@@ -1,74 +1,47 @@
-/* Cơ bản */
 body {
     font-family: Arial, sans-serif;
-    margin: 10px;
     text-align: center;
     background-color: #f4f4f4;
 }
 
-/* Tiêu đề nhỏ gọn */
 h1 {
-    font-size: 20px;
-    margin-bottom: 5px;
-}
-
-/* Tối ưu hiển thị trên điện thoại  */
-@media (max-width: 768px) {
-    h1 {
-        font-size: 18px;
-    }
-    input, select, button {
-        font-size: 14px;
-        padding: 8px;
-    }
-}
-
-/* Thanh tìm kiếm gọn gàng hơn */
-.search-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 5px;
-    align-items: center;
+    font-size: 18px;
     margin-bottom: 10px;
 }
 
-.search-container input {
+.search-container {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-bottom: 10px;
+}
+
+#searchInput {
     flex: 1;
     min-width: 200px;
 }
 
-/* Căn chỉnh bảng tìm kiếm */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: white;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+button {
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
 }
 
-th, td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: center;
-}
-
-th {
-    background-color: #3498db;
+#searchButton {
+    background-color: #007bff;
     color: white;
 }
 
-/* Thanh cuộn trong bảng kết quả */
+#resetButton {
+    background-color: red;
+    color: white;
+}
+
 #dataContainer {
     max-height: 300px;
     overflow-y: auto;
-    margin-top: 10px;
-    border: 1px solid #ddd;
-    background: white;
 }
 
-/* Cửa sổ popup chi tiết */
 #detailView {
     position: fixed;
     top: 10%;
@@ -79,42 +52,10 @@ th {
     max-width: 600px;
     max-height: 80vh;
     overflow-y: auto;
-    border-radius: 10px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
     padding: 15px;
     display: none;
 }
 
-/* Tự động điều chỉnh popup trên điện thoại */
-@media (max-width: 768px) {
-    #detailView {
-        top: 5%;
-        width: 95%;
-        max-height: 85vh;
-    }
-}
-
-/* Nút đóng popup */
-#closeDetail {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: red;
-    color: white;
-    border: none;
-    padding: 8px;
-    cursor: pointer;
-    border-radius: 5px;
-}
-
-/* Thanh cuộn trong chi tiết */
-#detailContent {
-    max-height: 70vh;
-    overflow-y: auto;
-    text-align: left;
-}
-
-/* Hiển thị popup khi được bật */
 .show {
     display: block !important;
 }

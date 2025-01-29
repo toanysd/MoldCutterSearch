@@ -1,6 +1,6 @@
 let moldData = [];
 let cutterData = [];
-let searchCategory = "mold"; // Mặc định là tìm khuôn 
+let searchCategory = "mold"; // Mặc định là tìm khuôn
 
 async function loadData() {
     try {
@@ -40,6 +40,8 @@ function updateColumnFilter() {
     Object.keys(sampleData).forEach(key => {
         columnFilter.innerHTML += `<option value="${key}">${key}</option>`;
     });
+
+    document.getElementById("tableHeader").style.backgroundColor = searchCategory === "mold" ? "#3498db" : "#e67e22";
 }
 
 function searchData() {
@@ -59,7 +61,7 @@ function searchData() {
 }
 
 function displayData(data) {
-    const tableBody = document.getElementById("dataTable");
+    const tableBody = document.querySelector("#dataTable tbody");
     tableBody.innerHTML = "";
 
     data.forEach(row => {
@@ -77,12 +79,20 @@ function displayData(data) {
 }
 
 function showDetails(row) {
-    document.getElementById("detailContent").innerHTML = Object.entries(row).map(([key, value]) => `<p><strong>${key}:</strong> ${value}</p>`).join("");
+    document.getElementById("detailContent").innerHTML = Object.entries(row)
+        .map(([key, value]) => `<p><strong>${key}:</strong> ${value}</p>`)
+        .join("");
+    
     document.getElementById("detailView").classList.add("show");
 }
 
 function closeDetail() {
     document.getElementById("detailView").classList.remove("show");
+}
+
+function resetSearch() {
+    document.getElementById("searchInput").value = "";
+    searchData();
 }
 
 window.onload = loadData;

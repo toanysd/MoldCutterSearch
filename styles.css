@@ -12,7 +12,7 @@ h1 {
     margin-bottom: 5px;
 }
 
-/* Tối ưu hiển thị trên điện thoại */
+/* Tối ưu hiển thị trên điện thoại  */
 @media (max-width: 768px) {
     h1 {
         font-size: 18px;

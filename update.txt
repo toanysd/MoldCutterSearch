@@ -1,0 +1,45 @@
+Bạn đang gặp lỗi "Updates were rejected because the tip of your current branch is behind its remote counterpart."
+Điều này có nghĩa là nhánh main trên GitHub đã có thay đổi mới mà nhánh cục bộ (local) của bạn chưa có. Bạn cần đồng bộ (pull) lại trước khi có thể push.
+
+Cách sửa lỗi và đồng bộ lại Git
+Bước 1: Cập nhật nhánh main của bạn từ GitHub
+Chạy lệnh này để kéo các thay đổi từ GitHub về máy:
+
+bash
+Sao chép
+Chỉnh sửa
+git pull --rebase origin main
+👉 Nếu có xung đột (merge conflict), Git sẽ yêu cầu bạn chỉnh sửa các file có xung đột. Sau khi sửa, chạy:
+
+bash
+Sao chép
+Chỉnh sửa
+git add .
+git rebase --continue
+Bước 2: Kiểm tra lại trạng thái Git
+Sau khi pull, kiểm tra xem mọi thứ đã sẵn sàng để đẩy lên chưa:
+
+bash
+Sao chép
+Chỉnh sửa
+git status
+✔️ Nếu Git hiển thị Your branch is up to date, bạn có thể tiếp tục.
+
+Bước 3: Đẩy (push) thay đổi lên GitHub
+Sau khi đồng bộ, bây giờ bạn có thể đẩy (push) lại bằng:
+
+bash
+Sao chép
+Chỉnh sửa
+git push origin main
+📌 Tổng hợp lệnh để sửa lỗi
+Chạy lần lượt các lệnh sau:
+
+bash
+Sao chép
+Chỉnh sửa
+git pull --rebase origin main  # Đồng bộ code từ GitHub về máy
+git add --all  # Thêm tất cả file đã chỉnh sửa
+git commit -m "Cập nhật dữ liệu và hệ thống"  # Tạo commit mới
+git push origin main  # Đẩy code lên GitHub
+🚀 Sau khi hoàn tất, kiểm tra lại GitHub để xem dữ liệu đã cập nhật chưa!

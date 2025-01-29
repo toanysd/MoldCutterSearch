@@ -1,6 +1,6 @@
 let moldData = [];
 let cutterData = [];
-let searchCategory = "mold"; // Mặc định là tìm khuôn
+let searchCategory = "mold"; // Mặc định là tìm khuôn 
 
 async function loadData() {
     try {

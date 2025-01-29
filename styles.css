@@ -1,49 +1,98 @@
+/* Cơ bản */
 body {
     font-family: Arial, sans-serif;
-    margin: 20px;
+    margin: 10px;
     text-align: center;
+    background-color: #f4f4f4;
 }
 
+/* Phần tìm kiếm */
 .search-container {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
 }
 
 input, select, button {
-    padding: 10px;
-    margin: 5px;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    text-align: center;
 }
 
+/* Bảng kết quả */
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
 }
 
 th, td {
     border: 1px solid #ddd;
-    padding: 8px;
+    padding: 10px;
+    text-align: center;
 }
 
 th {
-    background-color: #f0f0f0;
+    background-color: #3498db;
+    color: white;
+    font-size: 16px;
 }
 
-.hidden {
-    display: none;
+/* Thanh cuộn trong bảng kết quả */
+#dataContainer {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-top: 10px;
+    border: 1px solid #ddd;
+    background: white;
 }
 
+/* Cửa sổ chi tiết */
 #detailView {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     background: white;
-    padding: 20px;
-    border: 1px solid #ddd;
     width: 80%;
     max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    display: none;
 }
 
-#detailView button {
-    margin-top: 10px;
+/* Nút đóng cửa sổ */
+#closeDetail {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: red;
+    color: white;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+/* Thanh cuộn trong bảng chi tiết */
+#detailContent {
+    max-height: 70vh;
+    overflow-y: auto;
+    text-align: left;
+}
+
+/* Hiển thị khi được bật */
+.show {
+    display: block !important;
 }

@@ -87,18 +87,12 @@ function showDetails(row) {
     detailContent.innerHTML = Object.entries(row).map(([key, value]) => 
         `<p><strong>${key}:</strong> ${value}</p>`).join("");
 
-    detailView.classList.remove("hidden");
+    detailView.classList.add("show");
 }
 
 // Đóng cửa sổ chi tiết
 function closeDetail() {
-    document.getElementById("detailView").classList.add("hidden");
+    document.getElementById("detailView").classList.remove("show");
 }
-
-// Lắng nghe thay đổi loại tìm kiếm
-document.getElementById("searchCategory").addEventListener("change", function() {
-    searchCategory = this.value;
-    updateColumnFilter();
-});
 
 window.onload = loadData;

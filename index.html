@@ -7,8 +7,9 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
     <h1>金型とカッター検索 - Tra cứu Khuôn và Dao Cắt</h1>
-    
+
     <div class="search-container">
         <input type="text" id="searchInput" placeholder="検索ワードを入力 - Nhập từ khóa">
         <select id="searchCategory">
@@ -21,25 +22,27 @@
         <button onclick="searchData()">検索 - Tìm kiếm</button>
     </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>コード - Mã</th>
-                <th>名称 - Tên</th>
-                <th>サイズ - Kích thước</th>
-                <th>ラックID - RackLayerID</th>
-            </tr>
-        </thead>
-        <tbody id="dataTable">
-            <!-- Kết quả sẽ hiển thị ở đây -->
-        </tbody>
-    </table>
+    <div id="dataContainer">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>コード - Mã</th>
+                    <th>名前 - Tên</th>
+                    <th>サイズ - Kích thước</th>
+                    <th>ラックID - RackLayerID</th>
+                </tr>
+            </thead>
+            <tbody id="dataTable">
+                <!-- Kết quả sẽ hiển thị ở đây -->
+            </tbody>
+        </table>
+    </div>
 
-    <div id="detailView" class="hidden">
+    <div id="detailView">
+        <button id="closeDetail" onclick="closeDetail()">✖</button>
         <h2>詳細情報 - Thông tin chi tiết</h2>
         <div id="detailContent"></div>
-        <button onclick="closeDetail()">閉じる - Đóng</button>
     </div>
 
     <script src="script.js"></script>

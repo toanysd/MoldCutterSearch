@@ -1,121 +1,31 @@
-/* ===========================
-   🌟 CẤU HÌNH CHUNG CHO GIAO DIỆN
-   =========================== */
 body {
     font-family: Arial, sans-serif;
     text-align: center;
-    background-color: #f8f9fa;
-    margin: 0;
-    padding: 0;
 }
-
-h2 {
-    background-color: #007BFF;
-    color: white;
-    padding: 15px;
-    margin: 0;
-    font-size: 22px;
+.search-container {
+    margin-bottom: 20px;
 }
-
-h3 {
-    color: #007BFF;
-    margin-top: 15px;
-}
-
-/* ===========================
-   🔍 THANH TÌM KIẾM
-   =========================== */
 input, select, button {
-    width: 90%;
-    max-width: 400px;
-    padding: 10px;
-    margin: 10px 0;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    padding: 8px;
+    margin: 5px;
 }
-
-button {
-    background-color: #28a745;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #218838;
-}
-
-/* ===========================
-   📊 BẢNG KẾT QUẢ
-   =========================== */
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 10px;
 }
-
 th, td {
-    padding: 10px;
+    padding: 8px;
     border: 1px solid #ddd;
-    font-size: 14px;
 }
-
-th {
-    background-color: #007BFF;
-    color: white;
+.popup-content {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
 }
-
-tr:hover {
-    background-color: #f1f1f1;
-    cursor: pointer;
-}
-
-/* ===========================
-   📋 HIỂN THỊ CHI TIẾT DAO / KHUÔN
-   =========================== */
-.detail {
+.hidden {
     display: none;
-    text-align: left;
-    background-color: white;
-    padding: 15px;
-    margin: 10px auto;
-    border-radius: 5px;
-    width: 90%;
-    max-width: 500px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.detail h3 {
-    text-align: center;
-    color: #dc3545;
-    margin-bottom: 10px;
-}
-
-.detail p {
-    font-size: 14px;
-    margin: 5px 0;
-}
-
-/* ===========================
-   📱 TỐI ƯU CHO MÀN HÌNH NHỎ (MOBILE)
-   =========================== */
-@media screen and (max-width: 600px) {
-    input, select, button {
-        width: 95%;
-        font-size: 14px;
-    }
-
-    table {
-        font-size: 12px;
-    }
-
-    th, td {
-        padding: 8px;
-    }
-
-    .detail {
-        width: 95%;
-        padding: 10px;
-    }
 }

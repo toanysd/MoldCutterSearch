@@ -1,78 +1,49 @@
 <!DOCTYPE html>
-<html lang="jp">
-<head>
-    <link rel="stylesheet" href="styles.css">
-</head>
-
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>カッターと金型の検索</title>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 10px; }
-        input, button, select { padding: 10px; margin: 5px; width: 100%; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 8px; }
-        th { background-color: #f0f0f0; }
-        .detail { display: none; background: #f9f9f9; padding: 10px; margin-top: 10px; }
-        .back-btn { margin-top: 10px; padding: 10px; background: #007bff; color: white; text-align: center; cursor: pointer; }
-    </style>
+    <title>検索 - Khuôn & Dao Cắt</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h2>🔍 カッターと金型の検索 / Tìm Dao & Khuôn</h2>
+    <h1>🔍 Tìm kiếm Khuôn & Dao Cắt | 金型 & カッター検索</h1>
+    
+    <div class="search-container">
+        <input type="text" id="searchBox" placeholder="Nhập từ khóa... | キーワードを入力">
+        
+        <select id="searchType">
+            <option value="mold">🔧 Khuôn | 金型</option>
+            <option value="cutter">✂ Dao cắt | カッター</option>
+        </select>
 
-    <label>🔎 検索 / Tìm kiếm</label>
-    <input type="text" id="searchInput" placeholder="キーワードを入力...">
+        <select id="columnFilter">
+            <option value="all">🔍 Tất cả cột | すべての列</option>
+        </select>
 
-    <label>🔘 検索タイプ / Loại tìm kiếm</label>
-    <select id="searchType">
-        <option value="cutter">🔪 カッターを探す / Tìm Dao Cắt</option>
-        <option value="mold">🛠️ 金型を探す / Tìm Khuôn</option>
-    </select>
-
-    <label>🔍 検索フィールド / Lọc theo cột</label>
-    <select id="columnFilter">
-        <option value="all">全ての列 / Tất cả</option>
-        <option value="CutterNo">カッター番号 / Mã Dao</option>
-        <option value="CutterType">カッターの種類 / Loại Dao</option>
-        <option value="MoldName">金型名 / Tên Khuôn</option>
-        <option value="MoldCode">金型コード / Mã Khuôn</option>
-    </select>
-
-    <label>🌏 言語選択 / Chọn ngôn ngữ</label>
-    <select id="languageSelect" onchange="changeLanguage()">
-        <option value="jp" selected>🇯🇵 日本語</option>
-        <option value="vi">🇻🇳 Tiếng Việt</option>
-    </select>
-
-    <button onclick="searchData()">🔍 検索 / Tìm kiếm</button>
-
-    <h3>🔧 フィルター / Bộ lọc nâng cao</h3>
-    <select id="cutterTypeFilter">
-        <option value="">-- カッターの種類 / Loại Dao --</option>
-        <option value="Loại 1">Loại 1</option>
-        <option value="Loại 2">Loại 2</option>
-    </select>
-
-    <select id="moldStatusFilter">
-        <option value="">-- 金型の状態 / Trạng Thái Khuôn --</option>
-        <option value="Hoạt động">Hoạt động</option>
-        <option value="Ngừng hoạt động">Ngừng hoạt động</option>
-    </select>
+        <button onclick="searchData()">🔍 Tìm kiếm | 検索</button>
+    </div>
 
     <table>
         <thead>
             <tr>
                 <th>ID</th>
-                <th>名前 / Tên</th>
-                <th>コード / Mã</th>
-                <th>種類 / Loại</th>
+                <th>Mã</th>
+                <th>Tên</th>
+                <th>Kích thước</th>
+                <th>Vị trí giá</th>
             </tr>
         </thead>
         <tbody id="resultTable"></tbody>
     </table>
 
-    <div id="detailView" class="detail"></div>
+    <div id="detailsPopup" class="hidden">
+        <div class="popup-content">
+            <span class="close" onclick="closePopup()">✖</span>
+            <h2>Chi tiết</h2>
+            <div id="detailsContent"></div>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>

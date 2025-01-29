@@ -1,64 +1,81 @@
-let data = [];
-const csvLinks = {
-    cutter: "https://raw.githubusercontent.com/toanysd/MoldCutterSearch/main/Data/cutters.csv",
-    mold: "https://raw.githubusercontent.com/toanysd/MoldCutterSearch/main/Data/molds.csv",
-    shiplog: "https://raw.githubusercontent.com/toanysd/MoldCutterSearch/main/Data/shiplog.csv"
-};
+let dataMolds = [];
+let dataCutters = [];
+let selectedData = [];
 
-async function loadData(type) {
-    const url = csvLinks[type];
-    try {
-        const response = await fetch(url);
-        const csvData = await response.text();
-        const rows = csvData.split("\n");
-        const headers = rows[0].split(",");
-        data = rows.slice(1).map(row => {
-            const values = row.split(",");
-            return headers.reduce((obj, header, index) => {
-                obj[header] = values[index] || "";
-                return obj;
-            }, {});
-        });
-    } catch (error) {
-        console.error("データのロードエラー / Lỗi tải dữ liệu:", error);
-    }
+// Tải dữ liệu CSV
+async function loadData() {
+    dataMolds = await fetchCSV('data/molds.csv');
+    dataCutters = await fetchCSV('data/cutters.csv');
+    updateColumnFilter();
 }
 
-function searchData() {
-    const query = document.getElementById("searchInput").value.toLowerCase();
-    const searchType = document.getElementById("searchType").value;
+// Đọc dữ liệu từ CSV
+async function fetchCSV(file) {
+    const response = await fetch(file);
+    const csv = await response.text();
+    const rows = csv.split("\n").map(row => row.split(","));
+    const headers = rows.shift();
+    return rows.map(row => Object.fromEntries(headers.map((h, i) => [h, row[i] || ""])));
+}
 
-    let filteredData = data.filter(row => 
-        Object.values(row).some(value => value.toLowerCase().includes(query))
+// Cập nhật bộ lọc cột dựa vào dữ liệu
+function updateColumnFilter() {
+    const filter = document.getElementById("columnFilter");
+    filter.innerHTML = '<option value="all">🔍 Tất cả cột</option>';
+    const headers = Object.keys(dataMolds[0]);
+    headers.forEach(header => {
+        filter.innerHTML += `<option value="${header}">${header}</option>`;
+    });
+}
+
+// Tìm kiếm
+function searchData() {
+    const keyword = document.getElementById("searchBox").value.toLowerCase();
+    const type = document.getElementById("searchType").value;
+    const column = document.getElementById("columnFilter").value;
+
+    selectedData = (type === "mold") ? dataMolds : dataCutters;
+
+    let results = selectedData.filter(row => 
+        column === "all"
+            ? Object.values(row).some(val => val.toLowerCase().includes(keyword))
+            : row[column] && row[column].toLowerCase().includes(keyword)
     );
 
-    displayData(filteredData);
+    displayResults(results);
 }
 
-function displayData(results) {
+// Hiển thị kết quả
+function displayResults(results) {
     const tableBody = document.getElementById("resultTable");
     tableBody.innerHTML = "";
-
+    
     results.forEach(row => {
-        const tr = document.createElement("tr");
+        let tr = document.createElement("tr");
         tr.innerHTML = `
-            <td>${row.CutterID || row.MoldID}</td>
-            <td>${row.CutterNo || row.MoldName}</td>
-            <td>${row.CutterDesignName || row.MoldCode}</td>
-            <td>${row.CutterType || row.MoldUsageStatus}</td>
+            <td>${row.ID}</td>
+            <td>${row.Mã}</td>
+            <td><a href="#" onclick="showDetails('${row.ID}')">${row.Tên}</a></td>
+            <td>${row.Kích_thước}</td>
+            <td>${row.Vị_trí_giá}</td>
         `;
-        tr.addEventListener("click", () => showDetails(row));
         tableBody.appendChild(tr);
     });
 }
 
-function showDetails(row) {
-    const detailView = document.getElementById("detailView");
-    detailView.innerHTML = `<h3>詳細 / Chi tiết</h3>`;
-    for (let key in row) {
-        detailView.innerHTML += `<p><strong>${key}:</strong> ${row[key]}</p>`;
-    }
-    detailView.style.display = "block";
+// Hiển thị chi tiết
+function showDetails(id) {
+    let item = selectedData.find(row => row.ID === id);
+    let detailsContent = document.getElementById("detailsContent");
+    detailsContent.innerHTML = Object.entries(item)
+        .map(([key, value]) => `<p><strong>${key}</strong>: ${value}</p>`).join("");
+
+    document.getElementById("detailsPopup").classList.remove("hidden");
 }
 
-window.onload = () => loadData("cutter");
+// Đóng popup
+function closePopup() {
+    document.getElementById("detailsPopup").classList.add("hidden");
+}
+
+window.onload = loadData;

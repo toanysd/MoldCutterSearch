@@ -12,14 +12,17 @@
 
     <div class="search-container">
         <input type="text" id="searchInput" placeholder="検索ワードを入力 - Nhập từ khóa">
-        <select id="searchCategory">
+        <button onclick="searchData()">🔍</button>
+    </div>
+
+    <div class="filter-container">
+        <select id="searchCategory" onchange="updateColumnFilter()">
             <option value="mold">金型 - Khuôn</option>
             <option value="cutter">カッター - Dao cắt</option>
         </select>
         <select id="columnFilter">
             <option value="all">全ての列 - Tất cả các cột</option>
         </select>
-        <button onclick="searchData()">検索 - Tìm kiếm</button>
     </div>
 
     <div id="dataContainer">

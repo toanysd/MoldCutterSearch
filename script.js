@@ -2,7 +2,6 @@ let moldData = [];
 let cutterData = [];
 let searchCategory = "mold"; // Mặc định là tìm khuôn
 
-// Tải dữ liệu từ CSV trên GitHub
 async function loadData() {
     try {
         const moldResponse = await fetch("https://raw.githubusercontent.com/toanysd/MoldCutterSearch/main/Data/molds.csv");
@@ -20,7 +19,6 @@ async function loadData() {
     }
 }
 
-// Chuyển đổi CSV thành mảng đối tượng
 function parseCSV(csv) {
     const rows = csv.split("\n");
     const headers = rows[0].split(",");
@@ -33,23 +31,22 @@ function parseCSV(csv) {
     });
 }
 
-// Cập nhật bộ lọc cột dựa trên danh mục tìm kiếm
 function updateColumnFilter() {
+    searchCategory = document.getElementById("searchCategory").value;
     const columnFilter = document.getElementById("columnFilter");
     columnFilter.innerHTML = '<option value="all">全ての列 - Tất cả các cột</option>';
-    
+
     const sampleData = searchCategory === "mold" ? moldData[0] : cutterData[0];
     Object.keys(sampleData).forEach(key => {
         columnFilter.innerHTML += `<option value="${key}">${key}</option>`;
     });
 }
 
-// Tìm kiếm dữ liệu
 function searchData() {
     const query = document.getElementById("searchInput").value.toLowerCase();
     const columnFilter = document.getElementById("columnFilter").value;
     const data = searchCategory === "mold" ? moldData : cutterData;
-    
+
     let filteredData = data.filter(row => {
         if (columnFilter === "all") {
             return Object.values(row).some(value => value.toLowerCase().includes(query));
@@ -61,7 +58,6 @@ function searchData() {
     displayData(filteredData);
 }
 
-// Hiển thị kết quả tìm kiếm
 function displayData(data) {
     const tableBody = document.getElementById("dataTable");
     tableBody.innerHTML = "";
@@ -80,17 +76,11 @@ function displayData(data) {
     });
 }
 
-// Hiển thị thông tin chi tiết
 function showDetails(row) {
-    const detailView = document.getElementById("detailView");
-    const detailContent = document.getElementById("detailContent");
-    detailContent.innerHTML = Object.entries(row).map(([key, value]) => 
-        `<p><strong>${key}:</strong> ${value}</p>`).join("");
-
-    detailView.classList.add("show");
+    document.getElementById("detailContent").innerHTML = Object.entries(row).map(([key, value]) => `<p><strong>${key}:</strong> ${value}</p>`).join("");
+    document.getElementById("detailView").classList.add("show");
 }
 
-// Đóng cửa sổ chi tiết
 function closeDetail() {
     document.getElementById("detailView").classList.remove("show");
 }

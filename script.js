@@ -1,81 +1,104 @@
-let dataMolds = [];
-let dataCutters = [];
-let selectedData = [];
+let moldData = [];
+let cutterData = [];
+let searchCategory = "mold"; // Mặc định là tìm khuôn
 
-// Tải dữ liệu CSV
+// Tải dữ liệu từ CSV trên GitHub
 async function loadData() {
-    dataMolds = await fetchCSV('data/molds.csv');
-    dataCutters = await fetchCSV('data/cutters.csv');
-    updateColumnFilter();
+    try {
+        const moldResponse = await fetch("https://raw.githubusercontent.com/toanysd/MoldCutterSearch/main/Data/molds.csv");
+        const cutterResponse = await fetch("https://raw.githubusercontent.com/toanysd/MoldCutterSearch/main/Data/cutters.csv");
+
+        const moldCsv = await moldResponse.text();
+        const cutterCsv = await cutterResponse.text();
+
+        moldData = parseCSV(moldCsv);
+        cutterData = parseCSV(cutterCsv);
+
+        updateColumnFilter();
+    } catch (error) {
+        console.error("データのロードエラー - Lỗi tải dữ liệu:", error);
+    }
 }
 
-// Đọc dữ liệu từ CSV
-async function fetchCSV(file) {
-    const response = await fetch(file);
-    const csv = await response.text();
-    const rows = csv.split("\n").map(row => row.split(","));
-    const headers = rows.shift();
-    return rows.map(row => Object.fromEntries(headers.map((h, i) => [h, row[i] || ""])));
-}
-
-// Cập nhật bộ lọc cột dựa vào dữ liệu
-function updateColumnFilter() {
-    const filter = document.getElementById("columnFilter");
-    filter.innerHTML = '<option value="all">🔍 Tất cả cột</option>';
-    const headers = Object.keys(dataMolds[0]);
-    headers.forEach(header => {
-        filter.innerHTML += `<option value="${header}">${header}</option>`;
+// Chuyển đổi CSV thành mảng đối tượng
+function parseCSV(csv) {
+    const rows = csv.split("\n");
+    const headers = rows[0].split(",");
+    return rows.slice(1).map(row => {
+        const values = row.split(",");
+        return headers.reduce((obj, header, index) => {
+            obj[header.trim()] = values[index] ? values[index].trim() : "";
+            return obj;
+        }, {});
     });
 }
 
-// Tìm kiếm
-function searchData() {
-    const keyword = document.getElementById("searchBox").value.toLowerCase();
-    const type = document.getElementById("searchType").value;
-    const column = document.getElementById("columnFilter").value;
-
-    selectedData = (type === "mold") ? dataMolds : dataCutters;
-
-    let results = selectedData.filter(row => 
-        column === "all"
-            ? Object.values(row).some(val => val.toLowerCase().includes(keyword))
-            : row[column] && row[column].toLowerCase().includes(keyword)
-    );
-
-    displayResults(results);
+// Cập nhật bộ lọc cột dựa trên danh mục tìm kiếm
+function updateColumnFilter() {
+    const columnFilter = document.getElementById("columnFilter");
+    columnFilter.innerHTML = '<option value="all">全ての列 - Tất cả các cột</option>';
+    
+    const sampleData = searchCategory === "mold" ? moldData[0] : cutterData[0];
+    Object.keys(sampleData).forEach(key => {
+        columnFilter.innerHTML += `<option value="${key}">${key}</option>`;
+    });
 }
 
-// Hiển thị kết quả
-function displayResults(results) {
-    const tableBody = document.getElementById("resultTable");
-    tableBody.innerHTML = "";
+// Tìm kiếm dữ liệu
+function searchData() {
+    const query = document.getElementById("searchInput").value.toLowerCase();
+    const columnFilter = document.getElementById("columnFilter").value;
+    const data = searchCategory === "mold" ? moldData : cutterData;
     
-    results.forEach(row => {
-        let tr = document.createElement("tr");
+    let filteredData = data.filter(row => {
+        if (columnFilter === "all") {
+            return Object.values(row).some(value => value.toLowerCase().includes(query));
+        } else {
+            return row[columnFilter] && row[columnFilter].toLowerCase().includes(query);
+        }
+    });
+
+    displayData(filteredData);
+}
+
+// Hiển thị kết quả tìm kiếm
+function displayData(data) {
+    const tableBody = document.getElementById("dataTable");
+    tableBody.innerHTML = "";
+
+    data.forEach(row => {
+        const tr = document.createElement("tr");
         tr.innerHTML = `
-            <td>${row.ID}</td>
-            <td>${row.Mã}</td>
-            <td><a href="#" onclick="showDetails('${row.ID}')">${row.Tên}</a></td>
-            <td>${row.Kích_thước}</td>
-            <td>${row.Vị_trí_giá}</td>
+            <td>${row.MoldID || row.CutterID}</td>
+            <td>${row.MoldCode || row.CutterNo}</td>
+            <td>${row.MoldName || row.CutterDesignName}</td>
+            <td>${row.MoldDesignDim || row.CutterDim}</td>
+            <td>${row.RackLayerID}</td>
         `;
+        tr.onclick = () => showDetails(row);
         tableBody.appendChild(tr);
     });
 }
 
-// Hiển thị chi tiết
-function showDetails(id) {
-    let item = selectedData.find(row => row.ID === id);
-    let detailsContent = document.getElementById("detailsContent");
-    detailsContent.innerHTML = Object.entries(item)
-        .map(([key, value]) => `<p><strong>${key}</strong>: ${value}</p>`).join("");
+// Hiển thị thông tin chi tiết
+function showDetails(row) {
+    const detailView = document.getElementById("detailView");
+    const detailContent = document.getElementById("detailContent");
+    detailContent.innerHTML = Object.entries(row).map(([key, value]) => 
+        `<p><strong>${key}:</strong> ${value}</p>`).join("");
 
-    document.getElementById("detailsPopup").classList.remove("hidden");
+    detailView.classList.remove("hidden");
 }
 
-// Đóng popup
-function closePopup() {
-    document.getElementById("detailsPopup").classList.add("hidden");
+// Đóng cửa sổ chi tiết
+function closeDetail() {
+    document.getElementById("detailView").classList.add("hidden");
 }
+
+// Lắng nghe thay đổi loại tìm kiếm
+document.getElementById("searchCategory").addEventListener("change", function() {
+    searchCategory = this.value;
+    updateColumnFilter();
+});
 
 window.onload = loadData;

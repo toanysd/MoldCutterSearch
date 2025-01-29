@@ -3,46 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>検索 - Khuôn & Dao Cắt</title>
+    <title>金型とカッター検索 - Tra cứu Khuôn và Dao Cắt</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>🔍 Tìm kiếm Khuôn & Dao Cắt | 金型 & カッター検索</h1>
+    <h1>金型とカッター検索 - Tra cứu Khuôn và Dao Cắt</h1>
     
     <div class="search-container">
-        <input type="text" id="searchBox" placeholder="Nhập từ khóa... | キーワードを入力">
-        
-        <select id="searchType">
-            <option value="mold">🔧 Khuôn | 金型</option>
-            <option value="cutter">✂ Dao cắt | カッター</option>
+        <input type="text" id="searchInput" placeholder="検索ワードを入力 - Nhập từ khóa">
+        <select id="searchCategory">
+            <option value="mold">金型 - Khuôn</option>
+            <option value="cutter">カッター - Dao cắt</option>
         </select>
-
         <select id="columnFilter">
-            <option value="all">🔍 Tất cả cột | すべての列</option>
+            <option value="all">全ての列 - Tất cả các cột</option>
         </select>
-
-        <button onclick="searchData()">🔍 Tìm kiếm | 検索</button>
+        <button onclick="searchData()">検索 - Tìm kiếm</button>
     </div>
 
     <table>
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Mã</th>
-                <th>Tên</th>
-                <th>Kích thước</th>
-                <th>Vị trí giá</th>
+                <th>コード - Mã</th>
+                <th>名称 - Tên</th>
+                <th>サイズ - Kích thước</th>
+                <th>ラックID - RackLayerID</th>
             </tr>
         </thead>
-        <tbody id="resultTable"></tbody>
+        <tbody id="dataTable">
+            <!-- Kết quả sẽ hiển thị ở đây -->
+        </tbody>
     </table>
 
-    <div id="detailsPopup" class="hidden">
-        <div class="popup-content">
-            <span class="close" onclick="closePopup()">✖</span>
-            <h2>Chi tiết</h2>
-            <div id="detailsContent"></div>
-        </div>
+    <div id="detailView" class="hidden">
+        <h2>詳細情報 - Thông tin chi tiết</h2>
+        <div id="detailContent"></div>
+        <button onclick="closeDetail()">閉じる - Đóng</button>
     </div>
 
     <script src="script.js"></script>

@@ -84,7 +84,7 @@ button {
     width: 25%; /* Giảm kích thước label */
     min-width: 100px;
     text-align: left;
-    font-size: 14px; /* Giảm kích thước */
+    font-size: 11px; /* Giảm kích thước */
     font-weight: bold;
 }
 

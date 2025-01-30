@@ -11,23 +11,22 @@
     
     <div class="search-container">
         <input type="text" id="searchInput" placeholder="🔍 検索キーワード - Nhập từ khóa..." oninput="searchData()">
-        <button id="searchButton" onclick="searchData()">🔎 検索</button>
         <button id="resetButton" onclick="resetSearch()">❌ リセット</button>
     </div>
     
     <div class="filters-container">
         <div class="filter-row">
-            <label for="searchCategory">カテゴリ選択 - Chọn loại:</label>
+            <label for="searchCategory">カテゴリ選択  Chọn loại:</label>
             <select id="searchCategory" onchange="updateColumnFilter()">
-                <option value="mold">金型 - Khuôn</option>
-                <option value="cutter">抜型 - Dao cắt</option>
+                <option value="mold">金型  Khuôn</option>
+                <option value="cutter">抜型  Dao cắt</option>
             </select>
         </div>
 
         <div class="filter-row-advanced">
-            <label for="columnFilter">フィルター - Bộ lọc:</label>
+            <label for="columnFilter">フィルター  Bộ lọc:</label>
             <select id="columnFilter" onchange="searchData()">
-                <option value="all">全ての列 - Tất cả các cột</option>
+                <option value="all">全ての列  Tất cả các cột</option>
             </select>
         </div>
     </div>
@@ -38,7 +37,7 @@
                 <tr id="tableHeader">
                     <th>ID</th>
                     <th>コード - Mã</th>
-                    <th>名前 - Tên</th>
+                    <th>名称 - Tên</th>
                     <th>サイズ - Kích thước</th>
                     <th>ラック - Giá</th>
                 </tr>

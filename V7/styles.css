@@ -90,28 +90,3 @@ h1 {
     text-align: left;
     padding: 10px;
 }
-#shipLogView {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: white;
-    width: 90%;
-    max-width: 600px;
-    max-height: 80vh;
-    overflow-y: auto;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-    display: none;
-    visibility: hidden;
-    opacity: 0;
-    transition: opacity 0.3s ease-in-out;
-    text-align: left;
-}
-
-#shipLogView.show {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1;
-}

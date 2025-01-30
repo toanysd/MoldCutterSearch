@@ -1,0 +1,38 @@
+📌 Hướng dẫn cập nhật từng file CSV lên GitHub một cách an toàn
+1️⃣ Kiểm tra trạng thái repository
+Trước khi cập nhật, hãy kiểm tra xem có file nào đang chờ commit không:
+
+bash
+Sao chép
+Chỉnh sửa
+git status
+Nếu có file bị thay đổi nhưng chưa commit, hãy commit trước hoặc sử dụng git stash để lưu tạm.
+
+2️⃣ Cập nhật từng file CSV lên GitHub
+Nếu chỉ muốn cập nhật một số file CSV cụ thể, sử dụng lệnh:
+
+bash
+Sao chép
+Chỉnh sửa
+git add Data/molds.csv Data/cutters.csv Data/shiplog.csv
+git commit -m "Cập nhật dữ liệu CSV mới"
+git push origin main
+Nếu có nhiều file, chỉ cần thay thế tên file cần cập nhật.
+
+3️⃣ Nếu gặp lỗi khi push
+Nếu push bị từ chối, cần đồng bộ lại với GitHub:
+
+bash
+Sao chép
+Chỉnh sửa
+git pull --rebase origin main
+git push origin main
+Nếu có lỗi merge conflict, hãy giải quyết xung đột rồi tiếp tục:
+
+bash
+Sao chép
+Chỉnh sửa
+git add .
+git commit -m "Giải quyết xung đột dữ liệu"
+git push origin main
+🚀 Xong! Giờ kiểm tra lại trên GitHub để đảm bảo dữ liệu đã được cập nhật.

@@ -1,4 +1,5 @@
 #!/bin/bash
-git add --all
-git commit -m "Cập nhật dữ liệu và hệ thống"
+git git add index.html script.js styles.css
+git commit -m "Cap nhat phien ban V7, lich su van chuyen"
+git pull --rebase origin main
 git push origin main

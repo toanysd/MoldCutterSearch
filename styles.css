@@ -16,23 +16,28 @@ h1 {
 /* Căn chỉnh vùng tìm kiếm */
 .search-container {
     display: flex;
-    justify-content: center;
     align-items: center;
     gap: 10px;
     margin-bottom: 10px;
     width: 100%;
-    max-width: 600px;
-    margin: auto;
+    max-width: 90%; /* Căn lề với bảng */
+    margin-left: auto;
+    margin-right: auto;
+    justify-content: flex-start; /* Căn lề trái */
 }
+
+
 
 /* Textbox tìm kiếm */
 #searchInput {
-    flex-grow: 2;  /* Giữ khoảng 60% chiều rộng */
-    min-width: 200px;
-    max-width: 400px;
-    font-size: 16px;  /* Đồng bộ kích thước chữ */
-    padding: 10px;
+    width: 60%;  /* Giữ tỷ lệ hợp lý */
+    min-width: 250px; /* Đảm bảo không quá nhỏ */
+    max-width: 500px; /* Không vượt quá bảng */
+    font-size: 16px; /* Đồng bộ với bảng */
+    padding: 8px;
+    text-align: left; /* Căn chữ về bên trái */
 }
+
 
 /* Điều chỉnh nút tìm kiếm và reset */
 button {
@@ -42,14 +47,7 @@ button {
     cursor: pointer;
 }
 
-#searchButton {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-weight: bold;
-    min-width: 100px;
-}
+
 
 #resetButton {
     background-color: red;
@@ -57,15 +55,14 @@ button {
     border: none;
     border-radius: 5px;
     font-weight: bold;
-    min-width: 100px;
+    font-size: 14px; /* Nhỏ hơn */
+    padding: 6px 12px; /* Nhỏ gọn */
+    min-width: 80px; /* Không quá lớn */
+    align-self: center;
 }
 
-#searchButton, #resetButton {
-    flex-grow: 1;  /* Chia tỷ lệ hợp lý với input */
-    font-size: 16px;  /* Đồng bộ với bảng */
-    padding: 10px 12px;
-    width: auto;
-}
+
+
 
 /* Các bộ lọc */
 .filters-container {
@@ -84,16 +81,20 @@ button {
 }
 
 .filter-row label, .filter-row-advanced label {
-    width: 30%; /* Đảm bảo label có cùng độ rộng */
-    text-align: left; /* Căn trái chữ trong label */
-    font-size: 16px; /* Đồng bộ kích thước chữ */
+    width: 25%; /* Giảm kích thước label */
+    min-width: 100px;
+    text-align: left;
+    font-size: 14px; /* Giảm kích thước */
+    font-weight: bold;
 }
 
+
 .filter-row select, .filter-row-advanced select {
-    width: 70%; /* Đảm bảo combobox có cùng độ rộng */
-    padding: 8px;
-    font-size: 16px; /* Đồng bộ kích thước chữ */
+    width: 75%; /* Lớn hơn để cân bằng với label nhỏ */
+    padding: 6px;
+    font-size: 14px; /* Nhỏ hơn để phù hợp */
 }
+
 
 /* Bảng kết quả */
 #dataContainer {

@@ -13,26 +13,84 @@ h1 {
     margin-bottom: 10px;
 }
 
-/* Vùng tìm kiếm */
+/* Căn chỉnh vùng tìm kiếm */
 .search-container {
     display: flex;
     justify-content: center;
-    gap: 5px;
-    margin-bottom: 10px;
+    align-items: center;
+    gap: 10px; /* Khoảng cách giữa các thành phần */
+    width: 90%;
+    margin: 0 auto;
+}
+
+/* Textbox tìm kiếm */
+#searchInput {
+    flex: 1;
+    padding: 12px;
+    font-size: 18px; /* Đồng bộ kích thước chữ với bảng */
+    width: 100%;
+    max-width: 300px; /* Tránh bị quá to trên màn hình lớn */
+    height: 42px; /* Đồng nhất chiều cao với combobox */
+}
+
+/* Điều chỉnh nút tìm kiếm và reset */
+button {
+    padding: 12px 15px;
+    font-size: 18px; /* Tăng cỡ chữ */
+    height: 42px; /* Đồng nhất với textbox */
+    cursor: pointer;
+}
+
+#searchButton {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    min-width: 100px;
+}
+
+#resetButton {
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    min-width: 100px;
+}
+
+#searchButton, #resetButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 /* Các bộ lọc */
 .filters-container {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start; /* Căn lề trái */
+    width: 90%; /* Đảm bảo không bị tràn màn hình */
+    margin: 0 auto;
 }
 
 .filter-row, .filter-row-advanced {
     display: flex;
-    justify-content: center;
-    gap: 10px;
+    align-items: center;
     width: 100%;
+    margin-bottom: 5px; /* Khoảng cách giữa hai dòng */
+}
+
+.filter-row label, .filter-row-advanced label {
+    width: 30%; /* Đảm bảo label có cùng độ rộng */
+    text-align: left; /* Căn trái chữ trong label */
+    font-size: 16px; /* Đồng bộ kích thước chữ */
+}
+
+.filter-row select, .filter-row-advanced select {
+    width: 70%; /* Đảm bảo combobox có cùng độ rộng */
+    padding: 8px;
+    font-size: 16px; /* Đồng bộ kích thước chữ */
 }
 
 /* Bảng kết quả */

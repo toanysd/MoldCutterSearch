@@ -97,11 +97,36 @@ button {
 
 
 /* Bảng kết quả */
-#dataContainer {
-    max-height: 300px;
-    overflow-y: auto;
-    margin-top: 10px;
+#dataTable {
+    width: 100%;
+    max-width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed; /* Cố định độ rộng các cột */
+    font-size: 14px;
 }
+
+#dataTable th, #dataTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+    overflow: hidden;
+    white-space: nowrap; /* Ngăn chặn xuống dòng làm vỡ bố cục */
+    text-overflow: ellipsis; /* Hiển thị "..." nếu nội dung quá dài */
+}
+
+/* Xác định độ rộng từng cột */
+#dataTable th:nth-child(1), #dataTable td:nth-child(1) { width: 10%; } /* ID */
+#dataTable th:nth-child(2), #dataTable td:nth-child(2) { width: 20%; } /* Mã */
+#dataTable th:nth-child(3), #dataTable td:nth-child(3) { width: 30%; } /* Tên */
+#dataTable th:nth-child(4), #dataTable td:nth-child(4) { width: 20%; } /* Kích thước */
+#dataTable th:nth-child(5), #dataTable td:nth-child(5) { width: 20%; } /* Giá */
+
+
+#dataTable td {
+    font-size: 14px; /* Đồng bộ cỡ chữ cho dữ liệu */
+    padding: 10px;
+}
+
 
 /* ============= 📌 CẬP NHẬT POPUP CHI TIẾT ============= */
 #detailView {

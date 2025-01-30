@@ -1,100 +1,100 @@
 ﻿ShipID,CustomerID,ItemTypeID,ShipItemName,ShipDate,ToCompanyID,FromCompanyID,ShipItemType,ShipStatus,MoldID,CutterID,FrameID,OtherEquipID,WaterBaseID,ShipNotes,DateEntry
 4,YSD,OTHER,ネル,30-Sep-24,VIETNAM,YSD,,,,,,ネル,,760x320x200 5.4kg,
-11,JAE,MOLD,,30-Sep-24,TEFLON,YSD,,,JAE-276 R1,,,,,,
-12,JAE,MOLD,,01-Oct-24,SAKATA,YSD,,,JAE-317 R1,,,,,坂田さん,
-13,JAE,MOLD,,01-Oct-24,SAKATA,YSD,,,JAE-324,,,,,坂田さん,
-14,JAE,MOLD,,02-Aug-24,AOMORI,YSD,,,JAE-036,,,,,,
-28,MZT,MOLD,金型返却,19-Aug-24,MZT,YSD,,,MZT-145,,,,,桜井さん,17-Aug-24
-29,YCM,MOLD,,21-Aug-24,,YSD,,,YCM-056,,,,,"管理課　購買・管理係
+11,JAE,MOLD,,30-Sep-24,TEFLON,YSD,,,1169,,,,,,
+12,JAE,MOLD,,01-Oct-24,SAKATA,YSD,,,2895,,,,,坂田さん,
+13,JAE,MOLD,,01-Oct-24,SAKATA,YSD,,,4223,,,,,坂田さん,
+14,JAE,MOLD,,02-Aug-24,AOMORI,YSD,,,2221,,,,,,
+28,MZT,MOLD,金型返却,19-Aug-24,MZT,YSD,,,3063,,,,,桜井さん,17-Aug-24
+29,YCM,MOLD,,21-Aug-24,,YSD,,,102,,,,,"管理課　購買・管理係
  　 　平方　義之　様
 
   〒719-3143
  　 岡山県真庭市下市瀬1100
 　　TEL：0867-52-7105",21-Aug-24
-30,JAE,MOLD,,23-Aug-24,AOMORI,YSD,,,JAE-045,,,,,,23-Aug-24
-31,JAE,MOLD,,23-Aug-24,AOMORI,YSD,,,JAE-047,,,,,,23-Aug-24
-32,WTN,MOLD,,23-Aug-24,TEFLON,YSD,,,WTN-009 R1,,,,,,23-Aug-24
-33,TE,MOLD,,,MARUDAI,YSD,,,TE-3-161-6 NO1,,,,,2024,27-Aug-24
-34,JAE,MOLD,,27-Aug-24,SAKATA,YSD,,,JAE-324,,,,,坂田さん,27-Aug-24
-35,WTN,MOLD,,28-Aug-24,SAKATA,YSD,,,WTN-009 R1,,,,,テフロン加工済,28-Aug-24
-36,MZT,MOLD,,28-Aug-24,YSD,SAKATA,,,MZT-140,,,,,写真撮影ため,28-Aug-24
-37,TE,MOLD,,22-Jul-24,,YSD,,,TE-6-159-6R1,,,,,,04-Sep-24
-38,KWE,MOLD,,09-Sep-24,,,,,KWE-002,,,,,坂田さん,09-Sep-24
-39,KDS,MOLD,,09-Sep-24,,,,,KDS-120,,,,,彫刻改造有,09-Sep-24
-40,JAE,MOLD,,03-Oct-24,YSD,TEFLON,,,JAE-267,,,,,テフロン加工受取,
-41,TE,MOLD,,07-Oct-24,YSD,NICHISAN,,,TE-9-162-7 R3,,,,,弊社に返却して改造する,
-42,TE,MOLD,,07-Oct-24,YSD,NICHISAN,,,TE-9-162-7,,,,,"R無しの方は廃棄していいかTEに確認しますので、
+30,JAE,MOLD,,23-Aug-24,AOMORI,YSD,,,2989,,,,,,23-Aug-24
+31,JAE,MOLD,,23-Aug-24,AOMORI,YSD,,,2990,,,,,,23-Aug-24
+32,WTN,MOLD,,23-Aug-24,TEFLON,YSD,,,3078,,,,,,23-Aug-24
+33,TE,MOLD,,,MARUDAI,YSD,,,1917,,,,,2024,27-Aug-24
+34,JAE,MOLD,,27-Aug-24,SAKATA,YSD,,,4223,,,,,坂田さん,27-Aug-24
+35,WTN,MOLD,,28-Aug-24,SAKATA,YSD,,,3078,,,,,テフロン加工済,28-Aug-24
+36,MZT,MOLD,,28-Aug-24,YSD,SAKATA,,,4226,,,,,写真撮影ため,28-Aug-24
+37,TE,MOLD,,22-Jul-24,,YSD,,,4239,,,,,,04-Sep-24
+38,KWE,MOLD,,09-Sep-24,,,,,1093,,,,,坂田さん,09-Sep-24
+39,KDS,MOLD,,09-Sep-24,,,,,2698,,,,,彫刻改造有,09-Sep-24
+40,JAE,MOLD,,03-Oct-24,YSD,TEFLON,,,1985,,,,,テフロン加工受取,
+41,TE,MOLD,,07-Oct-24,YSD,NICHISAN,,,3072,,,,,弊社に返却して改造する,
+42,TE,MOLD,,07-Oct-24,YSD,NICHISAN,,,4373,,,,,"R無しの方は廃棄していいかTEに確認しますので、
 それまでは保管しておいてください。",
-43,DIC,MOLD,,03-Oct-24,TEFLON,YSD,,,DIC-151,,,,,テフロン加工へ,
-44,TDW,MOLD,,17-Sep-24,MZT,YSD,,,TDW-001 R3,,,,0,強力テフロン加工へ,
-45,TDW,MOLD,,25-Sep-24,SAKATA,MZT,,,TDW-001 R3,,,,0,テフロン加工済,
+43,DIC,MOLD,,03-Oct-24,TEFLON,YSD,,,4428,,,,,テフロン加工へ,
+44,TDW,MOLD,,17-Sep-24,MZT,YSD,,,4218,,,,0,強力テフロン加工へ,
+45,TDW,MOLD,,25-Sep-24,SAKATA,MZT,,,4218,,,,0,テフロン加工済,
 46,YSD,OTHER,カットしたPP板,11-Sep-24,AOMORI,YSD,,,,,,,0,,
 47,MZT,CUTTER,MZT-145の抜き刃と支給材料を水谷製作所本社に送ります。,02-Sep-24,MZT,YSD,,,,,,,0,"材料：透明　PET(CL)1.00mm SCSV-APET
 　　　 青 PET(青)1.00mm 405巾",
-48,JAE,MOLD,JAE-322の金型・プラグ・カッタの出荷の予定は7/3（水）です。,03-Jul-24,,YSD,,,JAE-322 R1,,,,0,,
-49,KNC,MOLD,KNC-001金型返却,25-Jun-24,,YSD,,,KNC-001,,,,0,,
-50,TE,MOLD,,25-Jun-24,MARUDAI,YSD,,,TE-1-160-4 A Type,,,,0,再作成した金型のみ,
-51,TE,MOLD,,05-Jun-24,MARUDAI,YSD,,,TE-1-160-4 (Kaizen),,,,0,外形調整した金型,
-52,DIC,MOLD,,08-Oct-24,YSD,TEFLON,,,DIC-151,,,,0,テフロン加工済　トアン,
-53,SMK,MOLD,,07-Oct-24,DISPOSED,DISPOSED,,,SMK-164,,,,0,廃棄箱に入れた。　トアン,
-54,TE,MOLD,,09-Oct-24,NICHISAN,YSD,,,TE-9-162-7 R3,,,,0,改造完了-->成形,
-56,KDS,MOLD,,17-Oct-24,KDS,YSD,,,KDS-069,,,,0,"共同紙業 早川様より金型返却の連絡が来ました。
+48,JAE,MOLD,JAE-322の金型・プラグ・カッタの出荷の予定は7/3（水）です。,03-Jul-24,,YSD,,,3060,,,,0,,
+49,KNC,MOLD,KNC-001金型返却,25-Jun-24,,YSD,,,2393,,,,0,,
+50,TE,MOLD,,25-Jun-24,MARUDAI,YSD,,,3049,,,,0,再作成した金型のみ,
+51,TE,MOLD,,05-Jun-24,MARUDAI,YSD,,,4538,,,,0,外形調整した金型,
+52,DIC,MOLD,,08-Oct-24,YSD,TEFLON,,,4428,,,,0,テフロン加工済　トアン,
+53,SMK,MOLD,,07-Oct-24,DISPOSED,DISPOSED,,,4648,,,,0,廃棄箱に入れた。　トアン,
+54,TE,MOLD,,09-Oct-24,NICHISAN,YSD,,,3072,,,,0,改造完了-->成形,
+56,KDS,MOLD,,17-Oct-24,KDS,YSD,,,1565,,,,0,"共同紙業 早川様より金型返却の連絡が来ました。
 該当金型は KDS-069 です。",
-58,ADY,MOLD,,16-Oct-24,ADY,YSD,,,ADY-093R,,,,0,返却のため,16-Oct-24
-59,ADY,MOLD,,16-Oct-24,ADY,YSD,,,ADY-079,,,,0,返却,
-60,TE,MOLD,,19-Oct-24,YSD,YSD,,,TE-2-023-8,,,,0,成形為２Fに移動・361から2F,
-61,JAE,MOLD,,21-Oct-24,SAKATA,YSD,,,JAE-316,,,,0,成形のため,
-62,JAE,MOLD,,25-Oct-24,YSD,SAKATA,,,JAE-323 R2,,,,0,写真撮影ため,
-63,JAE,MOLD,,25-Oct-24,YSD,SAKATA,,,JAE-324,,,,0,写真撮影ため,
-64,JAE,MOLD,,29-Oct-24,SAKATA,YSD,,,JAE-304,,,,0,金型確認（坂田さん）,
-65,JAE,MOLD,,29-Oct-24,SAKATA,YSD,,,JAE-324,,,,0,成形,
-66,TE,MOLD,,30-Oct-24,TEFLON,YSD,,,TE-2423252-2 R5,,,,0,VIET,
-67,TE,MOLD,,05-Nov-24,YSD,TEFLON,,,TE-2423252-2 R5,,,,0,VIET,
-74,SIT,MOLD,,08-Nov-24,TEFLON,YSD,,,SIT-021,,,,0,テフロン加工依頼（谷口さん）,08-Nov-24
-75,SIT,MOLD,,08-Nov-24,TEFLON,YSD,,,SIT-020,,,,0,テフロン加工依頼（谷口さん）,08-Nov-24
-76,SIT,MOLD,,08-Nov-24,TEFLON,YSD,,,SIT-022,,,,0,テフロン加工依頼（谷口さん）,
-77,DIC,MOLD,,18-Nov-24,MARUDAI,YSD,,,DIC-149 R5,,,,0,"先ほど話したように月曜日の茨城工場向けのトラックにDIC-149/DIC-150の金型関係と材料を載せます。
+58,ADY,MOLD,,16-Oct-24,ADY,YSD,,,444,,,,0,返却のため,16-Oct-24
+59,ADY,MOLD,,16-Oct-24,ADY,YSD,,,433,,,,0,返却,
+60,TE,MOLD,,19-Oct-24,YSD,YSD,,,1769,,,,0,成形為２Fに移動・361から2F,
+61,JAE,MOLD,,21-Oct-24,SAKATA,YSD,,,276,,,,0,成形のため,
+62,JAE,MOLD,,25-Oct-24,YSD,SAKATA,,,3058,,,,0,写真撮影ため,
+63,JAE,MOLD,,25-Oct-24,YSD,SAKATA,,,4223,,,,0,写真撮影ため,
+64,JAE,MOLD,,29-Oct-24,SAKATA,YSD,,,273,,,,0,金型確認（坂田さん）,
+65,JAE,MOLD,,29-Oct-24,SAKATA,YSD,,,4223,,,,0,成形,
+66,TE,MOLD,,30-Oct-24,TEFLON,YSD,,,2820,,,,0,VIET,
+67,TE,MOLD,,05-Nov-24,YSD,TEFLON,,,2820,,,,0,VIET,
+74,SIT,MOLD,,08-Nov-24,TEFLON,YSD,,,4675,,,,0,テフロン加工依頼（谷口さん）,08-Nov-24
+75,SIT,MOLD,,08-Nov-24,TEFLON,YSD,,,4672,,,,0,テフロン加工依頼（谷口さん）,08-Nov-24
+76,SIT,MOLD,,08-Nov-24,TEFLON,YSD,,,4677,,,,0,テフロン加工依頼（谷口さん）,
+77,DIC,MOLD,,18-Nov-24,MARUDAI,YSD,,,4678,,,,0,"先ほど話したように月曜日の茨城工場向けのトラックにDIC-149/DIC-150の金型関係と材料を載せます。
 斉藤君に下記材料を出してもらうようにお願いしてください。
 
 RP東プラ　PS黒1.0㎜導電練り込み　640㎜幅×200m；1本",
-78,DIC,MOLD,,18-Nov-24,MARUDAI,YSD,,,DIC-150 R3,,,,0,"先ほど話したように月曜日の茨城工場向けのトラックにDIC-149/DIC-150の金型関係と材料を載せます。
+78,DIC,MOLD,,18-Nov-24,MARUDAI,YSD,,,4680,,,,0,"先ほど話したように月曜日の茨城工場向けのトラックにDIC-149/DIC-150の金型関係と材料を載せます。
 斉藤君に下記材料を出してもらうようにお願いしてください。
 
 RP東プラ　PS黒1.0㎜導電練り込み　640㎜幅×200m；1本",
-79,KOS,MOLD,,22-Nov-24,YSD,TEFLON,,,KOS-015,,,,0,テフロン加工完了,
-80,JAE,,,27-Nov-24,MARUDAI,YSD,,,JAE-026 R2,,,,0,抜型と,
-81,JAE,,,27-Nov-24,MARUDAI,YSD,,,JAE-046 No2,,,,0,,
-82,JAE,,,27-Nov-24,MARUDAI,YSD,,,JAE-068,,,,0,,
-83,TIH,MOLD,,27-Nov-24,TEFLON,YSD,,,TIH-024 R2,,,,0,,
-84,SHT,,,03-Dec-24,YSD,TEFLON,,,SHT-017 R3,,,,0,,
-85,ATS,,,03-Dec-24,YSD,TEFLON,,,ATS-030R1,,,,0,,
-86,ATS,,,03-Dec-24,YSD,TEFLON,,,ATS-031,,,,0,,
+79,KOS,MOLD,,22-Nov-24,YSD,TEFLON,,,1132,,,,0,テフロン加工完了,
+80,JAE,,,27-Nov-24,MARUDAI,YSD,,,3472,,,,0,抜型と,
+81,JAE,,,27-Nov-24,MARUDAI,YSD,,,4723,,,,0,,
+82,JAE,,,27-Nov-24,MARUDAI,YSD,,,4705,,,,0,,
+83,TIH,MOLD,,27-Nov-24,TEFLON,YSD,,,4727,,,,0,,
+84,SHT,,,03-Dec-24,YSD,TEFLON,,,4625,,,,0,,
+85,ATS,,,03-Dec-24,YSD,TEFLON,,,1128,,,,0,,
+86,ATS,,,03-Dec-24,YSD,TEFLON,,,1129,,,,0,,
 87,,FRAME,フレーム,04-Dec-24,NICHISAN,YSD,,,,,,,0,小比類巻さん,
-88,SHT,,,16-Dec-24,TEFLON,YSD,,,SHT-018 R2,,,,0,,
-89,TE,MOLD,金型・抜型・別抜き74C・スタッキング１面・フレーム・サンプル・水冷盤,18-Dec-24,,,,,TE-8-161-5,,,,0,茨城工場へ[セット],
-91,JAE,MOLD,,23-Dec-24,AOMORI,YSD,,,JAE-083,,,,0,,
-92,JAE,MOLD,,23-Dec-24,AOMORI,YSD,,,JAE-112,,,,0,,
-93,JAE,MOLD,,23-Dec-24,AOMORI,YSD,,,JAE-005,,,,0,,
-94,JAE,MOLD,,23-Dec-24,AOMORI,YSD,,,JAE-070,,,,0,,
-95,JAE,MOLD,,23-Dec-24,AOMORI,YSD,,,JAE-045,,,,0,,
-96,JAE,MOLD,,23-Dec-24,AOMORI,YSD,,,JAE-047,,,,0,,
-97,JAE,MOLD,,23-Dec-24,AOMORI,YSD,,,JAE-004,,,,0,,
+88,SHT,,,16-Dec-24,TEFLON,YSD,,,4626,,,,0,,
+89,TE,MOLD,金型・抜型・別抜き74C・スタッキング１面・フレーム・サンプル・水冷盤,18-Dec-24,,,,,2026,,,,0,茨城工場へ[セット],
+91,JAE,MOLD,,23-Dec-24,AOMORI,YSD,,,301,,,,0,,
+92,JAE,MOLD,,23-Dec-24,AOMORI,YSD,,,323,,,,0,,
+93,JAE,MOLD,,23-Dec-24,AOMORI,YSD,,,2988,,,,0,,
+94,JAE,MOLD,,23-Dec-24,AOMORI,YSD,,,297,,,,0,,
+95,JAE,MOLD,,23-Dec-24,AOMORI,YSD,,,2989,,,,0,,
+96,JAE,MOLD,,23-Dec-24,AOMORI,YSD,,,2990,,,,0,,
+97,JAE,MOLD,,23-Dec-24,AOMORI,YSD,,,299,,,,0,,
 98,JAE,CUTTER,CUTTER YS17122 2P JAE(275x275)-4R10,23-Dec-24,AOMORI,YSD,,,,,,,0,,
 99,JAE,CUTTER,CUTTER YS16031 2P JAE(275x275)-2C-2R,23-Dec-24,AOMORI,YSD,,,,,,,0,,
-100,TE,MOLD,,23-Dec-24,NICHISAN,YSD,,,TE-1-163-2 R4,,,,0,,
+100,TE,MOLD,,23-Dec-24,NICHISAN,YSD,,,5097,,,,0,,
 101,,OTHER,面板SUS1.0　＋ねじ,23-Dec-24,MARUDAI,YSD,,,,,,,0,,
-102,TE,MOLD,,20-Dec-24,NICHISAN,YSD,,,TE-1-163-1 R2,,,,0,,
-103,SHT,MOLD,,20-Dec-24,TEFLON,YSD,,,SHT-018 R2,,,,0,,
-104,TE,MOLD,,25-Dec-24,NICHISAN,YSD,,,TE-9-162-7 R4,,,,0,,
-105,TE,MOLD,,06-Jan-25,NICHISAN,YSD,,,TE-6-159-8 R1,,,,0,,
-106,YSD,MOLD,teflon,07-Jan-25,TEFLON,YSD,,,YSD-F-200-1,,,,0,,
-107,TE,MOLD,,07-Jan-25,NICHISAN,YSD,,,TE-6-159-7 R4,,,,0,,
+102,TE,MOLD,,20-Dec-24,NICHISAN,YSD,,,5096,,,,0,,
+103,SHT,MOLD,,20-Dec-24,TEFLON,YSD,,,4626,,,,0,,
+104,TE,MOLD,,25-Dec-24,NICHISAN,YSD,,,5099,,,,0,,
+105,TE,MOLD,,06-Jan-25,NICHISAN,YSD,,,5103,,,,0,,
+106,YSD,MOLD,teflon,07-Jan-25,TEFLON,YSD,,,2593,,,,0,,
+107,TE,MOLD,,07-Jan-25,NICHISAN,YSD,,,5102,,,,0,,
 108,DIC,MOLD,DIC-153 R3 スタッキング,07-Jan-25,MARUDAI,YSD,,,,,,,0,,
-109,HIN,MOLD,返却,09-Jan-25,HIN-001,YSD,,,HIN-004,,,,0,,
-111,YSD,MOLD,,10-Jan-25,TEFLON,YSD,,,YSD-F-200-1,,,,0,teflon,10-Jan-25
-112,YSD,STAKING,inline 2P staking,15-Jan-25,MARUDAI,YSD,,,TE-8-161-5,,,,0,,
-113,KOS,MOLD,teflon finish,15-Jan-25,YSD,TEFLON,,,KOS-018,,,,0,,
-114,MZT,MOLD,,20-Jan-25,SAKATA,YSD,,,MZT-140,,,,0,成形,20-Jan-25
-115,JAE,MOLD,Mold,20-Jan-25,AOMORI,YSD,,,JAE-337,,,,0,,20-Jan-25
-116,YMT,MOLD,,21-Jan-25,TEFLON,YSD,,,YMT-011,,,,0,,21-Jan-25
-117,YMT,MOLD,,,YSD,TEFLON,,,YMT-011,,,,0,,24-Jan-25
+109,HIN,MOLD,返却,09-Jan-25,HIN-001,YSD,,,1040,,,,0,,
+111,YSD,MOLD,,10-Jan-25,TEFLON,YSD,,,2593,,,,0,teflon,10-Jan-25
+112,YSD,STAKING,inline 2P staking,15-Jan-25,MARUDAI,YSD,,,2026,,,,0,,
+113,KOS,MOLD,teflon finish,15-Jan-25,YSD,TEFLON,,,4764,,,,0,,
+114,MZT,MOLD,,20-Jan-25,SAKATA,YSD,,,4226,,,,0,成形,20-Jan-25
+115,JAE,MOLD,Mold,20-Jan-25,AOMORI,YSD,,,5110,,,,0,,20-Jan-25
+116,YMT,MOLD,,21-Jan-25,TEFLON,YSD,,,5090,,,,0,,21-Jan-25
+117,YMT,MOLD,,,YSD,TEFLON,,,5090,,,,0,,24-Jan-25

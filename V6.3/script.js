@@ -1,26 +1,21 @@
 let moldData = [];
 let cutterData = [];
-let shiplogData = [];
 let searchCategory = "mold"; // Mặc định là tìm khuôn
 
 async function loadData() {
     try {
         const moldResponse = await fetch("https://raw.githubusercontent.com/toanysd/MoldCutterSearch/main/Data/molds.csv");
         const cutterResponse = await fetch("https://raw.githubusercontent.com/toanysd/MoldCutterSearch/main/Data/cutters.csv");
-        const shiplogResponse = await fetch("https://raw.githubusercontent.com/toanysd/MoldCutterSearch/main/Data/shiplog.csv");
 
         const moldCsv = await moldResponse.text();
         const cutterCsv = await cutterResponse.text();
-        const shiplogCsv = await shiplogResponse.text();
 
         moldData = parseCSV(moldCsv);
         cutterData = parseCSV(cutterCsv);
-        shiplogData = parseCSV(shiplogCsv);
 
-        console.log("📂 Dữ liệu tải xong!", { moldData, cutterData, shiplogData });
         updateColumnFilter();
     } catch (error) {
-        console.error("❌ Lỗi tải dữ liệu:", error);
+        console.error("データのロードエラー - Lỗi tải dữ liệu:", error);
     }
 }
 
@@ -47,7 +42,6 @@ function updateColumnFilter() {
     });
 
     document.getElementById("tableHeader").style.backgroundColor = searchCategory === "mold" ? "#3498db" : "#e67e22";
-    searchData();
 }
 
 function searchData() {
@@ -85,36 +79,15 @@ function displayData(data) {
 }
 
 function showDetails(row) {
-    console.log("📌 Hiển thị chi tiết:", row);
-
-    let shipHistory = shiplogData.filter(log => log.MoldID === row.MoldID || log.CutterID === row.CutterID);
-    let shipHistoryHTML = shipHistory.length ? shipHistory.map(log => `<p>${log.ShipDate} - ${log.ToCompanyID}</p>`).join("") : "<p>🔹 Không có dữ liệu vận chuyển.</p>";
-
-    document.getElementById("detailContent").innerHTML = `
-        <h2>📋 Chi tiết</h2>
-        <div class="detail-section">
-            <h3>🚚 Lịch sử vận chuyển</h3>
-            ${shipHistoryHTML}
-        </div>
-        ${Object.entries(row).map(([key, value]) => `<p><strong>${key}:</strong> ${value}</p>`).join("")}
-    `;
-
-    const popup = document.getElementById("detailView");
-    popup.style.display = "block";
-    popup.style.visibility = "visible";
-    popup.style.opacity = "1";
-    popup.classList.add("show");
+    document.getElementById("detailContent").innerHTML = Object.entries(row)
+        .map(([key, value]) => `<p><strong>${key}:</strong> ${value}</p>`)
+        .join("");
+    
+    document.getElementById("detailView").classList.add("show");
 }
 
 function closeDetail() {
-    console.log("🔴 Đóng popup...");
-    const popup = document.getElementById("detailView");
-    popup.style.opacity = "0";
-    setTimeout(() => {
-        popup.style.display = "none";
-        popup.style.visibility = "hidden";
-        popup.classList.remove("show");
-    }, 300);
+    document.getElementById("detailView").classList.remove("show");
 }
 
 function resetSearch() {

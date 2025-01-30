@@ -8,17 +8,17 @@
 </head>
 <body>
     <h1>抜型・金型検索 - Tìm kiếm Dao & Khuôn</h1>
-
+    
     <div class="search-container">
         <input type="text" id="searchInput" placeholder="🔍 検索キーワード - Nhập từ khóa..." oninput="searchData()">
         <button id="searchButton" onclick="searchData()">🔎 検索 - Tìm kiếm</button>
         <button id="resetButton" onclick="resetSearch()">❌ リセット - Xóa</button>
     </div>
-
+    
     <div class="filters-container">
         <div class="filter-row">
             <label for="searchCategory" class="filter-label">カテゴリ選択 - Chọn loại:</label>
-            <select id="searchCategory" class="filter-select" onchange="updateColumnFilter(); searchData();">
+            <select id="searchCategory" class="filter-select" onchange="updateColumnFilter()">
                 <option value="mold">金型 - Khuôn</option>
                 <option value="cutter">抜型 - Dao cắt</option>
             </select>
@@ -47,9 +47,10 @@
     </div>
 
     <div id="detailView">
-        <button id="closeDetail" onclick="closeDetail()">✖</button>
-        <div id="detailContent"></div>
-    </div>
+    <button id="closeDetail" onclick="closeDetail()">✖</button>
+    <div id="detailContent"></div>
+</div>
+
 
     <script src="script.js"></script>
 </body>

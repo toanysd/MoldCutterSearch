@@ -1,31 +1,36 @@
 let moldData = [];
 let cutterData = [];
-let shiplogData = [];
+let shipLogData = [];
 let searchCategory = "mold"; // Mặc định là tìm khuôn
 
 async function loadData() {
     try {
         const moldResponse = await fetch("https://raw.githubusercontent.com/toanysd/MoldCutterSearch/main/Data/molds.csv");
         const cutterResponse = await fetch("https://raw.githubusercontent.com/toanysd/MoldCutterSearch/main/Data/cutters.csv");
-        const shiplogResponse = await fetch("https://raw.githubusercontent.com/toanysd/MoldCutterSearch/main/Data/shiplog.csv");
+        const shipLogResponse = await fetch("https://raw.githubusercontent.com/toanysd/MoldCutterSearch/main/Data/shiplog.csv");
 
         const moldCsv = await moldResponse.text();
         const cutterCsv = await cutterResponse.text();
-        const shiplogCsv = await shiplogResponse.text();
+        const shipLogCsv = await shipLogResponse.text();
 
         moldData = parseCSV(moldCsv);
         cutterData = parseCSV(cutterCsv);
-        shiplogData = parseCSV(shiplogCsv);
+        shipLogData = parseCSV(shipLogCsv);
 
-        console.log("📂 Dữ liệu tải xong!", { moldData, cutterData, shiplogData });
+        console.log("Mold Data:", moldData);
+        console.log("Cutter Data:", cutterData);
+        console.log("Ship Log Data:", shipLogData);
+
         updateColumnFilter();
     } catch (error) {
-        console.error("❌ Lỗi tải dữ liệu:", error);
+        console.error("データのロードエラー - Lỗi tải dữ liệu:", error);
     }
 }
 
 function parseCSV(csv) {
-    const rows = csv.split("\n");
+    const rows = csv.split("\n").map(row => row.trim()).filter(row => row);
+    if (rows.length < 2) return [];
+
     const headers = rows[0].split(",");
     return rows.slice(1).map(row => {
         const values = row.split(",");
@@ -42,11 +47,14 @@ function updateColumnFilter() {
     columnFilter.innerHTML = '<option value="all">全ての列 - Tất cả các cột</option>';
 
     const sampleData = searchCategory === "mold" ? moldData[0] : cutterData[0];
+    if (!sampleData) return;
+
     Object.keys(sampleData).forEach(key => {
         columnFilter.innerHTML += `<option value="${key}">${key}</option>`;
     });
 
     document.getElementById("tableHeader").style.backgroundColor = searchCategory === "mold" ? "#3498db" : "#e67e22";
+
     searchData();
 }
 
@@ -79,43 +87,52 @@ function displayData(data) {
             <td>${row.MoldDesignDim || row.CutterDim}</td>
             <td>${row.RackLayerID}</td>
         `;
-        tr.onclick = () => showDetails(row);
+
+        tr.addEventListener("click", () => showDetails(row)); // ✅ Đảm bảo sự kiện click hoạt động
         tableBody.appendChild(tr);
     });
+
+    console.log("Data displayed successfully:", data.length);
 }
 
 function showDetails(row) {
-    console.log("📌 Hiển thị chi tiết:", row);
+    console.log("📌 Gọi showDetails với dữ liệu:", row);
 
-    let shipHistory = shiplogData.filter(log => log.MoldID === row.MoldID || log.CutterID === row.CutterID);
-    let shipHistoryHTML = shipHistory.length ? shipHistory.map(log => `<p>${log.ShipDate} - ${log.ToCompanyID}</p>`).join("") : "<p>🔹 Không có dữ liệu vận chuyển.</p>";
+    if (!row) {
+        console.error("❌ Lỗi: Dữ liệu trống", row);
+        return;
+    }
 
-    document.getElementById("detailContent").innerHTML = `
-        <h2>📋 Chi tiết</h2>
-        <div class="detail-section">
-            <h3>🚚 Lịch sử vận chuyển</h3>
-            ${shipHistoryHTML}
-        </div>
-        ${Object.entries(row).map(([key, value]) => `<p><strong>${key}:</strong> ${value}</p>`).join("")}
-    `;
+    const detailContainer = document.getElementById("detailContent");
+    detailContainer.innerHTML = Object.entries(row)
+        .map(([key, value]) => `<p><strong>${key}:</strong> ${value}</p>`)
+        .join("");
+
+    console.log("✅ Nội dung chi tiết đã cập nhật!");
 
     const popup = document.getElementById("detailView");
+
+    // 🚀 Đảm bảo các thuộc tính hiển thị đúng
+    popup.classList.add("show");
     popup.style.display = "block";
     popup.style.visibility = "visible";
     popup.style.opacity = "1";
-    popup.classList.add("show");
+    popup.style.zIndex = "9999";
+
+    console.log("✅ Popup hiển thị thành công!");
 }
 
 function closeDetail() {
-    console.log("🔴 Đóng popup...");
     const popup = document.getElementById("detailView");
     popup.style.opacity = "0";
     setTimeout(() => {
         popup.style.display = "none";
         popup.style.visibility = "hidden";
-        popup.classList.remove("show");
     }, 300);
+    console.log("🔴 Đã đóng popup!");
 }
+
+
 
 function resetSearch() {
     document.getElementById("searchInput").value = "";

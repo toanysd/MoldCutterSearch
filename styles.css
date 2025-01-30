@@ -2,6 +2,8 @@ body {
     font-family: Arial, sans-serif;
     text-align: center;
     background-color: #f4f4f4;
+    margin: 0;
+    padding: 10px;
 }
 
 h1 {
@@ -9,39 +11,76 @@ h1 {
     margin-bottom: 10px;
 }
 
+/* Điều chỉnh kích thước các phần tử tìm kiếm */
 .search-container {
     display: flex;
+    flex-wrap: wrap; /* Đảm bảo bộ lọc xuống hàng trên màn hình nhỏ */
     justify-content: center;
     gap: 5px;
     margin-bottom: 10px;
 }
 
+/* Textbox nhỏ lại */
 #searchInput {
     flex: 1;
-    min-width: 200px;
+    min-width: 150px;  /* Giảm kích thước tối thiểu */
+    max-width: 250px;  /* Tránh quá dài trên màn hình lớn */
+    padding: 8px;
+    font-size: 14px;
 }
 
+/* Định dạng nút tìm kiếm và đặt cạnh nhau */
 button {
     padding: 10px 15px;
     font-size: 16px;
     cursor: pointer;
 }
 
+/* Nút tìm kiếm màu xanh */
 #searchButton {
     background-color: #007bff;
     color: white;
 }
 
+/* Nút reset màu đỏ */
 #resetButton {
     background-color: red;
     color: white;
 }
 
+/* Điều chỉnh bộ lọc thành 2 hàng */
+.filters-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+.filter-row {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 5px;
+    width: 100%;
+    margin-bottom: 5px;
+}
+
+/* Điều chỉnh dropdown cho bộ lọc */
+select {
+    padding: 8px;
+    font-size: 14px;
+    min-width: 120px;
+    max-width: 200px;
+}
+
+/* Giới hạn chiều cao vùng hiển thị kết quả để không chiếm hết màn hình */
 #dataContainer {
     max-height: 300px;
     overflow-y: auto;
+    margin-top: 10px;
 }
 
+/* Giao diện chi tiết hiển thị hợp lý */
 #detailView {
     position: fixed;
     top: 10%;
@@ -53,9 +92,12 @@ button {
     max-height: 80vh;
     overflow-y: auto;
     padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
     display: none;
 }
 
+/* Đảm bảo hiển thị đúng */
 .show {
     display: block !important;
 }

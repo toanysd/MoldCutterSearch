@@ -3,49 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>抜型・金型検索 - Tra cứu Dao & Khuôn</title>
+    <title>検索 - Mold & Cutter</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>抜型・金型検索 - Tìm kiếm Dao & Khuôn</h1>
-    
+    <h1>金型と抜型検索システム</h1>
+
+    <!-- Ô tìm kiếm -->
     <div class="search-container">
-        <input type="text" id="searchInput" placeholder="🔍 検索キーワード - Nhập từ khóa...">
-        <button id="searchButton" onclick="searchData()">🔎 検索 - Tìm kiếm</button>
-        <button id="resetButton" onclick="resetSearch()">❌ リセット - Xóa</button>
-    </div>
-    
-    <div class="filter-container">
-        <label for="searchCategory">カテゴリ選択 - Chọn loại:</label>
-        <select id="searchCategory" onchange="updateColumnFilter()">
-            <option value="mold">金型 - Khuôn</option>
-            <option value="cutter">抜型 - Dao cắt</option>
-        </select>
-
-        <label for="columnFilter">フィルター - Bộ lọc:</label>
-        <select id="columnFilter">
-            <option value="all">全ての列 - Tất cả các cột</option>
-        </select>
+        <input type="text" id="searchInput" placeholder="検索キーワードを入力" oninput="searchData()">
+        <button id="searchButton" onclick="searchData()">🔍 検索</button>
+        <button id="resetButton" onclick="resetSearch()">✖ リセット</button>
     </div>
 
+    <!-- Bộ lọc -->
+    <div class="filters-container">
+        <div class="filter-row">
+            <label class="filter-label">カテゴリ選択:</label>
+            <select id="searchCategory" class="filter-select" onchange="updateColumnFilter()">
+                <option value="mold">金型 - Khuôn</option>
+                <option value="cutter">抜型 - Dao cắt</option>
+            </select>
+        </div>
+        <div class="filter-row-advanced">
+            <label class="filter-label">フィルター:</label>
+            <select id="columnFilter" class="filter-select"></select>
+        </div>
+    </div>
+
+    <!-- Kết quả tìm kiếm -->
     <div id="dataContainer">
         <table id="dataTable">
-            <thead>
-                <tr id="tableHeader">
+            <thead id="tableHeader">
+                <tr>
                     <th>ID</th>
-                    <th>コード - Mã</th>
-                    <th>名前 - Tên</th>
-                    <th>サイズ - Kích thước</th>
-                    <th>ラック - Giá</th>
+                    <th>コード</th>
+                    <th>名称</th>
+                    <th>寸法</th>
+                    <th>ラック</th>
                 </tr>
             </thead>
             <tbody></tbody>
         </table>
     </div>
 
+    <!-- Bảng chi tiết -->
     <div id="detailView">
-        <button id="closeDetail" onclick="closeDetail()">✖</button>
+        <button class="close-button" onclick="closeDetail()">✖</button>
         <div id="detailContent"></div>
+        <button id="historyButton" onclick="showHistory()">📜 Lịch sử vận chuyển</button>
     </div>
 
     <script src="script.js"></script>

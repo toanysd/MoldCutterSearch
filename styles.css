@@ -18,19 +18,20 @@ h1 {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 10px; /* Khoảng cách giữa các thành phần */
-    width: 90%;
-    margin: 0 auto;
+    gap: 10px;
+    margin-bottom: 10px;
+    width: 100%;
+    max-width: 600px;
+    margin: auto;
 }
 
 /* Textbox tìm kiếm */
 #searchInput {
-    flex: 1;
-    padding: 12px;
-    font-size: 18px; /* Đồng bộ kích thước chữ với bảng */
-    width: 100%;
-    max-width: 300px; /* Tránh bị quá to trên màn hình lớn */
-    height: 42px; /* Đồng nhất chiều cao với combobox */
+    flex-grow: 2;  /* Giữ khoảng 60% chiều rộng */
+    min-width: 200px;
+    max-width: 400px;
+    font-size: 16px;  /* Đồng bộ kích thước chữ */
+    padding: 10px;
 }
 
 /* Điều chỉnh nút tìm kiếm và reset */
@@ -60,9 +61,10 @@ button {
 }
 
 #searchButton, #resetButton {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-grow: 1;  /* Chia tỷ lệ hợp lý với input */
+    font-size: 16px;  /* Đồng bộ với bảng */
+    padding: 10px 12px;
+    width: auto;
 }
 
 /* Các bộ lọc */

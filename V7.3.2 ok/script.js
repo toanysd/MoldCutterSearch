@@ -162,65 +162,34 @@ function showDetails(row) {
     // 📌 Xác định loại dữ liệu (Khuôn / Dao cắt)
     const isMold = searchCategory === "mold";
 
-  // 📌 Xác định thứ tự hiển thị
-const fieldOrder = isMold
-    ? ["MoldID", "MoldName", "MoldDesignDim", "MoldSetupType", "PieceCount", "TrayInfoForMoldDesign", "DesignForPlasticType",
-       "MoldDate", "MoldUsageStatus", "TeflonCoating", "MoldReturning", "MoldReturnedDate", "MoldDisposing", "MoldDisposedDate",
-       "MoldDesignWeight", "MoldDesignDepth", "DraftAngle", "MoldDesignCutline", "Pitch", "CutlineX", "CutlineY", "CornerR", 
-       "ChamferC", "UnderDepth", "TextContent", "UnitPrice", "RackLayerID", "RackLayerNotes", "RackSymbol", "RackLocation", 
-       "RackNotes", "MoldCode"]
-    : ["CutterID", "CutterNo", "CutterDesignName", "RackLayerID", "CutterType", "PlasticCutType", "PPcushionUse", "BladeCount"];
+    // 📌 Xác định thứ tự hiển thị
+    const fieldOrder = isMold
+        ? ["MoldID", "MoldName", "MoldCode", "RackLayerID", "MoldDate", "MoldUsageStatus", "MoldProcessStatus", "MoldDesignCode", "MoldDesignName", "MoldDesignDim", "DesignForPlasticType", "UnitPrice"]
+        : ["CutterID", "CutterNo", "CutterDesignName", "RackLayerID", "CutterType", "PlasticCutType", "PPcushionUse", "BladeCount"];
 
-// 📌 Xác định tên hiển thị song ngữ
-const fieldNames = {
-    "MoldID": "金型ID",
-    "MoldName": "金型名",
-    "MoldCode": "金型コード",
-    "MoldDate": "作成日",
-    "MoldUsageStatus": "使用状況",
-    "TeflonCoating": "テフロンコーティング",
-    "MoldProcessStatus": "加工状況",
-    "MoldReturning": "返却状況",
-    "MoldReturnedDate": "返却日",
-    "MoldDisposing": "廃棄状況",
-    "MoldDisposedDate": "廃棄日",
-    "MoldDesignCode": "設計コード",
-    "MoldDesignID": "設計ID",
-    "MoldDesignName": "設計名",
-    "TrayInfoForMoldDesign": "トレイ情報",
-    "MoldDesignLength": "金型長さ",
-    "MoldDesignWidth": "金型幅",
-    "MoldDesignHeight": "金型高さ",
-    "MoldDesignDepth": "金型深さ",
-    "MoldDesignWeight": "金型重量",
-    "MoldDesignDim": "金型寸法",
-    "MoldDesignCutline": "カットライン寸法",
-    "DesignForPlasticType": "適用プラスチック",
-    "MoldSetupType": "設置タイプ",
-    "PieceCount": "製品数",
-    "Pitch": "ピッチ",
-    "CutlineX": "カットラインX",
-    "CutlineY": "カットラインY",
-    "CornerR": "コーナーR",
-    "ChamferC": "面取りC",
-    "TextContent": "刻印内容",
-    "UnderDepth": "アンダーカット深さ",
-    "DraftAngle": "抜き勾配",
-    "UnitPrice": "単価",
-    "RackLayerID": "ラックID",
-    "RackLayerNotes": "ラックメモ",
-    "RackSymbol": "ラック記号",
-    "RackLocation": "ラック位置",
-    "RackNotes": "ラック備考",
+    // 📌 Xác định tên hiển thị song ngữ
+    const fieldNames = {
+        "MoldID": "金型ID - MoldID",
+        "MoldName": "金型名 - MoldName",
+        "MoldCode": "コード - Mã",
+        "RackLayerID": "ラックID - Giá để khuôn",
+        "MoldDate": "作成日 - Ngày tạo",
+        "MoldUsageStatus": "利用状況 - Trạng thái sử dụng",
+        "MoldProcessStatus": "加工状況 - Trạng thái gia công",
+        "MoldDesignCode": "設計コード - Mã thiết kế",
+        "MoldDesignName": "設計名 - Tên thiết kế",
+        "MoldDesignDim": "設計寸法 - Kích thước",
+        "DesignForPlasticType": "プラスチック種類 - Loại nhựa",
+        "UnitPrice": "価格 - Giá thành",
 
-    "CutterID": "抜型ID - CutterID",
-    "CutterNo": "抜型番号 - CutterNo",
-    "CutterDesignName": "抜型デザイン - Tên thiết kế Dao cắt",
-    "CutterType": "抜型種類 - Loại dao cắt",
-    "PlasticCutType": "プラスチック種類 - Loại nhựa cắt",
-    "PPcushionUse": "クッション使用 - Dùng PP cushion",
-    "BladeCount": "刃の数 - Số lưỡi dao"
-};
+        "CutterID": "抜型ID - CutterID",
+        "CutterNo": "抜型番号 - CutterNo",
+        "CutterDesignName": "抜型デザイン - Tên thiết kế Dao cắt",
+        "CutterType": "抜型種類 - Loại dao cắt",
+        "PlasticCutType": "プラスチック種類 - Loại nhựa cắt",
+        "PPcushionUse": "クッション使用 - Dùng PP cushion",
+        "BladeCount": "刃の数 - Số lưỡi dao"
+    };
 
     // 📌 Tạo bảng với hai cột: Tiêu đề - Giá trị
     fieldOrder.forEach(key => {

@@ -216,8 +216,8 @@ button {
 #detailContent {
     text-align: left;
     padding: 10px;
-    font-size: 16px; /* Đồng bộ cỡ chữ */
-    line-height: 1; /* Cải thiện khoảng cách giữa các dòng */
+    font-size: 14px; /* Đồng bộ cỡ chữ */
+    line-height: 1.6; /* Cải thiện khoảng cách giữa các dòng */
 }
 
 #detailContent h2 {

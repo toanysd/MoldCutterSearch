@@ -1,0 +1,41 @@
+フォルダー パスの一覧:  ボリューム DATADRIVE1
+ボリューム シリアル番号は 540D-5247 です
+D:.
+│  detail.html
+│  Huong dan cap nhat.txt
+│  index.html
+│  management.html
+│  moldCutterSearch_structure.txt
+│  MoldCutterSearch_V01.rar
+│  MoldCutterSearch_V02_CanSuaGiaoDien.rar
+│  script.js
+│  styles.css
+│  tao cau truc moldCutterSearch.bat
+│  test.html
+│  update_CapNhatGiaoDien.sh
+│  
+├─data
+│      companies.csv
+│      customers.csv
+│      cutters.csv
+│      employees.csv
+│      locationlog.csv
+│      molcutter.csv
+│      molddesign.csv
+│      molds.csv
+│      racklayers.csv
+│      racks.csv
+│      shiplog.csv
+│      
+├─huong dan
+│      dataCSVupdate_CapNhatDuLieuCSV.bat
+│      update.txt
+│      update_CapNhatGiaoDien.sh
+│      update_data.sh
+│      金型とカッターの検索.docx
+│      
+└─js
+        detail.js
+        management.js
+        utils.js
+        

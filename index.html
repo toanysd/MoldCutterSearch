@@ -1,59 +1,161 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>抜型・金型検索 - Tra cứu Dao & Khuôn</title>
+    <title>金型・抜型検索システム - Hệ thống tìm kiếm Khuôn & Dao</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>抜型・金型検索 - Tìm kiếm Dao & Khuôn</h1>
-    
-    <div class="search-container">
-        <input type="text" id="searchInput" placeholder="🔍 検索キーワード - Nhập từ khóa..." oninput="searchData()">
-        <button id="resetButton" onclick="resetSearch()">リセット</button>
-    </div>
-    
-    <div class="filters-container">
-        <div class="filter-row">
-            <label for="searchCategory">カテゴリ選択 　Chọn loại:</label>
-            <select id="searchCategory" onchange="updateColumnFilter()">
-                <option value="mold">金型  Khuôn</option>
-                <option value="cutter">抜型  Dao cắt</option>
-            </select>
+    <!-- Header -->
+    <header class="main-header">
+        <div class="container">
+            <h1>🔧 金型・抜型検索システム</h1>
+            <p class="header-subtitle">Hệ thống quản lý và tìm kiếm Khuôn & Dao chuyên nghiệp</p>
         </div>
+    </header>
 
-        <div class="filter-row-advanced">
-            <label for="columnFilter">フィルター　Lọc theo:</label>
-            <select id="columnFilter" onchange="searchData()">
-                <option value="all">全ての列  Tất cả các cột</option>
-            </select>
+    <div class="container">
+        <!-- Search Section -->
+        <section class="search-section">
+            <!-- Main Search Box -->
+            <div class="search-main">
+                <div class="search-input-container">
+                    <input type="text" id="searchInput" placeholder="検索キーワードを入力 - Nhập từ khóa tìm kiếm (例: 469x299x45, ADY-090, YSD-001)..." 
+                           oninput="handleSearchInput()">
+                    <div class="search-icon">🔍</div>
+                </div>
+                <button onclick="resetSearch()" class="btn-reset">
+                    🔄 リセット
+                </button>
+            </div>
+
+            <!-- Filters Row -->
+            <div class="filters-container">
+                <div class="filter-item">
+                    <label>カテゴリ - Loại:</label>
+                    <select id="searchCategory" onchange="handleFilterChange()">
+                        <option value="all">全て - Tất cả</option>
+                        <option value="mold">金型 - Khuôn</option>
+                        <option value="cutter">抜型 - Dao cắt</option>
+                    </select>
+                </div>
+
+                <div class="filter-item">
+                    <label>フィールド - Trường:</label>
+                    <select id="columnFilter" onchange="handleFilterChange()">
+                        <option value="all">全て - Tất cả</option>
+                    </select>
+                </div>
+
+                <div class="filter-item">
+                    <label>場所 - Vị trí:</label>
+                    <select id="locationFilter" onchange="handleFilterChange()">
+                        <option value="all">全て - Tất cả</option>
+                    </select>
+                </div>
+
+                <div class="filter-item">
+                    <label>状態 - Trạng thái:</label>
+                    <select id="statusFilter" onchange="handleFilterChange()">
+                        <option value="all">全て - Tất cả</option>
+                        <option value="available">利用可能 - Có sẵn</option>
+                        <option value="shipped">出荷済み - Đã gửi đi</option>
+                        <option value="returned">返却済み - Đã trả về</option>
+                        <option value="disposed">廃棄済み - Đã hủy</option>
+                    </select>
+                </div>
+
+                <div class="filter-item">
+                    <label>顧客 - Khách hàng:</label>
+                    <select id="customerFilter" onchange="handleFilterChange()">
+                        <option value="all">全て - Tất cả</option>
+                    </select>
+                </div>
+
+                <div class="filter-item">
+                    <label>プラスチック - Nhựa:</label>
+                    <select id="plasticFilter" onchange="handleFilterChange()">
+                        <option value="all">全て - Tất cả</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section class="results-section">
+            <div class="results-header">
+                <div class="results-info">
+                    <span id="resultsCount">0件の結果 - 0 kết quả</span>
+                    <span id="selectedCount" class="selected-count" style="display: none;">選択済み: 0</span>
+                </div>
+                
+                <div class="results-actions">
+                    <button onclick="selectAll()" class="btn-action">全選択</button>
+                    <button onclick="clearSelection()" class="btn-action">選択解除</button>
+                    <button onclick="printSelected()" class="btn-action btn-primary" id="printBtn" style="display: none;">
+                        🖨️ 印刷
+                    </button>
+                </div>
+            </div>
+
+            <!-- Data Table -->
+            <div class="table-container">
+                <table id="dataTable">
+                    <thead>
+                        <tr>
+                            <th class="select-col">
+                                <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()">
+                            </th>
+                            <th class="sortable" onclick="sortTable('id')">
+                                ID <span class="sort-icon">↕️</span>
+                            </th>
+                            <th class="sortable" onclick="sortTable('code')">
+                                コード - Mã <span class="sort-icon">↕️</span>
+                            </th>
+                            <th class="sortable" onclick="sortTable('name')">
+                                名称 - Tên <span class="sort-icon">↕️</span>
+                            </th>
+                            <th class="sortable" onclick="sortTable('dimensions')">
+                                サイズ - Kích thước <span class="sort-icon">↕️</span>
+                            </th>
+                            <th class="sortable" onclick="sortTable('location')">
+                                場所 - Vị trí <span class="sort-icon">↕️</span>
+                            </th>
+                            <th class="sortable" onclick="sortTable('customer')">
+                                顧客 - Khách hàng <span class="sort-icon">↕️</span>
+                            </th>
+                            <th class="sortable" onclick="sortTable('status')">
+                                状態 - Trạng thái <span class="sort-icon">↕️</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                <div class="pagination-info">
+                    <select id="pageSize" onchange="changePageSize()">
+                        <option value="25">25件/ページ</option>
+                        <option value="50" selected>50件/ページ</option>
+                        <option value="100">100件/ページ</option>
+                        <option value="all">全て表示</option>
+                    </select>
+                </div>
+                <div id="paginationControls"></div>
+            </div>
+        </section>
+
+        <!-- Loading -->
+        <div id="loadingIndicator" class="loading">
+            <div class="spinner"></div>
+            <span>読み込み中... - Đang tải...</span>
         </div>
-    </div>
-
-    <div id="dataContainer">
-        <table id="dataTable">
-            <thead>
-                <tr id="tableHeader">
-                    <th>ID</th>
-                    <th>コード - Mã</th>
-                    <th>名称 - Tên</th>
-                    <th>サイズ - Kích thước</th>
-                    <th>ラック - Giá</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
-
-    <div id="detailView">
-        <button id="closeDetail" onclick="closeDetail()">✖</button>
-        <div id="detailContent"></div>
-    </div>
-
-    <div id="shipLogView">
-        <button id="closeShipLog" onclick="closeShipLog()">✖</button>
-        <div id="shipLogContent"></div>
     </div>
 
     <script src="script.js"></script>

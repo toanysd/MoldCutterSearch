@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoldCutterSearch - Data Test & Debug</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 20px; 
+            background: #f5f6fa;
+            color: #2c3e50;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        .status-section {
+            margin-bottom: 25px;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+        .error { 
+            color: #e74c3c; 
+            background: #ffeaea; 
+            border-left-color: #e74c3c;
+        }
+        .success { 
+            color: #27ae60; 
+            background: #eafff0; 
+            border-left-color: #27ae60;
+        }
+        .info { 
+            color: #3498db; 
+            background: #eaf4ff; 
+            border-left-color: #3498db;
+        }
+        .warning {
+            color: #f39c12;
+            background: #fff8e1;
+            border-left-color: #f39c12;
+        }
+        pre { 
+            background: #f8f9fa; 
+            padding: 15px; 
+            border-radius: 6px; 
+            overflow-x: auto;
+            border: 1px solid #dee2e6;
+            font-size: 12px;
+        }
+        .data-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .summary-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #dee2e6;
+        }
+        .summary-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #3498db;
+        }
+        .summary-label {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+        .test-button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        .test-button:hover {
+            background: #2980b9;
+        }
+        .test-button:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 12px;
+        }
+        .data-table th,
+        .data-table td {
+            border: 1px solid #dee2e6;
+            padding: 8px;
+            text-align: left;
+        }
+        .data-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+        .relationship-info {
+            background: #e8f4fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 MoldCutterSearch - Data Test & Debug</h1>
+        <p style="text-align: center; color: #7f8c8d;">
+            Kiểm tra dữ liệu và debug hệ thống quản lý khuôn & dao cắt
+        </p>
+        
+        <!-- Test Controls -->
+        <div style="text-align: center; margin: 20px 0;">
+            <button onclick="testAllData()" class="test-button" id="testAllBtn">
+                🧪 Test All Data
+            </button>
+            <button onclick="testRelationships()" class="test-button" id="testRelBtn">
+                🔗 Test Relationships
+            </button>
+            <button onclick="testSearch()" class="test-button" id="testSearchBtn">
+                🔍 Test Search
+            </button>
+            <button onclick="clearResults()" class="test-button" style="background: #e74c3c;">
+                🗑️ Clear Results
+            </button>
+        </div>
+
+        <!-- Status Display -->
+        <div id="status"></div>
+
+        <!-- Data Summary -->
+        <div id="dataSummary"></div>
+
+        <!-- Output Display -->
+        <div id="output"></div>
+    </div>
+    
+    <script>
+        let testData = {};
+        let isLoading = false;
+
+        function log(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            const div = document.createElement('div');
+            div.className = `status-section ${type}`;
+            div.innerHTML = `
+                <strong>${type.toUpperCase()}:</strong> ${message}
+                <small style="float: right;">${new Date().toLocaleTimeString()}</small>
+            `;
+            statusDiv.appendChild(div);
+            statusDiv.scrollTop = statusDiv.scrollHeight;
+        }
+
+        function showLoading(show, buttonId = null) {
+            isLoading = show;
+            if (buttonId) {
+                const btn = document.getElementById(buttonId);
+                if (btn) {
+                    btn.disabled = show;
+                    if (show) {
+                        btn.innerHTML = '<span class="loading"></span> Loading...';
+                    } else {
+                        btn.innerHTML = btn.getAttribute('data-original-text') || btn.innerHTML;
+                    }
+                }
+            }
+        }
+
+        async function testAllData() {
+            if (isLoading) return;
+            
+            showLoading(true, 'testAllBtn');
+            document.getElementById('testAllBtn').setAttribute('data-original-text', '🧪 Test All Data');
+            
+            try {
+                // Check protocol
+                log(`🌐 Protocol: ${window.location.protocol}`, 'info');
+                log(`🏠 Host: ${window.location.host}`, 'info');
+                log(`📍 URL: ${window.location.href}`, 'info');
+                
+                if (window.location.protocol === 'file:') {
+                    log('❌ CORS Error: Đang chạy từ file:// protocol', 'error');
+                    log('💡 Giải pháp: Sử dụng Live Server hoặc HTTP server', 'warning');
+                    return;
+                }
+                
+                log('✅ Đang chạy từ HTTP server', 'success');
+                
+                // Test all data files
+                const dataFiles = [
+                    { key: 'molds', file: 'molds.csv', description: 'Dữ liệu khuôn' },
+                    { key: 'cutters', file: 'cutters.csv', description: 'Dữ liệu dao cắt' },
+                    { key: 'companies', file: 'companies.csv', description: 'Dữ liệu công ty' },
+                    { key: 'customers', file: 'customers.csv', description: 'Dữ liệu khách hàng' },
+                    { key: 'employees', file: 'employees.csv', description: 'Dữ liệu nhân viên' },
+                    { key: 'racks', file: 'racks.csv', description: 'Dữ liệu giá' },
+                    { key: 'racklayers', file: 'racklayers.csv', description: 'Dữ liệu tầng giá' },
+                    { key: 'molddesign', file: 'molddesign.csv', description: 'Dữ liệu thiết kế khuôn' },
+                    { key: 'moldcutter', file: 'moldcutter.csv', description: 'Quan hệ khuôn-dao cắt' },
+                    { key: 'shiplog', file: 'shiplog.csv', description: 'Lịch sử vận chuyển' },
+                    { key: 'locationlog', file: 'locationlog.csv', description: 'Lịch sử vị trí' }
+                ];
+
+                testData = {};
+                let totalRecords = 0;
+                let successCount = 0;
+
+                for (const { key, file, description } of dataFiles) {
+                    try {
+                        log(`📂 Đang tải ${file} (${description})...`, 'info');
+                        const response = await fetch(`data/${file}`);
+                        
+                        if (!response.ok) {
+                            log(`⚠️ ${file}: HTTP ${response.status} - ${response.statusText}`, 'warning');
+                            testData[key] = [];
+                            continue;
+                        }
+                        
+                        const csvText = await response.text();
+                        const data = parseCSV(csvText);
+                        testData[key] = data;
+                        
+                        totalRecords += data.length;
+                        successCount++;
+                        
+                        log(`✅ ${file}: ${data.length} records loaded`, 'success');
+                        
+                    } catch (error) {
+                        log(`❌ ${file}: ${error.message}`, 'error');
+                        testData[key] = [];
+                    }
+                }
+
+                // Display summary
+                displayDataSummary(testData, successCount, dataFiles.length, totalRecords);
+                
+                // Display sample data
+                displaySampleData();
+                
+                log(`🎉 Hoàn thành! ${successCount}/${dataFiles.length} files loaded, ${totalRecords} total records`, 'success');
+                
+            } catch (error) {
+                log(`💥 Lỗi tổng quát: ${error.message}`, 'error');
+                console.error('Full error:', error);
+            } finally {
+                showLoading(false, 'testAllBtn');
+            }
+        }
+
+        function displayDataSummary(data, successCount, totalFiles, totalRecords) {
+            const summaryDiv = document.getElementById('dataSummary');
+            summaryDiv.innerHTML = `
+                <h3>📊 Tóm tắt dữ liệu</h3>
+                <div class="data-summary">
+                    <div class="summary-card">
+                        <div class="summary-number">${successCount}/${totalFiles}</div>
+                        <div class="summary-label">Files Loaded</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-number">${totalRecords}</div>
+                        <div class="summary-label">Total Records</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-number">${data.molds?.length || 0}</div>
+                        <div class="summary-label">Molds - Khuôn</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-number">${data.cutters?.length || 0}</div>
+                        <div class="summary-label">Cutters - Dao cắt</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-number">${data.moldcutter?.length || 0}</div>
+                        <div class="summary-label">Relationships</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-number">${data.shiplog?.length || 0}</div>
+                        <div class="summary-label">Ship Logs</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function displaySampleData() {
+            const outputDiv = document.getElementById('output');
+            let html = '<h3>📋 Sample Data</h3>';
+
+            // Molds sample
+            if (testData.molds && testData.molds.length > 0) {
+                const sample = testData.molds[0];
+                html += `
+                    <h4>🔧 Molds Sample (${testData.molds.length} records)</h4>
+                    <div class="relationship-info">
+                        <strong>Headers:</strong> ${Object.keys(sample).join(', ')}
+                    </div>
+                    <table class="data-table">
+                        <tr>
+                            <th>Field</th>
+                            <th>Value</th>
+                            <th>Type</th>
+                        </tr>
+                        ${Object.entries(sample).slice(0, 10).map(([key, value]) => `
+                            <tr>
+                                <td><strong>${key}</strong></td>
+                                <td>${value || '<em>empty</em>'}</td>
+                                <td>${typeof value}</td>
+                            </tr>
+                        `).join('')}
+                    </table>
+                `;
+            }
+
+            // Cutters sample
+            if (testData.cutters && testData.cutters.length > 0) {
+                const sample = testData.cutters[0];
+                html += `
+                    <h4>✂️ Cutters Sample (${testData.cutters.length} records)</h4>
+                    <div class="relationship-info">
+                        <strong>Headers:</strong> ${Object.keys(sample).join(', ')}
+                    </div>
+                    <table class="data-table">
+                        <tr>
+                            <th>Field</th>
+                            <th>Value</th>
+                            <th>Type</th>
+                        </tr>
+                        ${Object.entries(sample).slice(0, 10).map(([key, value]) => `
+                            <tr>
+                                <td><strong>${key}</strong></td>
+                                <td>${value || '<em>empty</em>'}</td>
+                                <td>${typeof value}</td>
+                            </tr>
+                        `).join('')}
+                    </table>
+                `;
+            }
+
+            outputDiv.innerHTML = html;
+        }
+
+        async function testRelationships() {
+            if (isLoading) return;
+            if (!testData.molds || !testData.cutters) {
+                log('⚠️ Cần load data trước khi test relationships', 'warning');
+                return;
+            }
+
+            showLoading(true, 'testRelBtn');
+            document.getElementById('testRelBtn').setAttribute('data-original-text', '🔗 Test Relationships');
+
+            try {
+                log('🔗 Đang test relationships...', 'info');
+
+                let relationshipStats = {
+                    moldsWithDesign: 0,
+                    moldsWithRack: 0,
+                    cuttersWithRack: 0,
+                    moldCutterRelations: testData.moldcutter?.length || 0,
+                    shipLogEntries: testData.shiplog?.length || 0
+                };
+
+                // Test mold relationships
+                testData.molds.forEach(mold => {
+                    if (mold.MoldDesignID && testData.molddesign?.find(d => d.MoldDesignID === mold.MoldDesignID)) {
+                        relationshipStats.moldsWithDesign++;
+                    }
+                    if (mold.RackLayerID && testData.racklayers?.find(r => r.RackLayerID === mold.RackLayerID)) {
+                        relationshipStats.moldsWithRack++;
+                    }
+                });
+
+                // Test cutter relationships
+                testData.cutters.forEach(cutter => {
+                    if (cutter.RackLayerID && testData.racklayers?.find(r => r.RackLayerID === cutter.RackLayerID)) {
+                        relationshipStats.cuttersWithRack++;
+                    }
+                });
+
+                // Display relationship analysis
+                const outputDiv = document.getElementById('output');
+                outputDiv.innerHTML = `
+                    <h3>🔗 Relationship Analysis</h3>
+                    <div class="data-summary">
+                        <div class="summary-card">
+                            <div class="summary-number">${relationshipStats.moldsWithDesign}</div>
+                            <div class="summary-label">Molds with Design</div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-number">${relationshipStats.moldsWithRack}</div>
+                            <div class="summary-label">Molds with Rack</div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-number">${relationshipStats.cuttersWithRack}</div>
+                            <div class="summary-label">Cutters with Rack</div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-number">${relationshipStats.moldCutterRelations}</div>
+                            <div class="summary-label">Mold-Cutter Relations</div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-number">${relationshipStats.shipLogEntries}</div>
+                            <div class="summary-label">Ship Log Entries</div>
+                        </div>
+                    </div>
+
+                    <h4>🔍 Sample Relationships</h4>
+                    <div class="relationship-info">
+                        <strong>Mold-Cutter Relations:</strong><br>
+                        ${testData.moldcutter?.slice(0, 5).map(rel => 
+                            `MoldID: ${rel.MoldID} ↔ CutterID: ${rel.CutterID}`
+                        ).join('<br>') || 'No relations found'}
+                    </div>
+                `;
+
+                log('✅ Relationship analysis completed', 'success');
+
+            } catch (error) {
+                log(`❌ Relationship test error: ${error.message}`, 'error');
+            } finally {
+                showLoading(false, 'testRelBtn');
+            }
+        }
+
+        async function testSearch() {
+            if (isLoading) return;
+            if (!testData.molds || !testData.cutters) {
+                log('⚠️ Cần load data trước khi test search', 'warning');
+                return;
+            }
+
+            showLoading(true, 'testSearchBtn');
+            document.getElementById('testSearchBtn').setAttribute('data-original-text', '🔍 Test Search');
+
+            try {
+                log('🔍 Đang test search functionality...', 'info');
+
+                // Test search scenarios
+                const searchTests = [
+                    { query: 'ADY', field: 'all', description: 'Search "ADY" in all fields' },
+                    { query: 'YCM', field: 'all', description: 'Search "YCM" in all fields' },
+                    { query: '001', field: 'all', description: 'Search "001" in all fields' }
+                ];
+
+                let searchResults = [];
+
+                for (const test of searchTests) {
+                    const moldResults = searchInData(testData.molds, test.query, test.field);
+                    const cutterResults = searchInData(testData.cutters, test.query, test.field);
+                    
+                    searchResults.push({
+                        ...test,
+                        moldCount: moldResults.length,
+                        cutterCount: cutterResults.length,
+                        moldSample: moldResults.slice(0, 3),
+                        cutterSample: cutterResults.slice(0, 3)
+                    });
+                }
+
+                // Display search results
+                const outputDiv = document.getElementById('output');
+                let html = '<h3>🔍 Search Test Results</h3>';
+
+                searchResults.forEach(result => {
+                    html += `
+                        <div class="relationship-info">
+                            <h4>${result.description}</h4>
+                            <p><strong>Results:</strong> ${result.moldCount} molds, ${result.cutterCount} cutters</p>
+                            
+                            ${result.moldSample.length > 0 ? `
+                                <p><strong>Sample Molds:</strong></p>
+                                <ul>
+                                    ${result.moldSample.map(m => `<li>${m.MoldCode} - ${m.MoldName}</li>`).join('')}
+                                </ul>
+                            ` : ''}
+                            
+                            ${result.cutterSample.length > 0 ? `
+                                <p><strong>Sample Cutters:</strong></p>
+                                <ul>
+                                    ${result.cutterSample.map(c => `<li>${c.CutterNo} - ${c.CutterName}</li>`).join('')}
+                                </ul>
+                            ` : ''}
+                        </div>
+                    `;
+                });
+
+                outputDiv.innerHTML = html;
+                log('✅ Search test completed', 'success');
+
+            } catch (error) {
+                log(`❌ Search test error: ${error.message}`, 'error');
+            } finally {
+                showLoading(false, 'testSearchBtn');
+            }
+        }
+
+        function searchInData(data, query, field) {
+            if (!data || !query) return [];
+            
+            const lowerQuery = query.toLowerCase();
+            
+            return data.filter(item => {
+                if (field === 'all') {
+                    return Object.values(item).some(value => 
+                        value && value.toString().toLowerCase().includes(lowerQuery)
+                    );
+                } else {
+                    return item[field] && item[field].toString().toLowerCase().includes(lowerQuery);
+                }
+            });
+        }
+
+        function clearResults() {
+            document.getElementById('status').innerHTML = '';
+            document.getElementById('output').innerHTML = '';
+            document.getElementById('dataSummary').innerHTML = '';
+            testData = {};
+            log('🗑️ Results cleared', 'info');
+        }
+
+        // Enhanced CSV parser
+        function parseCSV(csv) {
+            const lines = csv.split('\n').filter(line => line.trim());
+            if (lines.length === 0) return [];
+            
+            const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+            
+            return lines.slice(1).map(line => {
+                const values = [];
+                let current = '';
+                let inQuotes = false;
+                
+                for (let i = 0; i < line.length; i++) {
+                    const char = line[i];
+                    if (char === '"') {
+                        inQuotes = !inQuotes;
+                    } else if (char === ',' && !inQuotes) {
+                        values.push(current.trim().replace(/^"|"$/g, ''));
+                        current = '';
+                    } else {
+                        current += char;
+                    }
+                }
+                values.push(current.trim().replace(/^"|"$/g, ''));
+                
+                const obj = {};
+                headers.forEach((header, index) => {
+                    obj[header] = values[index] || '';
+                });
+                return obj;
+            });
+        }
+
+        // Auto-run basic test on load
+        window.addEventListener('load', function() {
+            log('🚀 MoldCutterSearch Test Tool initialized', 'success');
+            log('💡 Click "Test All Data" để bắt đầu kiểm tra', 'info');
+        });
+    </script>
+</body>
+</html>

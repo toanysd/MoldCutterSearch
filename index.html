@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>金型・抜型検索 - Tìm kiếm Khuôn & Dao</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,78 +18,74 @@
     </header>
 
     <div class="container">
-        <!-- Optimized Search Section -->
-        <section class="optimized-search-section">
-            <!-- Search Row 1: Category + Search Input + Filter C + Reset -->
-            <div class="search-row-1">
-                <!-- Category Toggle Button -->
-                <div class="category-toggle all" id="categoryToggle" onclick="toggleCategory()">
-                    <span id="categoryText">すべて</span>
+        <!-- Ultra Compact Search Section -->
+        <section class="ultra-compact-search">
+            <!-- Row 1: Zoom + Category + Search + Clear -->
+            <div class="search-row-ultra-1">
+                <!-- Zoom Fit Button -->
+                <button class="zoom-fit-btn" onclick="zoomFit()" title="画面調整">
+                    🔍
+                </button>
+                
+                <!-- Category Toggle -->
+                <div class="category-toggle-mini all" id="categoryToggle" onclick="toggleCategory()">
+                    <span id="categoryText">全</span>
                 </div>
                 
-                <!-- Search Input with Clear Button -->
-                <div class="search-input-wrapper">
-                    <input type="text" id="searchInput" placeholder="検索 (例: JAE,025-3551 または 469x299x45)" 
-                           oninput="handleSearchInput()" autofocus>
-                    <button class="clear-search-btn" id="clearSearchBtn" onclick="clearSearchInput()" style="display: none;">
+                <!-- Search Input with Left Clear -->
+                <div class="search-input-ultra">
+                    <button class="clear-search-left" id="clearSearchBtn" onclick="clearSearchInput()" style="display: none;">
                         ✕
                     </button>
-                    <div class="search-icon">🔍</div>
+                    <input type="text" id="searchInput" placeholder="検索 (例: JAE,025-3551)" 
+                           oninput="handleSearchInput()" autofocus>
+                    <div class="search-icon-right">🔍</div>
                 </div>
-                
-                <!-- Filter C - Independent column filter -->
-                <select id="filterC" onchange="handleFilterCChange()" class="filter-c">
-                    <option value="all">全フィールド</option>
-                </select>
-                
-                <!-- Reset Filter Button -->
-                <button onclick="resetFilters()" class="btn-reset-compact">フィルタリセット</button>
             </div>
 
-            <!-- Search Row 2: Filter A + Filter B -->
-            <div class="search-row-2">
-                <select id="fieldFilterA" onchange="handleFieldFilterChange()" class="field-filter-a">
-                    <option value="all">フィルタA</option>
+            <!-- Row 2: Filter A (1/3) + Filter B + Reset -->
+            <div class="search-row-ultra-2">
+                <select id="fieldFilterA" onchange="handleFieldFilterChange()" class="filter-a-mini">
+                    <option value="all">A</option>
                 </select>
                 
-                <select id="valueFilterB" onchange="handleValueFilterChange()" class="value-filter-b">
+                <select id="valueFilterB" onchange="handleValueFilterChange()" class="filter-b-flex">
                     <option value="all">フィルタB</option>
                 </select>
                 
-                <div class="search-info">
-                    <span id="resultsCount" class="results-count">0件</span>
-                </div>
+                <button onclick="resetFilters()" class="btn-reset-mini">リセット</button>
             </div>
         </section>
 
         <!-- Results Section -->
-        <section class="optimized-results-section">
-            <!-- Optimized Results Header -->
-            <div class="optimized-results-header">
-                <!-- Left: Selection Info -->
-                <div class="selection-info">
+        <section class="ultra-compact-results">
+            <!-- Single Row Header -->
+            <div class="results-header-single">
+                <!-- Left: Selection + Count -->
+                <div class="left-group">
                     <span id="selectedCount" class="selected-count" style="display: none;">選択: 0</span>
+                    <span id="resultsCount" class="results-count">0件</span>
                 </div>
                 
-                <!-- Right: Controls Group -->
-                <div class="controls-group">
-                    <!-- View Toggle Switch -->
-                    <div class="view-toggle-switch">
+                <!-- Right: View Toggle + Actions -->
+                <div class="right-group">
+                    <!-- View Toggle Mini -->
+                    <div class="view-toggle-mini">
                         <input type="checkbox" id="viewToggle" onchange="handleViewToggle()">
-                        <label for="viewToggle" class="toggle-label">
-                            <span class="toggle-slider">
-                                <span class="toggle-icon table-icon">📋</span>
-                                <span class="toggle-icon grid-icon">🔲</span>
+                        <label for="viewToggle" class="toggle-mini-label">
+                            <span class="toggle-mini-slider">
+                                <span class="toggle-mini-icon table-icon">📋</span>
+                                <span class="toggle-mini-icon grid-icon">🔲</span>
                             </span>
                         </label>
                     </div>
                     
-                    <!-- Action Buttons -->
-                    <div class="action-buttons-group">
-                        <button onclick="selectAll()" class="btn-action-mini">全選択</button>
-                        <button onclick="clearSelection()" class="btn-action-mini">解除</button>
-                        <button onclick="printSelected()" class="btn-action-mini btn-primary-mini" id="printBtn" style="display: none;">
-                            印刷
+                    <!-- Actions Mini -->
+                    <div class="actions-mini-group">
+                        <button onclick="selectAll()" class="btn-mini">全</button>
+                        <button onclick="clearSelection()" class="btn-mini">解</button>
+                        <button onclick="printSelected()" class="btn-mini btn-primary-mini" id="printBtn" style="display: none;">
+                            印
                         </button>
                     </div>
                 </div>
@@ -97,24 +93,24 @@
 
             <!-- Table View -->
             <div class="table-view" id="tableView">
-                <div class="compact-table-container">
-                    <table id="dataTable" class="compact-table">
+                <div class="ultra-compact-table-container">
+                    <table id="dataTable" class="ultra-compact-table">
                         <thead>
                             <tr>
-                                <th class="select-col">
+                                <th class="select-col-mini">
                                     <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()">
                                 </th>
-                                <th class="thumbnail-col">画像</th>
-                                <th class="sortable id-col" onclick="sortTable('id')">
+                                <th class="thumbnail-col-mini">画</th>
+                                <th class="sortable id-col-mini" onclick="sortTable('id')">
                                     ID <span class="sort-icon">↕️</span>
                                 </th>
-                                <th class="sortable name-col" onclick="sortTable('name')">
+                                <th class="sortable name-col-mini" onclick="sortTable('name')">
                                     名称 <span class="sort-icon">↕️</span>
                                 </th>
-                                <th class="sortable" onclick="sortTable('dimensions')">
+                                <th class="sortable size-col-mini" onclick="sortTable('dimensions')">
                                     サイズ <span class="sort-icon">↕️</span>
                                 </th>
-                                <th class="sortable" onclick="sortTable('location')">
+                                <th class="sortable location-col-mini" onclick="sortTable('location')">
                                     場所 <span class="sort-icon">↕️</span>
                                 </th>
                             </tr>
@@ -126,19 +122,19 @@
 
             <!-- Grid View -->
             <div class="grid-view" id="gridView" style="display: none;">
-                <div class="grid-container" id="gridContainer">
+                <div class="grid-container-mini" id="gridContainer">
                     <!-- Grid items will be populated here -->
                 </div>
             </div>
 
             <!-- Compact Pagination -->
-            <div class="compact-pagination">
-                <select id="pageSize" onchange="changePageSize()" class="page-size-compact">
-                    <option value="25">25件</option>
-                    <option value="50" selected>50件</option>
-                    <option value="100">100件</option>
+            <div class="pagination-mini">
+                <select id="pageSize" onchange="changePageSize()" class="page-size-mini">
+                    <option value="25">25</option>
+                    <option value="50" selected>50</option>
+                    <option value="100">100</option>
                 </select>
-                <div id="paginationControls" class="pagination-controls-compact"></div>
+                <div id="paginationControls" class="pagination-controls-mini"></div>
             </div>
         </section>
 

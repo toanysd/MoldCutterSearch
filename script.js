@@ -9,7 +9,8 @@ let allData = {
     locationlog: [],
     employees: [],
     racklayers: [],
-    racks: []
+    racks: [],
+    companies: []
 };
 
 let filteredData = [];
@@ -29,9 +30,36 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
         searchInput.focus();
+        
+        // Auto zoom fit when input loses focus
+        searchInput.addEventListener('blur', function() {
+            setTimeout(() => {
+                zoomFit();
+            }, 300); // Delay để keyboard ẩn hoàn toàn
+        });
+        
+        // Auto zoom fit on Enter key
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                this.blur(); // This will trigger zoom fit
+                performSearch();
+            }
+        });
+        
         // Add event listener for clear button visibility
         searchInput.addEventListener('input', updateClearSearchButton);
     }
+    
+    // Prevent zoom on all form elements
+    const formElements = document.querySelectorAll('input, select, textarea');
+    formElements.forEach(element => {
+        element.style.fontSize = '16px';
+        element.addEventListener('focus', function() {
+            // Optional: scroll element into view
+            this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+    });
     
     showLoading(true);
     loadAllData().then(() => {
@@ -59,7 +87,8 @@ async function loadAllData() {
         { key: 'locationlog', file: 'locationlog.csv', required: false },
         { key: 'employees', file: 'employees.csv', required: false },
         { key: 'racklayers', file: 'racklayers.csv', required: false },
-        { key: 'racks', file: 'racks.csv', required: false }
+        { key: 'racks', file: 'racks.csv', required: false },
+        { key: 'companies', file: 'companies.csv', required: false }
     ];
 
     const promises = dataFiles.map(async ({ key, file, required }) => {
@@ -115,6 +144,11 @@ function processDataRelationships() {
         customerMap.set(customer.CustomerID, customer);
     });
 
+    const companyMap = new Map();
+    allData.companies.forEach(company => {
+        companyMap.set(company.CompanyID, company);
+    });
+
     const rackMap = new Map();
     allData.racks.forEach(rack => {
         rackMap.set(rack.RackID, rack);
@@ -129,6 +163,7 @@ function processDataRelationships() {
     allData.molds = allData.molds.map(mold => {
         const design = moldDesignMap.get(mold.MoldDesignID) || {};
         const customer = customerMap.get(mold.CustomerID) || {};
+        const company = companyMap.get(customer.CompanyID) || {};
         const rackLayer = rackLayerMap.get(mold.RackLayerID) || {};
         const rack = rackLayer.RackID ? rackMap.get(rackLayer.RackID) || {} : {};
         
@@ -141,6 +176,7 @@ function processDataRelationships() {
             ...mold,
             designInfo: design,
             customerInfo: customer,
+            companyInfo: company,
             rackLayerInfo: rackLayer,
             rackInfo: rack,
             relatedCutters: getRelatedCutters(mold.MoldID),
@@ -151,7 +187,7 @@ function processDataRelationships() {
             displayName: mold.MoldName || mold.MoldCode || '',
             displayDimensions: createCombinedDimensionString(mold, design),
             displayLocation: mold.RackLayerID || '',
-            displayCustomer: getCustomerDisplayName(customer),
+            displayCustomer: getCustomerDisplayName(customer, company),
             displayPlasticType: design.DesignForPlasticType || mold.DefaultPlasticType || '',
             lastUpdate: getLastUpdateDate(mold),
             itemType: 'mold',
@@ -169,6 +205,7 @@ function processDataRelationships() {
     // Process cutters với CutterNo formatting
     allData.cutters = allData.cutters.map(cutter => {
         const customer = customerMap.get(cutter.CustomerID) || {};
+        const company = companyMap.get(customer.CompanyID) || {};
         const rackLayer = rackLayerMap.get(cutter.RackLayerID) || {};
         const rack = rackLayer.RackID ? rackMap.get(rackLayer.RackID) || {} : {};
         
@@ -187,6 +224,7 @@ function processDataRelationships() {
         return {
             ...cutter,
             customerInfo: customer,
+            companyInfo: company,
             rackLayerInfo: rackLayer,
             rackInfo: rack,
             relatedMolds: getRelatedMolds(cutter.CutterID),
@@ -197,7 +235,7 @@ function processDataRelationships() {
             displayName: displayName,
             displayDimensions: createCutterCombinedDimensionString(cutter),
             displayLocation: cutter.RackLayerID || '',
-            displayCustomer: getCustomerDisplayName(customer),
+            displayCustomer: getCustomerDisplayName(customer, company),
             displayPlasticType: cutter.PlasticCutType || '',
             lastUpdate: getLastUpdateDate(cutter),
             itemType: 'cutter',
@@ -272,10 +310,17 @@ function getCurrentStatus(item) {
     return { status: 'available', text: '利用可能', class: 'status-available' };
 }
 
-// Get customer display name
-function getCustomerDisplayName(customer) {
+// Get customer display name với company info
+function getCustomerDisplayName(customer, company) {
     if (!customer || !customer.CustomerID) return '';
-    return customer.CustomerShortName || customer.CustomerName || customer.CustomerID;
+    
+    let displayName = customer.CustomerShortName || customer.CustomerName || customer.CustomerID;
+    
+    if (company && company.CompanyShortName) {
+        displayName = `${company.CompanyShortName} - ${displayName}`;
+    }
+    
+    return displayName;
 }
 
 // Get related items
@@ -327,16 +372,15 @@ function getLastUpdateDate(item) {
 // Initialize filters
 function initializeFilters() {
     updateFieldFilterA();
-    updateFilterC();
     updateValueFilterB();
 }
 
-// Update Field Filter A
+// Update Field Filter A với short labels
 function updateFieldFilterA() {
     const fieldFilterA = document.getElementById('fieldFilterA');
     if (!fieldFilterA) return;
     
-    fieldFilterA.innerHTML = '<option value="all">フィルタA</option>';
+    fieldFilterA.innerHTML = '<option value="all">A</option>';
     
     const fieldOptions = [
         { value: 'displayCode', text: 'コード' },
@@ -344,14 +388,10 @@ function updateFieldFilterA() {
         { value: 'displayDimensions', text: 'サイズ' },
         { value: 'displayLocation', text: '場所' },
         { value: 'displayCustomer', text: '顧客' },
-        { value: 'displayPlasticType', text: 'プラスチック' },
-        { value: 'drawingNumber', text: '図面番号' },
-        { value: 'equipmentCode', text: '設備コード' },
-        { value: 'moldSetupType', text: 'セットアップ' },
-        { value: 'cutlineDimension', text: 'カットライン' },
-        { value: 'textContent', text: 'テキスト' },
-        { value: 'rackName', text: 'ラック名' },
-        { value: 'rackLayerDisplay', text: 'レイヤー詳細' }
+        { value: 'displayPlasticType', text: 'プラ' },
+        { value: 'drawingNumber', text: '図面' },
+        { value: 'equipmentCode', text: '設備' },
+        { value: 'rackName', text: 'ラック' }
     ];
     
     fieldOptions.forEach(option => {
@@ -359,30 +399,6 @@ function updateFieldFilterA() {
         optionElement.value = option.value;
         optionElement.textContent = option.text;
         fieldFilterA.appendChild(optionElement);
-    });
-}
-
-// Update Filter C (independent)
-function updateFilterC() {
-    const filterC = document.getElementById('filterC');
-    if (!filterC) return;
-    
-    filterC.innerHTML = '<option value="all">全フィールド</option>';
-    
-    const fieldOptions = [
-        { value: 'displayCode', text: 'コード' },
-        { value: 'displayName', text: '名称' },
-        { value: 'displayDimensions', text: 'サイズ' },
-        { value: 'displayLocation', text: '場所' },
-        { value: 'displayCustomer', text: '顧客' },
-        { value: 'displayPlasticType', text: 'プラスチック' }
-    ];
-    
-    fieldOptions.forEach(option => {
-        const optionElement = document.createElement('option');
-        optionElement.value = option.value;
-        optionElement.textContent = option.text;
-        filterC.appendChild(optionElement);
     });
 }
 
@@ -428,7 +444,6 @@ function performSearch() {
     const query = document.getElementById('searchInput')?.value.trim() || '';
     const fieldFilterA = document.getElementById('fieldFilterA')?.value || 'all';
     const valueFilterB = document.getElementById('valueFilterB')?.value || 'all';
-    const filterC = document.getElementById('filterC')?.value || 'all';
     
     // Get data based on category
     let dataToSearch = [];
@@ -482,16 +497,7 @@ function performSearch() {
             }
         }
         
-        // Filter C logic (independent) - FIXED LOGIC
-        let filterCMatch = true;
-        if (filterC !== 'all' && query) {
-            const filterCFields = getFieldsByType(filterC);
-            filterCMatch = filterCFields.some(field => 
-                item[field] && item[field].toString().toLowerCase().includes(query.toLowerCase())
-            );
-        }
-        
-        return textMatch && (filterC === 'all' || filterCMatch);
+        return textMatch;
     });
     
     // Apply sorting
@@ -507,25 +513,69 @@ function performSearch() {
     saveSearchState();
 }
 
-// Get fields by type for Filter C
-function getFieldsByType(fieldType) {
-    const fieldMap = {
-        'displayCode': ['displayCode', 'MoldCode', 'CutterNo'],
-        'displayName': ['displayName', 'MoldName', 'CutterName', 'CutterDesignName'],
-        'displayDimensions': ['displayDimensions', 'cutlineDimension'],
-        'displayLocation': ['displayLocation', 'rackName', 'rackLayerDisplay'],
-        'displayCustomer': ['displayCustomer'],
-        'displayPlasticType': ['displayPlasticType'],
-        'drawingNumber': ['drawingNumber'],
-        'equipmentCode': ['equipmentCode'],
-        'moldSetupType': ['moldSetupType'],
-        'textContent': ['textContent']
-    };
+// Zoom fit function
+function zoomFit() {
+    // Reset viewport scale
+    const viewport = document.querySelector('meta[name="viewport"]');
+    if (viewport) {
+        viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+    }
     
-    return fieldMap[fieldType] || [fieldType];
+    // Force layout recalculation
+    document.body.style.zoom = '1';
+    
+    // Scroll to top
+    window.scrollTo(0, 0);
+    
+    // Blur any focused input to hide keyboard
+    if (document.activeElement) {
+        document.activeElement.blur();
+    }
+    
+    // Visual feedback
+    const zoomBtn = document.querySelector('.zoom-fit-btn');
+    if (zoomBtn) {
+        zoomBtn.style.background = 'var(--success-green)';
+        zoomBtn.style.color = 'var(--white)';
+        setTimeout(() => {
+            zoomBtn.style.background = '';
+            zoomBtn.style.color = '';
+        }, 500);
+    }
 }
 
-// Clear search input only
+// Enhanced category toggle với text ngắn
+function toggleCategory() {
+    const categoryToggle = document.getElementById('categoryToggle');
+    const categoryText = document.getElementById('categoryText');
+    const dynamicHeader = document.getElementById('dynamicHeader');
+    
+    switch (currentCategory) {
+        case 'all':
+            currentCategory = 'mold';
+            categoryText.textContent = '金';
+            categoryToggle.className = 'category-toggle-mini mold';
+            if (dynamicHeader) dynamicHeader.className = 'dynamic-header mold';
+            break;
+        case 'mold':
+            currentCategory = 'cutter';
+            categoryText.textContent = '抜';
+            categoryToggle.className = 'category-toggle-mini cutter';
+            if (dynamicHeader) dynamicHeader.className = 'dynamic-header cutter';
+            break;
+        case 'cutter':
+            currentCategory = 'all';
+            categoryText.textContent = '全';
+            categoryToggle.className = 'category-toggle-mini all';
+            if (dynamicHeader) dynamicHeader.className = 'dynamic-header all';
+            break;
+    }
+    
+    updateValueFilterB();
+    performSearch();
+}
+
+// Enhanced clear search với left position
 function clearSearchInput() {
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
@@ -533,6 +583,11 @@ function clearSearchInput() {
         searchInput.focus();
         updateClearSearchButton();
         performSearch();
+        
+        // Auto zoom fit after clear
+        setTimeout(() => {
+            zoomFit();
+        }, 100);
     }
 }
 
@@ -555,7 +610,6 @@ function resetFilters() {
     const searchInput = document.getElementById('searchInput');
     const fieldFilterA = document.getElementById('fieldFilterA');
     const valueFilterB = document.getElementById('valueFilterB');
-    const filterC = document.getElementById('filterC');
     const categoryToggle = document.getElementById('categoryToggle');
     const categoryText = document.getElementById('categoryText');
     const dynamicHeader = document.getElementById('dynamicHeader');
@@ -563,12 +617,11 @@ function resetFilters() {
     if (searchInput) searchInput.value = '';
     if (fieldFilterA) fieldFilterA.value = 'all';
     if (valueFilterB) valueFilterB.value = 'all';
-    if (filterC) filterC.value = 'all';
     
     currentCategory = 'all';
     if (categoryToggle && categoryText) {
-        categoryText.textContent = 'すべて';
-        categoryToggle.className = 'category-toggle all';
+        categoryText.textContent = '全';
+        categoryToggle.className = 'category-toggle-mini all';
         if (dynamicHeader) dynamicHeader.className = 'dynamic-header all';
     }
     
@@ -581,38 +634,6 @@ function resetFilters() {
     
     updateValueFilterB();
     updateClearSearchButton();
-    performSearch();
-}
-
-// Category Toggle Function
-function toggleCategory() {
-    const categoryToggle = document.getElementById('categoryToggle');
-    const categoryText = document.getElementById('categoryText');
-    const dynamicHeader = document.getElementById('dynamicHeader');
-    
-    // Cycle through: all -> mold -> cutter -> all
-    switch (currentCategory) {
-        case 'all':
-            currentCategory = 'mold';
-            categoryText.textContent = '金型';
-            categoryToggle.className = 'category-toggle mold';
-            if (dynamicHeader) dynamicHeader.className = 'dynamic-header mold';
-            break;
-        case 'mold':
-            currentCategory = 'cutter';
-            categoryText.textContent = '抜型';
-            categoryToggle.className = 'category-toggle cutter';
-            if (dynamicHeader) dynamicHeader.className = 'dynamic-header cutter';
-            break;
-        case 'cutter':
-            currentCategory = 'all';
-            categoryText.textContent = 'すべて';
-            categoryToggle.className = 'category-toggle all';
-            if (dynamicHeader) dynamicHeader.className = 'dynamic-header all';
-            break;
-    }
-    
-    updateValueFilterB();
     performSearch();
 }
 
@@ -646,7 +667,7 @@ function displayData() {
     updateSelectAllCheckbox();
 }
 
-// Display table data với cutter styling
+// Enhanced display table data với mini thumbnails
 function displayTableData() {
     const tableBody = document.querySelector('#dataTable tbody');
     if (!tableBody) return;
@@ -672,27 +693,29 @@ function displayTableData() {
         
         let thumbnailHtml = '';
         if (item.thumbnailUrl && item.itemType === 'mold') {
-            thumbnailHtml = `<img src="${item.thumbnailUrl}" alt="Mold ${itemId}" class="mold-thumbnail" 
+            thumbnailHtml = `<img src="${item.thumbnailUrl}" alt="Mold ${itemId}" class="mold-thumbnail-mini" 
+                                 loading="lazy"
+                                 onclick="showImageModal('${item.originalImageUrl}', '${item.displayName}')"
                                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                            <div class="mold-thumbnail placeholder" style="display: none;">📷</div>`;
+                            <div class="mold-thumbnail-mini placeholder" style="display: none;">📷</div>`;
         } else {
-            thumbnailHtml = '<div class="mold-thumbnail placeholder">📷</div>';
+            thumbnailHtml = '<div class="mold-thumbnail-mini placeholder">📷</div>';
         }
         
         row.innerHTML = `
-            <td class="select-col">
+            <td class="select-col-mini">
                 <input type="checkbox" ${selectedItems.has(itemId) ? 'checked' : ''} 
                        onchange="toggleSelection('${itemId}', this.checked)">
             </td>
-            <td class="thumbnail-col">${thumbnailHtml}</td>
-            <td class="id-col">${itemId}</td>
-            <td class="name-col">
-                <a href="detail.html?id=${itemId}&type=${itemType}" class="name-link ${itemType}" onclick="saveSearchState()">
+            <td class="thumbnail-col-mini">${thumbnailHtml}</td>
+            <td class="id-col-mini">${itemId}</td>
+            <td class="name-col-mini">
+                <a href="detail.html?id=${itemId}&type=${itemType}" class="name-link-mini ${itemType}" onclick="saveSearchState()">
                     ${item.displayName}
                 </a>
             </td>
-            <td>${item.displayDimensions}</td>
-            <td>${item.displayLocation}</td>
+            <td class="size-col-mini">${item.displayDimensions}</td>
+            <td class="location-col-mini">${item.displayLocation}</td>
         `;
         
         tableBody.appendChild(row);
@@ -724,6 +747,8 @@ function displayGridData() {
         let thumbnailHtml = '';
         if (item.thumbnailUrl && item.itemType === 'mold') {
             thumbnailHtml = `<img src="${item.thumbnailUrl}" alt="Mold ${itemId}" class="grid-thumbnail-img" 
+                                 loading="lazy"
+                                 onclick="showImageModal('${item.originalImageUrl}', '${item.displayName}')"
                                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                             <div class="grid-thumbnail-placeholder" style="display: none;">📷</div>`;
         } else {
@@ -773,6 +798,7 @@ function displayGridData() {
 
 // Real-time search input handler
 function handleSearchInput() {
+    updateClearSearchButton();
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(() => {
         performSearch();
@@ -786,10 +812,6 @@ function handleFieldFilterChange() {
 }
 
 function handleValueFilterChange() {
-    performSearch();
-}
-
-function handleFilterCChange() {
     performSearch();
 }
 
@@ -1085,7 +1107,6 @@ function saveSearchState() {
         currentCategory: currentCategory,
         fieldFilterA: document.getElementById('fieldFilterA')?.value || 'all',
         valueFilterB: document.getElementById('valueFilterB')?.value || 'all',
-        filterC: document.getElementById('filterC')?.value || 'all',
         currentPage: currentPage,
         pageSize: pageSize,
         sortField: sortField,
@@ -1116,18 +1137,18 @@ function restoreSearchState() {
                 if (categoryToggle && categoryText) {
                     switch (currentCategory) {
                         case 'mold':
-                            categoryText.textContent = '金型';
-                            categoryToggle.className = 'category-toggle mold';
+                            categoryText.textContent = '金';
+                            categoryToggle.className = 'category-toggle-mini mold';
                             if (dynamicHeader) dynamicHeader.className = 'dynamic-header mold';
                             break;
                         case 'cutter':
-                            categoryText.textContent = '抜型';
-                            categoryToggle.className = 'category-toggle cutter';
+                            categoryText.textContent = '抜';
+                            categoryToggle.className = 'category-toggle-mini cutter';
                             if (dynamicHeader) dynamicHeader.className = 'dynamic-header cutter';
                             break;
                         default:
-                            categoryText.textContent = 'すべて';
-                            categoryToggle.className = 'category-toggle all';
+                            categoryText.textContent = '全';
+                            categoryToggle.className = 'category-toggle-mini all';
                             if (dynamicHeader) dynamicHeader.className = 'dynamic-header all';
                     }
                 }
@@ -1141,11 +1162,6 @@ function restoreSearchState() {
             if (state.valueFilterB) {
                 const valueFilterB = document.getElementById('valueFilterB');
                 if (valueFilterB) valueFilterB.value = state.valueFilterB;
-            }
-            
-            if (state.filterC) {
-                const filterC = document.getElementById('filterC');
-                if (filterC) filterC.value = state.filterC;
             }
             
             if (state.currentView) {
@@ -1258,4 +1274,33 @@ function showError(message) {
             errorDiv.parentNode.removeChild(errorDiv);
         }
     }, 5000);
+}
+
+// Image modal function
+function showImageModal(imageUrl, title) {
+    if (!imageUrl) return;
+    
+    const modal = document.createElement('div');
+    modal.className = 'image-modal';
+    modal.innerHTML = `
+        <div class="image-modal-content">
+            <div class="image-modal-header">
+                <h3>${title}</h3>
+                <button class="image-modal-close" onclick="closeImageModal()">&times;</button>
+            </div>
+            <div class="image-modal-body">
+                <img src="${imageUrl}" alt="${title}" class="modal-image" loading="lazy">
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    modal.style.display = 'flex';
+}
+
+function closeImageModal() {
+    const modal = document.querySelector('.image-modal');
+    if (modal) {
+        modal.remove();
+    }
 }

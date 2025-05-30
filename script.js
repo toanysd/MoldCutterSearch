@@ -23,40 +23,67 @@ let searchTimeout = null;
 let currentCategory = 'all';
 let currentView = 'table';
 
+// Search history và suggestions
+let searchHistory = [];
+let suggestionIndex = -1;
+let isShowingSuggestions = false;
+let hideTimeout = null;
+
 const GITHUB_BASE_URL = "https://raw.githubusercontent.com/toanysd/MoldCutterSearch/main/Data/";
 
 // Initialize application
 document.addEventListener('DOMContentLoaded', function() {
+    // Load search history
+    loadSearchHistory();
+    
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
         searchInput.focus();
         
-        // Auto zoom fit when input loses focus
+        // Enhanced event listeners
+        searchInput.addEventListener('focus', function() {
+            // Clear any pending hide timeout
+            if (hideTimeout) {
+                clearTimeout(hideTimeout);
+                hideTimeout = null;
+            }
+            
+            // Show suggestions khi focus
+            setTimeout(() => {
+                if (document.activeElement === this) {
+                    showSearchSuggestions();
+                }
+            }, 100);
+        });
+        
         searchInput.addEventListener('blur', function() {
+            // Delay hide để user có thể click suggestion
+            hideSearchSuggestions(false);
+            
             setTimeout(() => {
                 zoomFit();
-            }, 300); // Delay để keyboard ẩn hoàn toàn
+            }, 300);
         });
         
-        // Auto zoom fit on Enter key
-        searchInput.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                this.blur(); // This will trigger zoom fit
-                performSearch();
-            }
-        });
-        
-        // Add event listener for clear button visibility
-        searchInput.addEventListener('input', updateClearSearchButton);
+        searchInput.addEventListener('keydown', handleSearchKeydown);
+        searchInput.addEventListener('input', handleSearchInput);
     }
+    
+    // Enhanced click outside handler
+    document.addEventListener('click', function(e) {
+        const searchContainer = e.target.closest('.search-input-ultra');
+        const suggestionContainer = e.target.closest('.search-suggestions');
+        
+        if (!searchContainer && !suggestionContainer) {
+            hideSearchSuggestions(true);
+        }
+    });
     
     // Prevent zoom on all form elements
     const formElements = document.querySelectorAll('input, select, textarea');
     formElements.forEach(element => {
         element.style.fontSize = '16px';
         element.addEventListener('focus', function() {
-            // Optional: scroll element into view
             this.scrollIntoView({ behavior: 'smooth', block: 'center' });
         });
     });
@@ -74,6 +101,370 @@ document.addEventListener('DOMContentLoaded', function() {
         showError(`エラー: ${error.message}`);
     });
 });
+
+// Load search history from localStorage
+function loadSearchHistory() {
+    try {
+        const saved = localStorage.getItem('moldSearchHistory');
+        if (saved) {
+            searchHistory = JSON.parse(saved);
+            if (searchHistory.length > 20) {
+                searchHistory = searchHistory.slice(-20);
+                saveSearchHistory();
+            }
+        }
+    } catch (e) {
+        console.warn('Failed to load search history:', e);
+        searchHistory = [];
+    }
+}
+
+// Save search history to localStorage
+function saveSearchHistory() {
+    try {
+        localStorage.setItem('moldSearchHistory', JSON.stringify(searchHistory));
+    } catch (e) {
+        console.warn('Failed to save search history:', e);
+    }
+}
+
+// Add search term to history
+function addToSearchHistory(query) {
+    if (!query || query.trim().length < 2) return;
+    
+    const trimmedQuery = query.trim();
+    const now = new Date();
+    
+    // Remove existing entry if exists
+    searchHistory = searchHistory.filter(item => item.query !== trimmedQuery);
+    
+    // Add new entry at the end
+    searchHistory.push({
+        query: trimmedQuery,
+        timestamp: now.toISOString(),
+        count: 1,
+        results: filteredData.length
+    });
+    
+    // Keep only last 20 searches
+    if (searchHistory.length > 20) {
+        searchHistory = searchHistory.slice(-20);
+    }
+    
+    saveSearchHistory();
+}
+
+// Show search suggestions
+function showSearchSuggestions() {
+    const suggestions = document.getElementById('searchSuggestions');
+    const searchInput = document.getElementById('searchInput');
+    
+    if (!suggestions || !searchInput) return;
+    
+    // Clear any pending hide timeout
+    if (hideTimeout) {
+        clearTimeout(hideTimeout);
+        hideTimeout = null;
+    }
+    
+    const query = searchInput.value.trim();
+    
+    // Generate suggestions
+    const suggestionsList = generateSuggestions(query);
+    
+    // Update suggestions content
+    updateSuggestionsContent(suggestionsList);
+    
+    // Show dropdown
+    suggestions.style.display = 'block';
+    isShowingSuggestions = true;
+    suggestionIndex = -1;
+    
+    // Update input border radius
+    searchInput.style.borderBottomLeftRadius = '0';
+    searchInput.style.borderBottomRightRadius = '0';
+}
+
+// Enhanced hide search suggestions với delay tốt hơn
+function hideSearchSuggestions(immediate = false) {
+    if (immediate) {
+        performHide();
+    } else {
+        hideTimeout = setTimeout(() => {
+            performHide();
+        }, 500);
+    }
+}
+
+function performHide() {
+    const suggestions = document.getElementById('searchSuggestions');
+    const searchInput = document.getElementById('searchInput');
+    
+    if (suggestions) {
+        suggestions.style.display = 'none';
+    }
+    
+    if (searchInput) {
+        searchInput.style.borderBottomLeftRadius = 'var(--radius-md)';
+        searchInput.style.borderBottomRightRadius = 'var(--radius-md)';
+    }
+    
+    isShowingSuggestions = false;
+    suggestionIndex = -1;
+    hideTimeout = null;
+}
+
+// Generate suggestions based on query
+function generateSuggestions(query = '') {
+    const suggestions = [];
+    const queryLower = query.toLowerCase();
+    
+    // Filter search history
+    const historyMatches = searchHistory
+        .filter(item => {
+            if (!query) return true;
+            return item.query.toLowerCase().includes(queryLower);
+        })
+        .reverse()
+        .slice(0, 8);
+    
+    // Add history suggestions
+    historyMatches.forEach(item => {
+        suggestions.push({
+            type: 'history',
+            text: item.query,
+            meta: {
+                results: item.results,
+                time: formatRelativeTime(item.timestamp)
+            }
+        });
+    });
+    
+    // Add smart suggestions based on current data
+    if (query.length >= 2) {
+        const smartSuggestions = generateSmartSuggestions(query);
+        suggestions.push(...smartSuggestions.slice(0, 5));
+    }
+    
+    return suggestions;
+}
+
+// Generate smart suggestions from current data
+function generateSmartSuggestions(query) {
+    const suggestions = [];
+    const queryLower = query.toLowerCase();
+    const seen = new Set();
+    
+    // Get all data for suggestions
+    const allDataItems = [...(allData.molds || []), ...(allData.cutters || [])];
+    
+    // Extract unique terms that match query
+    allDataItems.forEach(item => {
+        const searchFields = [
+            item.displayCode, item.displayName, item.displayDimensions,
+            item.displayCustomer, item.MoldCode, item.CutterNo,
+            item.MoldName, item.CutterName, item.CutterDesignName
+        ].filter(field => field && field.toString().trim());
+        
+        searchFields.forEach(field => {
+            const fieldStr = field.toString();
+            if (fieldStr.toLowerCase().includes(queryLower) && 
+                fieldStr.length <= 50 && 
+                !seen.has(fieldStr)) {
+                
+                seen.add(fieldStr);
+                suggestions.push({
+                    type: 'smart',
+                    text: fieldStr,
+                    meta: {
+                        type: item.itemType === 'mold' ? '金型' : '抜型'
+                    }
+                });
+            }
+        });
+    });
+    
+    return suggestions.slice(0, 5);
+}
+
+// Update suggestions content với better event handling
+function updateSuggestionsContent(suggestions) {
+    const suggestionsList = document.getElementById('suggestionsList');
+    if (!suggestionsList) return;
+    
+    if (suggestions.length === 0) {
+        suggestionsList.innerHTML = '<div class="no-suggestions">検索履歴がありません - Không có lịch sử tìm kiếm</div>';
+        return;
+    }
+    
+    let html = '';
+    suggestions.forEach((suggestion, index) => {
+        const isHistory = suggestion.type === 'history';
+        const metaHtml = isHistory 
+            ? `<span class="suggestion-count">${suggestion.meta.results}件</span>
+               <span class="suggestion-time">${suggestion.meta.time}</span>`
+            : `<span class="suggestion-count">${suggestion.meta.type}</span>`;
+        
+        html += `
+            <div class="suggestion-item" 
+                 data-index="${index}" 
+                 onmousedown="selectSuggestion('${escapeHtml(suggestion.text)}')"
+                 onmouseenter="highlightSuggestion(${index})"
+                 onmouseleave="clearSuggestionHighlight()">
+                <span class="suggestion-text">${highlightQuery(suggestion.text, document.getElementById('searchInput')?.value || '')}</span>
+                <div class="suggestion-meta">
+                    ${metaHtml}
+                    ${isHistory ? `<button class="remove-suggestion" onmousedown="removeSuggestion('${escapeHtml(suggestion.text)}', event)">×</button>` : ''}
+                </div>
+            </div>
+        `;
+    });
+    
+    suggestionsList.innerHTML = html;
+}
+
+// Helper functions cho mouse interaction
+function highlightSuggestion(index) {
+    suggestionIndex = index;
+    updateSuggestionHighlight();
+}
+
+function clearSuggestionHighlight() {
+    suggestionIndex = -1;
+    updateSuggestionHighlight();
+}
+
+// Handle keyboard navigation in search
+function handleSearchKeydown(event) {
+    if (!isShowingSuggestions) {
+        if (event.key === 'ArrowDown') {
+            event.preventDefault();
+            showSearchSuggestions();
+            return;
+        }
+        return;
+    }
+    
+    const suggestionItems = document.querySelectorAll('.suggestion-item');
+    const maxIndex = suggestionItems.length - 1;
+    
+    switch (event.key) {
+        case 'ArrowDown':
+            event.preventDefault();
+            suggestionIndex = Math.min(suggestionIndex + 1, maxIndex);
+            updateSuggestionHighlight();
+            break;
+            
+        case 'ArrowUp':
+            event.preventDefault();
+            suggestionIndex = Math.max(suggestionIndex - 1, -1);
+            updateSuggestionHighlight();
+            break;
+            
+        case 'Enter':
+            event.preventDefault();
+            if (suggestionIndex >= 0 && suggestionItems[suggestionIndex]) {
+                const suggestionText = suggestionItems[suggestionIndex].querySelector('.suggestion-text').textContent;
+                selectSuggestion(suggestionText);
+            } else {
+                hideSearchSuggestions(true);
+                performSearch();
+            }
+            break;
+            
+        case 'Escape':
+            hideSearchSuggestions(true);
+            break;
+            
+        case 'Tab':
+            hideSearchSuggestions(true);
+            break;
+    }
+}
+
+// Update suggestion highlight
+function updateSuggestionHighlight() {
+    const suggestionItems = document.querySelectorAll('.suggestion-item');
+    
+    suggestionItems.forEach((item, index) => {
+        if (index === suggestionIndex) {
+            item.classList.add('highlighted');
+        } else {
+            item.classList.remove('highlighted');
+        }
+    });
+}
+
+// Enhanced select suggestion
+function selectSuggestion(text) {
+    if (hideTimeout) {
+        clearTimeout(hideTimeout);
+        hideTimeout = null;
+    }
+    
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.value = text;
+        hideSearchSuggestions(true);
+        updateClearSearchButton();
+        performSearch();
+        searchInput.focus();
+    }
+}
+
+// Enhanced remove suggestion
+function removeSuggestion(text, event) {
+    event.stopPropagation();
+    event.preventDefault();
+    
+    if (hideTimeout) {
+        clearTimeout(hideTimeout);
+        hideTimeout = null;
+    }
+    
+    searchHistory = searchHistory.filter(item => item.query !== text);
+    saveSearchHistory();
+    
+    // Refresh suggestions
+    const query = document.getElementById('searchInput')?.value || '';
+    if (query.length > 0) {
+        showFilteredSuggestions(query);
+    } else {
+        showSearchSuggestions();
+    }
+}
+
+// Enhanced clear search history
+function clearSearchHistory() {
+    if (hideTimeout) {
+        clearTimeout(hideTimeout);
+        hideTimeout = null;
+    }
+    
+    searchHistory = [];
+    saveSearchHistory();
+    
+    // Refresh suggestions
+    const query = document.getElementById('searchInput')?.value || '';
+    if (query.length > 0) {
+        showFilteredSuggestions(query);
+    } else {
+        showSearchSuggestions();
+    }
+}
+
+// Show filtered suggestions based on query
+function showFilteredSuggestions(query) {
+    const suggestions = document.getElementById('searchSuggestions');
+    if (!suggestions) return;
+    
+    const filteredSuggestions = generateSuggestions(query);
+    updateSuggestionsContent(filteredSuggestions);
+    
+    suggestions.style.display = 'block';
+    isShowingSuggestions = true;
+    suggestionIndex = -1;
+}
 
 // Load all data từ GitHub
 async function loadAllData() {
@@ -186,7 +577,7 @@ function processDataRelationships() {
             displayCode: mold.MoldCode || '',
             displayName: mold.MoldName || mold.MoldCode || '',
             displayDimensions: createCombinedDimensionString(mold, design),
-            displayLocation: mold.RackLayerID || '',
+            displayLocation: createLocationDisplay(mold.RackLayerID, rackLayer),
             displayCustomer: getCustomerDisplayName(customer, company),
             displayPlasticType: design.DesignForPlasticType || mold.DefaultPlasticType || '',
             lastUpdate: getLastUpdateDate(mold),
@@ -234,7 +625,7 @@ function processDataRelationships() {
             displayCode: cutter.CutterNo || '',
             displayName: displayName,
             displayDimensions: createCutterCombinedDimensionString(cutter),
-            displayLocation: cutter.RackLayerID || '',
+            displayLocation: createLocationDisplay(cutter.RackLayerID, rackLayer),
             displayCustomer: getCustomerDisplayName(customer, company),
             displayPlasticType: cutter.PlasticCutType || '',
             lastUpdate: getLastUpdateDate(cutter),
@@ -244,6 +635,17 @@ function processDataRelationships() {
             thumbnailUrl: ''
         };
     });
+}
+
+// Enhanced location display function - RackLayerID + RackLayerNotes
+function createLocationDisplay(rackLayerID, rackLayer) {
+    if (!rackLayerID) return '';
+    
+    if (rackLayer && rackLayer.RackLayerNotes) {
+        return `${rackLayerID} - ${rackLayer.RackLayerNotes}`;
+    }
+    
+    return rackLayerID;
 }
 
 // Enhanced rack display functions
@@ -445,6 +847,11 @@ function performSearch() {
     const fieldFilterA = document.getElementById('fieldFilterA')?.value || 'all';
     const valueFilterB = document.getElementById('valueFilterB')?.value || 'all';
     
+    // Add to search history if query is not empty
+    if (query) {
+        addToSearchHistory(query);
+    }
+    
     // Get data based on category
     let dataToSearch = [];
     if (currentCategory === 'mold') {
@@ -511,6 +918,9 @@ function performSearch() {
     updatePagination();
     updateClearSearchButton();
     saveSearchState();
+    
+    // Hide suggestions after search
+    hideSearchSuggestions(true);
 }
 
 // Zoom fit function
@@ -577,11 +987,17 @@ function toggleCategory() {
 
 // Enhanced clear search với left position
 function clearSearchInput() {
+    if (hideTimeout) {
+        clearTimeout(hideTimeout);
+        hideTimeout = null;
+    }
+    
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
         searchInput.value = '';
         searchInput.focus();
         updateClearSearchButton();
+        hideSearchSuggestions(true);
         performSearch();
         
         // Auto zoom fit after clear
@@ -634,6 +1050,7 @@ function resetFilters() {
     
     updateValueFilterB();
     updateClearSearchButton();
+    hideSearchSuggestions(true);
     performSearch();
 }
 
@@ -667,7 +1084,7 @@ function displayData() {
     updateSelectAllCheckbox();
 }
 
-// Enhanced display table data với mini thumbnails
+// Enhanced display table data với mini thumbnails và location display
 function displayTableData() {
     const tableBody = document.querySelector('#dataTable tbody');
     if (!tableBody) return;
@@ -715,7 +1132,7 @@ function displayTableData() {
                 </a>
             </td>
             <td class="size-col-mini">${item.displayDimensions}</td>
-            <td class="location-col-mini">${item.displayLocation}</td>
+            <td class="location-col-mini" title="${item.displayLocation}">${item.displayLocation}</td>
         `;
         
         tableBody.appendChild(row);
@@ -776,7 +1193,7 @@ function displayGridData() {
                     </div>
                     <div class="grid-item-detail">
                         <span class="grid-detail-label">場所:</span>
-                        <span class="grid-detail-value">${item.displayLocation}</span>
+                        <span class="grid-detail-value" title="${item.displayLocation}">${item.displayLocation}</span>
                     </div>
                     <div class="grid-item-detail">
                         <span class="grid-detail-label">顧客:</span>
@@ -799,6 +1216,23 @@ function displayGridData() {
 // Real-time search input handler
 function handleSearchInput() {
     updateClearSearchButton();
+    
+    // Clear hide timeout nếu đang gõ
+    if (hideTimeout) {
+        clearTimeout(hideTimeout);
+        hideTimeout = null;
+    }
+    
+    // Show suggestions if input is focused and has content
+    if (document.activeElement === document.getElementById('searchInput')) {
+        const query = document.getElementById('searchInput')?.value || '';
+        if (query.length > 0) {
+            showFilteredSuggestions(query);
+        } else {
+            showSearchSuggestions();
+        }
+    }
+    
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(() => {
         performSearch();
@@ -1303,4 +1737,37 @@ function closeImageModal() {
     if (modal) {
         modal.remove();
     }
+}
+
+// Utility functions for autocomplete
+function formatRelativeTime(timestamp) {
+    const now = new Date();
+    const time = new Date(timestamp);
+    const diffMs = now - time;
+    const diffMins = Math.floor(diffMs / (1000 * 60));
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    
+    if (diffMins < 1) return '今';
+    if (diffMins < 60) return `${diffMins}分前`;
+    if (diffHours < 24) return `${diffHours}時間前`;
+    if (diffDays < 7) return `${diffDays}日前`;
+    
+    return time.toLocaleDateString('ja-JP', { month: 'short', day: 'numeric' });
+}
+
+function highlightQuery(text, query) {
+    if (!query || query.length < 2) return escapeHtml(text);
+    
+    const escapedText = escapeHtml(text);
+    const escapedQuery = escapeHtml(query);
+    const regex = new RegExp(`(${escapedQuery})`, 'gi');
+    
+    return escapedText.replace(regex, '<mark style="background: var(--accent-orange); color: var(--white); padding: 0 0.125rem; border-radius: 2px;">$1</mark>');
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
 }

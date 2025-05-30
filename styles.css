@@ -166,7 +166,7 @@ body {
     color: var(--accent-orange);
 }
 
-/* Search Input Ultra với Clear bên trái */
+/* Search Input Ultra với Clear bên trái và Autocomplete */
 .search-input-ultra {
     position: relative;
     flex: 1;
@@ -176,7 +176,7 @@ body {
 
 #searchInput {
     width: 100%;
-    padding: 0.5rem 2rem 0.5rem 2.5rem; /* Left padding cho clear button */
+    padding: 0.5rem 2rem 0.5rem 2.5rem;
     border: 2px solid var(--primary-blue);
     border-radius: var(--radius-md);
     font-size: 16px; /* CRITICAL: 16px để tránh zoom */
@@ -185,12 +185,15 @@ body {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
+    z-index: 1;
 }
 
 #searchInput:focus {
     outline: none;
     border-color: var(--primary-blue);
     box-shadow: 0 0 0 2px rgba(30, 64, 175, 0.1);
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
 }
 
 .clear-search-left {
@@ -227,6 +230,182 @@ body {
     font-size: 16px;
     color: var(--primary-blue);
     pointer-events: none;
+}
+
+/* Search Suggestions Dropdown */
+.search-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--white);
+    border: 2px solid var(--primary-blue);
+    border-top: none;
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    z-index: 1000;
+    max-height: 300px;
+    overflow: hidden;
+}
+
+.suggestions-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    background: var(--gray-50);
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.suggestions-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+}
+
+.clear-history-btn {
+    background: none;
+    border: none;
+    color: var(--accent-orange);
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-sm);
+    transition: var(--transition);
+}
+
+.clear-history-btn:hover {
+    background: var(--accent-orange);
+    color: var(--white);
+}
+
+.suggestions-list {
+    max-height: 180px;
+    overflow-y: auto;
+}
+
+.suggestion-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+    transition: var(--transition);
+    border-bottom: 1px solid var(--gray-100);
+    font-size: 14px;
+}
+
+.suggestion-item:hover,
+.suggestion-item.highlighted {
+    background: var(--primary-blue);
+    color: var(--white);
+}
+
+.suggestion-text {
+    flex: 1;
+    font-weight: 500;
+}
+
+.suggestion-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 11px;
+    color: var(--gray-500);
+}
+
+.suggestion-item:hover .suggestion-meta,
+.suggestion-item.highlighted .suggestion-meta {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.suggestion-count {
+    background: var(--gray-200);
+    color: var(--gray-700);
+    padding: 0.125rem 0.375rem;
+    border-radius: 9999px;
+    font-weight: 600;
+}
+
+.suggestion-item:hover .suggestion-count,
+.suggestion-item.highlighted .suggestion-count {
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--white);
+}
+
+.suggestion-time {
+    font-style: italic;
+}
+
+.remove-suggestion {
+    background: none;
+    border: none;
+    color: var(--gray-400);
+    font-size: 14px;
+    cursor: pointer;
+    padding: 0.125rem;
+    border-radius: 50%;
+    transition: var(--transition);
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.remove-suggestion:hover {
+    background: var(--danger-red);
+    color: var(--white);
+}
+
+.suggestions-footer {
+    padding: 0.5rem 0.75rem;
+    background: var(--gray-50);
+    border-top: 1px solid var(--gray-200);
+}
+
+.popular-searches {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+
+.popular-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--gray-600);
+}
+
+.popular-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+}
+
+.popular-tag {
+    background: var(--gray-200);
+    color: var(--gray-700);
+    padding: 0.125rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.popular-tag:hover {
+    background: var(--primary-blue);
+    color: var(--white);
+}
+
+/* No suggestions message */
+.no-suggestions {
+    padding: 1rem;
+    text-align: center;
+    color: var(--gray-500);
+    font-size: 12px;
+    font-style: italic;
 }
 
 /* Filter Mini */
@@ -506,7 +685,7 @@ body {
 }
 
 .name-col-mini {
-    min-width: 120px;
+    min-width: 100px;
 }
 
 .size-col-mini {
@@ -514,7 +693,7 @@ body {
 }
 
 .location-col-mini {
-    width: 60px;
+    width: 120px;
 }
 
 /* Thumbnail Mini */
@@ -718,6 +897,28 @@ body {
     .ultra-compact-table td {
         font-size: 12px;
     }
+    
+    .search-suggestions {
+        max-height: 250px;
+    }
+    
+    .suggestions-list {
+        max-height: 150px;
+    }
+    
+    .suggestion-item {
+        padding: 0.375rem 0.5rem;
+        font-size: 13px;
+    }
+    
+    .popular-tags {
+        gap: 0.125rem;
+    }
+    
+    .popular-tag {
+        font-size: 10px;
+        padding: 0.125rem 0.375rem;
+    }
 }
 
 /* iPhone 7 Plus specific (414px width) */
@@ -762,5 +963,159 @@ body {
     
     .grid-container-mini {
         max-height: calc(100vh - 100px);
+    }
+}
+/* Enhanced Search Suggestions Dropdown */
+.search-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--white);
+    border: 2px solid var(--primary-blue);
+    border-top: none;
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+    box-shadow: var(--shadow-xl); /* Stronger shadow */
+    z-index: 1000;
+    max-height: 300px;
+    overflow: hidden;
+    /* Prevent pointer events on container to avoid conflicts */
+    pointer-events: auto;
+}
+
+.suggestion-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+    transition: var(--transition);
+    border-bottom: 1px solid var(--gray-100);
+    font-size: 14px;
+    /* Ensure pointer events work */
+    pointer-events: auto;
+    user-select: none; /* Prevent text selection */
+}
+
+.suggestion-item:hover,
+.suggestion-item.highlighted {
+    background: var(--primary-blue);
+    color: var(--white);
+    /* Stronger highlight */
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+
+.suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.suggestion-item:active {
+    background: var(--primary-blue-dark);
+}
+
+.remove-suggestion {
+    background: none;
+    border: none;
+    color: var(--gray-400);
+    font-size: 14px;
+    cursor: pointer;
+    padding: 0.125rem;
+    border-radius: 50%;
+    transition: var(--transition);
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Ensure it's clickable */
+    pointer-events: auto;
+}
+
+.remove-suggestion:hover {
+    background: var(--danger-red);
+    color: var(--white);
+}
+
+.suggestion-item:hover .remove-suggestion {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.suggestion-item:hover .remove-suggestion:hover {
+    background: var(--danger-red);
+    color: var(--white);
+}
+
+/* Popular tags improvements */
+.popular-tag {
+    background: var(--gray-200);
+    color: var(--gray-700);
+    padding: 0.125rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    /* Better interaction */
+    user-select: none;
+    pointer-events: auto;
+}
+
+.popular-tag:hover {
+    background: var(--primary-blue);
+    color: var(--white);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+.popular-tag:active {
+    transform: translateY(0);
+}
+
+/* Clear history button improvements */
+.clear-history-btn {
+    background: none;
+    border: none;
+    color: var(--accent-orange);
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-sm);
+    transition: var(--transition);
+    pointer-events: auto;
+    user-select: none;
+}
+
+.clear-history-btn:hover {
+    background: var(--accent-orange);
+    color: var(--white);
+    transform: translateY(-1px);
+}
+
+.clear-history-btn:active {
+    transform: translateY(0);
+}
+
+/* Mobile specific improvements */
+@media (max-width: 768px) {
+    .search-suggestions {
+        max-height: 250px;
+        /* Better touch targets on mobile */
+    }
+    
+    .suggestion-item {
+        padding: 0.625rem 0.5rem; /* Larger touch area */
+        font-size: 13px;
+    }
+    
+    .remove-suggestion {
+        width: 24px;
+        height: 24px;
+        font-size: 16px;
+    }
+    
+    .popular-tag {
+        padding: 0.25rem 0.5rem; /* Larger touch area */
+        font-size: 12px;
     }
 }

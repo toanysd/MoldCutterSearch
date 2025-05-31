@@ -457,7 +457,7 @@ async function loadAllData() {
         { key: 'cutters', file: 'cutters.csv', required: true },
         { key: 'customers', file: 'customers.csv', required: false },
         { key: 'molddesign', file: 'molddesign.csv', required: false },
-        { key: 'moldcutter', file: 'molcutter.csv', required: false },
+        { key: 'moldcutter', file: 'moldcutter.csv', required: false },
         { key: 'shiplog', file: 'shiplog.csv', required: false },
         { key: 'locationlog', file: 'locationlog.csv', required: false },
         { key: 'employees', file: 'employees.csv', required: false },

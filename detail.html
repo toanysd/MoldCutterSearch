@@ -2,280 +2,270 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>詳細情報 - Chi tiết</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="detail-styles.css">
 </head>
 <body>
-    <div class="detail-layout">
-        <!-- Left Sidebar - Main Info & Quick Actions -->
-        <aside class="detail-sidebar">
-            <!-- Header -->
-            <div class="sidebar-header">
-                <button onclick="goBack()" class="btn-back">← 戻る</button>
-                <div class="item-title">
-                    <div class="item-type-label" id="itemTypeLabel">金型</div>
-                    <div class="item-name" id="itemName">TDW-001D R3</div>
+    <!-- Header -->
+    <header class="detail-header">
+        <div class="container">
+            <div class="header-content">
+                <button class="back-btn" onclick="goBack()">
+                    ← 戻る - Quay lại
+                </button>
+                <h1 id="pageTitle">詳細情報 - Chi tiết</h1>
+                <div class="header-actions">
+                    <button class="btn-icon" onclick="printDetail()" title="印刷">🖨️</button>
+                    <button class="btn-icon" onclick="shareDetail()" title="共有">📤</button>
                 </div>
             </div>
+        </div>
+    </header>
 
-            <!-- Quick Actions -->
-            <div class="quick-actions-section">
-                <h3>クイックアクション - Thao tác nhanh</h3>
-                <div class="action-buttons">
-                    <button onclick="showLocationUpdate()" class="action-btn location">
-                        📍 位置変更
-                    </button>
-                    <button onclick="showShipmentUpdate()" class="action-btn shipment">
-                        🚚 出荷記録
-                    </button>
-                    <button onclick="showFeedback()" class="action-btn feedback">
-                        💬 コメント
-                    </button>
-                </div>
+    <div class="container">
+        <!-- Quick Actions -->
+        <section class="quick-actions-section">
+            <div class="quick-actions-grid">
+                <button class="quick-action-btn location-btn" onclick="showLocationModal()">
+                    📍 位置変更 - Thay đổi vị trí
+                </button>
+                <button class="quick-action-btn shipment-btn" onclick="showShipmentModal()">
+                    🚚 出荷記録 - Vận chuyển
+                </button>
+                <button class="quick-action-btn comment-btn" onclick="showCommentModal()">
+                    💬 コメント追加 - Thêm ghi chú
+                </button>
+            </div>
+        </section>
+
+        <!-- Main Content Grid -->
+        <div class="detail-main-grid">
+            <!-- Left Column -->
+            <div class="detail-left-column">
+                <!-- Basic Info -->
+                <section class="detail-section" id="basicInfoSection">
+                    <div class="section-header">
+                        <h2>基本情報 - Thông tin cơ bản</h2>
+                    </div>
+                    <div class="section-content" id="basicInfo">
+                        <!-- Content will be populated by JavaScript -->
+                    </div>
+                </section>
+
+                <!-- Status Info -->
+                <section class="detail-section" id="statusSection">
+                    <div class="section-header">
+                        <h2>状態情報 - Thông tin trạng thái</h2>
+                    </div>
+                    <div class="section-content" id="statusInfo">
+                        <!-- Content will be populated by JavaScript -->
+                    </div>
+                </section>
+
+                <!-- Product Info -->
+                <section class="detail-section" id="productSection">
+                    <div class="section-header">
+                        <h2>製品情報 - Thông tin sản phẩm</h2>
+                    </div>
+                    <div class="section-content" id="productInfo">
+                        <!-- Content will be populated by JavaScript -->
+                    </div>
+                </section>
             </div>
 
-            <!-- Basic Information -->
-            <div class="sidebar-section">
-                <h3>基本情報 - Thông tin cơ bản</h3>
-                <div class="info-grid-compact" id="basicInfo"></div>
+            <!-- Right Column -->
+            <div class="detail-right-column">
+                <!-- Location History -->
+                <section class="detail-section" id="locationSection">
+                    <div class="section-header">
+                        <h2>位置履歴 - Lịch sử vị trí</h2>
+                        <button class="btn-small" onclick="showLocationModal()">変更</button>
+                    </div>
+                    <div class="section-content" id="locationHistory">
+                        <!-- Content will be populated by JavaScript -->
+                    </div>
+                </section>
+
+                <!-- Shipment History -->
+                <section class="detail-section" id="shipmentSection">
+                    <div class="section-header">
+                        <h2>出荷履歴 - Lịch sử vận chuyển</h2>
+                        <button class="btn-small" onclick="showShipmentModal()">追加</button>
+                    </div>
+                    <div class="section-content" id="shipmentHistory">
+                        <!-- Content will be populated by JavaScript -->
+                    </div>
+                </section>
+
+                <!-- Related Items -->
+                <section class="detail-section" id="relatedSection" style="display: none;">
+                    <div class="section-header">
+                        <h2 id="relatedTitle">関連アイテム - Mục liên quan</h2>
+                    </div>
+                    <div class="section-content" id="relatedItems">
+                        <!-- Content will be populated by JavaScript -->
+                    </div>
+                </section>
+
+                <!-- User Comments -->
+                <section class="detail-section" id="commentsSection">
+                    <div class="section-header">
+                        <h2>ユーザーコメント - Ghi chú người dùng</h2>
+                        <button class="btn-small" onclick="showCommentModal()">追加</button>
+                    </div>
+                    <div class="section-content" id="userComments">
+                        <!-- Content will be populated by JavaScript -->
+                    </div>
+                </section>
             </div>
-
-            <!-- Technical Information -->
-            <div class="sidebar-section">
-                <h3>技術情報 - Thông tin kỹ thuật</h3>
-                <div class="info-grid-compact" id="technicalInfo"></div>
-            </div>
-
-            <!-- Status Information -->
-            <div class="sidebar-section">
-                <h3>状態情報 - Thông tin trạng thái</h3>
-                <div class="info-grid-compact" id="statusInfo"></div>
-            </div>
-
-            <!-- Location History -->
-            <div class="sidebar-section">
-                <h3>位置履歴 - Lịch sử vị trí</h3>
-                <div class="history-compact" id="locationHistoryCompact"></div>
-            </div>
-        </aside>
-
-        <!-- Main Content Area - Full width -->
-        <main class="detail-main" id="detailContent" style="display: none;">
-            <!-- Design Information -->
-            <section class="content-section" id="designSection" style="display: none;">
-                <h3>設計情報 - Thông tin thiết kế</h3>
-                <div class="design-info-grid" id="designInfo"></div>
-            </section>
-
-            <!-- Thêm section mới sau Design Information -->
-            <section class="content-section" id="productSection">
-                <h3>製品情報 - Thông tin sản phẩm</h3>
-                <div class="product-info-grid" id="productInfo"></div>
-            </section>
-
-            <!-- Location Details -->
-            <section class="content-section">
-                <h3>位置詳細 - Chi tiết vị trí</h3>
-                <div class="location-details" id="locationDetails"></div>
-                
-                <h4>位置変更履歴 - Lịch sử thay đổi vị trí</h4>
-                <div class="timeline" id="locationHistoryFull"></div>
-            </section>
-
-            <!-- Shipment History -->
-            <section class="content-section">
-                <h3>出荷履歴 - Lịch sử vận chuyển</h3>
-                <div class="timeline" id="shipmentHistoryFull"></div>
-            </section>
-
-            <!-- Related Items -->
-            <section class="content-section" id="relatedSection" style="display: none;">
-                <h3 id="relatedTitle">関連アイテム - Mục liên quan</h3>
-                <div class="related-grid" id="relatedItems"></div>
-            </section>
-
-            <!-- User Feedback -->
-            <section class="content-section" id="feedbackSection" style="display: none;">
-                <h3>ユーザーコメント - Ghi chú người dùng</h3>
-                <div class="feedback-list" id="feedbackList"></div>
-            </section>
-        </main>
+        </div>
 
         <!-- Error Message -->
-        <div id="errorMessage" class="error-overlay" style="display: none;">
+        <div id="errorMessage" class="error-message" style="display: none;">
             <div class="error-content">
-                <div class="error-icon">⚠️</div>
-                <h3>エラー - Lỗi</h3>
+                <h3>⚠️ エラー - Lỗi</h3>
                 <p id="errorText"></p>
-                <button onclick="goBack()" class="btn-primary">戻る - Quay lại</button>
-            </div>
-        </div>
-
-        <!-- Location Update Modal - FIXED LAYOUT -->
-        <div id="locationModal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>📍 位置変更 - Thay đổi vị trí</h3>
-                    <button onclick="closeModal('locationModal')" class="modal-close">×</button>
-                </div>
-                <div class="modal-body">
-                    <!-- Current Location Info -->
-                    <div class="current-info">
-                        <div class="current-info-title">現在位置 - Vị trí hiện tại</div>
-                        <div class="current-info-value" id="currentLocationDisplay">-</div>
-                    </div>
-                    
-                    <form id="locationForm" class="compact-form">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>ラック - Giá <span class="required">*</span></label>
-                                <select id="rackSelect" onchange="updateLayerOptions()" required>
-                                    <option value="">選択 - Chọn</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>レイヤー - Tầng <span class="required">*</span></label>
-                                <select id="layerSelect" required>
-                                    <option value="">選択 - Chọn</option>
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>変更者 - Người thay đổi <span class="required">*</span></label>
-                            <select id="employeeSelect" required>
-                                <option value="">選択してください - Chọn nhân viên</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>備考 - Ghi chú</label>
-                            <textarea id="locationNotes" placeholder="位置変更の理由など - Lý do thay đổi..."></textarea>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" onclick="closeModal('locationModal')" class="btn-secondary">
-                        キャンセル - Hủy
-                    </button>
-                    <button type="submit" form="locationForm" class="btn-primary">
-                        💾 保存 - Lưu
-                    </button>
-                </div>
-                <div class="modal-loading" id="locationModalLoading">
-                    <div class="modal-spinner"></div>
-                    <span>保存中... - Đang lưu...</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Shipment Modal - FIXED LAYOUT -->
-        <div id="shipmentModal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>🚚 出荷記録 - Vận chuyển</h3>
-                    <button onclick="closeModal('shipmentModal')" class="modal-close">×</button>
-                </div>
-                <div class="modal-body">
-                    <!-- Current Status Info -->
-                    <div class="current-info">
-                        <div class="current-info-title">現在状態 - Trạng thái hiện tại</div>
-                        <div class="current-info-value" id="currentStatusDisplay">-</div>
-                    </div>
-                    
-                    <form id="shipmentForm" class="compact-form">
-                        <div class="form-group">
-                            <label>送り先会社 - Công ty nhận <span class="required">*</span></label>
-                            <select id="toCompanySelect" onchange="handleCompanySelect()" required>
-                                <option value="">選択してください - Chọn công ty</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group" id="customCompanyGroup" style="display: none;">
-                            <label>会社名 - Tên công ty <span class="required">*</span></label>
-                            <input type="text" id="customCompanyName" placeholder="会社名を入力 - Nhập tên công ty">
-                        </div>
-                        
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>担当者 - Người phụ trách <span class="required">*</span></label>
-                                <input type="text" id="contactPerson" placeholder="担当者名" required>
-                            </div>
-                            <div class="form-group">
-                                <label>出荷日 - Ngày gửi <span class="required">*</span></label>
-                                <input type="date" id="shipDate" required>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>備考 - Ghi chú</label>
-                            <textarea id="shipNotes" placeholder="出荷に関する詳細情報 - Chi tiết vận chuyển..."></textarea>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" onclick="closeModal('shipmentModal')" class="btn-secondary">
-                        キャンセル - Hủy
-                    </button>
-                    <button type="submit" form="shipmentForm" class="btn-primary">
-                        💾 保存 - Lưu
-                    </button>
-                </div>
-                <div class="modal-loading" id="shipmentModalLoading">
-                    <div class="modal-spinner"></div>
-                    <span>保存中... - Đang lưu...</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Feedback Modal - FIXED LAYOUT -->
-        <div id="feedbackModal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>💬 コメント追加 - Thêm ghi chú</h3>
-                    <button onclick="closeModal('feedbackModal')" class="modal-close">×</button>
-                </div>
-                <div class="modal-body">
-                    <form id="feedbackForm" class="compact-form">
-                        <div class="form-group">
-                            <label>コメント - Ghi chú <span class="required">*</span></label>
-                            <textarea id="feedbackText" required placeholder="例：修理が必要、部品交換など - Ví dụ: Cần sửa chữa, thay linh kiện..."></textarea>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>記録者 - Người ghi <span class="required">*</span></label>
-                            <select id="feedbackEmployeeSelect" required>
-                                <option value="">選択してください - Chọn nhân viên</option>
-                            </select>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" onclick="closeModal('feedbackModal')" class="btn-secondary">
-                        キャンセル - Hủy
-                    </button>
-                    <button type="submit" form="feedbackForm" class="btn-primary">
-                        💾 保存 - Lưu
-                    </button>
-                </div>
-                <div class="modal-loading" id="feedbackModalLoading">
-                    <div class="modal-spinner"></div>
-                    <span>保存中... - Đang lưu...</span>
-                </div>
+                <button onclick="hideError()" class="btn-secondary">閉じる</button>
             </div>
         </div>
 
         <!-- Loading -->
-        <div id="loadingDetail" class="loading">
+        <div id="loadingIndicator" class="loading">
             <div class="spinner"></div>
-            <span class="loading-text">読み込み中... - Đang tải...</span>
+            <span>読み込み中...</span>
         </div>
     </div>
 
-    <script src="js/detail.js"></script>
+    <!-- Location Change Modal -->
+    <div id="locationModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📍 位置変更 - Thay đổi vị trí</h3>
+                <button class="modal-close" onclick="hideLocationModal()">&times;</button>
+            </div>
+            <form id="locationForm" class="modal-body">
+                <div class="form-group">
+                    <label>現在位置 - Vị trí hiện tại</label>
+                    <input type="text" id="currentLocation" readonly>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>ラック - Giá</label>
+                        <select id="rackSelect" onchange="updateRackLayers()">
+                            <option value="">選択 - Chọn</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>レイヤー - Tầng</label>
+                        <select id="rackLayerSelect">
+                            <option value="">選択 - Chọn</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>変更者 - Người thay đổi</label>
+                    <select id="employeeSelect">
+                        <option value="">選択してください - Chọn nhân viên</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>備考 - Ghi chú</label>
+                    <textarea id="locationNotes" rows="3"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" onclick="hideLocationModal()" class="btn-secondary">
+                        キャンセル - Hủy
+                    </button>
+                    <button type="submit" class="btn-primary">
+                        💾 保存 - Lưu
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Shipment Modal -->
+    <div id="shipmentModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🚚 出荷記録 - Vận chuyển</h3>
+                <button class="modal-close" onclick="hideShipmentModal()">&times;</button>
+            </div>
+            <form id="shipmentForm" class="modal-body">
+                <div class="form-group">
+                    <label>現在状態 - Trạng thái hiện tại</label>
+                    <input type="text" id="currentStatus" readonly>
+                </div>
+                <div class="form-group">
+                    <label>送り先会社 - Công ty nhận</label>
+                    <select id="toCompanySelect">
+                        <option value="">選択してください - Chọn công ty</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>会社名 - Tên công ty</label>
+                    <input type="text" id="companyName" readonly>
+                </div>
+                <div class="form-group">
+                    <label>担当者 - Người phụ trách</label>
+                    <input type="text" id="contactPerson">
+                </div>
+                <div class="form-group">
+                    <label>出荷日 - Ngày gửi</label>
+                    <input type="date" id="shipmentDate">
+                </div>
+                <div class="form-group">
+                    <label>備考 - Ghi chú</label>
+                    <textarea id="shipmentNotes" rows="3"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" onclick="hideShipmentModal()" class="btn-secondary">
+                        キャンセル - Hủy
+                    </button>
+                    <button type="submit" class="btn-primary">
+                        💾 保存 - Lưu
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Comment Modal -->
+    <div id="commentModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>💬 コメント追加 - Thêm ghi chú</h3>
+                <button class="modal-close" onclick="hideCommentModal()">&times;</button>
+            </div>
+            <form id="commentForm" class="modal-body">
+                <div class="form-group">
+                    <label>コメント - Ghi chú</label>
+                    <textarea id="commentText" rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>記録者 - Người ghi</label>
+                    <select id="commentEmployeeSelect">
+                        <option value="">選択してください - Chọn nhân viên</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" onclick="hideCommentModal()" class="btn-secondary">
+                        キャンセル - Hủy
+                    </button>
+                    <button type="submit" class="btn-primary">
+                        💾 保存 - Lưu
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="detail.js"></script>
 </body>
 </html>

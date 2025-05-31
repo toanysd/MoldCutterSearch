@@ -20,37 +20,64 @@
     <div class="container">
         <!-- Ultra Compact Search Section -->
         <section class="ultra-compact-search">
-            <!-- Row 1: Zoom + Category + Search + Clear -->
+            <!-- Search Row 1: Zoom + Category + Search + Clear -->
             <div class="search-row-ultra-1">
                 <!-- Zoom Fit Button -->
                 <button class="zoom-fit-btn" onclick="zoomFit()" title="画面調整">
                     🔍
                 </button>
                 
-                <!-- Category Toggle -->
-                <div class="category-toggle-mini all" id="categoryToggle" onclick="toggleCategory()">
-                    <span id="categoryText">全</span>
+                <!-- Category Toggle - Expanded for mobile -->
+                <div class="category-toggle-expanded all" id="categoryToggle" onclick="toggleCategory()">
+                    <span id="categoryText">すべて</span>
                 </div>
                 
-                <!-- Search Input with Left Clear -->
+                <!-- Search Input with Autocomplete -->
                 <div class="search-input-ultra">
-                    <button class="clear-search-left" id="clearSearchBtn" onclick="clearSearchInput()" style="display: none;">
+                    <button class="clear-search-left-expanded" id="clearSearchBtn" onclick="clearSearchInput()" style="display: none;">
                         ✕
                     </button>
                     <input type="text" id="searchInput" placeholder="検索 (例: JAE,025-3551)" 
-                           oninput="handleSearchInput()" autofocus>
+                           oninput="handleSearchInput()" 
+                           onfocus="showSearchSuggestions()"
+                           onblur="hideSearchSuggestions()"
+                           onkeydown="handleSearchKeydown(event)"
+                           autocomplete="off"
+                           autofocus>
                     <div class="search-icon-right">🔍</div>
+                    
+                    <!-- Search Suggestions Dropdown -->
+                    <div class="search-suggestions" id="searchSuggestions" style="display: none;">
+                        <div class="suggestions-header">
+                            <span class="suggestions-title">最近の検索 - Tìm kiếm gần đây</span>
+                            <button class="clear-history-btn" onclick="clearSearchHistory()">履歴削除</button>
+                        </div>
+                        <div class="suggestions-list" id="suggestionsList">
+                            <!-- Suggestions will be populated here -->
+                        </div>
+                        <div class="suggestions-footer">
+                            <div class="popular-searches">
+                                <span class="popular-title">人気検索 - Tìm kiếm phổ biến:</span>
+                                <div class="popular-tags">
+                                    <span class="popular-tag" onclick="selectSuggestion('JAE')">JAE</span>
+                                    <span class="popular-tag" onclick="selectSuggestion('025-3551')">025-3551</span>
+                                    <span class="popular-tag" onclick="selectSuggestion('469x299x45')">469x299x45</span>
+                                    <span class="popular-tag" onclick="selectSuggestion('DIC-152')">DIC-152</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Row 2: Filter A (1/3) + Filter B + Reset -->
+            <!-- Search Row 2: Filter A (expanded) + Filter B + Reset -->
             <div class="search-row-ultra-2">
-                <select id="fieldFilterA" onchange="handleFieldFilterChange()" class="filter-a-mini">
-                    <option value="all">A</option>
+                <select id="fieldFilterA" onchange="handleFieldFilterChange()" class="filter-a-expanded">
+                    <option value="all">フィールドを選択</option>
                 </select>
                 
-                <select id="valueFilterB" onchange="handleValueFilterChange()" class="filter-b-flex">
-                    <option value="all">フィルタB</option>
+                <select id="valueFilterB" onchange="handleValueFilterChange()" class="filter-b-standard">
+                    <option value="all">データでフィルタ</option>
                 </select>
                 
                 <button onclick="resetFilters()" class="btn-reset-mini">リセット</button>
@@ -112,6 +139,9 @@
                                 </th>
                                 <th class="sortable location-col-mini" onclick="sortTable('location')">
                                     場所 <span class="sort-icon">↕️</span>
+                                </th>
+                                <th class="sortable notes-col-mini" onclick="sortTable('notes')">
+                                    ノート <span class="sort-icon">↕️</span>
                                 </th>
                             </tr>
                         </thead>

@@ -1,0 +1,3 @@
+﻿CommentID,ItemID,ItemType,EmployeeID,CommentText,Timestamp,IsActive
+1,4616,mold,1,金型の状態良好です。,2024-12-01T10:00:00Z,TRUE
+2,1234,cutter,2,抜型のメンテナンスが必要,2024-12-02T14:30:00Z,TRUE

@@ -1,4 +1,4 @@
-﻿CompanyID,CompanyShortName,CompanyKanaName,CompanyRomajiName,OrderParentFolder,OrderFolderPath,CadFolderPath,CompanyAddress,CompanyTEL,CompanyFAX,CompanyNotes
+﻿CompanyID,CompanyShortName,CompanyName,CompanyRomajiName,OrderParentFolder,OrderFolderPath,CadFolderPath,CompanyAddress,CompanyTEL,CompanyFAX,CompanyNotes
 1,MARUDAI,茨城（株）丸大,,,,,〒300-2746  茨城県常総市鴻野⼭129,0297-44-7772,FAX 0297-44-7773,
 2,YSD,ヨシダパッケージ,,,,,〒212-0055　川崎市幸区南加瀬5-36-6,044-588-1621,044-588-7000,
 3,SAKATA,坂田精文書,,,,,,,,
@@ -1212,7 +1212,7 @@
 1211,MKP-003（20100315）.xls,日本ｻﾞﾝﾊﾟｯｸ,,な行,#\\server\ysd-folder\新一般注文書\な行\に　日本ｻﾞﾝﾊﾟｯｸ#,,,,,
 1212,AP24（20100210）.xls,日本ﾋﾞｼﾞﾈｽﾛｼﾞｽﾃｨｸｽ,,な行,#\\server\ysd-folder\新一般注文書\な行\に　日本ﾋﾞｼﾞﾈｽﾛｼﾞｽﾃｨｸｽ#,,,,,
 1213,NTB,日東部品,,な行,#\\server\ysd-folder\新一般注文書\な行\に　日東部品#,,,,,
-1214,000,日東電機,,な行,#\\server\ysd-folder\新一般注文書\な行\に　日東電機#,,,,,
+1214,0,日東電機,,な行,#\\server\ysd-folder\新一般注文書\な行\に　日東電機#,,,,,
 1215,NSH,日生発條,,な行,#\\server\ysd-folder\新一般注文書\な行\に　日生発條#,,,,,
 1216,NKN,日研工業,,な行,#\\server\ysd-folder\新一般注文書\な行\に　日研工業#,,,,,
 1217,NSO,日章,,な行,#\\server\ysd-folder\新一般注文書\な行\に　日章#,,,,,

@@ -42,13 +42,10 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Enhanced event listeners
         searchInput.addEventListener('focus', function() {
-            // Clear any pending hide timeout
             if (hideTimeout) {
                 clearTimeout(hideTimeout);
                 hideTimeout = null;
             }
-            
-            // Show suggestions khi focus
             setTimeout(() => {
                 if (document.activeElement === this) {
                     showSearchSuggestions();
@@ -57,9 +54,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         searchInput.addEventListener('blur', function() {
-            // Delay hide để user có thể click suggestion
             hideSearchSuggestions(false);
-            
             setTimeout(() => {
                 zoomFit();
             }, 300);
@@ -161,26 +156,19 @@ function showSearchSuggestions() {
     
     if (!suggestions || !searchInput) return;
     
-    // Clear any pending hide timeout
     if (hideTimeout) {
         clearTimeout(hideTimeout);
         hideTimeout = null;
     }
     
     const query = searchInput.value.trim();
-    
-    // Generate suggestions
     const suggestionsList = generateSuggestions(query);
-    
-    // Update suggestions content
     updateSuggestionsContent(suggestionsList);
     
-    // Show dropdown
     suggestions.style.display = 'block';
     isShowingSuggestions = true;
     suggestionIndex = -1;
     
-    // Update input border radius
     searchInput.style.borderBottomLeftRadius = '0';
     searchInput.style.borderBottomRightRadius = '0';
 }
@@ -255,10 +243,8 @@ function generateSmartSuggestions(query) {
     const queryLower = query.toLowerCase();
     const seen = new Set();
     
-    // Get all data for suggestions
     const allDataItems = [...(allData.molds || []), ...(allData.cutters || [])];
     
-    // Extract unique terms that match query
     allDataItems.forEach(item => {
         const searchFields = [
             item.displayCode, item.displayName, item.displayDimensions,
@@ -425,7 +411,6 @@ function removeSuggestion(text, event) {
     searchHistory = searchHistory.filter(item => item.query !== text);
     saveSearchHistory();
     
-    // Refresh suggestions
     const query = document.getElementById('searchInput')?.value || '';
     if (query.length > 0) {
         showFilteredSuggestions(query);
@@ -444,7 +429,6 @@ function clearSearchHistory() {
     searchHistory = [];
     saveSearchHistory();
     
-    // Refresh suggestions
     const query = document.getElementById('searchInput')?.value || '';
     if (query.length > 0) {
         showFilteredSuggestions(query);
@@ -577,7 +561,8 @@ function processDataRelationships() {
             displayCode: mold.MoldCode || '',
             displayName: mold.MoldName || mold.MoldCode || '',
             displayDimensions: createCombinedDimensionString(mold, design),
-            displayLocation: createLocationDisplay(mold.RackLayerID, rackLayer),
+            displayLocation: mold.RackLayerID || '', // Vị trí
+            displayRackLayerNotes: rackLayer.RackLayerNotes || '', // Ghi chú
             displayCustomer: getCustomerDisplayName(customer, company),
             displayPlasticType: design.DesignForPlasticType || mold.DefaultPlasticType || '',
             lastUpdate: getLastUpdateDate(mold),
@@ -588,7 +573,6 @@ function processDataRelationships() {
             cutlineDimension: cutlineDimension,
             textContent: design.TextContent || '',
             rackName: getRackDisplayName(mold.RackLayerID),
-            rackLayerDisplay: getRackLayerDisplayName(mold.RackLayerID),
             thumbnailUrl: mold.MoldPicture || ''
         };
     });
@@ -600,7 +584,6 @@ function processDataRelationships() {
         const rackLayer = rackLayerMap.get(cutter.RackLayerID) || {};
         const rack = rackLayer.RackID ? rackMap.get(rackLayer.RackID) || {} : {};
         
-        // Format display name: CutterNo. CutterName
         let displayName = '';
         if (cutter.CutterNo && cutter.CutterName) {
             displayName = `${cutter.CutterNo}. ${cutter.CutterName}`;
@@ -625,27 +608,16 @@ function processDataRelationships() {
             displayCode: cutter.CutterNo || '',
             displayName: displayName,
             displayDimensions: createCutterCombinedDimensionString(cutter),
-            displayLocation: createLocationDisplay(cutter.RackLayerID, rackLayer),
+            displayLocation: cutter.RackLayerID || '', // Vị trí
+            displayRackLayerNotes: rackLayer.RackLayerNotes || '', // Ghi chú
             displayCustomer: getCustomerDisplayName(customer, company),
             displayPlasticType: cutter.PlasticCutType || '',
             lastUpdate: getLastUpdateDate(cutter),
             itemType: 'cutter',
             rackName: getRackDisplayName(cutter.RackLayerID),
-            rackLayerDisplay: getRackLayerDisplayName(cutter.RackLayerID),
             thumbnailUrl: ''
         };
     });
-}
-
-// Enhanced location display function - RackLayerID + RackLayerNotes
-function createLocationDisplay(rackLayerID, rackLayer) {
-    if (!rackLayerID) return '';
-    
-    if (rackLayer && rackLayer.RackLayerNotes) {
-        return `${rackLayerID} - ${rackLayer.RackLayerNotes}`;
-    }
-    
-    return rackLayerID;
 }
 
 // Enhanced rack display functions
@@ -659,28 +631,15 @@ function getRackDisplayName(rackLayerID) {
     return `${rack.RackSymbol || rack.RackName || ''} - ${rack.RackLocation || ''}`.trim();
 }
 
-function getRackLayerDisplayName(rackLayerID) {
-    if (!rackLayerID) return '';
-    const rackLayer = allData.racklayers.find(r => r.RackLayerID === rackLayerID);
-    if (!rackLayer) return '';
-    
-    return `${rackLayer.RackLayerID} - ${rackLayer.RackLayerNotes || ''}`.trim();
-}
-
 // Create combined dimension string
 function createCombinedDimensionString(mold, design) {
     if (design.MoldDesignLength && design.MoldDesignWidth && design.MoldDesignHeight) {
         return `${design.MoldDesignLength}x${design.MoldDesignWidth}x${design.MoldDesignHeight}`;
     }
-    
-    if (design.MoldDesignDim) {
-        return design.MoldDesignDim;
-    }
-    
+    if (design.MoldDesignDim) return design.MoldDesignDim;
     if (mold.MoldLength && mold.MoldWidth && mold.MoldHeight) {
         return `${mold.MoldLength}x${mold.MoldWidth}x${mold.MoldHeight}`;
     }
-    
     return mold.MoldDescription || '';
 }
 
@@ -688,7 +647,6 @@ function createCutterCombinedDimensionString(cutter) {
     if (cutter.CutterLength && cutter.CutterWidth && cutter.CutterHeight) {
         return `${cutter.CutterLength}x${cutter.CutterWidth}x${cutter.CutterHeight}`;
     }
-    
     return cutter.CutterDim || cutter.OverallDimensions || '';
 }
 
@@ -700,7 +658,6 @@ function getCurrentStatus(item) {
     if (item.MoldDisposing === 'TRUE' || item.MoldDisposing === true) {
         return { status: 'disposed', text: '廃棄済み', class: 'status-disposed' };
     }
-    
     const history = getShipHistory(item.MoldID ? 'MOLD' : 'CUTTER', item.MoldID || item.CutterID);
     if (history.length > 0) {
         const latest = history[0];
@@ -708,20 +665,16 @@ function getCurrentStatus(item) {
             return { status: 'shipped', text: '出荷済み', class: 'status-shipped' };
         }
     }
-    
     return { status: 'available', text: '利用可能', class: 'status-available' };
 }
 
 // Get customer display name với company info
 function getCustomerDisplayName(customer, company) {
     if (!customer || !customer.CustomerID) return '';
-    
     let displayName = customer.CustomerShortName || customer.CustomerName || customer.CustomerID;
-    
     if (company && company.CompanyShortName) {
         displayName = `${company.CompanyShortName} - ${displayName}`;
     }
-    
     return displayName;
 }
 
@@ -777,18 +730,19 @@ function initializeFilters() {
     updateValueFilterB();
 }
 
-// Update Field Filter A với short labels
+// Update Field Filter A với placeholder mới
 function updateFieldFilterA() {
     const fieldFilterA = document.getElementById('fieldFilterA');
     if (!fieldFilterA) return;
     
-    fieldFilterA.innerHTML = '<option value="all">A</option>';
+    fieldFilterA.innerHTML = '<option value="all">フィールドを選択</option>'; // Chọn cột để lọc
     
     const fieldOptions = [
         { value: 'displayCode', text: 'コード' },
         { value: 'displayName', text: '名称' },
         { value: 'displayDimensions', text: 'サイズ' },
         { value: 'displayLocation', text: '場所' },
+        { value: 'displayRackLayerNotes', text: 'ノート' }, // Ghi chú
         { value: 'displayCustomer', text: '顧客' },
         { value: 'displayPlasticType', text: 'プラ' },
         { value: 'drawingNumber', text: '図面' },
@@ -804,7 +758,7 @@ function updateFieldFilterA() {
     });
 }
 
-// Enhanced Value Filter B
+// Update Value Filter B với placeholder mới
 function updateValueFilterB() {
     const fieldFilterA = document.getElementById('fieldFilterA');
     const valueFilterB = document.getElementById('valueFilterB');
@@ -812,7 +766,7 @@ function updateValueFilterB() {
     if (!fieldFilterA || !valueFilterB) return;
     
     const selectedField = fieldFilterA.value;
-    valueFilterB.innerHTML = '<option value="all">フィルタB</option>';
+    valueFilterB.innerHTML = '<option value="all">データでフィルタ</option>'; // Lọc theo dữ liệu
     
     if (selectedField === 'all') return;
     
@@ -852,7 +806,6 @@ function performSearch() {
         addToSearchHistory(query);
     }
     
-    // Get data based on category
     let dataToSearch = [];
     if (currentCategory === 'mold') {
         dataToSearch = allData.molds;
@@ -862,7 +815,6 @@ function performSearch() {
         dataToSearch = [...allData.molds, ...allData.cutters];
     }
     
-    // Apply Filter A & B first (if set)
     let preFilteredData = dataToSearch;
     if (fieldFilterA !== 'all' && valueFilterB !== 'all') {
         preFilteredData = dataToSearch.filter(item => 
@@ -871,31 +823,26 @@ function performSearch() {
     }
     
     filteredData = preFilteredData.filter(item => {
-        // Multi-keyword text search - FIXED LOGIC
         let textMatch = true;
         if (query) {
-            // Split by comma and trim each keyword, filter out empty strings
             const keywords = query.split(',')
                 .map(k => k.trim().toLowerCase())
                 .filter(k => k.length > 0);
             
             if (keywords.length > 0) {
-                // All keywords must match (AND logic)
                 textMatch = keywords.every(keyword => {
                     const searchFields = [
                         item.displayCode, item.displayName, item.displayDimensions,
-                        item.displayLocation, item.displayCustomer, item.displayPlasticType,
+                        item.displayLocation, item.displayRackLayerNotes, item.displayCustomer, item.displayPlasticType,
                         item.MoldID, item.CutterID, item.MoldCode, item.CutterNo,
                         item.MoldName, item.CutterName, item.CutterDesignName,
                         item.drawingNumber, item.equipmentCode, item.moldSetupType,
-                        item.cutlineDimension, item.textContent, item.rackName,
-                        item.rackLayerDisplay
+                        item.cutlineDimension, item.textContent, item.rackName
                     ].filter(field => field && field.toString().trim());
                     
                     return searchFields.some(field => 
                         field.toString().toLowerCase().includes(keyword)
                     ) || 
-                    // Special handling for dimension search
                     (item.displayDimensions && 
                      item.displayDimensions.toLowerCase().replace(/\s/g, '').includes(keyword.replace(/\s/g, ''))) ||
                     (item.cutlineDimension && 
@@ -903,46 +850,30 @@ function performSearch() {
                 });
             }
         }
-        
         return textMatch;
     });
     
-    // Apply sorting
     if (sortField) applySorting();
-    
-    // Reset to first page
     currentPage = 1;
-    
     displayData();
     updateResultsCount();
     updatePagination();
     updateClearSearchButton();
     saveSearchState();
-    
-    // Hide suggestions after search
     hideSearchSuggestions(true);
 }
 
 // Zoom fit function
 function zoomFit() {
-    // Reset viewport scale
     const viewport = document.querySelector('meta[name="viewport"]');
     if (viewport) {
         viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
     }
-    
-    // Force layout recalculation
     document.body.style.zoom = '1';
-    
-    // Scroll to top
     window.scrollTo(0, 0);
-    
-    // Blur any focused input to hide keyboard
     if (document.activeElement) {
         document.activeElement.blur();
     }
-    
-    // Visual feedback
     const zoomBtn = document.querySelector('.zoom-fit-btn');
     if (zoomBtn) {
         zoomBtn.style.background = 'var(--success-green)';
@@ -963,19 +894,19 @@ function toggleCategory() {
     switch (currentCategory) {
         case 'all':
             currentCategory = 'mold';
-            categoryText.textContent = '金';
+            categoryText.textContent = '金型';
             categoryToggle.className = 'category-toggle-mini mold';
             if (dynamicHeader) dynamicHeader.className = 'dynamic-header mold';
             break;
         case 'mold':
             currentCategory = 'cutter';
-            categoryText.textContent = '抜';
+            categoryText.textContent = '抜型';
             categoryToggle.className = 'category-toggle-mini cutter';
             if (dynamicHeader) dynamicHeader.className = 'dynamic-header cutter';
             break;
         case 'cutter':
             currentCategory = 'all';
-            categoryText.textContent = '全';
+            categoryText.textContent = '全て';
             categoryToggle.className = 'category-toggle-mini all';
             if (dynamicHeader) dynamicHeader.className = 'dynamic-header all';
             break;
@@ -999,8 +930,6 @@ function clearSearchInput() {
         updateClearSearchButton();
         hideSearchSuggestions(true);
         performSearch();
-        
-        // Auto zoom fit after clear
         setTimeout(() => {
             zoomFit();
         }, 100);
@@ -1021,36 +950,15 @@ function updateClearSearchButton() {
     }
 }
 
-// Reset all filters
+// Reset filters (chỉ A và B)
 function resetFilters() {
-    const searchInput = document.getElementById('searchInput');
     const fieldFilterA = document.getElementById('fieldFilterA');
     const valueFilterB = document.getElementById('valueFilterB');
-    const categoryToggle = document.getElementById('categoryToggle');
-    const categoryText = document.getElementById('categoryText');
-    const dynamicHeader = document.getElementById('dynamicHeader');
     
-    if (searchInput) searchInput.value = '';
     if (fieldFilterA) fieldFilterA.value = 'all';
     if (valueFilterB) valueFilterB.value = 'all';
     
-    currentCategory = 'all';
-    if (categoryToggle && categoryText) {
-        categoryText.textContent = '全';
-        categoryToggle.className = 'category-toggle-mini all';
-        if (dynamicHeader) dynamicHeader.className = 'dynamic-header all';
-    }
-    
-    currentPage = 1;
-    sortField = '';
-    sortDirection = 'asc';
-    selectedItems.clear();
-    
-    localStorage.removeItem('moldSearchState');
-    
     updateValueFilterB();
-    updateClearSearchButton();
-    hideSearchSuggestions(true);
     performSearch();
 }
 
@@ -1084,7 +992,7 @@ function displayData() {
     updateSelectAllCheckbox();
 }
 
-// Enhanced display table data với mini thumbnails và location display
+// Enhanced display table data với 2 cột Vị trí và Ghi chú
 function displayTableData() {
     const tableBody = document.querySelector('#dataTable tbody');
     if (!tableBody) return;
@@ -1133,13 +1041,14 @@ function displayTableData() {
             </td>
             <td class="size-col-mini">${item.displayDimensions}</td>
             <td class="location-col-mini" title="${item.displayLocation}">${item.displayLocation}</td>
+            <td class="notes-col-mini" title="${item.displayRackLayerNotes}">${item.displayRackLayerNotes}</td>
         `;
         
         tableBody.appendChild(row);
     });
 }
 
-// Display grid data
+// Display grid data (cập nhật để hiển thị RackLayerNotes)
 function displayGridData() {
     const gridContainer = document.getElementById('gridContainer');
     if (!gridContainer) return;
@@ -1196,6 +1105,10 @@ function displayGridData() {
                         <span class="grid-detail-value" title="${item.displayLocation}">${item.displayLocation}</span>
                     </div>
                     <div class="grid-item-detail">
+                        <span class="grid-detail-label">ノート:</span>
+                        <span class="grid-detail-value" title="${item.displayRackLayerNotes}">${item.displayRackLayerNotes}</span>
+                    </div>
+                    <div class="grid-item-detail">
                         <span class="grid-detail-label">顧客:</span>
                         <span class="grid-detail-value">${item.displayCustomer}</span>
                     </div>
@@ -1216,14 +1129,10 @@ function displayGridData() {
 // Real-time search input handler
 function handleSearchInput() {
     updateClearSearchButton();
-    
-    // Clear hide timeout nếu đang gõ
     if (hideTimeout) {
         clearTimeout(hideTimeout);
         hideTimeout = null;
     }
-    
-    // Show suggestions if input is focused and has content
     if (document.activeElement === document.getElementById('searchInput')) {
         const query = document.getElementById('searchInput')?.value || '';
         if (query.length > 0) {
@@ -1232,7 +1141,6 @@ function handleSearchInput() {
             showSearchSuggestions();
         }
     }
-    
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(() => {
         performSearch();
@@ -1249,7 +1157,7 @@ function handleValueFilterChange() {
     performSearch();
 }
 
-// Sort table
+// Sort table (Thêm sort cho RackLayerNotes)
 function sortTable(field) {
     if (sortField === field) {
         sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
@@ -1285,6 +1193,10 @@ function applySorting() {
                 aValue = a.displayLocation;
                 bValue = b.displayLocation;
                 break;
+            case 'notes': // Sort cho RackLayerNotes
+                aValue = a.displayRackLayerNotes;
+                bValue = b.displayRackLayerNotes;
+                break;
             default:
                 return 0;
         }
@@ -1300,6 +1212,7 @@ function applySorting() {
     });
 }
 
+// Update sort icons
 function updateSortIcons() {
     document.querySelectorAll('.sort-icon').forEach(icon => {
         icon.textContent = '↕️';
@@ -1402,7 +1315,7 @@ function updateSelectAllCheckbox() {
     }
 }
 
-// Enhanced print function
+// Enhanced print function (thêm cột Ghi chú)
 function printSelected() {
     if (selectedItems.size === 0) {
         alert('印刷するアイテムを選択してください');
@@ -1461,6 +1374,7 @@ function printSelected() {
                         <th>名称 - Tên</th>
                         <th>サイズ - Kích thước</th>
                         <th>場所 - Vị trí</th>
+                        <th>ノート - Ghi chú</th>
                         <th>種類 - Loại</th>
                     </tr>
                 </thead>
@@ -1471,6 +1385,7 @@ function printSelected() {
                             <td>${item.displayName}</td>
                             <td>${item.displayDimensions}</td>
                             <td>${item.displayLocation}</td>
+                            <td>${item.displayRackLayerNotes}</td>
                             <td>${item.itemType === 'mold' ? '金型' : '抜型'}</td>
                         </tr>
                     `).join('')}
@@ -1571,17 +1486,17 @@ function restoreSearchState() {
                 if (categoryToggle && categoryText) {
                     switch (currentCategory) {
                         case 'mold':
-                            categoryText.textContent = '金';
+                            categoryText.textContent = '金型';
                             categoryToggle.className = 'category-toggle-mini mold';
                             if (dynamicHeader) dynamicHeader.className = 'dynamic-header mold';
                             break;
                         case 'cutter':
-                            categoryText.textContent = '抜';
+                            categoryText.textContent = '抜型';
                             categoryToggle.className = 'category-toggle-mini cutter';
                             if (dynamicHeader) dynamicHeader.className = 'dynamic-header cutter';
                             break;
                         default:
-                            categoryText.textContent = '全';
+                            categoryText.textContent = '全て';
                             categoryToggle.className = 'category-toggle-mini all';
                             if (dynamicHeader) dynamicHeader.className = 'dynamic-header all';
                     }

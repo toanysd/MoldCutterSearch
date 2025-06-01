@@ -1,5 +1,5 @@
 CutterID,CutterNo,CutterName,CutterDesignName,SatoCode,SatoCodeDate,Description,UsageStatus,BladeCount,Pitch,PlasticCutType,CutterType,PPcushionUse,CutlineLength,CutlineWidth,CutterCorner,CutterChamfer,PostCutLength,PostCutWidth,CutterLength,CutterWidth,CutterNote,CutterDetail,CustomerID,RackLayerID,storage_company,CutterDisposing,last_update_date
-175,340,YCM-038B,,,,,,,,,別抜き,,,,,,,,,,,,230,42A2,2,,
+175,340,YCM-038B,,,,,,,,,別抜き,,,,,,,,,,,,230,,1,,
 176,359,NPR-002,,,,,,,,,別抜き,,,,,,,,,,,,271,421,,,
 177,317,SSK-005,,,,,,,,,別抜き,,,,,,,,,,,,80,421,,,
 179,707,JAE-090,,,,,,1,,,別抜き+In-Line,,,,,,,,,,1面で1Fプレス,インラインカッター,177,421,,,

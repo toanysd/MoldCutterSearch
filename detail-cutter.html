@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>抜型詳細 - V4.24</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="detail-cutter-styles.css">
+</head>
+<body class="cutter-detail-page">
+    <!-- Compact Header -->
+    <header class="detail-header-compact cutter">
+        <div class="container">
+            <div class="header-row-compact">
+                <button class="back-btn-compact" onclick="goBack()">‹</button>
+                <div class="header-info-compact">
+                    <div class="item-title-compact" id="cutterTitle">読み込み中...</div>
+                    <div class="storage-info-compact" id="storageInfo">- / -</div>
+                </div>
+                <!-- Thêm vào header-actions-compact trong detail-cutter.html -->
+                <div class="header-actions-compact">
+                    <button class="btn-icon-compact" onclick="reloadCutterDataFromGitHub()" title="最新データ">🔄</button>
+                    <button class="btn-icon-compact" onclick="printDetail()" title="印刷">🖨</button>
+                    <button class="btn-icon-compact" onclick="showQuickEditModal()" title="編集">✏</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Quick Actions Row - Mobile Optimized -->
+        <div class="quick-actions-compact">
+            <button class="quick-btn-compact location" onclick="showLocationModal()">
+                <span class="btn-icon-small">📍</span>
+                <span class="btn-text-small">位置</span>
+            </button>
+            <button class="quick-btn-compact shipment" onclick="showShipmentModal()">
+                <span class="btn-icon-small">🚚</span>
+                <span class="btn-text-small">出荷</span>
+            </button>
+            <button class="quick-btn-compact comment" onclick="showCommentModal()">
+                <span class="btn-icon-small">💬</span>
+                <span class="btn-text-small">コメント</span>
+            </button>
+        </div>
+
+        <!-- Main Content Grid - Mobile Optimized -->
+        <div class="detail-grid-compact">
+            <!-- Basic Info -->
+            <section class="detail-card-compact">
+                <h3 class="card-title-compact">基本情報</h3>
+                <div class="info-content-compact" id="basicInfo">
+                    <!-- Populated by JS -->
+                </div>
+            </section>
+
+            <!-- Technical Info -->
+            <section class="detail-card-compact">
+                <h3 class="card-title-compact">技術仕様</h3>
+                <div class="info-content-compact" id="technicalInfo">
+                    <!-- Populated by JS -->
+                </div>
+            </section>
+
+            <!-- Dimensions Info -->
+            <section class="detail-card-compact">
+                <h3 class="card-title-compact">寸法情報</h3>
+                <div class="info-content-compact" id="dimensionsInfo">
+                    <!-- Populated by JS -->
+                </div>
+            </section>
+
+            <!-- Cutting Specifications -->
+            <section class="detail-card-compact">
+                <h3 class="card-title-compact">カット仕様</h3>
+                <div class="info-content-compact" id="cuttingInfo">
+                    <!-- Populated by JS -->
+                </div>
+            </section>
+
+            <!-- Location History -->
+            <section class="detail-card-compact">
+                <h3 class="card-title-compact">位置履歴</h3>
+                <div class="history-content-compact" id="locationHistory">
+                    <!-- Populated by JS -->
+                </div>
+            </section>
+
+            <!-- Shipment History -->
+            <section class="detail-card-compact">
+                <h3 class="card-title-compact">出荷履歴</h3>
+                <div class="history-content-compact" id="shipmentHistory">
+                    <!-- Populated by JS -->
+                </div>
+            </section>
+
+            <!-- Related Molds -->
+            <section class="detail-card-compact" id="relatedMoldsSection">
+                <h3 class="card-title-compact">関連金型</h3>
+                <div class="related-content-compact" id="relatedMolds">
+                    <!-- Populated by JS -->
+                </div>
+            </section>
+
+            <!-- User Comments -->
+            <section class="detail-card-compact">
+                <h3 class="card-title-compact">コメント</h3>
+                <div class="comments-content-compact" id="userComments">
+                    <!-- Populated by JS -->
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div id="loadingIndicator" class="loading-overlay">
+        <div class="loading-content">
+            <div class="spinner cutter"></div>
+            <span class="loading-text">読み込み中...</span>
+        </div>
+    </div>
+
+    <!-- Location Modal - Mobile Optimized -->
+    <div id="locationModal" class="modal-compact">
+        <div class="modal-content-compact">
+            <div class="modal-header-compact cutter">
+                <h3>位置変更</h3>
+                <button class="modal-close-compact" onclick="hideLocationModal()">×</button>
+            </div>
+            <form id="locationForm" class="modal-body-compact">
+                <div class="form-group-compact">
+                    <label>現在位置</label>
+                    <input type="text" id="currentLocation" readonly class="form-input-compact">
+                </div>
+                <div class="form-row-compact">
+                    <div class="form-group-compact">
+                        <label>ラック</label>
+                        <select id="rackSelect" onchange="updateRackLayers()" class="form-select-compact">
+                            <option value="">選択</option>
+                        </select>
+                    </div>
+                    <div class="form-group-compact">
+                        <label>レイヤー</label>
+                        <select id="rackLayerSelect" class="form-select-compact">
+                            <option value="">選択</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group-compact">
+                    <label>担当者</label>
+                    <select id="employeeSelect" class="form-select-compact">
+                        <option value="">選択</option>
+                    </select>
+                </div>
+                <div class="form-group-compact">
+                    <label>備考</label>
+                    <textarea id="locationNotes" rows="2" class="form-textarea-compact"></textarea>
+                </div>
+                <div class="modal-actions-compact">
+                    <button type="button" onclick="hideLocationModal()" class="btn-secondary-compact">キャンセル</button>
+                    <button type="submit" class="btn-primary-compact cutter">更新</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Shipment Modal - Mobile Optimized -->
+    <div id="shipmentModal" class="modal-compact">
+        <div class="modal-content-compact">
+            <div class="modal-header-compact cutter">
+                <h3>出荷登録</h3>
+                <button class="modal-close-compact" onclick="hideShipmentModal()">×</button>
+            </div>
+            <form id="shipmentForm" class="modal-body-compact">
+                <div class="form-row-compact">
+                    <div class="form-group-compact">
+                        <label>出荷元</label>
+                        <select id="fromCompanySelect" class="form-select-compact">
+                            <option value="">選択</option>
+                        </select>
+                    </div>
+                    <div class="form-group-compact">
+                        <label>出荷先</label>
+                        <select id="toCompanySelect" class="form-select-compact">
+                            <option value="">選択</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row-compact">
+                    <div class="form-group-compact">
+                        <label>出荷元（手入力）</label>
+                        <input type="text" id="fromCompanyManual" class="form-input-compact">
+                    </div>
+                    <div class="form-group-compact">
+                        <label>出荷先（手入力）</label>
+                        <input type="text" id="toCompanyManual" class="form-input-compact">
+                    </div>
+                </div>
+                <div class="form-row-compact">
+                    <div class="form-group-compact">
+                        <label>出荷日</label>
+                        <input type="date" id="shipmentDate" class="form-input-compact">
+                    </div>
+                    <div class="form-group-compact">
+                        <label>担当者</label>
+                        <input type="text" id="handler" class="form-input-compact">
+                    </div>
+                </div>
+                <div class="form-group-compact">
+                    <label>備考</label>
+                    <textarea id="shipmentNotes" rows="2" class="form-textarea-compact"></textarea>
+                </div>
+                <div class="modal-actions-compact">
+                    <button type="button" onclick="hideShipmentModal()" class="btn-secondary-compact">キャンセル</button>
+                    <button type="submit" class="btn-primary-compact cutter">登録</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Comment Modal - Mobile Optimized -->
+    <div id="commentModal" class="modal-compact">
+        <div class="modal-content-compact">
+            <div class="modal-header-compact cutter">
+                <h3>コメント追加</h3>
+                <button class="modal-close-compact" onclick="hideCommentModal()">×</button>
+            </div>
+            <form id="commentForm" class="modal-body-compact">
+                <div class="form-group-compact">
+                    <label>コメント</label>
+                    <textarea id="commentText" rows="3" required class="form-textarea-compact"></textarea>
+                </div>
+                <div class="form-group-compact">
+                    <label>投稿者</label>
+                    <select id="commentEmployeeSelect" class="form-select-compact">
+                        <option value="">選択</option>
+                    </select>
+                </div>
+                <div class="modal-actions-compact">
+                    <button type="button" onclick="hideCommentModal()" class="btn-secondary-compact">キャンセル</button>
+                    <button type="submit" class="btn-primary-compact cutter">投稿</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+    <script src="detail-cutter.js"></script>
+</body>
+</html>

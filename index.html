@@ -3,178 +3,200 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>金型・抜型検索 - Tìm kiếm Khuôn & Dao</title>
+    <title>金型・抜型検索システム V4.23</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <meta name="description" content="金型・抜型検索システム - 高度な検索とフィルタリング機能">
+    <meta name="keywords" content="金型,抜型,検索,mold,cutter,search">
 </head>
 <body>
     <!-- Dynamic Header -->
-    <header class="dynamic-header" id="dynamicHeader">
+    <header id="dynamicHeader" class="dynamic-header all">
         <div class="container">
-            <h1>🔧 金型・抜型検索</h1>
+            <h1>🔧 金型・抜型検索システム V4.23</h1>
         </div>
     </header>
 
     <div class="container">
-        <!-- Ultra Compact Search Section -->
-        <section class="ultra-compact-search">
-            <!-- Search Row 1: Zoom + Category + Search + Clear -->
-            <div class="search-row-ultra-1">
-                <!-- Zoom Fit Button -->
-                <button class="zoom-fit-btn" onclick="zoomFit()" title="画面調整">
+        <!-- Search Section -->
+        <section class="search-section">
+            <!-- Search Controls Row 1 -->
+            <div class="search-controls-row-1">
+                <button class="zoom-btn" onclick="zoomFit()" title="画面リセット" aria-label="画面リセット">
                     🔍
                 </button>
                 
-                <!-- Category Toggle - Expanded for mobile -->
-                <div class="category-toggle-expanded all" id="categoryToggle" onclick="toggleCategory()">
+                <div id="categoryToggle" class="category-toggle all" onclick="toggleCategory()" title="カテゴリ切替" aria-label="カテゴリ切替">
                     <span id="categoryText">すべて</span>
                 </div>
                 
-                <!-- Search Input with Autocomplete -->
-                <div class="search-input-ultra">
-                    <button class="clear-search-left-expanded" id="clearSearchBtn" onclick="clearSearchInput()" style="display: none;">
-                        ✕
-                    </button>
-                    <input type="text" id="searchInput" placeholder="検索 (例: JAE,025-3551)" 
-                           oninput="handleSearchInput()" 
-                           onfocus="showSearchSuggestions()"
-                           onblur="hideSearchSuggestions()"
-                           onkeydown="handleSearchKeydown(event)"
-                           autocomplete="off"
-                           autofocus>
-                    <div class="search-icon-right">🔍</div>
-                    
-                    <!-- Search Suggestions Dropdown -->
-                    <div class="search-suggestions" id="searchSuggestions" style="display: none;">
-                        <div class="suggestions-header">
-                            <span class="suggestions-title">最近の検索 - Tìm kiếm gần đây</span>
-                            <button class="clear-history-btn" onclick="clearSearchHistory()">履歴削除</button>
-                        </div>
-                        <div class="suggestions-list" id="suggestionsList">
-                            <!-- Suggestions will be populated here -->
-                        </div>
-                        <div class="suggestions-footer">
-                            <div class="popular-searches">
-                                <span class="popular-title">人気検索 - Tìm kiếm phổ biến:</span>
-                                <div class="popular-tags">
-                                    <span class="popular-tag" onclick="selectSuggestion('JAE')">JAE</span>
-                                    <span class="popular-tag" onclick="selectSuggestion('025-3551')">025-3551</span>
-                                    <span class="popular-tag" onclick="selectSuggestion('469x299x45')">469x299x45</span>
-                                    <span class="popular-tag" onclick="selectSuggestion('DIC-152')">DIC-152</span>
-                                </div>
+                <div class="search-input-container">
+                <button class="clear-search-btn" id="clearSearchBtn" onclick="clearSearchInput()" style="display: none;">
+                    ✕
+                </button>
+                <input type="text" id="searchInput" placeholder="JAE, 025-3551, 270×270, CutlineX×CutlineY" autocomplete="off">
+                <span class="search-icon">🔍</span>
+                
+                <!-- Search Suggestions - CRITICAL: Đảm bảo structure này tồn tại -->
+                <div id="searchSuggestions" class="search-suggestions" style="display: none;">
+                    <div class="suggestions-header">
+                        <span class="suggestions-title">最近の検索</span>
+                        <button class="clear-history-btn" onclick="clearSearchHistory()">クリア</button>
+                    </div>
+                    <div id="suggestionsList" class="suggestions-list">
+                        <!-- Suggestions sẽ được populate ở đây -->
+                    </div>
+                    <div class="suggestions-footer">
+                        <div class="popular-searches">
+                            <div class="popular-title">人気の検索</div>
+                            <div class="popular-tags">
+                                <span class="popular-tag" onclick="selectSuggestion('JAE')">JAE</span>
+                                <span class="popular-tag" onclick="selectSuggestion('025-3551')">025-3551</span>
+                                <span class="popular-tag" onclick="selectSuggestion('270×270')">270×270</span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+            </div>
 
-            <!-- Search Row 2: Filter A (expanded) + Filter B + Reset -->
-            <div class="search-row-ultra-2">
-                <select id="fieldFilterA" onchange="handleFieldFilterChange()" class="filter-a-expanded">
+            <!-- Search Controls Row 2 -->
+            <div class="search-controls-row-2">
+                <select id="fieldFilterA" class="field-filter" onchange="handleFieldFilterChange()" aria-label="フィールド選択">
                     <option value="all">フィールドを選択</option>
                 </select>
-                
-                <select id="valueFilterB" onchange="handleValueFilterChange()" class="filter-b-standard">
+                <select id="valueFilterB" class="value-filter" onchange="handleValueFilterChange()" aria-label="値でフィルタ">
                     <option value="all">データでフィルタ</option>
                 </select>
-                
-                <button onclick="resetFilters()" class="btn-reset-mini">リセット</button>
+                <button class="reset-btn" onclick="resetFilters()" title="フィルタリセット" aria-label="フィルタリセット">
+                    リセット
+                </button>
             </div>
         </section>
 
         <!-- Results Section -->
-        <section class="ultra-compact-results">
-            <!-- Single Row Header -->
-            <div class="results-header-single">
-                <!-- Left: Selection + Count -->
-                <div class="left-group">
-                    <span id="selectedCount" class="selected-count" style="display: none;">選択: 0</span>
-                    <span id="resultsCount" class="results-count">0件</span>
+        <section class="results-section">
+            <!-- Results Header -->
+            <div class="results-header">
+                <div class="results-info">
+                    <span class="results-count" id="resultsCount">0 件</span>
+                    <span class="selected-count" id="selectedCount" style="display: none;">選択: 0</span>
                 </div>
-                
-                <!-- Right: View Toggle + Actions -->
-                <div class="right-group">
-                    <!-- View Toggle Mini -->
-                    <div class="view-toggle-mini">
-                        <input type="checkbox" id="viewToggle" onchange="handleViewToggle()">
-                        <label for="viewToggle" class="toggle-mini-label">
-                            <span class="toggle-mini-slider">
-                                <span class="toggle-mini-icon table-icon">📋</span>
-                                <span class="toggle-mini-icon grid-icon">🔲</span>
-                            </span>
+                <div class="results-controls">
+                    <!-- Selection Actions -->
+                    <div class="selection-actions">
+                        <button class="action-btn" onclick="selectAll()" title="全選択" aria-label="全選択">全選択</button>
+                        <button class="action-btn" onclick="clearSelection()" title="選択解除" aria-label="選択解除">解除</button>
+                        <button class="action-btn primary" id="printBtn" onclick="printSelected()" style="display: none;" title="印刷" aria-label="印刷">印刷</button>
+                    </div>
+                    
+                    <!-- View Toggle -->
+                    <div class="view-toggle">
+                        <input type="checkbox" id="viewToggle" onchange="handleViewToggle()" aria-label="表示切替">
+                        <label for="viewToggle" class="toggle-label">
+                            <div class="toggle-slider">
+                                <span class="toggle-icon table-icon">📋</span>
+                                <span class="toggle-icon grid-icon">⊞</span>
+                            </div>
                         </label>
                     </div>
                     
-                    <!-- Actions Mini -->
-                    <div class="actions-mini-group">
-                        <button onclick="selectAll()" class="btn-mini">全</button>
-                        <button onclick="clearSelection()" class="btn-mini">解</button>
-                        <button onclick="printSelected()" class="btn-mini btn-primary-mini" id="printBtn" style="display: none;">
-                            印
-                        </button>
-                    </div>
+                    <button class="action-btn" onclick="zoomFit()" title="画面リセット" aria-label="画面リセット">⚡</button>
                 </div>
             </div>
 
             <!-- Table View -->
-            <div class="table-view" id="tableView">
-                <div class="ultra-compact-table-container">
-                    <table id="dataTable" class="ultra-compact-table">
+            <div id="tableView" class="table-view">
+                <div class="table-container">
+                    <table class="data-table" id="dataTable">
                         <thead>
                             <tr>
-                                <th class="select-col-mini">
-                                    <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()">
+                                <th class="col-select">
+                                    <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()" aria-label="全選択">
                                 </th>
-                                <th class="thumbnail-col-mini">画</th>
-                                <th class="sortable id-col-mini" onclick="sortTable('id')">
+                                <th class="col-thumbnail">📷</th>
+                                <th class="col-id sortable" onclick="sortTable('id')">
                                     ID <span class="sort-icon">↕️</span>
                                 </th>
-                                <th class="sortable name-col-mini" onclick="sortTable('name')">
+                                <th class="col-name sortable" onclick="sortTable('name')">
                                     名称 <span class="sort-icon">↕️</span>
                                 </th>
-                                <th class="sortable size-col-mini" onclick="sortTable('dimensions')">
+                                <th class="col-size sortable" onclick="sortTable('size')">
                                     サイズ <span class="sort-icon">↕️</span>
                                 </th>
-                                <th class="sortable location-col-mini" onclick="sortTable('location')">
+                                <th class="col-location sortable" onclick="sortTable('location')">
                                     場所 <span class="sort-icon">↕️</span>
                                 </th>
-                                <th class="sortable notes-col-mini" onclick="sortTable('notes')">
-                                    ノート <span class="sort-icon">↕️</span>
+                                <th class="col-rack-location sortable" onclick="sortTable('rackLocation')">
+                                    位置 <span class="sort-icon">↕️</span>
+                                </th>
+                                <th class="col-company sortable" onclick="sortTable('company')">
+                                    保管会社 <span class="sort-icon">↕️</span>
+                                </th>
+                                <th class="col-notes sortable" onclick="sortTable('notes')">
+                                    備考 <span class="sort-icon">↕️</span>
                                 </th>
                             </tr>
                         </thead>
-                        <tbody></tbody>
+                        <tbody id="dataTableBody">
+                            <!-- Data will be populated here -->
+                        </tbody>
                     </table>
                 </div>
             </div>
 
             <!-- Grid View -->
-            <div class="grid-view" id="gridView" style="display: none;">
-                <div class="grid-container-mini" id="gridContainer">
+            <div id="gridView" class="grid-view" style="display: none;">
+                <div id="gridContainer" class="grid-container">
                     <!-- Grid items will be populated here -->
                 </div>
             </div>
 
-            <!-- Compact Pagination -->
-            <div class="pagination-mini">
-                <select id="pageSize" onchange="changePageSize()" class="page-size-mini">
-                    <option value="25">25</option>
-                    <option value="50" selected>50</option>
-                    <option value="100">100</option>
-                </select>
-                <div id="paginationControls" class="pagination-controls-mini"></div>
+            <!-- Pagination -->
+            <div class="pagination">
+                <div class="pagination-info">
+                    <select id="pageSize" class="page-size-select" onchange="changePageSize()" aria-label="ページサイズ">
+                        <option value="25">25</option>
+                        <option value="50" selected>50</option>
+                        <option value="100">100</option>
+                        <option value="200">200</option>
+                    </select>
+                    <span class="page-info">件 per page</span>
+                </div>
+                <div id="paginationControls" class="pagination-controls">
+                    <!-- Pagination buttons will be populated here -->
+                </div>
             </div>
         </section>
+    </div>
 
-        <!-- Loading -->
-        <div id="loadingIndicator" class="loading">
+    <!-- Loading Indicator -->
+    <div id="loadingIndicator" class="loading-overlay">
+        <div class="loading-content">
             <div class="spinner"></div>
-            <span>読み込み中...</span>
+            <span class="loading-text">読み込み中...</span>
         </div>
     </div>
 
+    <!-- No Data Message -->
+    <div id="noDataMessage" class="no-data-message" style="display: none;">
+        <div class="no-data-icon">📭</div>
+        <h3>データがありません</h3>
+        <p>検索条件を変更してください</p>
+        <button class="reset-btn" onclick="resetFilters()">フィルタリセット</button>
+    </div>
+
+    <!-- Error Message -->
+    <div id="errorMessage" class="error-message" style="display: none;">
+        <div class="error-icon">⚠️</div>
+        <h3>エラーが発生しました</h3>
+        <p id="errorText"></p>
+        <button class="retry-btn" onclick="location.reload()">再試行</button>
+    </div>
+
+    <!-- Scripts -->
     <script src="script.js"></script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 MoldID,MoldCode,MoldName,MoldAssyDrawing,MoldDesignID,MoldMakerID,MoldType,CustomerID,MoldCavity,MoldDimL,MoldDimW,MoldDimH,MoldWeight,MoldNote,MoldDetail,RackLayerID,storage_company,MoldReturning,MoldDisposing,last_update_date
-10,TIH014,TIH-014,,3018,,,95,,,,,,,,12,2,,,
+10,TIH014,TIH-014,,3018,,,95,,,,,,,,11,2,,,
 12,TKO009T,TKO-009T,,3078,,,98,,,,,,,,11,,,,
 13,TYJ001,TYJ-001,,3172,,,223,,,,,,,,11,,,,
 14,THP004,THP-004,,2998,,,94,,,,,,,,12,,,,

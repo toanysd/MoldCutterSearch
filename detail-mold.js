@@ -239,6 +239,7 @@ function processMoldDataRelationships() {
 }
 
 // Display mold detail data
+// ✅ NEW: Enhanced header display với storage company và rack info
 function displayMoldDetailData() {
     // Update page title and header
     const moldTitle = document.getElementById('moldTitle');
@@ -250,11 +251,34 @@ function displayMoldDetailData() {
     }
     
     if (storageInfo) {
-        const storageCompany = currentMold.storageCompanyInfo?.CompanyShortName || 
-                             currentMold.storageCompanyInfo?.CompanyName || '-';
-        const rackLocation = currentMold.rackInfo?.RackLocation || '-';
-        const rackLayerId = currentMold.RackLayerID || '-';
-        storageInfo.textContent = `${storageCompany} / ${rackLayerId} / ${rackLocation}`;
+        // Enhanced storage info display
+        const storageCompany = currentMold.storageCompanyInfo;
+        const rackLayer = currentMold.rackLayerInfo;
+        const rack = currentMold.rackInfo;
+        
+        let storageText = '';
+        
+        // Storage company info
+        if (storageCompany) {
+            const companyShort = storageCompany.CompanyShortName || storageCompany.CompanyName;
+            const companyFull = storageCompany.CompanyName;
+            storageText += `保管会社: ${companyShort}`;
+            if (companyFull && companyFull !== companyShort) {
+                storageText += ` - ${companyFull}`;
+            }
+        } else {
+            storageText += '保管会社: N/A';
+        }
+        
+        // YSD location info (only if storage company is YSD - ID 2)
+        if (currentMold.storage_company === '2' && rackLayer && rack) {
+            storageText += ` | `;
+            storageText += `<span class="rack-circle-header mold">${rackLayer.RackID}</span>`;
+            storageText += ` - ${rackLayer.RackLayerNumber || 'N/A'}`;
+            storageText += ` (${rack.RackLocation || 'N/A'})`;
+        }
+        
+        storageInfo.innerHTML = storageText;
     }
     
     displayMoldBasicInfo();
@@ -265,6 +289,153 @@ function displayMoldDetailData() {
     displayMoldShipmentHistory();
     displayMoldRelatedCutters();
     displayMoldUserComments();
+}
+// ✅ NEW: Enhanced timestamp formatting
+function formatTimestamp(dateString) {
+    if (!dateString) return '';
+    try {
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return dateString;
+        
+        // Format: YYYY/MM/DD HH:MM
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        
+        return `${year}/${month}/${day} ${hours}:${minutes}`;
+    } catch (e) {
+        return dateString;
+    }
+}
+// ✅ NEW: Delete history functions
+async function deleteLocationHistory(locationLogId) {
+    if (!confirm('この位置履歴を削除しますか？')) return;
+    
+    try {
+        showLoading(true);
+        
+        await callBackendApi('delete-log', {
+            endpoint: 'locationlog.csv',
+            data: {
+                logId: locationLogId,
+                idField: 'LocationLogID'
+            }
+        });
+        
+        // Remove from frontend data
+        if (moldAllData.locationlog) {
+            moldAllData.locationlog = moldAllData.locationlog.filter(log => log.LocationLogID !== locationLogId);
+        }
+        
+        // Refresh display
+        await reloadMoldDataFromGitHub();
+        showSuccessNotification('位置履歴が削除されました');
+        
+    } catch (error) {
+        console.error('Failed to delete location history:', error);
+        showErrorNotification(`位置履歴削除に失敗しました: ${error.message}`);
+    } finally {
+        showLoading(false);
+    }
+}
+
+async function deleteShipmentHistory(shipId) {
+    if (!confirm('この出荷履歴を削除しますか？')) return;
+    
+    try {
+        showLoading(true);
+        
+        await callBackendApi('delete-log', {
+            endpoint: 'shiplog.csv',
+            data: {
+                logId: shipId,
+                idField: 'ShipID'
+            }
+        });
+        
+        // Remove from frontend data
+        if (moldAllData.shiplog) {
+            moldAllData.shiplog = moldAllData.shiplog.filter(log => log.ShipID !== shipId);
+        }
+        
+        // Refresh display
+        await reloadMoldDataFromGitHub();
+        showSuccessNotification('出荷履歴が削除されました');
+        
+    } catch (error) {
+        console.error('Failed to delete shipment history:', error);
+        showErrorNotification(`出荷履歴削除に失敗しました: ${error.message}`);
+    } finally {
+        showLoading(false);
+    }
+}
+
+async function deleteUserComment(commentId) {
+    if (!confirm('このコメントを削除しますか？')) return;
+    
+    try {
+        showLoading(true);
+        
+        await callBackendApi('delete-comment', {
+            endpoint: 'usercomments.csv',
+            data: {
+                commentId: commentId,
+                idField: 'UserCommentID'
+            }
+        });
+        
+        // Remove from frontend data
+        if (moldAllData.usercomments) {
+            moldAllData.usercomments = moldAllData.usercomments.filter(comment => comment.UserCommentID !== commentId);
+        }
+        
+        // Refresh display
+        displayMoldUserComments();
+        showSuccessNotification('コメントが削除されました');
+        
+    } catch (error) {
+        console.error('Failed to delete comment:', error);
+        showErrorNotification(`コメント削除に失敗しました: ${error.message}`);
+    } finally {
+        showLoading(false);
+    }
+}
+
+// ✅ NEW: Professional notification system
+function showSuccessNotification(message) {
+    showNotification(message, 'success');
+}
+
+function showErrorNotification(message) {
+    showNotification(message, 'error');
+}
+
+function showNotification(message, type = 'info') {
+    // Remove existing notifications
+    const existingNotifications = document.querySelectorAll('.notification-toast');
+    existingNotifications.forEach(n => n.remove());
+    
+    // Create notification
+    const notification = document.createElement('div');
+    notification.className = `notification-toast ${type}`;
+    notification.innerHTML = `
+        <div class="notification-content">
+            <span class="notification-icon">${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span>
+            <span class="notification-message">${message}</span>
+        </div>
+        <button class="notification-close" onclick="this.parentElement.remove()">×</button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        if (notification.parentElement) {
+            notification.remove();
+        }
+    }, 5000);
 }
 
 // Display mold basic information
@@ -284,7 +455,7 @@ function displayMoldBasicInfo() {
     if (currentMold.designInfo) {
         const design = currentMold.designInfo;
         if (design.MoldDesignLength && design.MoldDesignWidth && design.MoldDesignHeight) {
-            dimensions = `${design.MoldDesignLength}×${design.MoldDesignWidth}×${design.MoldDesignHeight}`;
+            dimensions = `${design.MoldDesignLength}x${design.MoldDesignWidth}x${design.MoldDesignHeight}`;
         } else if (design.MoldDesignDim) {
             dimensions = design.MoldDesignDim;
         }
@@ -293,7 +464,7 @@ function displayMoldBasicInfo() {
     // Get product dimensions
     let productDimensions = 'N/A';
     if (currentMold.designInfo?.CutlineX && currentMold.designInfo?.CutlineY) {
-        productDimensions = `${currentMold.designInfo.CutlineX}×${currentMold.designInfo.CutlineY}`;
+        productDimensions = `${currentMold.designInfo.CutlineX}x${currentMold.designInfo.CutlineY}`;
     }
     
     let html = `
@@ -434,6 +605,7 @@ function displayMoldProductInfo() {
 }
 
 // Display mold location history
+// ✅ FIX: Enhanced displayMoldLocationHistory với notes và timestamp
 function displayMoldLocationHistory() {
     const locationHistory = document.getElementById('locationHistory');
     if (!locationHistory) return;
@@ -444,15 +616,21 @@ function displayMoldLocationHistory() {
             const oldRackLayer = moldAllData.racklayers.find(r => r.RackLayerID === log.OldRackLayer);
             const newRackLayer = moldAllData.racklayers.find(r => r.RackLayerID === log.NewRackLayer);
             
+            // Enhanced timestamp display
+            const timestamp = formatTimestamp(log.DateEntry);
+            
             html += `
-                <div class="history-item-compact location">
+                <div class="history-item-compact location" data-log-id="${log.LocationLogID}">
                     <div class="history-header-compact">
                         <div class="history-title-compact">位置変更</div>
-                        <div class="history-date-compact">${formatDate(log.DateEntry)}</div>
+                        <div class="history-actions-compact">
+                            <span class="history-timestamp-compact">${timestamp}</span>
+                            <button class="delete-history-btn" onclick="deleteLocationHistory('${log.LocationLogID}')" title="削除">🗑</button>
+                        </div>
                     </div>
                     <div class="history-details-compact">
-                        ${log.OldRackLayer} → ${log.NewRackLayer}
-                        ${log.notes ? `<br>${log.notes}` : ''}
+                        <div class="location-change">${log.OldRackLayer || 'N/A'} → ${log.NewRackLayer || 'N/A'}</div>
+                        ${log.notes ? `<div class="history-notes"><strong>備考:</strong> ${log.notes}</div>` : ''}
                     </div>
                 </div>
             `;
@@ -464,6 +642,7 @@ function displayMoldLocationHistory() {
 }
 
 // Display mold shipment history
+// ✅ FIX: Enhanced displayMoldShipmentHistory với notes và timestamp
 function displayMoldShipmentHistory() {
     const shipmentHistory = document.getElementById('shipmentHistory');
     if (!shipmentHistory) return;
@@ -474,17 +653,25 @@ function displayMoldShipmentHistory() {
             const toCompany = moldAllData.companies.find(c => c.CompanyID === log.ToCompanyID);
             const fromCompany = moldAllData.companies.find(c => c.CompanyID === log.FromCompanyID);
             
+            // Enhanced timestamp display
+            const timestamp = formatTimestamp(log.DateEntry);
+            
             html += `
-                <div class="history-item-compact shipment">
+                <div class="history-item-compact shipment" data-log-id="${log.ShipID}">
                     <div class="history-header-compact">
                         <div class="history-title-compact">出荷</div>
-                        <div class="history-date-compact">${formatDate(log.DateEntry)}</div>
+                        <div class="history-actions-compact">
+                            <span class="history-timestamp-compact">${timestamp}</span>
+                            <button class="delete-history-btn" onclick="deleteShipmentHistory('${log.ShipID}')" title="削除">🗑</button>
+                        </div>
                     </div>
                     <div class="history-details-compact">
-                        ${fromCompany?.CompanyShortName || log.FromCompanyID || 'N/A'} → 
-                        ${toCompany?.CompanyShortName || log.ToCompanyID || 'N/A'}
-                        ${log.handler ? `<br>担当: ${log.handler}` : ''}
-                        ${log.ShipmentNotes ? `<br>${log.ShipmentNotes}` : ''}
+                        <div class="shipment-route">
+                            ${fromCompany?.CompanyShortName || log.FromCompany || log.FromCompanyID || 'N/A'} → 
+                            ${toCompany?.CompanyShortName || log.ToCompany || log.ToCompanyID || 'N/A'}
+                        </div>
+                        ${log.handler ? `<div class="handler-info"><strong>担当:</strong> ${log.handler}</div>` : ''}
+                        ${log.ShipNotes ? `<div class="history-notes"><strong>備考:</strong> ${log.ShipNotes}</div>` : ''}
                     </div>
                 </div>
             `;
@@ -525,23 +712,27 @@ function displayMoldRelatedCutters() {
 }
 
 // Display user comments
+// ✅ FIX: Enhanced displayMoldUserComments với delete function
 function displayMoldUserComments() {
     const userComments = document.getElementById('userComments');
     if (!userComments) return;
     
-    // Get comments from server data instead of localStorage
     const comments = getMoldUserCommentsFromServer(currentMold.MoldID);
     
     if (comments.length > 0) {
         let html = '';
         comments.slice(0, 10).forEach(comment => {
             const employee = moldAllData.employees.find(e => e.EmployeeID === comment.EmployeeID);
+            const timestamp = formatTimestamp(comment.DateEntry);
             
             html += `
-                <div class="comment-item-compact">
+                <div class="comment-item-compact" data-comment-id="${comment.UserCommentID}">
                     <div class="comment-header-compact">
                         <div class="comment-author-compact">${employee?.EmployeeName || 'Unknown'}</div>
-                        <div class="comment-date-compact">${formatDate(comment.DateEntry)}</div>
+                        <div class="comment-actions-compact">
+                            <span class="comment-timestamp-compact">${timestamp}</span>
+                            <button class="delete-comment-btn" onclick="deleteUserComment('${comment.UserCommentID}')" title="削除">🗑</button>
+                        </div>
                     </div>
                     <div class="comment-text-compact">${comment.CommentText}</div>
                 </div>
@@ -694,11 +885,11 @@ async function handleMoldLocationUpdate() {
         await reloadMoldDataFromGitHub();
         
         hideLocationModal();
-        alert('位置が正常に更新されました');
+        showSuccessNotification('位置が正常に更新されました');
         
     } catch (error) {
         console.error('Failed to complete mold location update process:', error);
-        alert(`位置更新に失敗しました: ${error.message}`);
+        showErrorNotification(`位置更新に失敗しました: ${error.message}`);
     } finally {
         showLoading(false);
     }
@@ -774,11 +965,11 @@ async function handleMoldShipmentUpdate() {
         await reloadMoldDataFromGitHub();
         
         hideShipmentModal();
-        alert('出荷情報が正常に登録されました');
+        showSuccessNotification('出荷情報が正常に登録されました');
         
     } catch (error) {
         console.error('Failed to complete mold shipment update process:', error);
-        alert(`出荷登録に失敗しました: ${error.message}`);
+        showErrorNotification(`出荷登録に失敗しました: ${error.message}`);
     } finally {
         showLoading(false);
     }
@@ -795,12 +986,12 @@ async function handleMoldCommentSubmit(event) {
     const commentEmployeeSelect = document.getElementById('commentEmployeeSelect');
     
     if (!commentText.value.trim()) {
-        alert('コメントを入力してください');
+        showSuccessNotification('コメントが正常に投稿されました');
         return;
     }
     
     if (!commentEmployeeSelect.value) {
-        alert('投稿者を選択してください');
+        showErrorNotification(`コメント投稿に失敗しました: ${error.message}`);
         return;
     }
     

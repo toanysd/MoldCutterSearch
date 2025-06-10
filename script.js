@@ -53,7 +53,12 @@ const FILTER_FIELDS = {
         { value: 'cutlineSize', text: 'カットライン寸法' },
         { value: 'storageCompany', text: '保管会社' },
         { value: 'storageCompanyId', text: '保管会社ID' },
-        { value: 'moldStatus', text: '金型ステータス' }
+        { value: 'moldStatus', text: '金型ステータス' },
+        { value: 'TeflonCoating', text: 'テフロン加工' },
+        { value: 'MoldReturning', text: '金型返却' },
+        { value: 'MoldDisposing', text: '金型廃棄' },
+        { value: 'MoldNotes', text: '金型備考' },
+        { value: 'CutterNote', text: '抜型備考' },
     ],
     mold: [
         { value: 'displayCode', text: 'コード' },
@@ -67,17 +72,22 @@ const FILTER_FIELDS = {
         { value: 'pieceCount', text: '枚数' },
         { value: 'cutlineSize', text: 'カットライン寸法' },
         { value: 'storageCompany', text: '保管会社' },
-        { value: 'moldStatus', text: '金型ステータス' }
+        { value: 'moldStatus', text: '金型ステータス' },
+        { value: 'TeflonCoating', text: 'テフロン加工' },
+        { value: 'MoldReturning', text: '金型返却' },
+        { value: 'MoldDisposing', text: '金型廃棄' },
+        { value: 'MoldNotes', text: '金型備考' },
     ],
     cutter: [
-        { value: 'displayCode', text: 'カッターNo' },
+        { value: 'displayCode', text: '抜型No' },
         { value: 'displayName', text: '名称' },
         { value: 'cutlineSize', text: 'カットライン寸法' },
         { value: 'rackId', text: 'ラック (RackID)' },
         { value: 'plasticCutType', text: 'プラスチックカットタイプ' },
         { value: 'cutterType', text: 'カッタータイプ' },
         { value: 'bladeCount', text: 'ブレード数' },
-        { value: 'storageCompany', text: '保管会社' }
+        { value: 'storageCompany', text: '保管会社' },
+        { value: 'CutterNote', text: '抜型備考' },
     ]
 };
 
@@ -284,7 +294,7 @@ function processDataRelationships() {
         // Enhanced cutline size creation from molddesign
         let cutlineSize = '';
         if (design.CutlineX && design.CutlineY) {
-            cutlineSize = `${design.CutlineX}×${design.CutlineY}`;
+            cutlineSize = `${design.CutlineX}x${design.CutlineY}`;
         }
         
         // Enhanced mold status determination
@@ -344,7 +354,7 @@ function processDataRelationships() {
         // Enhanced cutline size creation from cutter data
         let cutlineSize = '';
         if (cutter.CutlineLength && cutter.CutlineWidth) {
-            cutlineSize = `${cutter.CutlineLength}×${cutter.CutlineWidth}`;
+            cutlineSize = `${cutter.CutlineLength}x${cutter.CutlineWidth}`;
             if (cutter.CutterCorner) cutlineSize += `-${cutter.CutterCorner}`;
             if (cutter.CutterChamfer) cutlineSize += `-${cutter.CutterChamfer}`;
         }
@@ -388,11 +398,11 @@ function processDataRelationships() {
 // Helper functions for data processing
 function createMoldDimensionString(mold, design) {
     if (design.MoldDesignLength && design.MoldDesignWidth && design.MoldDesignHeight) {
-        return `${design.MoldDesignLength}×${design.MoldDesignWidth}×${design.MoldDesignHeight}`;
+        return `${design.MoldDesignLength}x${design.MoldDesignWidth}x${design.MoldDesignHeight}`;
     }
     if (design.MoldDesignDim) return design.MoldDesignDim;
     if (mold.MoldLength && mold.MoldWidth && mold.MoldHeight) {
-        return `${mold.MoldLength}×${mold.MoldWidth}×${mold.MoldHeight}`;
+        return `${mold.MoldLength}x${mold.MoldWidth}x${mold.MoldHeight}`;
     }
     return '';
 }
@@ -968,11 +978,16 @@ function performSearch() {
                 item.moldStatus,
                 item.jobInfo?.JobName,
                 item.processingItemInfo?.ProcessingItemName,
+                item.TeflonCoating,
+                item.MoldReturning,
+                item.MoldDisposing,
+                item.MoldNotes,
+                item.CutterNote,
                 // Additional cutline search support
                 item.designInfo?.CutlineX && item.designInfo?.CutlineY ? 
-                    `${item.designInfo.CutlineX}×${item.designInfo.CutlineY}` : null,
+                    `${item.designInfo.CutlineX}x${item.designInfo.CutlineY}` : null,
                 item.CutlineLength && item.CutlineWidth ? 
-                    `${item.CutlineLength}×${item.CutlineWidth}` : null
+                    `${item.CutlineLength}x${item.CutlineWidth}` : null
             ].filter(field => field && field.toString().trim());
             
             return searchFields.some(field => 

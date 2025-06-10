@@ -1,11 +1,11 @@
-// detail-cutter.js - V4.24 with V3.0 Backend Logic and Mobile Optimized UI
+// detail-cutter.js - V4.242 with V4.0 Backend Logic and Mobile Optimized UI
 let currentCutter = null;
 let cutterAllData = {};
 let cutterUserComments = [];
 
 const CUTTER_GITHUB_BASE_URL = "https://raw.githubusercontent.com/toanysd/MoldCutterSearch/main/Data/";
 
-// Thêm vào detail-cutter.js và detail-mold.js
+// Auto refresh functionality
 let autoRefreshInterval = null;
 
 // Start auto refresh every 30 seconds after any update
@@ -15,11 +15,9 @@ function startAutoRefresh() {
     }
     
     autoRefreshInterval = setInterval(async () => {
-        console.log('Auto-refreshing data from GitHub...');
+        console.log('Auto-refreshing cutter data from GitHub...');
         if (currentCutter) {
             await reloadCutterDataFromGitHub();
-        } else if (currentMold) {
-            await reloadMoldDataFromGitHub();
         }
     }, 30000); // 30 seconds
 }
@@ -31,7 +29,6 @@ function stopAutoRefresh() {
         autoRefreshInterval = null;
     }
 }
-
 
 // Initialize cutter detail page
 document.addEventListener('DOMContentLoaded', function() {
@@ -46,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     initializeCutterEventListeners();
     loadCutterUserComments();
-
+    
     // Start auto refresh after 1 minute
     setTimeout(startAutoRefresh, 60000);
 });
@@ -81,7 +78,7 @@ function initializeCutterEventListeners() {
     }
 }
 
-// Thêm function reload data từ GitHub
+// ✅ NEW: Reload data from GitHub function
 async function reloadCutterDataFromGitHub() {
     console.log('Reloading cutter data from GitHub...');
     try {
@@ -253,7 +250,7 @@ function processCutterDataRelationships() {
     console.log(`Processed ${cutterAllData.cutters.length} cutters`);
 }
 
-// Display cutter detail data
+// ✅ NEW: Enhanced header display với storage company và rack info
 function displayCutterDetailData() {
     // Update page title and header
     const cutterTitle = document.getElementById('cutterTitle');
@@ -265,11 +262,34 @@ function displayCutterDetailData() {
     }
     
     if (storageInfo) {
-        const storageCompany = currentCutter.storageCompanyInfo?.CompanyShortName || 
-                             currentCutter.storageCompanyInfo?.CompanyName || '-';
-        const rackLocation = currentCutter.rackInfo?.RackLocation || '-';
-        const rackLayerId = currentCutter.RackLayerID || '-';
-        storageInfo.textContent = `${storageCompany} / ${rackLayerId} / ${rackLocation}`;
+        // Enhanced storage info display
+        const storageCompany = currentCutter.storageCompanyInfo;
+        const rackLayer = currentCutter.rackLayerInfo;
+        const rack = currentCutter.rackInfo;
+        
+        let storageText = '';
+        
+        // Storage company info
+        if (storageCompany) {
+            const companyShort = storageCompany.CompanyShortName || storageCompany.CompanyName;
+            const companyFull = storageCompany.CompanyName;
+            storageText += `保管会社: ${companyShort}`;
+            if (companyFull && companyFull !== companyShort) {
+                storageText += ` - ${companyFull}`;
+            }
+        } else {
+            storageText += '保管会社: N/A';
+        }
+        
+        // YSD location info (only if storage company is YSD - ID 2)
+        if (currentCutter.storage_company === '2' && rackLayer && rack) {
+            storageText += ` | `;
+            storageText += `<span class="rack-circle-header cutter">${rackLayer.RackID}</span>`;
+            storageText += ` - ${rackLayer.RackLayerNumber || 'N/A'}`;
+            storageText += ` (${rack.RackLocation || 'N/A'})`;
+        }
+        
+        storageInfo.innerHTML = storageText;
     }
     
     displayCutterBasicInfo();
@@ -280,6 +300,26 @@ function displayCutterDetailData() {
     displayCutterShipmentHistory();
     displayCutterRelatedMolds();
     displayCutterUserComments();
+}
+
+// ✅ NEW: Enhanced timestamp formatting
+function formatTimestamp(dateString) {
+    if (!dateString) return '';
+    try {
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return dateString;
+        
+        // Format: YYYY/MM/DD HH:MM
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        
+        return `${year}/${month}/${day} ${hours}:${minutes}`;
+    } catch (e) {
+        return dateString;
+    }
 }
 
 // Display cutter basic information
@@ -473,7 +513,7 @@ function displayCutterCuttingInfo() {
     cuttingInfo.innerHTML = html;
 }
 
-// Display cutter location history
+// ✅ FIX: Enhanced displayCutterLocationHistory với notes và timestamp
 function displayCutterLocationHistory() {
     const locationHistory = document.getElementById('locationHistory');
     if (!locationHistory) return;
@@ -481,15 +521,21 @@ function displayCutterLocationHistory() {
     if (currentCutter.locationHistory && currentCutter.locationHistory.length > 0) {
         let html = '';
         currentCutter.locationHistory.slice(0, 5).forEach(log => {
+            // Enhanced timestamp display
+            const timestamp = formatTimestamp(log.DateEntry);
+            
             html += `
-                <div class="history-item-compact location">
+                <div class="history-item-compact location" data-log-id="${log.LocationLogID}">
                     <div class="history-header-compact">
                         <div class="history-title-compact">位置変更</div>
-                        <div class="history-date-compact">${formatDate(log.DateEntry)}</div>
+                        <div class="history-actions-compact">
+                            <span class="history-timestamp-compact">${timestamp}</span>
+                            <button class="delete-history-btn" onclick="deleteCutterLocationHistory('${log.LocationLogID}')" title="削除">🗑</button>
+                        </div>
                     </div>
                     <div class="history-details-compact">
-                        ${log.OldRackLayer} → ${log.NewRackLayer}
-                        ${log.notes ? `<br>${log.notes}` : ''}
+                        <div class="location-change">${log.OldRackLayer || 'N/A'} → ${log.NewRackLayer || 'N/A'}</div>
+                        ${log.notes ? `<div class="history-notes"><strong>備考:</strong> ${log.notes}</div>` : ''}
                     </div>
                 </div>
             `;
@@ -500,7 +546,7 @@ function displayCutterLocationHistory() {
     }
 }
 
-// Display cutter shipment history
+// ✅ FIX: Enhanced displayCutterShipmentHistory với notes và timestamp
 function displayCutterShipmentHistory() {
     const shipmentHistory = document.getElementById('shipmentHistory');
     if (!shipmentHistory) return;
@@ -511,17 +557,25 @@ function displayCutterShipmentHistory() {
             const toCompany = cutterAllData.companies.find(c => c.CompanyID === log.ToCompanyID);
             const fromCompany = cutterAllData.companies.find(c => c.CompanyID === log.FromCompanyID);
             
+            // Enhanced timestamp display
+            const timestamp = formatTimestamp(log.DateEntry);
+            
             html += `
-                <div class="history-item-compact shipment">
+                <div class="history-item-compact shipment" data-log-id="${log.ShipID}">
                     <div class="history-header-compact">
                         <div class="history-title-compact">出荷</div>
-                        <div class="history-date-compact">${formatDate(log.DateEntry)}</div>
+                        <div class="history-actions-compact">
+                            <span class="history-timestamp-compact">${timestamp}</span>
+                            <button class="delete-history-btn" onclick="deleteCutterShipmentHistory('${log.ShipID}')" title="削除">🗑</button>
+                        </div>
                     </div>
                     <div class="history-details-compact">
-                        ${fromCompany?.CompanyShortName || log.FromCompanyID || 'N/A'} → 
-                        ${toCompany?.CompanyShortName || log.ToCompanyID || 'N/A'}
-                        ${log.handler ? `<br>担当: ${log.handler}` : ''}
-                        ${log.ShipmentNotes ? `<br>${log.ShipmentNotes}` : ''}
+                        <div class="shipment-route">
+                            ${fromCompany?.CompanyShortName || log.FromCompany || log.FromCompanyID || 'N/A'} → 
+                            ${toCompany?.CompanyShortName || log.ToCompany || log.ToCompanyID || 'N/A'}
+                        </div>
+                        ${log.handler ? `<div class="handler-info"><strong>担当:</strong> ${log.handler}</div>` : ''}
+                        ${log.ShipNotes ? `<div class="history-notes"><strong>備考:</strong> ${log.ShipNotes}</div>` : ''}
                     </div>
                 </div>
             `;
@@ -561,7 +615,7 @@ function displayCutterRelatedMolds() {
     }
 }
 
-// Display user comments
+// ✅ FIX: Enhanced displayCutterUserComments với delete function
 function displayCutterUserComments() {
     const userComments = document.getElementById('userComments');
     if (!userComments) return;
@@ -573,12 +627,16 @@ function displayCutterUserComments() {
         let html = '';
         comments.slice(0, 10).forEach(comment => {
             const employee = cutterAllData.employees.find(e => e.EmployeeID === comment.EmployeeID);
+            const timestamp = formatTimestamp(comment.DateEntry);
             
             html += `
-                <div class="comment-item-compact">
+                <div class="comment-item-compact" data-comment-id="${comment.UserCommentID}">
                     <div class="comment-header-compact">
                         <div class="comment-author-compact">${employee?.EmployeeName || 'Unknown'}</div>
-                        <div class="comment-date-compact">${formatDate(comment.DateEntry)}</div>
+                        <div class="comment-actions-compact">
+                            <span class="comment-timestamp-compact">${timestamp}</span>
+                            <button class="delete-comment-btn" onclick="deleteCutterUserComment('${comment.UserCommentID}')" title="削除">🗑</button>
+                        </div>
                     </div>
                     <div class="comment-text-compact">${comment.CommentText}</div>
                 </div>
@@ -596,6 +654,135 @@ function getCutterUserCommentsFromServer(cutterId) {
     return cutterAllData.usercomments
         .filter(comment => comment.ItemID === cutterId && comment.ItemType === 'cutter' && comment.CommentStatus === 'active')
         .sort((a, b) => new Date(b.DateEntry) - new Date(a.DateEntry));
+}
+
+// ✅ NEW: Delete history functions
+async function deleteCutterLocationHistory(locationLogId) {
+    if (!confirm('この位置履歴を削除しますか？')) return;
+    
+    try {
+        showLoading(true);
+        
+        await callBackendApi('delete-log', {
+            endpoint: 'locationlog.csv',
+            data: {
+                logId: locationLogId,
+                idField: 'LocationLogID'
+            }
+        });
+        
+        // Remove from frontend data
+        if (cutterAllData.locationlog) {
+            cutterAllData.locationlog = cutterAllData.locationlog.filter(log => log.LocationLogID !== locationLogId);
+        }
+        
+        // Refresh display
+        await reloadCutterDataFromGitHub();
+        showSuccessNotification('位置履歴が削除されました');
+        
+    } catch (error) {
+        console.error('Failed to delete location history:', error);
+        showErrorNotification(`位置履歴削除に失敗しました: ${error.message}`);
+    } finally {
+        showLoading(false);
+    }
+}
+
+async function deleteCutterShipmentHistory(shipId) {
+    if (!confirm('この出荷履歴を削除しますか？')) return;
+    
+    try {
+        showLoading(true);
+        
+        await callBackendApi('delete-log', {
+            endpoint: 'shiplog.csv',
+            data: {
+                logId: shipId,
+                idField: 'ShipID'
+            }
+        });
+        
+        // Remove from frontend data
+        if (cutterAllData.shiplog) {
+            cutterAllData.shiplog = cutterAllData.shiplog.filter(log => log.ShipID !== shipId);
+        }
+        
+        // Refresh display
+        await reloadCutterDataFromGitHub();
+        showSuccessNotification('出荷履歴が削除されました');
+        
+    } catch (error) {
+        console.error('Failed to delete shipment history:', error);
+        showErrorNotification(`出荷履歴削除に失敗しました: ${error.message}`);
+    } finally {
+        showLoading(false);
+    }
+}
+
+async function deleteCutterUserComment(commentId) {
+    if (!confirm('このコメントを削除しますか？')) return;
+    
+    try {
+        showLoading(true);
+        
+        await callBackendApi('delete-comment', {
+            endpoint: 'usercomments.csv',
+            data: {
+                commentId: commentId,
+                idField: 'UserCommentID'
+            }
+        });
+        
+        // Remove from frontend data
+        if (cutterAllData.usercomments) {
+            cutterAllData.usercomments = cutterAllData.usercomments.filter(comment => comment.UserCommentID !== commentId);
+        }
+        
+        // Refresh display
+        displayCutterUserComments();
+        showSuccessNotification('コメントが削除されました');
+        
+    } catch (error) {
+        console.error('Failed to delete comment:', error);
+        showErrorNotification(`コメント削除に失敗しました: ${error.message}`);
+    } finally {
+        showLoading(false);
+    }
+}
+
+// ✅ NEW: Professional notification system
+function showSuccessNotification(message) {
+    showNotification(message, 'success');
+}
+
+function showErrorNotification(message) {
+    showNotification(message, 'error');
+}
+
+function showNotification(message, type = 'info') {
+    // Remove existing notifications
+    const existingNotifications = document.querySelectorAll('.notification-toast');
+    existingNotifications.forEach(n => n.remove());
+    
+    // Create notification
+    const notification = document.createElement('div');
+    notification.className = `notification-toast ${type}`;
+    notification.innerHTML = `
+        <div class="notification-content">
+            <span class="notification-icon">${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span>
+            <span class="notification-message">${message}</span>
+        </div>
+        <button class="notification-close" onclick="this.parentElement.remove()">×</button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        if (notification.parentElement) {
+            notification.remove();
+        }
+    }, 5000);
 }
 
 // Populate form data
@@ -671,7 +858,6 @@ function updateRackLayers() {
     }
 }
 
-// Handle location update (V3.0 backend logic)
 // ✅ FIX: Update handleCutterLocationUpdate để reload data
 async function handleCutterLocationUpdate() {
     if (!currentCutter) return;
@@ -730,17 +916,16 @@ async function handleCutterLocationUpdate() {
         await reloadCutterDataFromGitHub();
         
         hideLocationModal();
-        alert('位置が正常に更新されました');
+        showSuccessNotification('位置が正常に更新されました');
         
     } catch (error) {
         console.error('Failed to complete cutter location update process:', error);
-        alert(`位置更新に失敗しました: ${error.message}`);
+        showErrorNotification(`位置更新に失敗しました: ${error.message}`);
     } finally {
         showLoading(false);
     }
 }
 
-// Handle shipment update (V3.0 backend logic)
 // ✅ FIX: Update handleCutterShipmentUpdate để reload data
 async function handleCutterShipmentUpdate() {
     if (!currentCutter) return;
@@ -778,9 +963,9 @@ async function handleCutterShipmentUpdate() {
     const cutterFieldUpdates = {};
     if (toCompanyId && toCompanyId !== '2') {
         cutterFieldUpdates.storage_company = toCompanyId;
-        cutterFieldUpdates.RackLayerID = '';
+        cutterFieldUpdates.RackLayerID = ''; // Clear location when shipped out
     } else if (toCompanyId === '2') {
-        cutterFieldUpdates.storage_company = '2';
+        cutterFieldUpdates.storage_company = '2'; // Return to YSD
     }
     
     try {
@@ -809,17 +994,16 @@ async function handleCutterShipmentUpdate() {
         await reloadCutterDataFromGitHub();
         
         hideShipmentModal();
-        alert('出荷情報が正常に登録されました');
+        showSuccessNotification('出荷情報が正常に登録されました');
         
     } catch (error) {
         console.error('Failed to complete cutter shipment update process:', error);
-        alert(`出荷登録に失敗しました: ${error.message}`);
+        showErrorNotification(`出荷登録に失敗しました: ${error.message}`);
     } finally {
         showLoading(false);
     }
 }
 
-// Handle comment submit (V3.0 backend logic)
 // ✅ FIX: Update handleCutterCommentSubmit để reload data
 async function handleCutterCommentSubmit() {
     if (!currentCutter) return;
@@ -867,11 +1051,11 @@ async function handleCutterCommentSubmit() {
         commentText.value = '';
         commentEmployeeSelect.value = '';
         
-        alert('コメントが正常に投稿されました');
+        showSuccessNotification('コメントが正常に投稿されました');
         
     } catch (error) {
         console.error('Failed to save cutter comment:', error);
-        alert(`コメント投稿に失敗しました: ${error.message}`);
+        showErrorNotification(`コメント投稿に失敗しました: ${error.message}`);
     } finally {
         showLoading(false);
     }
@@ -1037,6 +1221,7 @@ function formatDate(dateString) {
     if (!dateString) return '';
     try {
         const date = new Date(dateString);
+        if (isNaN(date.getTime())) return dateString;
         return date.toLocaleDateString('ja-JP');
     } catch {
         return dateString;

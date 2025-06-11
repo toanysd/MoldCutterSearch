@@ -81,7 +81,7 @@
   text-overflow: ellipsis;
 }
 
-/* ✅ NEW: Enhanced header storage info */
+/* NEW Enhanced header storage info */
 .storage-info-compact {
   font-size: 12px;
   opacity: 0.9;
@@ -192,7 +192,7 @@
   line-height: 1;
 }
 
-/* ✅ NEW: Multi-column layout */
+/* NEW Multi-column layout */
 .detail-grid-multi-column {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -207,7 +207,7 @@
   gap: 8px;
 }
 
-/* Detail Grid - Mobile Optimized (fallback) */
+/* Detail Grid - Mobile Optimized fallback */
 .detail-grid-compact {
   display: grid;
   grid-template-columns: 1fr;
@@ -215,7 +215,7 @@
   padding: 0 8px 8px 8px;
 }
 
-/* ✅ Enhanced card spacing for multi-column */
+/* Enhanced card spacing for multi-column */
 .detail-card-compact {
   background: var(--detail-text-white);
   border-radius: 8px;
@@ -296,7 +296,7 @@
   color: var(--mold-accent);
 }
 
-/* ✅ Improved history content scrolling */
+/* Improved history content scrolling */
 .history-content-compact {
   padding: 8px 12px;
   max-height: 250px; /* Increased for better visibility */
@@ -323,7 +323,7 @@
   border-left-color: var(--mold-accent);
 }
 
-/* ✅ NEW: Enhanced history items with delete buttons */
+/* NEW Enhanced history items with delete buttons */
 .history-header-compact {
   display: flex;
   justify-content: space-between;
@@ -450,7 +450,7 @@
   margin-bottom: 0;
 }
 
-/* ✅ NEW: Enhanced comment items */
+/* NEW Enhanced comment items */
 .comment-header-compact {
   display: flex;
   justify-content: space-between;
@@ -491,7 +491,7 @@
   font-size: 12px;
 }
 
-/* ✅ NEW: Professional notification system */
+/* NEW Professional notification system */
 .notification-toast {
   position: fixed;
   top: 20px;
@@ -764,7 +764,7 @@
   margin-bottom: 8px;
 }
 
-/* ✅ Enhanced loading spinner for mold */
+/* Enhanced loading spinner for mold */
 .spinner.mold {
   border-top-color: var(--mold-primary);
   border-right-color: var(--mold-secondary);
@@ -851,81 +851,81 @@
   line-height: 1.4;
 }
 
-/* ✅ Mobile responsive adjustments */
+/* Mobile responsive adjustments */
 @media (max-width: 768px) {
   .detail-grid-multi-column {
     grid-template-columns: 1fr;
     gap: 8px;
     padding: 0 4px 4px 4px;
   }
-  
+
   .quick-actions-compact {
     padding: 0 4px;
     gap: 3px;
   }
-  
+
   .quick-btn-compact {
     padding: 6px 2px;
     min-height: 44px;
   }
-  
+
   .btn-icon-small {
     font-size: 14px;
   }
-  
+
   .btn-text-small {
     font-size: 9px;
   }
-  
+
   .header-row-compact {
     padding: 0 4px;
     gap: 6px;
   }
-  
+
   .item-title-compact {
     font-size: 14px;
   }
-  
+
   .storage-info-compact {
     font-size: 11px;
     white-space: normal;
     line-height: 1.2;
   }
-  
+
   .rack-circle-header {
     width: 16px;
     height: 16px;
     font-size: 8px;
   }
-  
+
   .form-row-compact {
     grid-template-columns: 1fr;
     gap: 6px;
   }
-  
+
   .modal-compact {
     padding: 4px;
   }
-  
+
   .modal-content-compact {
     max-width: calc(100% - 8px);
   }
-  
+
   .modal-body-compact {
     padding: 12px;
   }
-  
+
   .modal-actions-compact {
     flex-direction: column;
     gap: 6px;
   }
-  
+
   .btn-primary-compact,
   .btn-secondary-compact {
     width: 100%;
     padding: 10px 16px;
   }
-  
+
   .notification-toast {
     top: 10px;
     right: 10px;
@@ -939,53 +939,53 @@
   .detail-grid-multi-column {
     grid-template-columns: 1fr;
   }
-  
+
   .detail-card-compact {
     margin-bottom: 6px;
   }
-  
+
   .card-title-compact {
     padding: 6px 8px;
     font-size: 13px;
   }
-  
+
   .info-content-compact,
   .history-content-compact,
   .related-content-compact,
   .comments-content-compact {
     padding: 6px 8px;
   }
-  
+
   .info-label-compact {
     font-size: 11px;
     flex: 0 0 40%;
   }
-  
+
   .info-value-compact {
     font-size: 11px;
   }
-  
+
   .history-item-compact,
   .comment-item-compact,
   .related-item-compact {
     padding: 6px;
   }
-  
+
   .quick-actions-compact {
     margin: 6px 0;
   }
-  
+
   .quick-btn-compact {
     min-height: 40px;
     padding: 4px 2px;
   }
-  
+
   .history-actions-compact {
     flex-direction: column;
     align-items: flex-end;
     gap: 2px;
   }
-  
+
   .comment-actions-compact {
     flex-direction: column;
     align-items: flex-end;
@@ -1000,16 +1000,16 @@
   .loading-overlay {
     display: none !important;
   }
-  
+
   .detail-grid-multi-column {
     display: block;
   }
-  
+
   .detail-card-compact {
     break-inside: avoid;
     margin-bottom: 12px;
   }
-  
+
   .header-actions-compact {
     display: none;
   }
@@ -1042,9 +1042,17 @@ textarea:focus-visible {
 }
 
 /* Utility Classes */
-.text-center { text-align: center; }
-.hidden { display: none !important; }
-.visible { display: block !important; }
+.text-center {
+  text-align: center;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.visible {
+  display: block !important;
+}
 
 /* Status badges */
 .status-badge {
@@ -1080,8 +1088,14 @@ textarea:focus-visible {
 
 /* Animation for loading states */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .fade-in {
@@ -1111,4 +1125,118 @@ button:disabled {
   border-radius: 2px;
 }
 
+/* Error handling styles */
+.error-container {
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 12px;
+  border-radius: 6px;
+  margin: 8px;
+  text-align: center;
+  font-weight: 500;
+}
+
+.warning-container {
+  background: #fef3c7;
+  color: #92400e;
+  padding: 12px;
+  border-radius: 6px;
+  margin: 8px;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Enhanced search and filter styles */
+.search-container {
+  background: var(--detail-text-white);
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.search-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 2px solid var(--detail-gray-300);
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.search-input:focus {
+  border-color: var(--mold-primary);
+  box-shadow: 0 0 0 3px rgba(30,64,175,0.1);
+  outline: none;
+}
+
+/* Table styles for data display */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.data-table th,
+.data-table td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid var(--detail-gray-200);
+}
+
+.data-table th {
+  background: var(--detail-gray-50);
+  font-weight: 600;
+  color: var(--detail-gray-700);
+}
+
+.data-table tr:hover {
+  background: var(--detail-gray-50);
+}
+
+/* Progress indicators */
+.progress-bar {
+  width: 100%;
+  height: 4px;
+  background: var(--detail-gray-200);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--mold-primary);
+  transition: width 0.3s ease;
+}
+
+/* Tooltip styles */
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: #555;
+  color: white;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-size: 12px;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
 /* End of detail-mold-styles.css V4.242 - Multi-column layout and enhanced features */
+/* 📋 KẾT THÚC FILE: detail-mold-styles.css V4.242 - File hoàn chỉnh, không bị gián đoạn */

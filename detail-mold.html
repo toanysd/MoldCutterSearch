@@ -1,136 +1,205 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>金型詳細 - V4.241</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="detail-mold-styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Chi tiết khuôn - Mold Detail V4.24</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="detail-mold-styles.css">
 </head>
 <body class="mold-detail-page">
-    <!-- Enhanced Compact Header -->
-    <header class="detail-header-compact mold">
-        <div class="container">
-            <div class="header-row-compact">
-                <button class="back-btn-compact" onclick="goBack()">‹</button>
-                <div class="header-info-compact">
-                    <div class="item-title-compact" id="moldTitle">読み込み中...</div>
-                    <div class="storage-info-compact" id="storageInfo">- / -</div>
-                </div>
-                <div class="header-actions-compact">
-                    <button class="btn-icon-compact" onclick="reloadMoldDataFromGitHub()" title="最新データ">🔄</button>
-                    <button class="btn-icon-compact" onclick="printDetail()" title="印刷">🖨</button>
-                    <button class="btn-icon-compact" onclick="showQuickEditModal()" title="編集">✏</button>
-                </div>
-            </div>
-        </div>
-    </header>
 
+  <!-- Enhanced Compact Header -->
+  <header class="detail-header-compact mold">
     <div class="container">
-        <!-- Quick Actions Row - Mobile Optimized -->
-        <div class="quick-actions-compact">
-            <button class="quick-btn-compact location" onclick="showLocationModal()">
-                <span class="btn-icon-small">📍</span>
-                <span class="btn-text-small">位置</span>
-            </button>
-            <button class="quick-btn-compact shipment" onclick="showShipmentModal()">
-                <span class="btn-icon-small">🚚</span>
-                <span class="btn-text-small">出荷</span>
-            </button>
-            <button class="quick-btn-compact comment" onclick="showCommentModal()">
-                <span class="btn-icon-small">💬</span>
-                <span class="btn-text-small">コメント</span>
-            </button>
+      <div class="header-row-compact">
+        <button class="back-btn-compact" onclick="goBack()">←</button>
+        <div class="header-info-compact">
+          <div class="item-title-compact" id="moldTitle">Loading...</div>
+          <div class="storage-info-compact" id="storageInfo">-</div>
         </div>
-
-        <!-- ✅ NEW: Multi-column layout for better space utilization -->
-        <div class="detail-grid-multi-column">
-            <!-- Left Column -->
-            <div class="detail-column-left">
-                <!-- Basic Info -->
-                <section class="detail-card-compact">
-                    <h3 class="card-title-compact">基本情報</h3>
-                    <div class="info-content-compact" id="basicInfo">
-                        <!-- Populated by JS -->
-                    </div>
-                </section>
-
-                <!-- Status Info -->
-                <section class="detail-card-compact">
-                    <h3 class="card-title-compact">ステータス</h3>
-                    <div class="info-content-compact" id="statusInfo">
-                        <!-- Populated by JS -->
-                    </div>
-                </section>
-
-                <!-- Technical Info -->
-                <section class="detail-card-compact">
-                    <h3 class="card-title-compact">技術仕様</h3>
-                    <div class="info-content-compact" id="technicalInfo">
-                        <!-- Populated by JS -->
-                    </div>
-                </section>
-
-                <!-- Product Info -->
-                <section class="detail-card-compact">
-                    <h3 class="card-title-compact">製品情報</h3>
-                    <div class="info-content-compact" id="productInfo">
-                        <!-- Populated by JS -->
-                    </div>
-                </section>
-            </div>
-
-            <!-- Right Column -->
-            <div class="detail-column-right">
-                <!-- Location History -->
-                <section class="detail-card-compact">
-                    <h3 class="card-title-compact">位置履歴</h3>
-                    <div class="history-content-compact" id="locationHistory">
-                        <!-- Populated by JS -->
-                    </div>
-                </section>
-
-                <!-- Shipment History -->
-                <section class="detail-card-compact">
-                    <h3 class="card-title-compact">出荷履歴</h3>
-                    <div class="history-content-compact" id="shipmentHistory">
-                        <!-- Populated by JS -->
-                    </div>
-                </section>
-
-                <!-- Related Cutters -->
-                <section class="detail-card-compact" id="relatedCuttersSection">
-                    <h3 class="card-title-compact">関連抜型</h3>
-                    <div class="related-content-compact" id="relatedCutters">
-                        <!-- Populated by JS -->
-                    </div>
-                </section>
-
-                <!-- User Comments -->
-                <section class="detail-card-compact">
-                    <h3 class="card-title-compact">コメント</h3>
-                    <div class="comments-content-compact" id="userComments">
-                        <!-- Populated by JS -->
-                    </div>
-                </section>
-            </div>
+        <div class="header-actions-compact">
+          <button class="btn-icon-compact" onclick="reloadMoldDataFromGitHub()" title="Làm mới / 更新">⟳</button>
+          <button class="btn-icon-compact" onclick="printDetail()" title="In / 印刷">🖨️</button>
+          <button class="btn-icon-compact" onclick="showQuickEditModal()" title="Chỉnh sửa nhanh / クイック編集">✎</button>
         </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- Quick Actions -->
+    <div class="quick-actions-compact">
+      <button class="quick-btn-compact location" id="showLocationBtn">
+        <span class="btn-icon-small">📦</span>
+        <span class="btn-text-small">Vị trí<br>位置</span>
+      </button>
+      <button class="quick-btn-compact shipment" id="showShipmentBtn">
+        <span class="btn-icon-small">🚚</span>
+        <span class="btn-text-small">Vận chuyển<br>出荷</span>
+      </button>
+      <button class="quick-btn-compact comment" id="showCommentBtn">
+        <span class="btn-icon-small">💬</span>
+        <span class="btn-text-small">Bình luận<br>コメント</span>
+      </button>
     </div>
 
-    <!-- Rest of modals remain the same... -->
-    <!-- Loading Indicator -->
-    <div id="loadingIndicator" class="loading-overlay">
-        <div class="loading-content">
-            <div class="spinner mold"></div>
-            <span class="loading-text">読み込み中...</span>
-        </div>
+    <!-- Multi-column layout -->
+    <div class="detail-grid-multi-column">
+      <!-- Left Column -->
+      <div class="detail-column-left">
+        <!-- Basic Info -->
+        <section class="detail-card-compact">
+          <h3 class="card-title-compact">Thông tin cơ bản<br>基本情報</h3>
+          <div class="info-content-compact" id="basicInfo"><!-- Populated by JS --></div>
+        </section>
+        <!-- Status Info -->
+        <section class="detail-card-compact">
+          <h3 class="card-title-compact">Trạng thái<br>ステータス</h3>
+          <div class="info-content-compact" id="statusInfo"><!-- Populated by JS --></div>
+        </section>
+        <!-- Technical Info -->
+        <section class="detail-card-compact">
+          <h3 class="card-title-compact">Kỹ thuật<br>技術情報</h3>
+          <div class="info-content-compact" id="technicalInfo"><!-- Populated by JS --></div>
+        </section>
+        <!-- Product Info -->
+        <section class="detail-card-compact">
+          <h3 class="card-title-compact">Sản phẩm<br>製品情報</h3>
+          <div class="info-content-compact" id="productInfo"><!-- Populated by JS --></div>
+        </section>
+      </div>
+      <!-- Right Column -->
+      <div class="detail-column-right">
+        <!-- Location History -->
+        <section class="detail-card-compact">
+          <h3 class="card-title-compact">Lịch sử vị trí<br>位置履歴</h3>
+          <div class="history-content-compact" id="locationHistory"><!-- Populated by JS --></div>
+        </section>
+        <!-- Shipment History -->
+        <section class="detail-card-compact">
+          <h3 class="card-title-compact">Lịch sử vận chuyển<br>出荷履歴</h3>
+          <div class="history-content-compact" id="shipmentHistory"><!-- Populated by JS --></div>
+        </section>
+        <!-- Related Cutters -->
+        <section class="detail-card-compact" id="relatedCuttersSection" style="display:none">
+          <h3 class="card-title-compact">Dao cắt liên quan<br>関連カッター</h3>
+          <div class="related-content-compact" id="relatedCutters"><!-- Populated by JS --></div>
+        </section>
+        <!-- User Comments -->
+        <section class="detail-card-compact">
+          <h3 class="card-title-compact">Bình luận<br>コメント</h3>
+          <div class="comments-content-compact" id="userComments"><!-- Populated by JS --></div>
+        </section>
+      </div>
     </div>
+  </div>
 
-    <!-- Scripts -->
-    <script src="script.js"></script>
-    <script src="detail-mold.js"></script>
+  <!-- MODALS -->
+  <!-- Location Modal -->
+  <div id="locationModal" class="modal-compact">
+    <div class="modal-content-compact">
+      <div class="modal-header-compact mold">
+        <h3>Thay đổi vị trí<br>金型位置変更</h3>
+        <button class="modal-close-compact" onclick="hideLocationModal()">×</button>
+      </div>
+      <form id="locationForm" class="modal-body-compact">
+        <div class="form-group-compact">
+          <label>Chọn giá/kệ<br>ラック選択</label>
+          <select id="rackSelect" class="form-select-compact" onchange="updateRackLayers()"></select>
+        </div>
+        <div class="form-group-compact">
+          <label>Chọn tầng<br>棚段選択</label>
+          <select id="rackLayerSelect" class="form-select-compact"></select>
+        </div>
+        <div class="form-group-compact">
+          <label>Người thực hiện<br>担当者</label>
+          <select id="employeeSelect" class="form-select-compact"></select>
+        </div>
+        <div class="form-group-compact">
+          <label>Ghi chú<br>備考</label>
+          <textarea id="locationNotes" class="form-textarea-compact"></textarea>
+        </div>
+        <div class="modal-actions-compact">
+          <button type="button" class="btn-secondary-compact" onclick="hideLocationModal()">Hủy<br>キャンセル</button>
+          <button type="submit" class="btn-primary-compact mold">Lưu<br>保存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Shipment Modal -->
+  <div id="shipmentModal" class="modal-compact">
+    <div class="modal-content-compact">
+      <div class="modal-header-compact mold">
+        <h3>Đăng ký vận chuyển<br>出荷登録</h3>
+        <button class="modal-close-compact" onclick="hideShipmentModal()">×</button>
+      </div>
+      <form id="shipmentForm" class="modal-body-compact">
+        <div class="form-group-compact">
+          <label>Đi đến<br>出荷先</label>
+          <select id="toCompanySelect" class="form-select-compact"></select>
+        </div>
+        <div class="form-group-compact">
+          <label>Ngày vận chuyển<br>日付</label>
+          <input type="date" id="shipmentDate" class="form-input-compact">
+        </div>
+        <div class="form-group-compact">
+          <label>Người thực hiện<br>担当者</label>
+          <input type="text" id="handler" class="form-input-compact">
+        </div>
+        <div class="form-group-compact">
+          <label>Ghi chú<br>備考</label>
+          <textarea id="shipmentNotes" class="form-textarea-compact"></textarea>
+        </div>
+        <div class="modal-actions-compact">
+          <button type="button" class="btn-secondary-compact" onclick="hideShipmentModal()">Hủy<br>キャンセル</button>
+          <button type="submit" class="btn-primary-compact mold">Lưu<br>保存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Comment Modal -->
+  <div id="commentModal" class="modal-compact">
+    <div class="modal-content-compact">
+      <div class="modal-header-compact mold">
+        <h3>Thêm bình luận<br>コメント追加</h3>
+        <button class="modal-close-compact" onclick="hideCommentModal()">×</button>
+      </div>
+      <form id="commentForm" class="modal-body-compact">
+        <div class="form-group-compact">
+          <label>Bình luận<br>コメント</label>
+          <textarea id="commentText" class="form-textarea-compact"></textarea>
+        </div>
+        <div class="form-group-compact">
+          <label>Người bình luận<br>担当者</label>
+          <select id="commentEmployeeSelect" class="form-select-compact"></select>
+        </div>
+        <div class="modal-actions-compact">
+          <button type="button" class="btn-secondary-compact" onclick="hideCommentModal()">Hủy<br>キャンセル</button>
+          <button type="submit" class="btn-primary-compact mold">Gửi<br>投稿</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Loading Indicator -->
+  <div id="loadingIndicator" class="loading-overlay" style="display:none;">
+    <div class="loading-content">
+      <div class="spinner mold"></div>
+      <span class="loading-text">Đang tải dữ liệu...<br>データ読込中...</span>
+    </div>
+  </div>
+
+  <!-- Error Container -->
+  <div id="errorContainer" class="error-container" style="display:none;"></div>
+
+  <!-- Scripts -->
+  <script src="script.js"></script>
+  <script src="detail-mold.js"></script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 // script.js - V4.24 Complete with V4.221 UI and V3.0 Server Logic
-const API_BASE_URL = 'http://localhost:3001/api';
-const GITHUB_BASE_URL = "https://raw.githubusercontent.com/toanysd/MoldCutterSearch/main/Data/";
 
+const GITHUB_BASE_URL = "https://raw.githubusercontent.com/toanysd/MoldCutterSearch/main/Data/";
+const API_BASE_URL = 'https://ysd-moldcutter-backend.onrender.com';
 // Global variables
 let allData = {
     molds: [],

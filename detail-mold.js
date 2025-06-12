@@ -1,5 +1,5 @@
-// detail-mold.js - V4.31 Production Ready
-// Complete implementation with enhanced business logic and full data display
+// detail-mold.js - V4.32 Production Ready
+// Professional desktop layout with enhanced business logic, no auto-refresh
 
 let currentMold = null;
 let moldAllData = {};
@@ -18,29 +18,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     initializeMoldEventListeners();
     loadMoldUserComments(); // Load fallback comments from localStorage
-    // Start auto-refresh after 1 minute to allow initial load to settle
-    setTimeout(startAutoRefresh, 60000);
+    // REMOVED: Auto-refresh to prevent screen flickering
 });
-
-// ===== TỰ ĐỘNG LÀM MỚI DỮ LIỆU (AUTO REFRESH LOGIC) =====
-let autoRefreshInterval = null;
-
-function startAutoRefresh() {
-    if (autoRefreshInterval) clearInterval(autoRefreshInterval);
-    autoRefreshInterval = setInterval(async () => {
-        console.log('Auto-refreshing mold data from GitHub...');
-        if (currentMold) {
-            await reloadMoldDataFromGitHub();
-        }
-    }, 30000); // 30 seconds
-}
-
-function stopAutoRefresh() {
-    if (autoRefreshInterval) {
-        clearInterval(autoRefreshInterval);
-        autoRefreshInterval = null;
-    }
-}
 
 // ===== THIẾT LẬP SỰ KIỆN (EVENT LISTENERS SETUP) =====
 function initializeMoldEventListeners() {
@@ -87,8 +66,11 @@ function initializeMoldEventListeners() {
 
 // ===== TẢI DỮ LIỆU TỪ GITHUB (DATA LOADING FROM GITHUB) =====
 
+/**
+ * Manual reload function (no auto-refresh to prevent flickering)
+ */
 async function reloadMoldDataFromGitHub() {
-    console.log('Reloading mold data from GitHub...');
+    console.log('Manual reload: Refreshing mold data from GitHub...');
     try {
         showLoading(true);
         const filesToReload = ['locationlog.csv', 'shiplog.csv', 'molds.csv', 'usercomments.csv'];
@@ -128,6 +110,9 @@ async function reloadMoldDataFromGitHub() {
     }
 }
 
+/**
+ * Loads all necessary data for the mold detail page on initial page load.
+ */
 async function loadMoldDetailData(moldId) {
     showLoading(true);
     try {
@@ -271,7 +256,7 @@ async function handleMoldLocationUpdate() {
         });
 
         // Wait for GitHub to propagate changes before reloading
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        await new Promise(resolve => setTimeout(resolve, 3000));
         await reloadMoldDataFromGitHub();
 
         hideLocationModal();
@@ -332,7 +317,7 @@ async function handleMoldShipmentUpdate() {
             }
         });
 
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        await new Promise(resolve => setTimeout(resolve, 3000));
         await reloadMoldDataFromGitHub();
 
         hideShipmentModal();
@@ -380,7 +365,7 @@ async function handleMoldCommentSubmit(event) {
             data: newCommentEntry
         });
 
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        await new Promise(resolve => setTimeout(resolve, 3000));
         await reloadMoldDataFromGitHub();
 
         hideCommentModal();
@@ -428,7 +413,7 @@ async function callBackendApi(action, data) {
 // ====== CÁC HÀM HIỂN THỊ DỮ LIỆU (UI DISPLAY FUNCTIONS) ======
 
 /**
- * Main function to orchestrate the display of all mold data on the page.
+ * FIXED: Main function with proper ID mapping for HTML compatibility
  */
 function displayMoldDetailData() {
     if (!currentMold) return;
@@ -436,13 +421,13 @@ function displayMoldDetailData() {
     // Update the main header with enhanced logic
     displayEnhancedHeader();
     
-    // Display the 4 main information groups as requested
-    displaySummaryInfo();      // Nhóm thông tin tổng hợp
-    displayStatusInfo();       // Nhóm trạng thái
-    displayTechnicalInfo();    // Nhóm thông số kỹ thuật  
-    displayProductInfo();      // Nhóm thông tin sản phẩm khay
+    // FIXED: Use standard HTML IDs that match V4.243/V4.244 structure
+    displayMoldBasicInfo();        // Uses 'basicInfo' ID
+    displayMoldStatusInfo();       // Uses 'statusInfo' ID
+    displayMoldTechnicalInfo();    // Uses 'technicalInfo' ID
+    displayMoldProductInfo();      // Uses 'productInfo' ID
 
-    // Display history and comments (keep existing structure)
+    // Display history and comments with enhanced styling
     displayMoldLocationHistory();
     displayMoldShipmentHistory();
     displayMoldRelatedCutters();
@@ -450,12 +435,12 @@ function displayMoldDetailData() {
 }
 
 /**
- * NEW: Enhanced header display with original YSD location when shipped out
+ * Enhanced header display with original YSD location when shipped out
  */
 function displayEnhancedHeader() {
     const moldTitle = document.getElementById('moldTitle');
     if (moldTitle) {
-        moldTitle.textContent = currentMold.MoldName || currentMold.MoldCode;
+        moldTitle.textContent = `${currentMold.MoldCode} - ${currentMold.MoldName || ''}`;
     }
 
     const storageInfo = document.getElementById('storageInfo');
@@ -479,10 +464,10 @@ function displayEnhancedHeader() {
 }
 
 /**
- * NEW: Display Summary Information Group (Nhóm thông tin tổng hợp)
+ * FIXED: Display basic information with proper ID and enhanced status logic
  */
-function displaySummaryInfo() {
-    const container = document.getElementById('summaryInfo');
+function displayMoldBasicInfo() {
+    const container = document.getElementById('basicInfo');
     if (!container) return;
     
     const design = currentMold.designInfo || {};
@@ -506,6 +491,8 @@ function displaySummaryInfo() {
     const firstShipDate = job.DeliveryDeadline ? formatDate(job.DeliveryDeadline) : 'N/A';
 
     container.innerHTML = `
+        <div class="info-row-compact"><div class="info-label-compact">ID</div><div class="info-value-compact muted">${currentMold.MoldID}</div></div>
+        <div class="info-row-compact"><div class="info-label-compact">Mã khuôn / 金型コード</div><div class="info-value-compact highlight">${currentMold.MoldCode}</div></div>
         <div class="info-row-compact"><div class="info-label-compact">Tên khuôn / 金型名</div><div class="info-value-compact">${currentMold.MoldName || 'N/A'}</div></div>
         <div class="info-row-compact"><div class="info-label-compact">Trạng thái / ステータス</div><div class="info-value-compact ${status.class}">${status.text}</div></div>
         <div class="info-row-compact"><div class="info-label-compact">Vị trí gốc YSD</div><div class="info-value-compact">${originalLocation}</div></div>
@@ -520,9 +507,9 @@ function displaySummaryInfo() {
 }
 
 /**
- * NEW: Display Status Information Group (Nhóm trạng thái)
+ * FIXED: Display status information with proper ID
  */
-function displayStatusInfo() {
+function displayMoldStatusInfo() {
     const container = document.getElementById('statusInfo');
     if (!container) return;
 
@@ -534,9 +521,9 @@ function displayStatusInfo() {
 }
 
 /**
- * NEW: Display Technical Information Group (Nhóm thông số kỹ thuật)
+ * FIXED: Display technical information with proper ID and full data
  */
-function displayTechnicalInfo() {
+function displayMoldTechnicalInfo() {
     const container = document.getElementById('technicalInfo');
     if (!container) return;
     
@@ -567,9 +554,9 @@ function displayTechnicalInfo() {
 }
 
 /**
- * NEW: Display Product Information Group (Nhóm thông tin sản phẩm khay)
+ * FIXED: Display product information with proper ID and full data
  */
-function displayProductInfo() {
+function displayMoldProductInfo() {
     const container = document.getElementById('productInfo');
     if (!container) return;
     
@@ -719,7 +706,7 @@ async function deleteLocationHistory(locationLogId) {
     try {
         showLoading(true);
         await callBackendApi('delete-log', { endpoint: 'locationlog.csv', data: { logId: locationLogId, idField: 'LocationLogID' } });
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        await new Promise(resolve => setTimeout(resolve, 3000));
         await reloadMoldDataFromGitHub();
         showSuccessNotification('Đã xóa lịch sử vị trí / 位置履歴が削除されました');
     } catch (error) {
@@ -734,7 +721,7 @@ async function deleteShipmentHistory(shipId) {
     try {
         showLoading(true);
         await callBackendApi('delete-log', { endpoint: 'shiplog.csv', data: { logId: shipId, idField: 'ShipID' } });
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        await new Promise(resolve => setTimeout(resolve, 3000));
         await reloadMoldDataFromGitHub();
         showSuccessNotification('Đã xóa lịch sử vận chuyển / 出荷履歴が削除されました');
     } catch (error) {
@@ -749,7 +736,7 @@ async function deleteUserComment(commentId) {
     try {
         showLoading(true);
         await callBackendApi('delete-comment', { endpoint: 'usercomments.csv', data: { commentId: commentId, idField: 'UserCommentID' } });
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        await new Promise(resolve => setTimeout(resolve, 3000));
         await reloadMoldDataFromGitHub();
         showSuccessNotification('Đã xóa bình luận / コメントが削除されました');
     } catch (error) {
@@ -791,7 +778,7 @@ function updateRackLayers() {
 }
 
 /**
- * NEW: Enhanced status logic - Priority: MoldReturning > MoldDisposing > MoldNotes
+ * FIXED: Enhanced status logic - Priority: MoldReturning > MoldDisposing > MoldNotes
  */
 function getEnhancedMoldStatus(mold) {
     // Check MoldReturning first
@@ -815,7 +802,7 @@ function getEnhancedMoldStatus(mold) {
 }
 
 /**
- * NEW: Gets the original YSD location for display in header when mold is shipped out
+ * Gets the original YSD location for display in header when mold is shipped out
  */
 function getOriginalYSDLocation() {
     const history = getMoldLocationHistory(currentMold.MoldID);
@@ -942,4 +929,4 @@ function printDetail() { window.print(); }
 function showQuickEditModal() { showNotification('Quick Edit機能は開発中です (Chức năng Quick Edit đang phát triển)', 'info'); }
 
 // ===== END OF FILE =====
-console.log('detail-mold.js V4.31 - Production Ready with Enhanced Business Logic - Fully loaded and complete.');
+console.log('detail-mold.js V4.32 - Professional Desktop Layout - No Auto-refresh - Production Ready - Fully loaded and complete.');

@@ -1,382 +1,205 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>金型詳細 - MoldCutterSearch V5.5</title>
-    <!-- V5.5 - Compact Header + Tab Design - Updated 2025.09.21 -->
-    <!-- 2-column layout, fixed action buttons, back navigation -->
-    <link rel="stylesheet" href="detail-mold-styles.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Chi tiết khuôn - Mold Detail V4.24</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="detail-mold-styles.css">
 </head>
-<body>
-    <!-- ===== COMPACT HEADER V5.5 ===== -->
-    <div class="header-container">
-        <div class="header-top">
-            <div class="header-left">
-                <!-- Navigation buttons -->
-                <div class="header-nav-buttons">
-                    <a href="index.html" class="nav-btn">
-                        ← 検索ページ
-                    </a>
-                    <button onclick="goBack()" class="nav-btn">
-                        ← 検索結果
-                    </button>
-                </div>
+<body class="mold-detail-page">
 
-                <!-- Title -->
-                <h1 class="header-title" id="moldTitle">Loading...</h1>
-                <div class="header-subtitle" id="moldSubtitle">金型詳細情報</div>
-            </div>
-
-            <!-- Fixed action buttons -->
-            <div class="header-right">
-                <button id="showLocationBtn" class="header-action-btn">
-                    📍 位置更新
-                </button>
-                <button id="showShipmentBtn" class="header-action-btn">
-                    🚚 出荷登録
-                </button>
-                <button id="showCommentBtn" class="header-action-btn">
-                    💬 コメント
-                </button>
-            </div>
+  <!-- Enhanced Compact Header -->
+  <header class="detail-header-compact mold">
+    <div class="container">
+      <div class="header-row-compact">
+        <button class="back-btn-compact" onclick="goBack()">←</button>
+        <div class="header-info-compact">
+          <div class="item-title-compact" id="moldTitle">Loading...</div>
+          <div class="storage-info-compact" id="storageInfo">-</div>
         </div>
+        <div class="header-actions-compact">
+          <button class="btn-icon-compact" onclick="reloadMoldDataFromGitHub()" title="Làm mới / 更新">⟳</button>
+          <button class="btn-icon-compact" onclick="printDetail()" title="In / 印刷">🖨️</button>
+          <button class="btn-icon-compact" onclick="showQuickEditModal()" title="Chỉnh sửa nhanh / クイック編集">✎</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- Quick Actions -->
+    <div class="quick-actions-compact">
+      <button class="quick-btn-compact location" id="showLocationBtn">
+        <span class="btn-icon-small">📦</span>
+        <span class="btn-text-small">Vị trí<br>位置</span>
+      </button>
+      <button class="quick-btn-compact shipment" id="showShipmentBtn">
+        <span class="btn-icon-small">🚚</span>
+        <span class="btn-text-small">Vận chuyển<br>出荷</span>
+      </button>
+      <button class="quick-btn-compact comment" id="showCommentBtn">
+        <span class="btn-icon-small">💬</span>
+        <span class="btn-text-small">Bình luận<br>コメント</span>
+      </button>
     </div>
 
-    <!-- ===== MAIN CONTAINER ===== -->
-    <div class="main-container">
-        <!-- Tab Navigation -->
-        <div class="tab-navigation">
-            <ul class="tab-nav-list">
-                <li class="tab-nav-item">
-                    <a href="#summary" class="tab-nav-link active" data-tab="summary">
-                        📋 情報総合
-                    </a>
-                </li>
-                <li class="tab-nav-item">
-                    <a href="#product" class="tab-nav-link" data-tab="product">
-                        📦 製品
-                    </a>
-                </li>
-                <li class="tab-nav-item">
-                    <a href="#technical" class="tab-nav-link" data-tab="technical">
-                        ⚙️ 技術
-                    </a>
-                </li>
-                <li class="tab-nav-item">
-                    <a href="#processing" class="tab-nav-link" data-tab="processing">
-                        🔄 処理・履歴
-                    </a>
-                </li>
-            </ul>
-        </div>
-
-        <!-- Tab Content -->
-        <div class="tab-content">
-            <!-- ===== TAB 1: SUMMARY (情報総合) ===== -->
-            <div id="summary" class="tab-pane active">
-                <div class="info-grid two-cols">
-                    <!-- Basic Summary Info -->
-                    <div class="info-section">
-                        <div class="section-header">
-                            <div class="section-icon">🏷️</div>
-                            <h3 class="section-title">基本情報</h3>
-                        </div>
-                        <div id="summaryBasicInfo" class="info-rows">
-                            <!-- Populated by JavaScript -->
-                        </div>
-                    </div>
-
-                    <!-- Tray Information -->
-                    <div class="info-section">
-                        <div class="section-header">
-                            <div class="section-icon">📋</div>
-                            <h3 class="section-title">トレイ情報</h3>
-                        </div>
-                        <div id="summaryTrayInfo" class="info-rows">
-                            <!-- Populated by JavaScript -->
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Related Cutters Section -->
-                <div class="info-section cutters-section">
-                    <div class="section-header">
-                        <div class="section-icon">🔧</div>
-                        <h3 class="section-title">関連カッター</h3>
-                    </div>
-                    <div id="summaryRelatedCutters">
-                        <!-- Populated by JavaScript -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- ===== TAB 2: PRODUCT (製品) ===== -->
-            <div id="product" class="tab-pane">
-                <div class="info-grid two-cols">
-                    <!-- Product Details -->
-                    <div class="info-section">
-                        <div class="section-header">
-                            <div class="section-icon">📦</div>
-                            <h3 class="section-title">製品詳細</h3>
-                        </div>
-                        <div id="productDetails" class="info-rows">
-                            <!-- Populated by JavaScript -->
-                        </div>
-                    </div>
-
-                    <!-- Business Information -->
-                    <div class="info-section">
-                        <div class="section-header">
-                            <div class="section-icon">💰</div>
-                            <h3 class="section-title">商業情報</h3>
-                        </div>
-                        <div id="productBusinessInfo" class="info-rows">
-                            <!-- Populated by JavaScript -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ===== TAB 3: TECHNICAL (技術) ===== -->
-            <div id="technical" class="tab-pane">
-                <div class="info-grid two-cols">
-                    <!-- Design Specifications -->
-                    <div class="info-section">
-                        <div class="section-header">
-                            <div class="section-icon">⚙️</div>
-                            <h3 class="section-title">設計仕様</h3>
-                        </div>
-                        <div id="technicalDesignSpecs" class="info-rows">
-                            <!-- Populated by JavaScript -->
-                        </div>
-                    </div>
-
-                    <!-- Manufacturing Details -->
-                    <div class="info-section">
-                        <div class="section-header">
-                            <div class="section-icon">🔨</div>
-                            <h3 class="section-title">製造詳細</h3>
-                        </div>
-                        <div id="technicalManufacturingDetails" class="info-rows">
-                            <!-- Populated by JavaScript -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ===== TAB 4: PROCESSING & HISTORY (処理・履歴) ===== -->
-            <div id="processing" class="tab-pane">
-                <!-- Processing Status -->
-                <div class="info-section">
-                    <div class="section-header">
-                        <div class="section-icon">🔄</div>
-                        <h3 class="section-title">処理状況</h3>
-                    </div>
-                    <div id="processingStatus">
-                        <!-- Populated by JavaScript -->
-                    </div>
-                </div>
-
-                <div class="info-grid two-cols">
-                    <!-- Location History -->
-                    <div class="info-section">
-                        <div class="section-header">
-                            <div class="section-icon">📍</div>
-                            <h3 class="section-title">位置履歴</h3>
-                        </div>
-                        <div id="processingLocationHistory" class="history-grid">
-                            <!-- Populated by JavaScript -->
-                        </div>
-                    </div>
-
-                    <!-- Shipment History -->
-                    <div class="info-section">
-                        <div class="section-header">
-                            <div class="section-icon">🚚</div>
-                            <h3 class="section-title">出荷履歴</h3>
-                        </div>
-                        <div id="processingShipmentHistory" class="history-grid">
-                            <!-- Populated by JavaScript -->
-                        </div>
-                    </div>
-                </div>
-
-                <!-- User Comments -->
-                <div class="info-section">
-                    <div class="section-header">
-                        <div class="section-icon">💬</div>
-                        <h3 class="section-title">コメント</h3>
-                    </div>
-                    <div id="processingUserComments">
-                        <!-- Populated by JavaScript -->
-                    </div>
-                </div>
-            </div>
-        </div>
+    <!-- Multi-column layout -->
+    <div class="detail-grid-multi-column">
+      <!-- Left Column -->
+      <div class="detail-column-left">
+        <!-- Basic Info -->
+        <section class="detail-card-compact">
+          <h3 class="card-title-compact">Thông tin cơ bản<br>基本情報</h3>
+          <div class="info-content-compact" id="basicInfo"><!-- Populated by JS --></div>
+        </section>
+        <!-- Status Info -->
+        <section class="detail-card-compact">
+          <h3 class="card-title-compact">Trạng thái<br>ステータス</h3>
+          <div class="info-content-compact" id="statusInfo"><!-- Populated by JS --></div>
+        </section>
+        <!-- Technical Info -->
+        <section class="detail-card-compact">
+          <h3 class="card-title-compact">Kỹ thuật<br>技術情報</h3>
+          <div class="info-content-compact" id="technicalInfo"><!-- Populated by JS --></div>
+        </section>
+        <!-- Product Info -->
+        <section class="detail-card-compact">
+          <h3 class="card-title-compact">Sản phẩm<br>製品情報</h3>
+          <div class="info-content-compact" id="productInfo"><!-- Populated by JS --></div>
+        </section>
+      </div>
+      <!-- Right Column -->
+      <div class="detail-column-right">
+        <!-- Location History -->
+        <section class="detail-card-compact">
+          <h3 class="card-title-compact">Lịch sử vị trí<br>位置履歴</h3>
+          <div class="history-content-compact" id="locationHistory"><!-- Populated by JS --></div>
+        </section>
+        <!-- Shipment History -->
+        <section class="detail-card-compact">
+          <h3 class="card-title-compact">Lịch sử vận chuyển<br>出荷履歴</h3>
+          <div class="history-content-compact" id="shipmentHistory"><!-- Populated by JS --></div>
+        </section>
+        <!-- Related Cutters -->
+        <section class="detail-card-compact" id="relatedCuttersSection" style="display:none">
+          <h3 class="card-title-compact">Dao cắt liên quan<br>関連カッター</h3>
+          <div class="related-content-compact" id="relatedCutters"><!-- Populated by JS --></div>
+        </section>
+        <!-- User Comments -->
+        <section class="detail-card-compact">
+          <h3 class="card-title-compact">Bình luận<br>コメント</h3>
+          <div class="comments-content-compact" id="userComments"><!-- Populated by JS --></div>
+        </section>
+      </div>
     </div>
+  </div>
 
-    <!-- ===== MODALS ===== -->
-    <!-- Location Modal -->
-    <div id="locationModal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('locationModal')">&times;</span>
-            <h3>位置更新 / Cập nhật vị trí</h3>
-            <form id="locationForm">
-                <div class="form-group">
-                    <label>ラック / Giá:</label>
-                    <select id="rackSelect" required>
-                        <option value="">選択してください / Chọn giá</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>レイヤー / Tầng:</label>
-                    <select id="rackLayerSelect" required>
-                        <option value="">選択してください / Chọn tầng</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>担当者 / Người thực hiện:</label>
-                    <select id="employeeSelect" required>
-                        <option value="">選択してください / Chọn người</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>備考 / Ghi chú:</label>
-                    <textarea id="locationNotes" rows="2" placeholder="備考を入力..."></textarea>
-                </div>
-                <div class="form-actions">
-                    <button type="submit">更新 / Cập nhật</button>
-                    <button type="button" onclick="closeModal('locationModal')">キャンセル / Hủy</button>
-                </div>
-            </form>
+  <!-- MODALS -->
+  <!-- Location Modal -->
+  <div id="locationModal" class="modal-compact">
+    <div class="modal-content-compact">
+      <div class="modal-header-compact mold">
+        <h3>Thay đổi vị trí<br>金型位置変更</h3>
+        <button class="modal-close-compact" onclick="hideLocationModal()">×</button>
+      </div>
+      <form id="locationForm" class="modal-body-compact">
+        <div class="form-group-compact">
+          <label>Chọn giá/kệ<br>ラック選択</label>
+          <select id="rackSelect" class="form-select-compact" onchange="updateRackLayers()"></select>
         </div>
-    </div>
-
-    <!-- Shipment Modal -->
-    <div id="shipmentModal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('shipmentModal')">&times;</span>
-            <h3>出荷登録 / Đăng ký vận chuyển</h3>
-            <form id="shipmentForm">
-                <div class="form-group">
-                    <label>出荷先 / Đích đến:</label>
-                    <select id="toCompanySelect" required>
-                        <option value="">選択してください / Chọn công ty</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>出荷日 / Ngày vận chuyển:</label>
-                    <input type="date" id="shipmentDate" required>
-                </div>
-                <div class="form-group">
-                    <label>担当者 / Người thực hiện:</label>
-                    <input type="text" id="handler" placeholder="担当者名を入力...">
-                </div>
-                <div class="form-group">
-                    <label>備考 / Ghi chú:</label>
-                    <textarea id="shipmentNotes" rows="2" placeholder="備考を入力..."></textarea>
-                </div>
-                <div class="form-actions">
-                    <button type="submit">登録 / Đăng ký</button>
-                    <button type="button" onclick="closeModal('shipmentModal')">キャンセル / Hủy</button>
-                </div>
-            </form>
+        <div class="form-group-compact">
+          <label>Chọn tầng<br>棚段選択</label>
+          <select id="rackLayerSelect" class="form-select-compact"></select>
         </div>
-    </div>
-
-    <!-- Comment Modal -->
-    <div id="commentModal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('commentModal')">&times;</span>
-            <h3>コメント追加 / Thêm bình luận</h3>
-            <form id="commentForm">
-                <div class="form-group">
-                    <label>担当者 / Người bình luận:</label>
-                    <select id="commentEmployeeSelect" required>
-                        <option value="">選択してください / Chọn người</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>コメント / Bình luận:</label>
-                    <textarea id="commentText" rows="3" required placeholder="コメントを入力してください..."></textarea>
-                </div>
-                <div class="form-actions">
-                    <button type="submit">追加 / Thêm</button>
-                    <button type="button" onclick="closeModal('commentModal')">キャンセル / Hủy</button>
-                </div>
-            </form>
+        <div class="form-group-compact">
+          <label>Người thực hiện<br>担当者</label>
+          <select id="employeeSelect" class="form-select-compact"></select>
         </div>
+        <div class="form-group-compact">
+          <label>Ghi chú<br>備考</label>
+          <textarea id="locationNotes" class="form-textarea-compact"></textarea>
+        </div>
+        <div class="modal-actions-compact">
+          <button type="button" class="btn-secondary-compact" onclick="hideLocationModal()">Hủy<br>キャンセル</button>
+          <button type="submit" class="btn-primary-compact mold">Lưu<br>保存</button>
+        </div>
+      </form>
     </div>
+  </div>
 
-    <!-- Loading indicator -->
-    <div id="loadingIndicator" class="loading-overlay" style="display: none;">
-        <div class="loading-spinner"></div>
-        <p>データを読み込み中... / Đang tải dữ liệu...</p>
+  <!-- Shipment Modal -->
+  <div id="shipmentModal" class="modal-compact">
+    <div class="modal-content-compact">
+      <div class="modal-header-compact mold">
+        <h3>Đăng ký vận chuyển<br>出荷登録</h3>
+        <button class="modal-close-compact" onclick="hideShipmentModal()">×</button>
+      </div>
+      <form id="shipmentForm" class="modal-body-compact">
+        <div class="form-group-compact">
+          <label>Đi đến<br>出荷先</label>
+          <select id="toCompanySelect" class="form-select-compact"></select>
+        </div>
+        <div class="form-group-compact">
+          <label>Ngày vận chuyển<br>日付</label>
+          <input type="date" id="shipmentDate" class="form-input-compact">
+        </div>
+        <div class="form-group-compact">
+          <label>Người thực hiện<br>担当者</label>
+          <input type="text" id="handler" class="form-input-compact">
+        </div>
+        <div class="form-group-compact">
+          <label>Ghi chú<br>備考</label>
+          <textarea id="shipmentNotes" class="form-textarea-compact"></textarea>
+        </div>
+        <div class="modal-actions-compact">
+          <button type="button" class="btn-secondary-compact" onclick="hideShipmentModal()">Hủy<br>キャンセル</button>
+          <button type="submit" class="btn-primary-compact mold">Lưu<br>保存</button>
+        </div>
+      </form>
     </div>
+  </div>
 
-    <!-- Error container -->
-    <div id="errorContainer" style="display: none; position: fixed; top: 20px; left: 20px; right: 20px; background: #f8d7da; color: #721c24; padding: 12px; border-radius: 8px; z-index: 9998;"></div>
+  <!-- Comment Modal -->
+  <div id="commentModal" class="modal-compact">
+    <div class="modal-content-compact">
+      <div class="modal-header-compact mold">
+        <h3>Thêm bình luận<br>コメント追加</h3>
+        <button class="modal-close-compact" onclick="hideCommentModal()">×</button>
+      </div>
+      <form id="commentForm" class="modal-body-compact">
+        <div class="form-group-compact">
+          <label>Bình luận<br>コメント</label>
+          <textarea id="commentText" class="form-textarea-compact"></textarea>
+        </div>
+        <div class="form-group-compact">
+          <label>Người bình luận<br>担当者</label>
+          <select id="commentEmployeeSelect" class="form-select-compact"></select>
+        </div>
+        <div class="modal-actions-compact">
+          <button type="button" class="btn-secondary-compact" onclick="hideCommentModal()">Hủy<br>キャンセル</button>
+          <button type="submit" class="btn-primary-compact mold">Gửi<br>投稿</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
-    <!-- JavaScript -->
-    <script src="script.js"></script>
-    <script src="detail-mold.js"></script>
+  <!-- Loading Indicator -->
+  <div id="loadingIndicator" class="loading-overlay" style="display:none;">
+    <div class="loading-content">
+      <div class="spinner mold"></div>
+      <span class="loading-text">Đang tải dữ liệu...<br>データ読込中...</span>
+    </div>
+  </div>
 
-    <script>
-        // Tab Navigation V5.5
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize tab functionality
-            const tabLinks = document.querySelectorAll('.tab-nav-link');
-            const tabPanes = document.querySelectorAll('.tab-pane');
+  <!-- Error Container -->
+  <div id="errorContainer" class="error-container" style="display:none;"></div>
 
-            tabLinks.forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-
-                    // Remove active class from all tabs and panes
-                    tabLinks.forEach(l => l.classList.remove('active'));
-                    tabPanes.forEach(p => p.classList.remove('active'));
-
-                    // Add active class to clicked tab
-                    this.classList.add('active');
-
-                    // Show corresponding pane
-                    const targetTab = this.getAttribute('data-tab');
-                    document.getElementById(targetTab).classList.add('active');
-                });
-            });
-
-            // Close modals when clicking outside
-            window.addEventListener('click', function(event) {
-                const modals = ['locationModal', 'shipmentModal', 'commentModal'];
-                modals.forEach(modalId => {
-                    const modal = document.getElementById(modalId);
-                    if (event.target === modal) {
-                        closeModal(modalId);
-                    }
-                });
-            });
-        });
-
-        // Navigation functions
-        function goBack() {
-            if (document.referrer && document.referrer.includes(window.location.hostname)) {
-                window.history.back();
-            } else {
-                window.location.href = 'index.html';
-            }
-        }
-
-        // Modal controls
-        function closeModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if (modal) {
-                modal.style.display = 'none';
-            }
-        }
-    </script>
+  <!-- Scripts -->
+  <script src="script.js"></script>
+  <script src="detail-mold.js"></script>
 </body>
 </html>

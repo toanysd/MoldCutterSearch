@@ -3,213 +3,172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Chi tiết khuôn - Mold Detail V5.7</title>
-    <!-- V5.7 - Tab-based Design + PDF Export + Based on V4.31 GitHub -->
+    <title>Chi tiết khuôn - MoldCutterSearch V6.3</title>
+    <!-- V6.3 - Simplified header like V5.9/V6.0 + Comprehensive print layout + Fixed mold dimensions -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="detail-mold-styles.css">
-
-    <!-- PDF Export Library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body class="mold-detail-page">
-    <!-- ===== COMPACT HEADER V5.7 - 2 LINES ===== -->
-    <header class="detail-header-compact mold">
-        <div class="container">
-            <!-- Line 1: Title + Actions -->
-            <div class="header-row-compact">
-                <div class="header-left">
-                    <button class="back-btn-compact" onclick="goBack()">← 戻る</button>
-                    <div class="header-info-compact">
-                        <div class="item-title-compact" id="moldTitle">Loading...</div>
-                        <div class="item-subtitle-compact" id="moldSubtitle">金型詳細情報</div>
+    
+    <!-- ===== SIMPLIFIED HEADER V6.3 LIKE V5.9 ===== -->
+    <header class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <a href="javascript:goBack()" class="back-btn">← 戻る</a>
+                <div class="mold-header-info">
+                    <div class="mold-title-row">
+                        <h1 class="mold-title" id="moldTitle">Loading...</h1>
+                        <div class="mold-location" id="moldLocation">
+                            📍 位置情報読み込み中...
+                        </div>
                     </div>
-                </div>
-
-                <div class="header-actions-compact">
-                    <button id="showLocationBtn" class="action-btn-compact">
-                        📍 位置更新
-                    </button>
-                    <button id="showShipmentBtn" class="action-btn-compact">
-                        🚚 出荷登録
-                    </button>
-                    <button id="showCommentBtn" class="action-btn-compact">
-                        💬 コメント
-                    </button>
-                    <button onclick="window.print()" class="action-btn-compact">
-                        🖨️ 印刷
-                    </button>
-                    <button onclick="exportToPDF()" class="action-btn-compact">
-                        📄 PDF出力
-                    </button>
+                    <p class="mold-subtitle">金型詳細情報 / Thông tin chi tiết khuôn</p>
                 </div>
             </div>
+            
+            <div class="header-actions">
+                <button id="showLocationBtn" class="action-btn">📍位置</button>
+                <button id="showShipmentBtn" class="action-btn">🚚出荷</button>
+                <button id="showCommentBtn" class="action-btn">💬コメント</button>
+                <button onclick="generateComprehensivePrint()" class="action-btn">🖨️印刷</button>
+                <button onclick="generatePDF()" class="action-btn">📄PDF</button>
+                <button onclick="reloadMoldDataFromGitHub()" class="action-btn">🔄更新</button>
+            </div>
         </div>
-
-        <!-- Line 2: Tab Navigation -->
-        <nav class="tab-navigation">
-            <ul class="tab-nav">
-                <li><a href="#summary" class="tab-link active" data-tab="summary">📋 情報総合</a></li>
-                <li><a href="#product" class="tab-link" data-tab="product">📦 製品</a></li>
-                <li><a href="#technical" class="tab-link" data-tab="technical">⚙️ 技術</a></li>
-                <li><a href="#processing" class="tab-link" data-tab="processing">🔄 処理・履歴</a></li>
-            </ul>
-        </nav>
     </header>
 
-    <!-- ===== MAIN CONTENT WITH TABS V5.7 ===== -->
-    <main class="tab-content-wrapper">
+    <!-- ===== V6.3: COMPREHENSIVE PRINT LAYOUT - HIDDEN ON SCREEN ===== -->
+    <div id="comprehensivePrintContent" class="print-only">
+        <!-- This content is populated by JavaScript and only visible when printing -->
+    </div>
 
-        <!-- PDF Header (Hidden, only for PDF export) -->
-        <div id="pdfHeader" style="display: none;">
-            <div class="pdf-header">
-                <div class="pdf-title">金型詳細情報 / Mold Detail Information</div>
-                <div class="pdf-subtitle">MoldCutterSearch System V5.7</div>
-            </div>
-        </div>
+    <!-- ===== TAB NAVIGATION V6.3 ===== -->
+    <nav class="tab-navigation">
+        <ul class="tab-nav">
+            <li><a href="#summary" class="tab-link active" data-tab="summary">📋総合</a></li>
+            <li><a href="#product" class="tab-link" data-tab="product">📦製品</a></li>
+            <li><a href="#technical" class="tab-link" data-tab="technical">⚙️技術</a></li>
+            <li><a href="#processing" class="tab-link" data-tab="processing">🔄処理</a></li>
+        </ul>
+    </nav>
 
-        <!-- ===== TAB 1: 情報総合 (SUMMARY) ===== -->
+    <!-- ===== TAB CONTENT V6.3 - SCREEN DISPLAY ===== -->
+    <div class="tab-content-wrapper">
+        
+        <!-- Tab 1: 総合 (Summary) -->
         <div id="summary" class="tab-pane active">
-            <!-- Basic Information -->
-            <div class="content-section">
-                <div class="section-header">
-                    <div class="section-icon">🏷️</div>
-                    <h3 class="section-title">基本情報 / Thông tin cơ bản</h3>
-                </div>
-                <div id="summaryBasicInfo" class="info-grid">
-                    <!-- Populated by JavaScript -->
-                </div>
-            </div>
-
-            <!-- Tray Information -->
             <div class="content-section">
                 <div class="section-header">
                     <div class="section-icon">📋</div>
-                    <h3 class="section-title">トレイ情報 / Thông tin khay</h3>
+                    <h2 class="section-title">基本情報 / Thông tin cơ bản</h2>
                 </div>
-                <div id="summaryTrayInfo" class="info-grid">
-                    <!-- Populated by JavaScript -->
+                <div id="summaryBasicInfo">
+                    <!-- Populated by JavaScript displaySummaryBasicInfo() -->
                 </div>
             </div>
 
-            <!-- Related Cutters -->
-            <div class="content-section cutters-section">
-                <div class="section-header">
-                    <div class="section-icon">🔧</div>
-                    <h3 class="section-title">関連カッター / Dao cắt liên quan</h3>
-                </div>
-                <div id="summaryRelatedCutters">
-                    <!-- Populated by JavaScript -->
-                </div>
-            </div>
-        </div>
-
-        <!-- ===== TAB 2: 製品 (PRODUCT) ===== -->
-        <div id="product" class="tab-pane">
-            <!-- Product Details -->
             <div class="content-section">
                 <div class="section-header">
                     <div class="section-icon">📦</div>
-                    <h3 class="section-title">製品詳細 / Chi tiết sản phẩm</h3>
+                    <h2 class="section-title">トレイ情報 / Thông tin khay</h2>
                 </div>
-                <div id="productDetails" class="info-grid two-cols">
-                    <!-- Populated by JavaScript -->
+                <div id="summaryTrayInfo">
+                    <!-- Populated by JavaScript displaySummaryTrayInfo() -->
                 </div>
             </div>
 
-            <!-- Business Information -->
-            <div class="content-section">
+            <div class="content-section cutters-section">
                 <div class="section-header">
-                    <div class="section-icon">💰</div>
-                    <h3 class="section-title">商業情報 / Thông tin thương mại</h3>
+                    <div class="section-icon">🔧</div>
+                    <h2 class="section-title">関連カッター / Dao cắt liên quan</h2>
                 </div>
-                <div id="productBusinessInfo" class="info-grid two-cols">
-                    <!-- Populated by JavaScript -->
+                <div id="summaryRelatedCutters">
+                    <!-- Populated by JavaScript displaySummaryRelatedCutters() -->
                 </div>
             </div>
         </div>
 
-        <!-- ===== TAB 3: 技術 (TECHNICAL) ===== -->
+        <!-- Tab 2: 製品 (Product) -->
+        <div id="product" class="tab-pane">
+            <div class="content-section">
+                <div class="section-header">
+                    <div class="section-icon">📦</div>
+                    <h2 class="section-title">製品情報 / Thông tin sản phẩm</h2>
+                </div>
+                <div id="productInfo">
+                    <!-- Populated by JavaScript displayProductTab() -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 3: 技術 (Technical) -->
         <div id="technical" class="tab-pane">
-            <!-- Design Specifications -->
             <div class="content-section">
                 <div class="section-header">
                     <div class="section-icon">⚙️</div>
-                    <h3 class="section-title">設計仕様 / Thông số thiết kế</h3>
+                    <h2 class="section-title">技術情報 / Thông tin kỹ thuật</h2>
                 </div>
-                <div id="technicalDesignSpecs" class="info-grid two-cols">
-                    <!-- Populated by JavaScript -->
-                </div>
-            </div>
-
-            <!-- Manufacturing Details -->
-            <div class="content-section">
-                <div class="section-header">
-                    <div class="section-icon">🔨</div>
-                    <h3 class="section-title">製造詳細 / Chi tiết sản xuất</h3>
-                </div>
-                <div id="technicalManufacturingDetails" class="info-grid two-cols">
-                    <!-- Populated by JavaScript -->
+                <div id="technicalInfo">
+                    <!-- Populated by JavaScript displayTechnicalTab() -->
                 </div>
             </div>
         </div>
 
-        <!-- ===== TAB 4: 処理・履歴 (PROCESSING & HISTORY) ===== -->
+        <!-- Tab 4: 処理 (Processing) -->
         <div id="processing" class="tab-pane">
-            <!-- Processing Status -->
             <div class="content-section">
                 <div class="section-header">
                     <div class="section-icon">🔄</div>
-                    <h3 class="section-title">処理状況 / Tình trạng xử lý</h3>
+                    <h2 class="section-title">処理状況 / Trạng thái xử lý</h2>
                 </div>
                 <div id="processingStatus">
-                    <!-- Populated by JavaScript -->
+                    <!-- Populated by JavaScript displayProcessingStatus() -->
                 </div>
             </div>
 
-            <!-- Location & Shipment History -->
-            <div class="info-grid two-cols">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
                 <div class="content-section">
                     <div class="section-header">
                         <div class="section-icon">📍</div>
-                        <h3 class="section-title">位置履歴 / Lịch sử vị trí</h3>
+                        <h2 class="section-title">位置履歴 / Lịch sử vị trí</h2>
                     </div>
                     <div id="processingLocationHistory" class="history-grid">
-                        <!-- Populated by JavaScript -->
+                        <!-- Populated by JavaScript displayProcessingLocationHistory() -->
                     </div>
                 </div>
 
                 <div class="content-section">
                     <div class="section-header">
                         <div class="section-icon">🚚</div>
-                        <h3 class="section-title">出荷履歴 / Lịch sử vận chuyển</h3>
+                        <h2 class="section-title">出荷履歴 / Lịch sử vận chuyển</h2>
                     </div>
                     <div id="processingShipmentHistory" class="history-grid">
-                        <!-- Populated by JavaScript -->
+                        <!-- Populated by JavaScript displayProcessingShipmentHistory() -->
                     </div>
                 </div>
             </div>
 
-            <!-- User Comments -->
             <div class="content-section">
                 <div class="section-header">
                     <div class="section-icon">💬</div>
-                    <h3 class="section-title">コメント / Bình luận</h3>
+                    <h2 class="section-title">ユーザーコメント / Bình luận người dùng</h2>
                 </div>
                 <div id="processingUserComments">
-                    <!-- Populated by JavaScript -->
+                    <!-- Populated by JavaScript displayProcessingUserComments() -->
                 </div>
             </div>
         </div>
-    </main>
 
-    <!-- ===== MODALS V5.7 ===== -->
-    <!-- Location Modal -->
-    <div id="locationModal" class="modal" style="display: none;">
+    </div>
+
+    <!-- ===== MODALS V6.3 ===== -->
+    
+    <!-- Location Update Modal -->
+    <div id="locationModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title">位置更新 / Cập nhật vị trí</h3>
@@ -217,26 +176,26 @@
             </div>
             <form id="locationForm">
                 <div class="form-group">
-                    <label>ラック / Giá:</label>
+                    <label for="rackSelect">ラック / Giá đỡ:</label>
                     <select id="rackSelect" required>
-                        <option value="">選択してください / Chọn giá</option>
+                        <option value="">選択してください / Vui lòng chọn</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>レイヤー / Tầng:</label>
+                    <label for="rackLayerSelect">レイヤー / Tầng:</label>
                     <select id="rackLayerSelect" required>
-                        <option value="">選択してください / Chọn tầng</option>
+                        <option value="">選択してください / Vui lòng chọn</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>担当者 / Người thực hiện:</label>
+                    <label for="employeeSelect">担当者 / Người thực hiện:</label>
                     <select id="employeeSelect" required>
-                        <option value="">選択してください / Chọn người</option>
+                        <option value="">選択してください / Vui lòng chọn</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>備考 / Ghi chú:</label>
-                    <textarea id="locationNotes" rows="3" placeholder="備考を入力..."></textarea>
+                    <label for="locationNotes">備考 / Ghi chú:</label>
+                    <textarea id="locationNotes" rows="3" placeholder="備考を入力してください..."></textarea>
                 </div>
                 <div class="form-actions">
                     <button type="submit">更新 / Cập nhật</button>
@@ -246,8 +205,8 @@
         </div>
     </div>
 
-    <!-- Shipment Modal -->
-    <div id="shipmentModal" class="modal" style="display: none;">
+    <!-- Shipment Registration Modal -->
+    <div id="shipmentModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title">出荷登録 / Đăng ký vận chuyển</h3>
@@ -255,22 +214,22 @@
             </div>
             <form id="shipmentForm">
                 <div class="form-group">
-                    <label>出荷先 / Đích đến:</label>
+                    <label for="toCompanySelect">出荷先 / Đích đến:</label>
                     <select id="toCompanySelect" required>
-                        <option value="">選択してください / Chọn công ty</option>
+                        <option value="">選択してください / Vui lòng chọn</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>出荷日 / Ngày vận chuyển:</label>
+                    <label for="shipmentDate">出荷日 / Ngày vận chuyển:</label>
                     <input type="date" id="shipmentDate" required>
                 </div>
                 <div class="form-group">
-                    <label>担当者 / Người thực hiện:</label>
-                    <input type="text" id="handler" placeholder="担当者名を入力...">
+                    <label for="handler">担当者 / Người xử lý:</label>
+                    <input type="text" id="handler" placeholder="担当者名を入力してください...">
                 </div>
                 <div class="form-group">
-                    <label>備考 / Ghi chú:</label>
-                    <textarea id="shipmentNotes" rows="3" placeholder="備考を入力..."></textarea>
+                    <label for="shipmentNotes">備考 / Ghi chú:</label>
+                    <textarea id="shipmentNotes" rows="3" placeholder="備考を入力してください..."></textarea>
                 </div>
                 <div class="form-actions">
                     <button type="submit">登録 / Đăng ký</button>
@@ -280,8 +239,8 @@
         </div>
     </div>
 
-    <!-- Comment Modal -->
-    <div id="commentModal" class="modal" style="display: none;">
+    <!-- Comment Add Modal -->
+    <div id="commentModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title">コメント追加 / Thêm bình luận</h3>
@@ -289,13 +248,13 @@
             </div>
             <form id="commentForm">
                 <div class="form-group">
-                    <label>担当者 / Người bình luận:</label>
+                    <label for="commentEmployeeSelect">担当者 / Người bình luận:</label>
                     <select id="commentEmployeeSelect" required>
-                        <option value="">選択してください / Chọn người</option>
+                        <option value="">選択してください / Vui lòng chọn</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>コメント / Bình luận:</label>
+                    <label for="commentText">コメント / Bình luận:</label>
                     <textarea id="commentText" rows="4" required placeholder="コメントを入力してください..."></textarea>
                 </div>
                 <div class="form-actions">
@@ -306,136 +265,46 @@
         </div>
     </div>
 
-    <!-- Loading Indicator -->
+    <!-- Loading Overlay -->
     <div id="loadingIndicator" class="loading-overlay" style="display: none;">
         <div class="loading-spinner"></div>
         <p>データを読み込み中... / Đang tải dữ liệu...</p>
     </div>
 
-    <!-- Error Container -->
-    <div id="errorContainer" style="display: none; position: fixed; top: 80px; left: 20px; right: 20px; background: #fee2e2; color: #991b1b; padding: 12px; border-radius: 8px; z-index: 9998; border-left: 4px solid #dc2626;"></div>
+    <!-- Error Display -->
+    <div id="errorContainer" style="display: none; position: fixed; top: 80px; left: 15px; right: 15px; background: #f8d7da; color: #721c24; padding: 12px; border-radius: 6px; z-index: 9998; border-left: 4px solid #dc3545; font-size: 14px; text-align: center;"></div>
 
     <!-- JavaScript -->
     <script src="script.js"></script>
     <script src="detail-mold.js"></script>
-
+    
     <script>
-        // ===== TAB NAVIGATION V5.7 =====
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize tab functionality
-            const tabLinks = document.querySelectorAll('.tab-link');
-            const tabPanes = document.querySelectorAll('.tab-pane');
-
-            tabLinks.forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-
-                    // Remove active class from all tabs and panes
-                    tabLinks.forEach(l => l.classList.remove('active'));
-                    tabPanes.forEach(p => p.classList.remove('active'));
-
-                    // Add active class to clicked tab
-                    this.classList.add('active');
-
-                    // Show corresponding pane
-                    const targetTab = this.getAttribute('data-tab');
-                    const targetPane = document.getElementById(targetTab);
-                    if (targetPane) {
-                        targetPane.classList.add('active');
-                    }
-                });
-            });
-
-            // Close modals when clicking outside
-            window.addEventListener('click', function(event) {
-                const modals = ['locationModal', 'shipmentModal', 'commentModal'];
-                modals.forEach(modalId => {
-                    const modal = document.getElementById(modalId);
-                    if (event.target === modal) {
-                        hideModal(modalId);
-                    }
-                });
-            });
-        });
-
-        // ===== PDF EXPORT V5.7 - 新規金型製作指示書 FORMAT =====
-        async function exportToPDF() {
-            if (!currentMold) {
-                alert('データが読み込まれていません');
-                return;
-            }
-
-            try {
-                showLoading(true);
-
-                // Show PDF header
-                document.getElementById('pdfHeader').style.display = 'block';
-
-                // Show all tab content for PDF
-                const tabPanes = document.querySelectorAll('.tab-pane');
-                tabPanes.forEach(pane => {
-                    pane.style.display = 'block';
-                });
-
-                // Configure html2canvas for better quality
-                const options = {
-                    scale: 2,
-                    useCORS: true,
-                    allowTaint: true,
-                    backgroundColor: '#ffffff',
-                    width: 1200,
-                    height: window.innerHeight * 3
-                };
-
-                // Capture the content
-                const canvas = await html2canvas(document.body, options);
-
-                // Create PDF
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF('p', 'mm', 'a4');
-
-                const imgData = canvas.toDataURL('image/png');
-                const pdfWidth = 210; // A4 width in mm
-                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-
-                // Add image to PDF
-                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-
-                // Add company header
-                pdf.setFontSize(16);
-                pdf.text('株式会社ヨシダパッケージ', 10, 10);
-                pdf.setFontSize(12);
-                pdf.text('金型詳細情報 - ' + (currentMold.MoldCode || 'N/A'), 10, 20);
-
-                // Save PDF
-                const fileName = `Mold_Detail_${currentMold.MoldCode || currentMold.MoldID}_${new Date().toISOString().split('T')[0]}.pdf`;
-                pdf.save(fileName);
-
-                // Hide PDF header and restore tab state
-                document.getElementById('pdfHeader').style.display = 'none';
-                tabPanes.forEach(pane => {
-                    pane.style.display = 'none';
-                });
-                document.querySelector('.tab-pane.active').style.display = 'block';
-
-                showSuccessNotification('PDF出力が完了しました');
-
-            } catch (error) {
-                console.error('PDF export failed:', error);
-                showErrorNotification('PDF出力に失敗しました: ' + error.message);
-            } finally {
-                showLoading(false);
-            }
+        // ===== V6.3 ENHANCED UI FUNCTIONS WITH COMPREHENSIVE PRINT =====
+        
+        function showLocationModal() {
+            document.getElementById('locationModal').style.display = 'block';
         }
-
-        // ===== MODAL CONTROLS V5.7 =====
-        function hideModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if (modal) {
-                modal.style.display = 'none';
-            }
+        
+        function hideLocationModal() {
+            document.getElementById('locationModal').style.display = 'none';
         }
-
+        
+        function showShipmentModal() {
+            document.getElementById('shipmentModal').style.display = 'block';
+        }
+        
+        function hideShipmentModal() {
+            document.getElementById('shipmentModal').style.display = 'none';
+        }
+        
+        function showCommentModal() {
+            document.getElementById('commentModal').style.display = 'block';
+        }
+        
+        function hideCommentModal() {
+            document.getElementById('commentModal').style.display = 'none';
+        }
+        
         function goBack() {
             if (document.referrer && document.referrer.includes(window.location.hostname)) {
                 window.history.back();
@@ -443,6 +312,102 @@
                 window.location.href = 'index.html';
             }
         }
+        
+        // V6.3: NEW - Comprehensive print function
+        function generateComprehensivePrint() {
+            console.log('V6.3: Generating comprehensive print layout...');
+            
+            if (typeof generateComprehensivePrintLayout === 'function') {
+                generateComprehensivePrintLayout();
+                
+                // Wait for layout generation, then print
+                setTimeout(() => {
+                    window.print();
+                }, 500);
+            } else {
+                console.error('V6.3: generateComprehensivePrintLayout function not found');
+                window.print(); // Fallback
+            }
+        }
+        
+        // V6.3: NEW - PDF generation function
+        function generatePDF() {
+            console.log('V6.3: Generating PDF...');
+            
+            if (typeof generateComprehensivePrintLayout === 'function') {
+                generateComprehensivePrintLayout();
+                
+                // Wait for layout generation, then print to PDF
+                setTimeout(() => {
+                    // For Chrome/Edge - this will show print dialog with PDF option
+                    window.print();
+                }, 500);
+            } else {
+                console.error('V6.3: generateComprehensivePrintLayout function not found');
+                window.print(); // Fallback
+            }
+        }
+        
+        // Close modals when clicking outside
+        window.addEventListener('click', function(event) {
+            const modals = ['locationModal', 'shipmentModal', 'commentModal'];
+            modals.forEach(modalId => {
+                const modal = document.getElementById(modalId);
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+        
+        function showError(message) {
+            const errorContainer = document.getElementById('errorContainer');
+            if (errorContainer) {
+                errorContainer.textContent = message;
+                errorContainer.style.display = 'block';
+                setTimeout(() => {
+                    errorContainer.style.display = 'none';
+                }, 5000);
+            } else {
+                alert(message);
+            }
+        }
+        
+        function showSuccess(message) {
+            const successDiv = document.createElement('div');
+            successDiv.style.cssText = `
+                position: fixed;
+                top: 90px;
+                left: 15px;
+                right: 15px;
+                background: #d4edda;
+                color: #155724;
+                padding: 12px;
+                border-radius: 6px;
+                z-index: 9999;
+                border-left: 4px solid #28a745;
+                font-size: 14px;
+                text-align: center;
+                box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+            `;
+            successDiv.textContent = message;
+            document.body.appendChild(successDiv);
+            
+            setTimeout(() => {
+                if (successDiv.parentNode) {
+                    successDiv.parentNode.removeChild(successDiv);
+                }
+            }, 3000);
+        }
+        
+        function showLoading(show) {
+            const loading = document.getElementById('loadingIndicator');
+            if (loading) {
+                loading.style.display = show ? 'flex' : 'none';
+            }
+        }
+        
+        console.log('MoldCutterSearch V6.3 - Enhanced HTML Structure Ready');
+        console.log('✅ Simplified Header + Comprehensive Print + Fixed Dimensions Logic');
     </script>
 </body>
 </html>

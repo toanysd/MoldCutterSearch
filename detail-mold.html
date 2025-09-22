@@ -1,205 +1,448 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Chi tiết khuôn - Mold Detail V4.24</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="detail-mold-styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chi tiết khuôn - Mold Detail V5.7</title>
+    <!-- V5.7 - Tab-based Design + PDF Export + Based on V4.31 GitHub -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="detail-mold-styles.css">
+
+    <!-- PDF Export Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body class="mold-detail-page">
+    <!-- ===== COMPACT HEADER V5.7 - 2 LINES ===== -->
+    <header class="detail-header-compact mold">
+        <div class="container">
+            <!-- Line 1: Title + Actions -->
+            <div class="header-row-compact">
+                <div class="header-left">
+                    <button class="back-btn-compact" onclick="goBack()">← 戻る</button>
+                    <div class="header-info-compact">
+                        <div class="item-title-compact" id="moldTitle">Loading...</div>
+                        <div class="item-subtitle-compact" id="moldSubtitle">金型詳細情報</div>
+                    </div>
+                </div>
 
-  <!-- Enhanced Compact Header -->
-  <header class="detail-header-compact mold">
-    <div class="container">
-      <div class="header-row-compact">
-        <button class="back-btn-compact" onclick="goBack()">←</button>
-        <div class="header-info-compact">
-          <div class="item-title-compact" id="moldTitle">Loading...</div>
-          <div class="storage-info-compact" id="storageInfo">-</div>
+                <div class="header-actions-compact">
+                    <button id="showLocationBtn" class="action-btn-compact">
+                        📍 位置更新
+                    </button>
+                    <button id="showShipmentBtn" class="action-btn-compact">
+                        🚚 出荷登録
+                    </button>
+                    <button id="showCommentBtn" class="action-btn-compact">
+                        💬 コメント
+                    </button>
+                    <button onclick="window.print()" class="action-btn-compact">
+                        🖨️ 印刷
+                    </button>
+                    <button onclick="exportToPDF()" class="action-btn-compact">
+                        📄 PDF出力
+                    </button>
+                </div>
+            </div>
         </div>
-        <div class="header-actions-compact">
-          <button class="btn-icon-compact" onclick="reloadMoldDataFromGitHub()" title="Làm mới / 更新">⟳</button>
-          <button class="btn-icon-compact" onclick="printDetail()" title="In / 印刷">🖨️</button>
-          <button class="btn-icon-compact" onclick="showQuickEditModal()" title="Chỉnh sửa nhanh / クイック編集">✎</button>
+
+        <!-- Line 2: Tab Navigation -->
+        <nav class="tab-navigation">
+            <ul class="tab-nav">
+                <li><a href="#summary" class="tab-link active" data-tab="summary">📋 情報総合</a></li>
+                <li><a href="#product" class="tab-link" data-tab="product">📦 製品</a></li>
+                <li><a href="#technical" class="tab-link" data-tab="technical">⚙️ 技術</a></li>
+                <li><a href="#processing" class="tab-link" data-tab="processing">🔄 処理・履歴</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- ===== MAIN CONTENT WITH TABS V5.7 ===== -->
+    <main class="tab-content-wrapper">
+
+        <!-- PDF Header (Hidden, only for PDF export) -->
+        <div id="pdfHeader" style="display: none;">
+            <div class="pdf-header">
+                <div class="pdf-title">金型詳細情報 / Mold Detail Information</div>
+                <div class="pdf-subtitle">MoldCutterSearch System V5.7</div>
+            </div>
         </div>
-      </div>
+
+        <!-- ===== TAB 1: 情報総合 (SUMMARY) ===== -->
+        <div id="summary" class="tab-pane active">
+            <!-- Basic Information -->
+            <div class="content-section">
+                <div class="section-header">
+                    <div class="section-icon">🏷️</div>
+                    <h3 class="section-title">基本情報 / Thông tin cơ bản</h3>
+                </div>
+                <div id="summaryBasicInfo" class="info-grid">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Tray Information -->
+            <div class="content-section">
+                <div class="section-header">
+                    <div class="section-icon">📋</div>
+                    <h3 class="section-title">トレイ情報 / Thông tin khay</h3>
+                </div>
+                <div id="summaryTrayInfo" class="info-grid">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Related Cutters -->
+            <div class="content-section cutters-section">
+                <div class="section-header">
+                    <div class="section-icon">🔧</div>
+                    <h3 class="section-title">関連カッター / Dao cắt liên quan</h3>
+                </div>
+                <div id="summaryRelatedCutters">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== TAB 2: 製品 (PRODUCT) ===== -->
+        <div id="product" class="tab-pane">
+            <!-- Product Details -->
+            <div class="content-section">
+                <div class="section-header">
+                    <div class="section-icon">📦</div>
+                    <h3 class="section-title">製品詳細 / Chi tiết sản phẩm</h3>
+                </div>
+                <div id="productDetails" class="info-grid two-cols">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Business Information -->
+            <div class="content-section">
+                <div class="section-header">
+                    <div class="section-icon">💰</div>
+                    <h3 class="section-title">商業情報 / Thông tin thương mại</h3>
+                </div>
+                <div id="productBusinessInfo" class="info-grid two-cols">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== TAB 3: 技術 (TECHNICAL) ===== -->
+        <div id="technical" class="tab-pane">
+            <!-- Design Specifications -->
+            <div class="content-section">
+                <div class="section-header">
+                    <div class="section-icon">⚙️</div>
+                    <h3 class="section-title">設計仕様 / Thông số thiết kế</h3>
+                </div>
+                <div id="technicalDesignSpecs" class="info-grid two-cols">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Manufacturing Details -->
+            <div class="content-section">
+                <div class="section-header">
+                    <div class="section-icon">🔨</div>
+                    <h3 class="section-title">製造詳細 / Chi tiết sản xuất</h3>
+                </div>
+                <div id="technicalManufacturingDetails" class="info-grid two-cols">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== TAB 4: 処理・履歴 (PROCESSING & HISTORY) ===== -->
+        <div id="processing" class="tab-pane">
+            <!-- Processing Status -->
+            <div class="content-section">
+                <div class="section-header">
+                    <div class="section-icon">🔄</div>
+                    <h3 class="section-title">処理状況 / Tình trạng xử lý</h3>
+                </div>
+                <div id="processingStatus">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Location & Shipment History -->
+            <div class="info-grid two-cols">
+                <div class="content-section">
+                    <div class="section-header">
+                        <div class="section-icon">📍</div>
+                        <h3 class="section-title">位置履歴 / Lịch sử vị trí</h3>
+                    </div>
+                    <div id="processingLocationHistory" class="history-grid">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <div class="section-header">
+                        <div class="section-icon">🚚</div>
+                        <h3 class="section-title">出荷履歴 / Lịch sử vận chuyển</h3>
+                    </div>
+                    <div id="processingShipmentHistory" class="history-grid">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Comments -->
+            <div class="content-section">
+                <div class="section-header">
+                    <div class="section-icon">💬</div>
+                    <h3 class="section-title">コメント / Bình luận</h3>
+                </div>
+                <div id="processingUserComments">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ===== MODALS V5.7 ===== -->
+    <!-- Location Modal -->
+    <div id="locationModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">位置更新 / Cập nhật vị trí</h3>
+                <button class="close" onclick="hideLocationModal()">&times;</button>
+            </div>
+            <form id="locationForm">
+                <div class="form-group">
+                    <label>ラック / Giá:</label>
+                    <select id="rackSelect" required>
+                        <option value="">選択してください / Chọn giá</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>レイヤー / Tầng:</label>
+                    <select id="rackLayerSelect" required>
+                        <option value="">選択してください / Chọn tầng</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>担当者 / Người thực hiện:</label>
+                    <select id="employeeSelect" required>
+                        <option value="">選択してください / Chọn người</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>備考 / Ghi chú:</label>
+                    <textarea id="locationNotes" rows="3" placeholder="備考を入力..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit">更新 / Cập nhật</button>
+                    <button type="button" onclick="hideLocationModal()">キャンセル / Hủy</button>
+                </div>
+            </form>
+        </div>
     </div>
-  </header>
 
-  <div class="container">
-    <!-- Quick Actions -->
-    <div class="quick-actions-compact">
-      <button class="quick-btn-compact location" id="showLocationBtn">
-        <span class="btn-icon-small">📦</span>
-        <span class="btn-text-small">Vị trí<br>位置</span>
-      </button>
-      <button class="quick-btn-compact shipment" id="showShipmentBtn">
-        <span class="btn-icon-small">🚚</span>
-        <span class="btn-text-small">Vận chuyển<br>出荷</span>
-      </button>
-      <button class="quick-btn-compact comment" id="showCommentBtn">
-        <span class="btn-icon-small">💬</span>
-        <span class="btn-text-small">Bình luận<br>コメント</span>
-      </button>
+    <!-- Shipment Modal -->
+    <div id="shipmentModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">出荷登録 / Đăng ký vận chuyển</h3>
+                <button class="close" onclick="hideShipmentModal()">&times;</button>
+            </div>
+            <form id="shipmentForm">
+                <div class="form-group">
+                    <label>出荷先 / Đích đến:</label>
+                    <select id="toCompanySelect" required>
+                        <option value="">選択してください / Chọn công ty</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>出荷日 / Ngày vận chuyển:</label>
+                    <input type="date" id="shipmentDate" required>
+                </div>
+                <div class="form-group">
+                    <label>担当者 / Người thực hiện:</label>
+                    <input type="text" id="handler" placeholder="担当者名を入力...">
+                </div>
+                <div class="form-group">
+                    <label>備考 / Ghi chú:</label>
+                    <textarea id="shipmentNotes" rows="3" placeholder="備考を入力..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit">登録 / Đăng ký</button>
+                    <button type="button" onclick="hideShipmentModal()">キャンセル / Hủy</button>
+                </div>
+            </form>
+        </div>
     </div>
 
-    <!-- Multi-column layout -->
-    <div class="detail-grid-multi-column">
-      <!-- Left Column -->
-      <div class="detail-column-left">
-        <!-- Basic Info -->
-        <section class="detail-card-compact">
-          <h3 class="card-title-compact">Thông tin cơ bản<br>基本情報</h3>
-          <div class="info-content-compact" id="basicInfo"><!-- Populated by JS --></div>
-        </section>
-        <!-- Status Info -->
-        <section class="detail-card-compact">
-          <h3 class="card-title-compact">Trạng thái<br>ステータス</h3>
-          <div class="info-content-compact" id="statusInfo"><!-- Populated by JS --></div>
-        </section>
-        <!-- Technical Info -->
-        <section class="detail-card-compact">
-          <h3 class="card-title-compact">Kỹ thuật<br>技術情報</h3>
-          <div class="info-content-compact" id="technicalInfo"><!-- Populated by JS --></div>
-        </section>
-        <!-- Product Info -->
-        <section class="detail-card-compact">
-          <h3 class="card-title-compact">Sản phẩm<br>製品情報</h3>
-          <div class="info-content-compact" id="productInfo"><!-- Populated by JS --></div>
-        </section>
-      </div>
-      <!-- Right Column -->
-      <div class="detail-column-right">
-        <!-- Location History -->
-        <section class="detail-card-compact">
-          <h3 class="card-title-compact">Lịch sử vị trí<br>位置履歴</h3>
-          <div class="history-content-compact" id="locationHistory"><!-- Populated by JS --></div>
-        </section>
-        <!-- Shipment History -->
-        <section class="detail-card-compact">
-          <h3 class="card-title-compact">Lịch sử vận chuyển<br>出荷履歴</h3>
-          <div class="history-content-compact" id="shipmentHistory"><!-- Populated by JS --></div>
-        </section>
-        <!-- Related Cutters -->
-        <section class="detail-card-compact" id="relatedCuttersSection" style="display:none">
-          <h3 class="card-title-compact">Dao cắt liên quan<br>関連カッター</h3>
-          <div class="related-content-compact" id="relatedCutters"><!-- Populated by JS --></div>
-        </section>
-        <!-- User Comments -->
-        <section class="detail-card-compact">
-          <h3 class="card-title-compact">Bình luận<br>コメント</h3>
-          <div class="comments-content-compact" id="userComments"><!-- Populated by JS --></div>
-        </section>
-      </div>
+    <!-- Comment Modal -->
+    <div id="commentModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">コメント追加 / Thêm bình luận</h3>
+                <button class="close" onclick="hideCommentModal()">&times;</button>
+            </div>
+            <form id="commentForm">
+                <div class="form-group">
+                    <label>担当者 / Người bình luận:</label>
+                    <select id="commentEmployeeSelect" required>
+                        <option value="">選択してください / Chọn người</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>コメント / Bình luận:</label>
+                    <textarea id="commentText" rows="4" required placeholder="コメントを入力してください..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit">追加 / Thêm</button>
+                    <button type="button" onclick="hideCommentModal()">キャンセル / Hủy</button>
+                </div>
+            </form>
+        </div>
     </div>
-  </div>
 
-  <!-- MODALS -->
-  <!-- Location Modal -->
-  <div id="locationModal" class="modal-compact">
-    <div class="modal-content-compact">
-      <div class="modal-header-compact mold">
-        <h3>Thay đổi vị trí<br>金型位置変更</h3>
-        <button class="modal-close-compact" onclick="hideLocationModal()">×</button>
-      </div>
-      <form id="locationForm" class="modal-body-compact">
-        <div class="form-group-compact">
-          <label>Chọn giá/kệ<br>ラック選択</label>
-          <select id="rackSelect" class="form-select-compact" onchange="updateRackLayers()"></select>
-        </div>
-        <div class="form-group-compact">
-          <label>Chọn tầng<br>棚段選択</label>
-          <select id="rackLayerSelect" class="form-select-compact"></select>
-        </div>
-        <div class="form-group-compact">
-          <label>Người thực hiện<br>担当者</label>
-          <select id="employeeSelect" class="form-select-compact"></select>
-        </div>
-        <div class="form-group-compact">
-          <label>Ghi chú<br>備考</label>
-          <textarea id="locationNotes" class="form-textarea-compact"></textarea>
-        </div>
-        <div class="modal-actions-compact">
-          <button type="button" class="btn-secondary-compact" onclick="hideLocationModal()">Hủy<br>キャンセル</button>
-          <button type="submit" class="btn-primary-compact mold">Lưu<br>保存</button>
-        </div>
-      </form>
+    <!-- Loading Indicator -->
+    <div id="loadingIndicator" class="loading-overlay" style="display: none;">
+        <div class="loading-spinner"></div>
+        <p>データを読み込み中... / Đang tải dữ liệu...</p>
     </div>
-  </div>
 
-  <!-- Shipment Modal -->
-  <div id="shipmentModal" class="modal-compact">
-    <div class="modal-content-compact">
-      <div class="modal-header-compact mold">
-        <h3>Đăng ký vận chuyển<br>出荷登録</h3>
-        <button class="modal-close-compact" onclick="hideShipmentModal()">×</button>
-      </div>
-      <form id="shipmentForm" class="modal-body-compact">
-        <div class="form-group-compact">
-          <label>Đi đến<br>出荷先</label>
-          <select id="toCompanySelect" class="form-select-compact"></select>
-        </div>
-        <div class="form-group-compact">
-          <label>Ngày vận chuyển<br>日付</label>
-          <input type="date" id="shipmentDate" class="form-input-compact">
-        </div>
-        <div class="form-group-compact">
-          <label>Người thực hiện<br>担当者</label>
-          <input type="text" id="handler" class="form-input-compact">
-        </div>
-        <div class="form-group-compact">
-          <label>Ghi chú<br>備考</label>
-          <textarea id="shipmentNotes" class="form-textarea-compact"></textarea>
-        </div>
-        <div class="modal-actions-compact">
-          <button type="button" class="btn-secondary-compact" onclick="hideShipmentModal()">Hủy<br>キャンセル</button>
-          <button type="submit" class="btn-primary-compact mold">Lưu<br>保存</button>
-        </div>
-      </form>
-    </div>
-  </div>
+    <!-- Error Container -->
+    <div id="errorContainer" style="display: none; position: fixed; top: 80px; left: 20px; right: 20px; background: #fee2e2; color: #991b1b; padding: 12px; border-radius: 8px; z-index: 9998; border-left: 4px solid #dc2626;"></div>
 
-  <!-- Comment Modal -->
-  <div id="commentModal" class="modal-compact">
-    <div class="modal-content-compact">
-      <div class="modal-header-compact mold">
-        <h3>Thêm bình luận<br>コメント追加</h3>
-        <button class="modal-close-compact" onclick="hideCommentModal()">×</button>
-      </div>
-      <form id="commentForm" class="modal-body-compact">
-        <div class="form-group-compact">
-          <label>Bình luận<br>コメント</label>
-          <textarea id="commentText" class="form-textarea-compact"></textarea>
-        </div>
-        <div class="form-group-compact">
-          <label>Người bình luận<br>担当者</label>
-          <select id="commentEmployeeSelect" class="form-select-compact"></select>
-        </div>
-        <div class="modal-actions-compact">
-          <button type="button" class="btn-secondary-compact" onclick="hideCommentModal()">Hủy<br>キャンセル</button>
-          <button type="submit" class="btn-primary-compact mold">Gửi<br>投稿</button>
-        </div>
-      </form>
-    </div>
-  </div>
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+    <script src="detail-mold.js"></script>
 
-  <!-- Loading Indicator -->
-  <div id="loadingIndicator" class="loading-overlay" style="display:none;">
-    <div class="loading-content">
-      <div class="spinner mold"></div>
-      <span class="loading-text">Đang tải dữ liệu...<br>データ読込中...</span>
-    </div>
-  </div>
+    <script>
+        // ===== TAB NAVIGATION V5.7 =====
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize tab functionality
+            const tabLinks = document.querySelectorAll('.tab-link');
+            const tabPanes = document.querySelectorAll('.tab-pane');
 
-  <!-- Error Container -->
-  <div id="errorContainer" class="error-container" style="display:none;"></div>
+            tabLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
 
-  <!-- Scripts -->
-  <script src="script.js"></script>
-  <script src="detail-mold.js"></script>
+                    // Remove active class from all tabs and panes
+                    tabLinks.forEach(l => l.classList.remove('active'));
+                    tabPanes.forEach(p => p.classList.remove('active'));
+
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+
+                    // Show corresponding pane
+                    const targetTab = this.getAttribute('data-tab');
+                    const targetPane = document.getElementById(targetTab);
+                    if (targetPane) {
+                        targetPane.classList.add('active');
+                    }
+                });
+            });
+
+            // Close modals when clicking outside
+            window.addEventListener('click', function(event) {
+                const modals = ['locationModal', 'shipmentModal', 'commentModal'];
+                modals.forEach(modalId => {
+                    const modal = document.getElementById(modalId);
+                    if (event.target === modal) {
+                        hideModal(modalId);
+                    }
+                });
+            });
+        });
+
+        // ===== PDF EXPORT V5.7 - 新規金型製作指示書 FORMAT =====
+        async function exportToPDF() {
+            if (!currentMold) {
+                alert('データが読み込まれていません');
+                return;
+            }
+
+            try {
+                showLoading(true);
+
+                // Show PDF header
+                document.getElementById('pdfHeader').style.display = 'block';
+
+                // Show all tab content for PDF
+                const tabPanes = document.querySelectorAll('.tab-pane');
+                tabPanes.forEach(pane => {
+                    pane.style.display = 'block';
+                });
+
+                // Configure html2canvas for better quality
+                const options = {
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#ffffff',
+                    width: 1200,
+                    height: window.innerHeight * 3
+                };
+
+                // Capture the content
+                const canvas = await html2canvas(document.body, options);
+
+                // Create PDF
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+
+                const imgData = canvas.toDataURL('image/png');
+                const pdfWidth = 210; // A4 width in mm
+                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+                // Add image to PDF
+                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+
+                // Add company header
+                pdf.setFontSize(16);
+                pdf.text('株式会社ヨシダパッケージ', 10, 10);
+                pdf.setFontSize(12);
+                pdf.text('金型詳細情報 - ' + (currentMold.MoldCode || 'N/A'), 10, 20);
+
+                // Save PDF
+                const fileName = `Mold_Detail_${currentMold.MoldCode || currentMold.MoldID}_${new Date().toISOString().split('T')[0]}.pdf`;
+                pdf.save(fileName);
+
+                // Hide PDF header and restore tab state
+                document.getElementById('pdfHeader').style.display = 'none';
+                tabPanes.forEach(pane => {
+                    pane.style.display = 'none';
+                });
+                document.querySelector('.tab-pane.active').style.display = 'block';
+
+                showSuccessNotification('PDF出力が完了しました');
+
+            } catch (error) {
+                console.error('PDF export failed:', error);
+                showErrorNotification('PDF出力に失敗しました: ' + error.message);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // ===== MODAL CONTROLS V5.7 =====
+        function hideModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        function goBack() {
+            if (document.referrer && document.referrer.includes(window.location.hostname)) {
+                window.history.back();
+            } else {
+                window.location.href = 'index.html';
+            }
+        }
+    </script>
 </body>
 </html>

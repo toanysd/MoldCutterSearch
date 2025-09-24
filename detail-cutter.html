@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>抜型詳細 - V4.24</title>
+    <title>抜型詳細 - MoldCutterSearch V6.9</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -11,244 +11,329 @@
     <link rel="stylesheet" href="detail-cutter-styles.css">
 </head>
 <body class="cutter-detail-page">
-    <!-- Compact Header -->
-    <header class="detail-header-compact cutter">
-        <div class="container">
-            <div class="header-row-compact">
-                <button class="back-btn-compact" onclick="goBack()">‹</button>
-                <div class="header-info-compact">
-                    <div class="item-title-compact" id="cutterTitle">読み込み中...</div>
-                    <div class="storage-info-compact" id="storageInfo">- / -</div>
+    
+    <!-- V6.9: HEADER WITH DYNAMIC LOCATION -->
+    <header class="header cutter">
+        <div class="header-content">
+            <div class="header-left">
+                <a href="javascript:goBack()" class="back-btn">← 戻る</a>
+                <div class="cutter-header-info">
+                    <div class="cutter-title-row">
+                        <h1 class="cutter-title" id="cutterTitle">読み込み中...</h1>
+                        <div class="cutter-location" id="cutterLocation">📍 位置情報読み込み中...</div>
+                    </div>
                 </div>
-                <!-- Thêm vào header-actions-compact trong detail-cutter.html -->
-                <div class="header-actions-compact">
-                    <button class="btn-icon-compact" onclick="reloadCutterDataFromGitHub()" title="最新データ">🔄</button>
-                    <button class="btn-icon-compact" onclick="printDetail()" title="印刷">🖨</button>
-                    <button class="btn-icon-compact" onclick="showQuickEditModal()" title="編集">✏</button>
-                </div>
+            </div>
+            
+            <div class="header-actions">
+                <button id="showLocationBtn" class="action-btn">📍位置</button>
+                <button id="showShipmentBtn" class="action-btn">🚚出荷</button>
+                <button id="showCommentBtn" class="action-btn">💬コメント</button>
+                <button onclick="CutterApp.printReport()" class="action-btn">🖨️印刷</button>
+                <button onclick="CutterApp.reloadData()" class="action-btn">🔄更新</button>
             </div>
         </div>
     </header>
 
-    <div class="container">
-        <!-- Quick Actions Row - Mobile Optimized -->
-        <div class="quick-actions-compact">
-            <button class="quick-btn-compact location" onclick="showLocationModal()">
-                <span class="btn-icon-small">📍</span>
-                <span class="btn-text-small">位置</span>
-            </button>
-            <button class="quick-btn-compact shipment" onclick="showShipmentModal()">
-                <span class="btn-icon-small">🚚</span>
-                <span class="btn-text-small">出荷</span>
-            </button>
-            <button class="quick-btn-compact comment" onclick="showCommentModal()">
-                <span class="btn-icon-small">💬</span>
-                <span class="btn-text-small">コメント</span>
-            </button>
-        </div>
+    <!-- V6.9: TAB NAVIGATION -->
+    <nav class="tab-navigation cutter">
+        <ul class="tab-nav">
+            <li><a href="#summary" class="tab-link active" data-tab="summary">📋総合</a></li>
+            <li><a href="#technical" class="tab-link" data-tab="technical">⚙️技術</a></li>
+            <li><a href="#cutting" class="tab-link" data-tab="cutting">🔪カット</a></li>
+            <li><a href="#processing" class="tab-link" data-tab="processing">🔄処理</a></li>
+        </ul>
+    </nav>
 
-        <!-- Main Content Grid - Mobile Optimized -->
-        <div class="detail-grid-compact">
-            <!-- Basic Info -->
-            <section class="detail-card-compact">
-                <h3 class="card-title-compact">基本情報</h3>
-                <div class="info-content-compact" id="basicInfo">
-                    <!-- Populated by JS -->
+    <!-- V6.9: TAB CONTENT -->
+    <div class="tab-content-wrapper">
+        
+        <!-- Tab 1: Summary -->
+        <div id="summary" class="tab-pane active">
+            <div class="content-section cutter">
+                <div class="section-header">
+                    <div class="section-icon cutter">📋</div>
+                    <h2 class="section-title">基本情報</h2>
                 </div>
-            </section>
-
-            <!-- Technical Info -->
-            <section class="detail-card-compact">
-                <h3 class="card-title-compact">技術仕様</h3>
-                <div class="info-content-compact" id="technicalInfo">
-                    <!-- Populated by JS -->
-                </div>
-            </section>
-
-            <!-- Dimensions Info -->
-            <section class="detail-card-compact">
-                <h3 class="card-title-compact">寸法情報</h3>
-                <div class="info-content-compact" id="dimensionsInfo">
-                    <!-- Populated by JS -->
-                </div>
-            </section>
-
-            <!-- Cutting Specifications -->
-            <section class="detail-card-compact">
-                <h3 class="card-title-compact">カット仕様</h3>
-                <div class="info-content-compact" id="cuttingInfo">
-                    <!-- Populated by JS -->
-                </div>
-            </section>
-
-            <!-- Location History -->
-            <section class="detail-card-compact">
-                <h3 class="card-title-compact">位置履歴</h3>
-                <div class="history-content-compact" id="locationHistory">
-                    <!-- Populated by JS -->
-                </div>
-            </section>
-
-            <!-- Shipment History -->
-            <section class="detail-card-compact">
-                <h3 class="card-title-compact">出荷履歴</h3>
-                <div class="history-content-compact" id="shipmentHistory">
-                    <!-- Populated by JS -->
-                </div>
-            </section>
-
-            <!-- Related Molds -->
-            <section class="detail-card-compact" id="relatedMoldsSection">
-                <h3 class="card-title-compact">関連金型</h3>
-                <div class="related-content-compact" id="relatedMolds">
-                    <!-- Populated by JS -->
-                </div>
-            </section>
-
-            <!-- User Comments -->
-            <section class="detail-card-compact">
-                <h3 class="card-title-compact">コメント</h3>
-                <div class="comments-content-compact" id="userComments">
-                    <!-- Populated by JS -->
-                </div>
-            </section>
-        </div>
-    </div>
-
-    <!-- Loading Indicator -->
-    <div id="loadingIndicator" class="loading-overlay">
-        <div class="loading-content">
-            <div class="spinner cutter"></div>
-            <span class="loading-text">読み込み中...</span>
-        </div>
-    </div>
-
-    <!-- Location Modal - Mobile Optimized -->
-    <div id="locationModal" class="modal-compact">
-        <div class="modal-content-compact">
-            <div class="modal-header-compact cutter">
-                <h3>位置変更</h3>
-                <button class="modal-close-compact" onclick="hideLocationModal()">×</button>
+                <div id="summaryBasicInfo">読み込み中...</div>
             </div>
-            <form id="locationForm" class="modal-body-compact">
-                <div class="form-group-compact">
-                    <label>現在位置</label>
-                    <input type="text" id="currentLocation" readonly class="form-input-compact">
+
+            <div class="content-section cutter">
+                <div class="section-header">
+                    <div class="section-icon cutter">📏</div>
+                    <h2 class="section-title">寸法情報</h2>
                 </div>
-                <div class="form-row-compact">
-                    <div class="form-group-compact">
-                        <label>ラック</label>
-                        <select id="rackSelect" onchange="updateRackLayers()" class="form-select-compact">
-                            <option value="">選択</option>
-                        </select>
-                    </div>
-                    <div class="form-group-compact">
-                        <label>レイヤー</label>
-                        <select id="rackLayerSelect" class="form-select-compact">
-                            <option value="">選択</option>
-                        </select>
-                    </div>
+                <div id="summaryDimensionInfo">読み込み中...</div>
+            </div>
+
+            <div class="content-section related-molds-section">
+                <div class="section-header">
+                    <div class="section-icon mold">🔷</div>
+                    <h2 class="section-title">関連金型</h2>
                 </div>
-                <div class="form-group-compact">
-                    <label>担当者</label>
-                    <select id="employeeSelect" class="form-select-compact">
-                        <option value="">選択</option>
+                <div id="summaryRelatedMolds">読み込み中...</div>
+            </div>
+        </div>
+
+        <!-- Tab 2: Technical -->
+        <div id="technical" class="tab-pane">
+            <div class="content-section cutter">
+                <div class="section-header">
+                    <div class="section-icon cutter">⚙️</div>
+                    <h2 class="section-title">技術仕様</h2>
+                </div>
+                <div id="technicalInfo">読み込み中...</div>
+            </div>
+        </div>
+
+        <!-- Tab 3: Cutting -->
+        <div id="cutting" class="tab-pane">
+            <div class="content-section cutter">
+                <div class="section-header">
+                    <div class="section-icon cutter">🔪</div>
+                    <h2 class="section-title">カット仕様</h2>
+                </div>
+                <div id="cuttingInfo">読み込み中...</div>
+            </div>
+        </div>
+
+        <!-- Tab 4: Processing -->
+        <div id="processing" class="tab-pane">
+            <div class="content-section cutter">
+                <div class="section-header">
+                    <div class="section-icon cutter">🔄</div>
+                    <h2 class="section-title">処理状況</h2>
+                </div>
+                <div id="processingStatus">読み込み中...</div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px;">
+                <div class="content-section cutter">
+                    <div class="section-header">
+                        <div class="section-icon cutter">📍</div>
+                        <h2 class="section-title">位置履歴</h2>
+                    </div>
+                    <div id="processingLocationHistory" class="history-grid">読み込み中...</div>
+                </div>
+
+                <div class="content-section cutter">
+                    <div class="section-header">
+                        <div class="section-icon cutter">🚚</div>
+                        <h2 class="section-title">出荷履歴</h2>
+                    </div>
+                    <div id="processingShipmentHistory" class="history-grid">読み込み中...</div>
+                </div>
+            </div>
+
+            <div class="content-section cutter">
+                <div class="section-header">
+                    <div class="section-icon cutter">💬</div>
+                    <h2 class="section-title">ユーザーコメント</h2>
+                </div>
+                <div id="processingUserComments">読み込み中...</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- V6.9: MODALS -->
+    
+    <!-- Location Update Modal -->
+    <div id="locationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header cutter">
+                <h3 class="modal-title">位置更新</h3>
+                <button class="close" onclick="CutterApp.hideLocationModal()">&times;</button>
+            </div>
+            <form id="locationForm">
+                <div class="form-group">
+                    <label for="rackSelect">ラック:</label>
+                    <select id="rackSelect" required>
+                        <option value="">選択してください</option>
                     </select>
                 </div>
-                <div class="form-group-compact">
-                    <label>備考</label>
-                    <textarea id="locationNotes" rows="2" class="form-textarea-compact"></textarea>
-                </div>
-                <div class="modal-actions-compact">
-                    <button type="button" onclick="hideLocationModal()" class="btn-secondary-compact">キャンセル</button>
-                    <button type="submit" class="btn-primary-compact cutter">更新</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Shipment Modal - Mobile Optimized -->
-    <div id="shipmentModal" class="modal-compact">
-        <div class="modal-content-compact">
-            <div class="modal-header-compact cutter">
-                <h3>出荷登録</h3>
-                <button class="modal-close-compact" onclick="hideShipmentModal()">×</button>
-            </div>
-            <form id="shipmentForm" class="modal-body-compact">
-                <div class="form-row-compact">
-                    <div class="form-group-compact">
-                        <label>出荷元</label>
-                        <select id="fromCompanySelect" class="form-select-compact">
-                            <option value="">選択</option>
-                        </select>
-                    </div>
-                    <div class="form-group-compact">
-                        <label>出荷先</label>
-                        <select id="toCompanySelect" class="form-select-compact">
-                            <option value="">選択</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-row-compact">
-                    <div class="form-group-compact">
-                        <label>出荷元（手入力）</label>
-                        <input type="text" id="fromCompanyManual" class="form-input-compact">
-                    </div>
-                    <div class="form-group-compact">
-                        <label>出荷先（手入力）</label>
-                        <input type="text" id="toCompanyManual" class="form-input-compact">
-                    </div>
-                </div>
-                <div class="form-row-compact">
-                    <div class="form-group-compact">
-                        <label>出荷日</label>
-                        <input type="date" id="shipmentDate" class="form-input-compact">
-                    </div>
-                    <div class="form-group-compact">
-                        <label>担当者</label>
-                        <input type="text" id="handler" class="form-input-compact">
-                    </div>
-                </div>
-                <div class="form-group-compact">
-                    <label>備考</label>
-                    <textarea id="shipmentNotes" rows="2" class="form-textarea-compact"></textarea>
-                </div>
-                <div class="modal-actions-compact">
-                    <button type="button" onclick="hideShipmentModal()" class="btn-secondary-compact">キャンセル</button>
-                    <button type="submit" class="btn-primary-compact cutter">登録</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Comment Modal - Mobile Optimized -->
-    <div id="commentModal" class="modal-compact">
-        <div class="modal-content-compact">
-            <div class="modal-header-compact cutter">
-                <h3>コメント追加</h3>
-                <button class="modal-close-compact" onclick="hideCommentModal()">×</button>
-            </div>
-            <form id="commentForm" class="modal-body-compact">
-                <div class="form-group-compact">
-                    <label>コメント</label>
-                    <textarea id="commentText" rows="3" required class="form-textarea-compact"></textarea>
-                </div>
-                <div class="form-group-compact">
-                    <label>投稿者</label>
-                    <select id="commentEmployeeSelect" class="form-select-compact">
-                        <option value="">選択</option>
+                <div class="form-group">
+                    <label for="rackLayerSelect">レイヤー:</label>
+                    <select id="rackLayerSelect" required>
+                        <option value="">選択してください</option>
                     </select>
                 </div>
-                <div class="modal-actions-compact">
-                    <button type="button" onclick="hideCommentModal()" class="btn-secondary-compact">キャンセル</button>
-                    <button type="submit" class="btn-primary-compact cutter">投稿</button>
+                <div class="form-group">
+                    <label for="employeeSelect">担当者:</label>
+                    <select id="employeeSelect" required>
+                        <option value="">選択してください</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="locationNotes">備考:</label>
+                    <textarea id="locationNotes" rows="3" placeholder="備考を入力してください..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit">更新</button>
+                    <button type="button" onclick="CutterApp.hideLocationModal()">キャンセル</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Scripts -->
+    <!-- Shipment Registration Modal -->
+    <div id="shipmentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header cutter">
+                <h3 class="modal-title">出荷登録</h3>
+                <button class="close" onclick="CutterApp.hideShipmentModal()">&times;</button>
+            </div>
+            <form id="shipmentForm">
+                <div class="form-group">
+                    <label for="toCompanySelect">出荷先:</label>
+                    <select id="toCompanySelect" required>
+                        <option value="">選択してください</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="shipmentDate">出荷日:</label>
+                    <input type="date" id="shipmentDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="handler">担当者:</label>
+                    <input type="text" id="handler" placeholder="担当者名を入力してください...">
+                </div>
+                <div class="form-group">
+                    <label for="shipmentNotes">備考:</label>
+                    <textarea id="shipmentNotes" rows="3" placeholder="備考を入力してください..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit">登録</button>
+                    <button type="button" onclick="CutterApp.hideShipmentModal()">キャンセル</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Comment Add Modal -->
+    <div id="commentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header cutter">
+                <h3 class="modal-title">コメント追加</h3>
+                <button class="close" onclick="CutterApp.hideCommentModal()">&times;</button>
+            </div>
+            <form id="commentForm">
+                <div class="form-group">
+                    <label for="commentEmployeeSelect">担当者:</label>
+                    <select id="commentEmployeeSelect" required>
+                        <option value="">選択してください</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="commentText">コメント:</label>
+                    <textarea id="commentText" rows="4" required placeholder="コメントを入力してください..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit">追加</button>
+                    <button type="button" onclick="CutterApp.hideCommentModal()">キャンセル</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- V6.9: Loading Overlay -->
+    <div id="loadingIndicator" class="loading-overlay" style="display: none;">
+        <div class="loading-spinner cutter"></div>
+        <p>データを読み込み中...</p>
+    </div>
+
+    <!-- V6.9: Error Display -->
+    <div id="errorContainer" style="display: none; position: fixed; top: 120px; left: 15px; right: 15px; background: #fee2e2; color: #991b1b; padding: 12px; border-radius: 6px; z-index: 9998; border-left: 4px solid #ef4444; font-size: 14px; text-align: center;"></div>
+
+    <!-- V6.9: Print Layout -->
+    <div id="printOnlyContent" class="print-only"></div>
+
+    <!-- ===== V6.9: STANDALONE SCRIPTS - NO CONFLICTS ===== -->
+    
+    <!-- V6.9: Load main system script (but don't use its API_BASE_URL) -->
+    <script>
+        // V6.9: Temporarily store any existing API_BASE_URL
+        const TEMP_API_URL = typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : null;
+    </script>
     <script src="script.js"></script>
+    <script>
+        // V6.9: Restore API_BASE_URL to prevent conflicts
+        if (TEMP_API_URL) {
+            API_BASE_URL = TEMP_API_URL;
+        }
+    </script>
+    
+    <!-- V6.9: Load cutter-specific script -->
     <script src="detail-cutter.js"></script>
+    
+    <!-- V6.9: HTML-Only UI Functions -->
+    <script>
+        // V6.9: Basic HTML UI functions - no dependencies
+        console.log('V6.9: Loading HTML UI functions...');
+        
+        function goBack() {
+            try {
+                if (document.referrer && document.referrer.includes(window.location.hostname)) {
+                    window.history.back();
+                } else {
+                    window.location.href = 'index.html';
+                }
+            } catch (error) {
+                console.error('V6.9: Navigation error:', error);
+                window.location.href = 'index.html';
+            }
+        }
+        
+        // Close modals when clicking outside
+        window.addEventListener('click', function(event) {
+            try {
+                const modals = ['locationModal', 'shipmentModal', 'commentModal'];
+                modals.forEach(modalId => {
+                    const modal = document.getElementById(modalId);
+                    if (modal && event.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+            } catch (error) {
+                console.error('V6.9: Modal click error:', error);
+            }
+        });
+        
+        // V6.9: Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('V6.9: DOM ready, initializing...');
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const cutterId = urlParams.get('id');
+            
+            if (!cutterId) {
+                if (typeof CutterApp !== 'undefined' && CutterApp.showError) {
+                    CutterApp.showError('抜型IDが指定されていません / ID dao cắt không được chỉ định');
+                } else {
+                    alert('抜型IDが指定されていません');
+                }
+                return;
+            }
+            
+            // Wait for CutterApp to be available
+            let attempts = 0;
+            const checkApp = () => {
+                attempts++;
+                if (typeof CutterApp !== 'undefined') {
+                    console.log('V6.9: CutterApp found, initializing...');
+                    CutterApp.initialize(cutterId);
+                } else if (attempts < 50) {
+                    setTimeout(checkApp, 100);
+                } else {
+                    console.error('V6.9: CutterApp not available after 5 seconds');
+                    alert('システムの初期化に失敗しました。ページを再読み込みしてください。');
+                }
+            };
+            
+            checkApp();
+        });
+        
+        console.log('V6.9: ✅ HTML UI functions loaded');
+    </script>
 </body>
 </html>

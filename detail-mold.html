@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Chi tiết khuôn - MoldCutterSearch V6.3</title>
-    <!-- V6.3 - Simplified header like V5.9/V6.0 + Comprehensive print layout + Fixed mold dimensions -->
+    <title>Chi tiết khuôn - MoldCutterSearch V6.5</title>
+    <!-- V6.5 - Final version with conditional header + Modern UI + Official report -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -14,7 +14,7 @@
 </head>
 <body class="mold-detail-page">
     
-    <!-- ===== SIMPLIFIED HEADER V6.3 LIKE V5.9 ===== -->
+    <!-- ===== V6.5: DYNAMIC HEADER BASED ON LOCATION ===== -->
     <header class="header">
         <div class="header-content">
             <div class="header-left">
@@ -26,7 +26,8 @@
                             📍 位置情報読み込み中...
                         </div>
                     </div>
-                    <p class="mold-subtitle">金型詳細情報 / Thông tin chi tiết khuôn</p>
+                    <!-- V6.5: Conditional subtitle - hidden when at other company -->
+                    <p class="mold-subtitle" id="moldSubtitle">金型詳細情報 / Thông tin chi tiết khuôn</p>
                 </div>
             </div>
             
@@ -34,19 +35,19 @@
                 <button id="showLocationBtn" class="action-btn">📍位置</button>
                 <button id="showShipmentBtn" class="action-btn">🚚出荷</button>
                 <button id="showCommentBtn" class="action-btn">💬コメント</button>
-                <button onclick="generateComprehensivePrint()" class="action-btn">🖨️印刷</button>
-                <button onclick="generatePDF()" class="action-btn">📄PDF</button>
+                <button onclick="generateOfficialReport()" class="action-btn">🖨️公式報告</button>
+                <button onclick="generateOfficialPDF()" class="action-btn">📄PDF</button>
                 <button onclick="reloadMoldDataFromGitHub()" class="action-btn">🔄更新</button>
             </div>
         </div>
     </header>
 
-    <!-- ===== V6.3: COMPREHENSIVE PRINT LAYOUT - HIDDEN ON SCREEN ===== -->
-    <div id="comprehensivePrintContent" class="print-only">
-        <!-- This content is populated by JavaScript and only visible when printing -->
+    <!-- ===== V6.5: OFFICIAL REPORT PRINT LAYOUT - HIDDEN ON SCREEN ===== -->
+    <div id="officialReportContent" class="print-only">
+        <!-- This content is populated by JavaScript using official form template -->
     </div>
 
-    <!-- ===== TAB NAVIGATION V6.3 ===== -->
+    <!-- ===== TAB NAVIGATION V6.5 - FIXED BELOW HEADER ===== -->
     <nav class="tab-navigation">
         <ul class="tab-nav">
             <li><a href="#summary" class="tab-link active" data-tab="summary">📋総合</a></li>
@@ -56,7 +57,7 @@
         </ul>
     </nav>
 
-    <!-- ===== TAB CONTENT V6.3 - SCREEN DISPLAY ===== -->
+    <!-- ===== TAB CONTENT V6.5 - MODERN UI ===== -->
     <div class="tab-content-wrapper">
         
         <!-- Tab 1: 総合 (Summary) -->
@@ -67,7 +68,7 @@
                     <h2 class="section-title">基本情報 / Thông tin cơ bản</h2>
                 </div>
                 <div id="summaryBasicInfo">
-                    <!-- Populated by JavaScript displaySummaryBasicInfo() -->
+                    <!-- Populated by JavaScript displaySummaryBasicInfo() with conditional location logic -->
                 </div>
             </div>
 
@@ -105,7 +106,7 @@
             </div>
         </div>
 
-        <!-- Tab 3: 技術 (Technical) -->
+        <!-- Tab 3: 技術 (Technical) - V6.5: Modern 2-column with enhanced distinction -->
         <div id="technical" class="tab-pane">
             <div class="content-section">
                 <div class="section-header">
@@ -113,12 +114,12 @@
                     <h2 class="section-title">技術情報 / Thông tin kỹ thuật</h2>
                 </div>
                 <div id="technicalInfo">
-                    <!-- Populated by JavaScript displayTechnicalTab() -->
+                    <!-- Populated by JavaScript displayTechnicalTab() with modern 2-column layout -->
                 </div>
             </div>
         </div>
 
-        <!-- Tab 4: 処理 (Processing) -->
+        <!-- Tab 4: 処理 (Processing) - V6.5: Compact spacing -->
         <div id="processing" class="tab-pane">
             <div class="content-section">
                 <div class="section-header">
@@ -130,7 +131,7 @@
                 </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px;">
                 <div class="content-section">
                     <div class="section-header">
                         <div class="section-icon">📍</div>
@@ -165,7 +166,7 @@
 
     </div>
 
-    <!-- ===== MODALS V6.3 ===== -->
+    <!-- ===== MODALS V6.5 ===== -->
     
     <!-- Location Update Modal -->
     <div id="locationModal" class="modal">
@@ -272,14 +273,14 @@
     </div>
 
     <!-- Error Display -->
-    <div id="errorContainer" style="display: none; position: fixed; top: 80px; left: 15px; right: 15px; background: #f8d7da; color: #721c24; padding: 12px; border-radius: 6px; z-index: 9998; border-left: 4px solid #dc3545; font-size: 14px; text-align: center;"></div>
+    <div id="errorContainer" style="display: none; position: fixed; top: 120px; left: 15px; right: 15px; background: #f8d7da; color: #721c24; padding: 12px; border-radius: 6px; z-index: 9998; border-left: 4px solid #dc3545; font-size: 14px; text-align: center;"></div>
 
     <!-- JavaScript -->
     <script src="script.js"></script>
     <script src="detail-mold.js"></script>
     
     <script>
-        // ===== V6.3 ENHANCED UI FUNCTIONS WITH COMPREHENSIVE PRINT =====
+        // ===== V6.5 ENHANCED UI FUNCTIONS WITH OFFICIAL REPORT =====
         
         function showLocationModal() {
             document.getElementById('locationModal').style.display = 'block';
@@ -313,29 +314,29 @@
             }
         }
         
-        // V6.3: NEW - Comprehensive print function
-        function generateComprehensivePrint() {
-            console.log('V6.3: Generating comprehensive print layout...');
+        // V6.5: NEW - Official report function using form template
+        function generateOfficialReport() {
+            console.log('V6.5: Generating official report using form template...');
             
-            if (typeof generateComprehensivePrintLayout === 'function') {
-                generateComprehensivePrintLayout();
+            if (typeof generateOfficialReportLayout === 'function') {
+                generateOfficialReportLayout();
                 
                 // Wait for layout generation, then print
                 setTimeout(() => {
                     window.print();
                 }, 500);
             } else {
-                console.error('V6.3: generateComprehensivePrintLayout function not found');
+                console.error('V6.5: generateOfficialReportLayout function not found');
                 window.print(); // Fallback
             }
         }
         
-        // V6.3: NEW - PDF generation function
-        function generatePDF() {
-            console.log('V6.3: Generating PDF...');
+        // V6.5: NEW - Official PDF generation
+        function generateOfficialPDF() {
+            console.log('V6.5: Generating official PDF using form template...');
             
-            if (typeof generateComprehensivePrintLayout === 'function') {
-                generateComprehensivePrintLayout();
+            if (typeof generateOfficialReportLayout === 'function') {
+                generateOfficialReportLayout();
                 
                 // Wait for layout generation, then print to PDF
                 setTimeout(() => {
@@ -343,7 +344,7 @@
                     window.print();
                 }, 500);
             } else {
-                console.error('V6.3: generateComprehensivePrintLayout function not found');
+                console.error('V6.5: generateOfficialReportLayout function not found');
                 window.print(); // Fallback
             }
         }
@@ -376,7 +377,7 @@
             const successDiv = document.createElement('div');
             successDiv.style.cssText = `
                 position: fixed;
-                top: 90px;
+                top: 130px;
                 left: 15px;
                 right: 15px;
                 background: #d4edda;
@@ -406,8 +407,27 @@
             }
         }
         
-        console.log('MoldCutterSearch V6.3 - Enhanced HTML Structure Ready');
-        console.log('✅ Simplified Header + Comprehensive Print + Fixed Dimensions Logic');
+        // V6.5: Enhanced scroll management for fixed tabs
+        let lastScrollTop = 0;
+        window.addEventListener('scroll', function() {
+            const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+            const tabNav = document.querySelector('.tab-navigation');
+            
+            if (tabNav) {
+                if (currentScroll > lastScrollTop && currentScroll > 200) {
+                    // Scrolling down - hide tabs for more space
+                    tabNav.style.transform = 'translateY(-100%)';
+                } else {
+                    // Scrolling up - show tabs
+                    tabNav.style.transform = 'translateY(0)';
+                }
+            }
+            
+            lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+        }, false);
+        
+        console.log('MoldCutterSearch V6.5 - Final HTML Structure Ready');
+        console.log('✅ Conditional Header + Modern UI + Official Report Template');
     </script>
 </body>
 </html>

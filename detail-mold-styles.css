@@ -1,5 +1,6 @@
-/* detail-mold-styles.css V6.3 - Fixed header like V5.9/V6.0 + Comprehensive print layout + Fixed mold dimensions */
-/* 2025.09.22 - Enhanced based on feedback: compact header, comprehensive print, fixed data logic */
+/* detail-mold-styles.css V6.5 - Final improvements with modern UI and official report format */
+/* Header location logic + Modern label/value distinction + Official report template */
+/* 2025.09.24 - Final version addressing all requirements */
 
 :root {
     --primary-blue: #007bff;
@@ -13,9 +14,15 @@
     --border-color: #dee2e6;
     --shadow-light: rgba(0,0,0,0.1);
     --shadow-medium: rgba(0,0,0,0.15);
+    
+    /* V6.5: Modern label/value colors */
+    --label-bg: #f8f9fa;
+    --label-color: #495057;
+    --value-bg: rgba(255,255,255,0.9);
+    --value-highlight: rgba(0,123,255,0.05);
 }
 
-/* ===== BASE STYLES V6.3 - 150% FONT SIZE ===== */
+/* ===== BASE STYLES V6.5 - MAINTAINED 150% FONT ===== */
 * {
     margin: 0;
     padding: 0;
@@ -24,7 +31,7 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    font-size: 19px; /* V6.3: 150% font maintained */
+    font-size: 19px;
     line-height: 1.3;
     color: #333;
     background: var(--light-gray);
@@ -35,11 +42,11 @@ body {
     min-height: 100vh;
 }
 
-/* ===== V6.3: SIMPLIFIED HEADER LIKE V5.9/V6.0 ===== */
+/* ===== V6.5: HEADER - 80% FONT SIZE + CONDITIONAL SUBTITLE ===== */
 .header {
     background: linear-gradient(135deg, var(--primary-blue), #0056b3);
     color: white;
-    padding: 8px 0; /* V6.3: Compact like V5.9 */
+    padding: 8px 0;
     box-shadow: 0 2px 8px var(--shadow-medium);
     position: sticky;
     top: 0;
@@ -52,7 +59,7 @@ body {
     padding: 0 15px;
     display: flex;
     justify-content: space-between;
-    align-items: center; /* V6.3: Center aligned like V5.9 */
+    align-items: center;
     flex-wrap: wrap;
     gap: 15px;
 }
@@ -71,7 +78,7 @@ body {
     padding: 8px 12px;
     border-radius: 4px;
     text-decoration: none;
-    font-size: 16px;
+    font-size: 13px; /* V6.5: 80% font size */
     font-weight: 500;
     transition: all 0.3s ease;
     flex-shrink: 0;
@@ -84,7 +91,7 @@ body {
     color: white;
 }
 
-/* V6.3: ENHANCED MOLD HEADER INFO LIKE V5.9 */
+/* V6.5: DYNAMIC HEADER INFO BASED ON LOCATION */
 .mold-header-info {
     display: flex;
     flex-direction: column;
@@ -100,7 +107,7 @@ body {
 }
 
 .mold-title {
-    font-size: 22px;
+    font-size: 18px; /* V6.5: 80% of 22px */
     font-weight: 600;
     margin: 0;
     line-height: 1.2;
@@ -110,7 +117,7 @@ body {
     background: rgba(255,255,255,0.15);
     padding: 6px 12px;
     border-radius: 6px;
-    font-size: 15px;
+    font-size: 12px; /* V6.5: 80% of 15px */
     font-weight: 500;
     border-left: 3px solid rgba(255,255,255,0.4);
     display: flex;
@@ -118,10 +125,15 @@ body {
     gap: 6px;
 }
 
+/* V6.5: Conditional subtitle display */
 .mold-subtitle {
-    font-size: 14px;
+    font-size: 11px; /* V6.5: 80% of 14px */
     opacity: 0.9;
     line-height: 1.1;
+}
+
+.mold-subtitle.hidden {
+    display: none;
 }
 
 .header-actions {
@@ -137,7 +149,7 @@ body {
     color: white;
     padding: 8px 12px;
     border-radius: 4px;
-    font-size: 14px;
+    font-size: 11px; /* V6.5: 80% of 14px */
     font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -154,11 +166,14 @@ body {
     color: white;
 }
 
-/* ===== TAB NAVIGATION V6.3 ===== */
+/* ===== V6.5: TAB NAVIGATION - FIXED POSITION ===== */
 .tab-navigation {
     background: white;
     border-bottom: 2px solid var(--border-color);
     padding: 0 15px;
+    position: sticky;
+    top: 62px;
+    z-index: 999;
 }
 
 .tab-nav {
@@ -199,11 +214,11 @@ body {
     background: white;
 }
 
-/* ===== TAB CONTENT V6.3 ===== */
+/* ===== V6.5: TAB CONTENT - COMPACT SPACING ===== */
 .tab-content-wrapper {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 15px;
 }
 
 .tab-pane {
@@ -220,12 +235,12 @@ body {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* ===== CONTENT SECTIONS V6.3 ===== */
+/* ===== V6.5: CONTENT SECTIONS - COMPACT SPACING ===== */
 .content-section {
     background: white;
     border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 15px;
+    padding: 15px;
+    margin-bottom: 10px;
     box-shadow: 0 2px 6px var(--shadow-light);
     border: 1px solid var(--border-color);
 }
@@ -233,92 +248,93 @@ body {
 .section-header {
     display: flex;
     align-items: center;
-    margin-bottom: 15px;
-    padding-bottom: 10px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
     border-bottom: 2px solid var(--border-color);
 }
 
 .section-icon {
-    width: 22px;
-    height: 22px;
-    margin-right: 10px;
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
     background: var(--primary-blue);
     border-radius: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    font-size: 14px;
+    font-size: 12px;
 }
 
 .section-title {
-    font-size: 20px;
+    font-size: 16px; /* V6.5: 80% of 20px */
     font-weight: 600;
     color: var(--dark-gray);
     margin: 0;
 }
 
-/* ===== V6.3: 2-COLUMN INFO LAYOUT ===== */
+/* ===== V6.5: MODERN LABEL/VALUE DISTINCTION ===== */
 .info-row-compact {
     display: grid;
     grid-template-columns: 200px 1fr;
-    gap: 20px;
-    align-items: start;
-    padding: 8px 0;
-    border-bottom: 1px solid rgba(0,0,0,0.05);
-    min-height: 40px;
-}
-
-.info-row-compact:last-child {
-    border-bottom: none;
+    gap: 0; /* V6.5: No gap for modern look */
+    align-items: stretch;
+    margin-bottom: 2px; /* V6.5: Minimal margin */
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 .info-label-compact {
+    background: var(--label-bg);
+    padding: 8px 12px;
+    border-right: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    padding-top: 2px;
+    justify-content: center;
 }
 
 .label-jp {
-    font-size: 16px;
-    font-weight: 700;
-    color: #2c3e50;
+    font-size: 15px; /* V6.5: Slightly reduced */
+    font-weight: 600;
+    color: var(--label-color);
     line-height: 1.2;
     margin-bottom: 2px;
 }
 
 .label-vn {
-    font-size: 13px;
-    color: #7f8c8d;
+    font-size: 12px; /* V6.5: Slightly reduced */
+    color: var(--medium-gray);
     opacity: 0.8;
     line-height: 1.1;
 }
 
 .info-value-compact {
-    font-size: 16px;
+    background: var(--value-bg);
+    padding: 8px 12px;
+    font-size: 15px; /* V6.5: Slightly reduced */
     color: #2c3e50;
     font-weight: 500;
     line-height: 1.2;
     word-wrap: break-word;
-    padding-top: 2px;
-    align-self: center;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.2s ease;
+}
+
+.info-value-compact:hover {
+    background: var(--value-highlight);
 }
 
 .info-value-compact.highlight {
     background: linear-gradient(135deg, var(--primary-blue), #0056b3);
     color: white;
-    padding: 6px 12px;
-    border-radius: 6px;
     font-weight: 600;
-    display: inline-block;
 }
 
 .info-value-compact.success {
     background: #d4edda;
     color: #155724;
-    padding: 4px 8px;
-    border-radius: 4px;
     border: 1px solid #c3e6cb;
     font-size: 14px;
 }
@@ -326,8 +342,6 @@ body {
 .info-value-compact.warning {
     background: #fff3cd;
     color: #856404;
-    padding: 4px 8px;
-    border-radius: 4px;
     border: 1px solid #ffeaa7;
     font-size: 14px;
 }
@@ -335,74 +349,170 @@ body {
 .info-value-compact.danger {
     background: #f8d7da;
     color: #721c24;
-    padding: 4px 8px;
-    border-radius: 4px;
     border: 1px solid #f1b0b7;
     font-size: 14px;
 }
 
-/* ===== V6.3: 3-COLUMN LAYOUT FOR SIZE+CAV (FIXED) ===== */
+/* ===== V6.5: 3-COLUMN LAYOUT FOR SIZE+CAV ===== */
 .size-cav-row {
     display: grid;
     grid-template-columns: 200px 1fr auto;
-    gap: 20px;
-    align-items: center;
-    padding: 8px 0;
-    border-bottom: 1px solid rgba(0,0,0,0.05);
-    margin-bottom: 8px;
+    gap: 0;
+    align-items: stretch;
+    margin-bottom: 2px;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 .size-cav-label {
+    background: var(--label-bg);
+    padding: 8px 12px;
+    border-right: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
+    justify-content: center;
 }
 
 .size-cav-value {
-    font-size: 16px;
+    background: var(--value-bg);
+    padding: 8px 12px;
+    font-size: 15px;
     color: #2c3e50;
     font-weight: 500;
     line-height: 1.2;
+    display: flex;
+    align-items: center;
+    border-right: 1px solid var(--border-color);
 }
 
 .size-cav-code {
-    justify-self: end;
+    background: var(--value-bg);
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-/* ===== CAV CODE STYLING V6.3 ===== */
+/* ===== V6.5: CAV CODE STYLING ===== */
 .cav-code {
     background: linear-gradient(135deg, #ffc107, #ff8c00);
     color: #000;
     padding: 6px 12px;
     border-radius: 6px;
     font-weight: 700;
-    font-size: 16px;
+    font-size: 14px;
     display: inline-block;
     border: 2px solid #ff8c00;
     box-shadow: 0 2px 4px rgba(255, 140, 0, 0.3);
     text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
 }
 
-/* ===== RACK DISPLAY V6.3 ===== */
+/* ===== V6.5: TECHNICAL 2-COLUMN WITH MODERN STYLING ===== */
+.technical-2-column {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px; /* V6.5: Optimized gap */
+    margin-bottom: 15px;
+}
+
+.tech-column {
+    display: flex;
+    flex-direction: column;
+    gap: 4px; /* V6.5: Compact spacing */
+}
+
+/* ===== V6.6: TECHNICAL 2-COLUMN WITH WIDER LABELS ===== */
+.tech-row {
+    display: grid;
+    grid-template-columns: 75px 1fr; /* ← Tăng từ 65px lên 85px */
+    gap: 0;
+    align-items: stretch;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+    margin-bottom: 2px;
+}
+
+.tech-row:last-child {
+    margin-bottom: 0;
+}
+
+.tech-label {
+    background: var(--label-bg);
+    padding: 8px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--label-color);
+    line-height: 1.1;
+    word-wrap: break-word;
+    display: flex;
+    align-items: center;
+    border-right: 1px solid var(--border-color);
+}
+
+.tech-value {
+    background: var(--value-bg);
+    padding: 6px 8px;
+    font-size: 11px; /* V6.5: Optimized for mobile */
+    color: #2c3e50;
+    font-weight: 500;
+    line-height: 1.1;
+    word-wrap: break-word;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.2s ease;
+}
+
+.tech-value:hover {
+    background: var(--value-highlight);
+}
+
+/* V6.5: Full-width row for text content */
+.tech-row-full {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 0;
+    align-items: stretch;
+    margin: 15px 0 8px 0;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    grid-column: 1 / -1; /* Span full width */
+}
+
+.tech-row-full .info-label-compact {
+    background: var(--label-bg);
+    padding: 8px 12px;
+    border-right: 1px solid var(--border-color);
+}
+
+.tech-row-full .info-value-compact {
+    background: var(--value-bg);
+    padding: 8px 12px;
+}
+
+/* ===== RACK DISPLAY V6.5 ===== */
 .rack-circle {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 28px;
-    height: 28px;
+    width: 22px;
+    height: 22px;
     background: linear-gradient(135deg, var(--primary-blue), #0056b3);
     color: white;
     border-radius: 50%;
-    font-size: 14px;
+    font-size: 11px;
     font-weight: 700;
     margin: 0 6px;
     box-shadow: 0 2px 4px rgba(0, 123, 255, 0.4);
     border: 2px solid white;
 }
 
-/* ===== STATUS SECTIONS V6.3 ===== */
+/* ===== V6.5: STATUS SECTIONS - COMPACT ===== */
 .status-section {
-    margin-bottom: 12px;
-    padding: 15px;
+    margin-bottom: 8px;
+    padding: 12px;
     border-left: 4px solid var(--primary-blue);
     background: rgba(0, 123, 255, 0.05);
     border-radius: 8px;
@@ -412,18 +522,18 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .status-title {
-    font-size: 17px;
+    font-size: 15px;
     font-weight: 600;
     color: var(--dark-gray);
 }
 
 .status-value {
-    font-size: 14px;
-    padding: 4px 8px;
+    font-size: 13px;
+    padding: 3px 6px;
     background: rgba(40, 167, 69, 0.2);
     border-radius: 4px;
     color: var(--success-green);
@@ -433,36 +543,36 @@ body {
 .date-row {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 10px;
-    margin-top: 8px;
+    gap: 8px;
+    margin-top: 6px;
 }
 
 .date-item {
     background: rgba(255,255,255,0.8);
-    padding: 8px 10px;
+    padding: 6px 8px;
     border-radius: 6px;
     border: 1px solid var(--border-color);
 }
 
 .date-label {
-    font-size: 13px;
+    font-size: 12px;
     color: var(--medium-gray);
-    margin-bottom: 3px;
+    margin-bottom: 2px;
     font-weight: 500;
 }
 
 .date-value {
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 600;
     color: var(--dark-gray);
 }
 
-/* ===== RELATED CUTTERS V6.3 ===== */
+/* ===== RELATED CUTTERS V6.5 ===== */
 .cutters-section {
     background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
     border: 2px solid var(--warning-orange);
     border-radius: 10px;
-    padding: 20px;
+    padding: 15px;
     position: relative;
     overflow: hidden;
 }
@@ -487,8 +597,8 @@ body {
     background: rgba(255,255,255,0.9);
     border: 1px solid var(--warning-orange);
     border-radius: 8px;
-    padding: 12px;
-    margin-bottom: 8px;
+    padding: 10px;
+    margin-bottom: 6px;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
@@ -503,35 +613,35 @@ body {
 }
 
 .cutter-code {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 700;
     color: #d63031;
     margin-bottom: 3px;
 }
 
 .cutter-name {
-    font-size: 14px;
+    font-size: 13px;
     color: var(--dark-gray);
     line-height: 1.2;
 }
 
 .cutter-location {
-    font-size: 13px;
+    font-size: 12px;
     color: var(--medium-gray);
     text-align: right;
 }
 
-/* ===== HISTORY & COMMENTS V6.3 ===== */
+/* ===== V6.5: HISTORY & COMMENTS - COMPACT ===== */
 .history-grid {
     display: grid;
-    gap: 10px;
+    gap: 8px;
 }
 
 .history-item, .comment-item {
     background: var(--light-gray);
     border: 1px solid var(--border-color);
     border-radius: 8px;
-    padding: 15px;
+    padding: 12px;
     transition: all 0.3s ease;
 }
 
@@ -545,39 +655,39 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 6px;
+    margin-bottom: 5px;
 }
 
 .history-title, .comment-author {
     font-weight: 600;
-    font-size: 15px;
+    font-size: 14px;
     color: var(--dark-gray);
 }
 
 .history-date, .comment-date {
-    font-size: 13px;
+    font-size: 12px;
     color: var(--medium-gray);
 }
 
 .history-content, .comment-text {
-    font-size: 14px;
+    font-size: 13px;
     color: #333;
     line-height: 1.3;
 }
 
 .location-change {
     font-weight: 500;
-    margin-bottom: 4px;
+    margin-bottom: 3px;
 }
 
 .history-notes {
-    font-size: 13px;
+    font-size: 12px;
     color: var(--medium-gray);
-    margin-top: 4px;
+    margin-top: 3px;
     font-style: italic;
 }
 
-/* ===== MODALS V6.3 ===== */
+/* ===== MODALS V6.5 ===== */
 .modal {
     display: none;
     position: fixed;
@@ -702,13 +812,13 @@ body {
     box-shadow: 0 3px 8px rgba(0,0,0,0.2);
 }
 
-/* ===== UTILITIES V6.3 ===== */
+/* ===== UTILITIES V6.5 ===== */
 .no-data {
     text-align: center;
     color: var(--medium-gray);
     font-style: italic;
-    padding: 25px;
-    font-size: 16px;
+    padding: 20px;
+    font-size: 15px;
 }
 
 .loading-overlay {
@@ -747,7 +857,8 @@ body {
     font-size: 17px;
 }
 
-/* ===== V6.3: COMPREHENSIVE PRINT LAYOUT - ALL TABS IN ONE PAGE ===== */
+/* ===== V6.5: OFFICIAL REPORT PRINT LAYOUT ===== */
+/* ===== V6.6: REDESIGNED PRINT LAYOUT ===== */
 .print-only {
     display: none;
 }
@@ -756,161 +867,221 @@ body {
     * {
         -webkit-print-color-adjust: exact !important;
         color-adjust: exact !important;
+        box-sizing: border-box !important;
     }
     
     body {
-        font-size: 11px !important;
+        font-family: 'MS Gothic', 'Yu Gothic', monospace !important;
+        font-size: 10px !important;
         line-height: 1.2 !important;
         background: white !important;
         color: black !important;
-        margin: 0 !important;
+        margin: 10mm !important;
         padding: 0 !important;
     }
     
-    /* V6.3: Hide screen elements */
+    /* V6.6: Hide all screen elements */
     .header,
     .tab-navigation,
     .action-btn,
     .modal,
     .loading-overlay,
-    #errorContainer {
+    #errorContainer,
+    .tab-content-wrapper {
         display: none !important;
     }
     
-    /* V6.3: Show print-only elements */
+    /* V6.6: Show print-only elements */
     .print-only {
         display: block !important;
     }
     
-    /* V6.3: Print header */
-    .print-header {
-        text-align: center;
-        margin-bottom: 15px !important;
-        padding: 10px !important;
-        border: 2px solid #000 !important;
-        background: #f0f0f0 !important;
+    /* V6.6: Redesigned print container */
+    .print-container {
+        width: 100% !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: white !important;
     }
     
-    .print-mold-title {
+    /* V6.6: Print header */
+    .print-header {
+        text-align: center !important;
+        margin-bottom: 20px !important;
+        border-bottom: 2px solid #000 !important;
+        padding-bottom: 10px !important;
+    }
+    
+    .print-title {
         font-size: 16px !important;
         font-weight: bold !important;
         margin-bottom: 5px !important;
     }
     
-    .print-mold-info {
+    .print-subtitle {
         font-size: 10px !important;
-        color: #333 !important;
-    }
-    
-    /* V6.3: Print content wrapper */
-    .print-content {
-        max-width: none !important;
-        padding: 0 !important;
         margin: 0 !important;
     }
     
-    /* V6.3: Print sections */
+    /* V6.6: Print sections */
     .print-section {
         margin-bottom: 15px !important;
-        page-break-inside: avoid;
-        border: 1px solid #333 !important;
+        page-break-inside: avoid !important;
     }
     
     .print-section-header {
         background: #f0f0f0 !important;
-        padding: 8px 12px !important;
-        border-bottom: 1px solid #333 !important;
+        padding: 5px 10px !important;
         font-weight: bold !important;
         font-size: 12px !important;
+        border: 1px solid #000 !important;
+        margin-bottom: 5px !important;
     }
     
     .print-section-content {
-        padding: 10px 12px !important;
+        border: 1px solid #000 !important;
+        padding: 10px !important;
     }
     
-    /* V6.3: Print info rows */
-    .print-info-row {
+    /* V6.6: Print grid layout */
+    .print-grid {
         display: grid !important;
-        grid-template-columns: 120px 1fr !important;
+        grid-template-columns: repeat(2, 1fr) !important;
         gap: 10px !important;
-        padding: 3px 0 !important;
-        border-bottom: 1px solid #ddd !important;
-        min-height: auto !important;
+        margin-bottom: 10px !important;
     }
     
-    .print-info-row:last-child {
-        border-bottom: none !important;
+    .print-grid-3col {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 8px !important;
+        margin-bottom: 10px !important;
+    }
+    
+    .print-field {
+        display: flex !important;
+        margin-bottom: 5px !important;
+        align-items: start !important;
+        page-break-inside: avoid !important;
     }
     
     .print-label {
         font-weight: bold !important;
-        font-size: 10px !important;
+        min-width: 80px !important;
+        margin-right: 10px !important;
+        font-size: 9px !important;
+        flex-shrink: 0 !important;
     }
     
     .print-value {
-        font-size: 10px !important;
-        word-wrap: break-word !important;
-    }
-    
-    /* V6.3: Special styling for important values */
-    .print-highlight {
-        background: #e0e0e0 !important;
-        color: black !important;
-        padding: 2px 4px !important;
-        border-radius: 2px !important;
-        font-weight: bold !important;
-    }
-    
-    .print-cav-code {
-        background: #ffc107 !important;
-        color: black !important;
-        border: 1px solid #ff8c00 !important;
+        flex: 1 !important;
         font-size: 9px !important;
+        word-wrap: break-word !important;
+        border-bottom: 1px dotted #666 !important;
+        padding-bottom: 2px !important;
+        min-height: 12px !important;
+    }
+    
+    .print-value.highlight {
+        background: #ffeb3b !important;
         padding: 2px 4px !important;
-        border-radius: 2px !important;
         font-weight: bold !important;
     }
     
-    /* V6.3: Print size+CAV row */
-    .print-size-cav-row {
-        display: grid !important;
-        grid-template-columns: 120px 1fr auto !important;
-        gap: 10px !important;
-        padding: 3px 0 !important;
-        border-bottom: 1px solid #ddd !important;
-        align-items: center !important;
+    /* V6.6: Full width fields */
+    .print-field-full {
+        grid-column: 1 / -1 !important;
+        margin-bottom: 8px !important;
     }
     
-    /* V6.3: Print history items */
-    .print-history-item {
-        margin-bottom: 8px !important;
-        padding: 6px !important;
-        border: 1px solid #ddd !important;
+    .print-field-full .print-label {
+        min-width: 100px !important;
+    }
+    
+    /* V6.6: CAV special styling */
+    .print-cav {
+        background: #ffeb3b !important;
+        border: 2px solid #ff9800 !important;
+        padding: 3px 6px !important;
+        font-weight: bold !important;
+        display: inline-block !important;
         border-radius: 3px !important;
     }
     
-    .print-history-header {
+    /* V6.6: History sections */
+    .print-history {
+        margin-bottom: 5px !important;
+        padding: 3px !important;
+        border-left: 3px solid #2196f3 !important;
+        font-size: 8px !important;
+        background: #f8f9fa !important;
+    }
+    
+    .print-history-date {
         font-weight: bold !important;
-        font-size: 9px !important;
-        margin-bottom: 3px !important;
+        color: #666 !important;
     }
     
-    .print-history-content {
-        font-size: 9px !important;
+    /* V6.6: Related items */
+    .print-related-item {
+        display: inline-block !important;
+        margin: 2px 5px 2px 0 !important;
+        padding: 2px 5px !important;
+        border: 1px solid #ddd !important;
+        border-radius: 3px !important;
+        font-size: 8px !important;
+        background: #f5f5f5 !important;
     }
     
-    /* V6.3: Page breaks */
-    .print-page-break {
+    /* V6.6: Footer */
+    .print-footer {
+        position: fixed !important;
+        bottom: 10mm !important;
+        left: 10mm !important;
+        right: 10mm !important;
+        text-align: center !important;
+        font-size: 8px !important;
+        border-top: 1px solid #666 !important;
+        padding-top: 5px !important;
+        color: #666 !important;
+    }
+    
+    /* V6.6: Page breaks */
+    .page-break {
         page-break-before: always !important;
     }
     
-    /* V6.3: Hide empty sections */
-    .print-section:empty {
-        display: none !important;
+    .no-break {
+        page-break-inside: avoid !important;
+    }
+    
+    /* V6.6: Status indicators */
+    .print-status {
+        display: inline-block !important;
+        padding: 2px 6px !important;
+        border-radius: 3px !important;
+        font-size: 8px !important;
+        font-weight: bold !important;
+    }
+    
+    .print-status.success {
+        background: #c8e6c9 !important;
+        border: 1px solid #4caf50 !important;
+    }
+    
+    .print-status.warning {
+        background: #ffe0b2 !important;
+        border: 1px solid #ff9800 !important;
+    }
+    
+    .print-status.danger {
+        background: #ffcdd2 !important;
+        border: 1px solid #f44336 !important;
     }
 }
 
-/* ===== RESPONSIVE DESIGN V6.3 ===== */
+/* ===== RESPONSIVE DESIGN V6.5 ===== */
 @media (max-width: 768px) {
     .header-content {
         flex-direction: column;
@@ -936,27 +1107,34 @@ body {
     .action-btn {
         flex: 1;
         max-width: 80px;
-        font-size: 12px;
+        font-size: 10px;
         padding: 6px 8px;
     }
     
     .tab-content-wrapper {
-        padding: 15px;
+        padding: 10px;
     }
     
     .info-row-compact {
-        grid-template-columns: 150px 1fr;
-        gap: 15px;
+        grid-template-columns: 140px 1fr;
     }
     
     .size-cav-row {
-        grid-template-columns: 150px 1fr auto;
-        gap: 10px;
+        grid-template-columns: 140px 1fr auto;
     }
     
-    .label-jp { font-size: 14px; }
-    .label-vn { font-size: 11px; }
-    .info-value-compact { font-size: 14px; }
+    .technical-2-column {
+        grid-template-columns: 1fr 1fr; /* Keep 2 columns on tablet */
+        gap: 8px;
+    }
+    
+    .tech-row {
+        grid-template-columns: 85px 1fr; /* Smaller labels */
+    }
+    
+    .label-jp { font-size: 13px; }
+    .label-vn { font-size: 10px; }
+    .info-value-compact { font-size: 13px; }
     
     .modal-content {
         margin: 10% auto;
@@ -971,25 +1149,37 @@ body {
     }
     
     .action-btn {
-        font-size: 10px;
+        font-size: 9px;
         padding: 4px 6px;
     }
     
     .mold-title {
-        font-size: 18px;
-    }
-    
-    .section-title {
         font-size: 16px;
     }
     
+    .section-title {
+        font-size: 14px;
+    }
+    
     .info-row-compact {
-        grid-template-columns: 120px 1fr;
-        gap: 10px;
+        grid-template-columns: 110px 1fr;
     }
     
     .size-cav-row {
-        grid-template-columns: 120px 1fr auto;
-        gap: 8px;
+        grid-template-columns: 110px 1fr auto;
+    }
+    
+    .technical-2-column {
+        grid-template-columns: 1fr 1fr; /* Keep 2 columns even on mobile */
+        gap: 6px;
+    }
+    
+    .tech-row {
+        grid-template-columns: 50px 1fr; /* Very compact */
+    }
+    
+    .tech-label,
+    .tech-value {
+        font-size: 10px;
     }
 }

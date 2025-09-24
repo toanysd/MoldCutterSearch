@@ -1,6 +1,6 @@
-// detail-mold.js V6.3 - Fixed mold dimensions + Comprehensive print layout + Simplified header like V5.9
-// Enhanced with proper dimension logic and complete print functionality
-// 2025.09.22 - Complete implementation addressing all feedback
+// detail-mold.js V6.5 - Final version with conditional location logic + Modern UI + Official report
+// Complete implementation with all requested improvements
+// 2025.09.24 - Final production ready version
 
 // ===== GLOBAL VARIABLES =====
 let currentMold = null;
@@ -10,12 +10,12 @@ let cavData = [];
 
 const MOLD_GITHUB_BASE_URL = "https://raw.githubusercontent.com/toanysd/MoldCutterSearch/main/Data";
 
-// ===== PAGE INITIALIZATION V6.3 =====
+// ===== PAGE INITIALIZATION V6.5 =====
 document.addEventListener('DOMContentLoaded', function() {
     const urlParams = new URLSearchParams(window.location.search);
     const moldId = urlParams.get('id');
     
-    console.log('V6.3: Initializing with moldId:', moldId);
+    console.log('V6.5: Initializing with moldId:', moldId);
     
     if (moldId) {
         loadMoldDetailData(moldId);
@@ -28,9 +28,9 @@ document.addEventListener('DOMContentLoaded', function() {
     loadMoldUserComments();
 });
 
-// ===== V6.3: TAB NAVIGATION =====
+// ===== V6.5: TAB NAVIGATION =====
 function initializeTabNavigation() {
-    console.log('V6.3: Initializing tab navigation...');
+    console.log('V6.5: Initializing tab navigation...');
     
     const tabLinks = document.querySelectorAll('.tab-link');
     const tabPanes = document.querySelectorAll('.tab-pane');
@@ -54,7 +54,7 @@ function initializeTabNavigation() {
             if (targetPane) {
                 targetPane.classList.add('active');
                 
-                // V6.3: Load tab content dynamically
+                // V6.5: Load tab content dynamically
                 if (currentMold) {
                     console.log('Loading content for tab:', targetTab);
                     switch(targetTab) {
@@ -77,9 +77,9 @@ function initializeTabNavigation() {
     });
 }
 
-// ===== EVENT LISTENERS SETUP V6.3 =====
+// ===== EVENT LISTENERS SETUP V6.5 =====
 function initializeMoldEventListeners() {
-    console.log('V6.3: Setting up event listeners...');
+    console.log('V6.5: Setting up event listeners...');
     
     const locationBtn = document.getElementById('showLocationBtn');
     const shipmentBtn = document.getElementById('showShipmentBtn');
@@ -119,9 +119,9 @@ function initializeMoldEventListeners() {
     }
 }
 
-// ===== DATA LOADING FROM GITHUB V6.3 =====
+// ===== DATA LOADING FROM GITHUB V6.5 =====
 async function reloadMoldDataFromGitHub() {
-    console.log('V6.3: Manual reload from GitHub...');
+    console.log('V6.5: Manual reload from GitHub...');
     try {
         showLoading(true);
         
@@ -136,10 +136,10 @@ async function reloadMoldDataFromGitHub() {
                     const data = parseCSV(csvText);
                     const key = file.replace('.csv', '');
                     moldAllData[key] = data;
-                    console.log(`V6.3: Reloaded ${file}: ${data.length} records`);
+                    console.log(`V6.5: Reloaded ${file}: ${data.length} records`);
                 }
             } catch (error) {
-                console.warn(`V6.3: Error reloading ${file}:`, error);
+                console.warn(`V6.5: Error reloading ${file}:`, error);
             }
         }
         
@@ -148,11 +148,11 @@ async function reloadMoldDataFromGitHub() {
        
         if (currentMold) {
             displayMoldDetailData();
-            console.log('V6.3: Data reloaded and display refreshed');
+            console.log('V6.5: Data reloaded and display refreshed');
             showSuccess('データが正常に更新されました / Dữ liệu đã được cập nhật thành công');
         }
     } catch (error) {
-        console.error('V6.3: Error reloading data:', error);
+        console.error('V6.5: Error reloading data:', error);
         showError('データ更新に失敗しました / Cập nhật dữ liệu thất bại: ' + error.message);
     } finally {
         showLoading(false);
@@ -160,7 +160,7 @@ async function reloadMoldDataFromGitHub() {
 }
 
 async function loadMoldDetailData(moldId) {
-    console.log('V6.3: Loading mold detail data for ID:', moldId);
+    console.log('V6.5: Loading mold detail data for ID:', moldId);
     showLoading(true);
     
     try {
@@ -171,7 +171,7 @@ async function loadMoldDetailData(moldId) {
             'CAV.csv'
         ];
         
-        console.log('V6.3: Loading', dataFiles.length, 'data files...');
+        console.log('V6.5: Loading', dataFiles.length, 'data files...');
         
         const promises = dataFiles.map(async file => {
             try {
@@ -180,10 +180,10 @@ async function loadMoldDetailData(moldId) {
                     const csvText = await response.text();
                     return { file, data: parseCSV(csvText) };
                 }
-                console.warn(`V6.3: Failed to load ${file}`);
+                console.warn(`V6.5: Failed to load ${file}`);
                 return { file, data: [] };
             } catch (error) {
-                console.warn(`V6.3: Error loading ${file}:`, error);
+                console.warn(`V6.5: Error loading ${file}:`, error);
                 return { file, data: [] };
             }
         });
@@ -194,37 +194,37 @@ async function loadMoldDetailData(moldId) {
             const key = file.replace('.csv', '');
             if (key === 'CAV') {
                 cavData = data;
-                console.log('V6.3: CAV data loaded:', cavData.length, 'records');
+                console.log('V6.5: CAV data loaded:', cavData.length, 'records');
             } else {
                 moldAllData[key] = data;
-                console.log(`V6.3: ${key} data loaded:`, data.length, 'records');
+                console.log(`V6.5: ${key} data loaded:`, data.length, 'records');
             }
         });
         
         processMoldDataRelationships();
         
         currentMold = moldAllData.molds.find(item => item.MoldID === moldId);
-        console.log('V6.3: Found mold:', currentMold ? 'YES' : 'NO');
+        console.log('V6.5: Found mold:', currentMold ? 'YES' : 'NO');
         
         if (currentMold) {
             displayMoldDetailData();
             populateMoldFormData();
-            console.log('V6.3: Mold detail loaded successfully');
+            console.log('V6.5: Mold detail loaded successfully');
         } else {
             showError('金型が見つかりません / Không tìm thấy khuôn');
         }
         
     } catch (error) {
-        console.error('V6.3: Error loading mold detail data:', error);
+        console.error('V6.5: Error loading mold detail data:', error);
         showError(`データの読み込みに失敗しました / Tải dữ liệu thất bại: ${error.message}`);
     } finally {
         showLoading(false);
     }
 }
 
-// ===== DATA RELATIONSHIP PROCESSING V6.3 =====
+// ===== DATA RELATIONSHIP PROCESSING V6.5 =====
 function processMoldDataRelationships() {
-    console.log('V6.3: Processing data relationships...');
+    console.log('V6.5: Processing data relationships...');
     
     const moldDesignMap = new Map(moldAllData.molddesign?.map(d => [d.MoldDesignID, d]));
     const customerMap = new Map(moldAllData.customers?.map(c => [c.CustomerID, c]));
@@ -257,16 +257,16 @@ function processMoldDataRelationships() {
                 itemType: 'mold'
             };
         });
-        console.log('V6.3: Enhanced', moldAllData.molds.length, 'mold records');
+        console.log('V6.5: Enhanced', moldAllData.molds.length, 'mold records');
     }
 }
 
-// ===== V6.3: MAIN DISPLAY FUNCTION WITH SIMPLIFIED HEADER =====
+// ===== V6.5: MAIN DISPLAY FUNCTION WITH CONDITIONAL HEADER =====
 function displayMoldDetailData() {
-    console.log('V6.3: Displaying mold detail data...');
+    console.log('V6.5: Displaying mold detail data...');
     
     if (!currentMold) {
-        console.error('V6.3: No current mold data available');
+        console.error('V6.5: No current mold data available');
         return;
     }
     
@@ -275,75 +275,116 @@ function displayMoldDetailData() {
     if (moldTitle) {
         const title = `${currentMold.MoldCode || 'N/A'}`;
         moldTitle.textContent = title;
-        console.log('V6.3: Updated title:', title);
+        console.log('V6.5: Updated title:', title);
     }
     
-    // V6.3: Update location info in header like V5.9
-    updateMoldLocationDisplay();
+    // V6.5: Conditional location display and subtitle
+    updateMoldLocationDisplayConditional();
     
     // Load default tab (Summary)
     displaySummaryTab();
-    console.log('V6.3: Summary tab loaded');
+    console.log('V6.5: Summary tab loaded');
 }
 
-// ===== V6.3: SIMPLIFIED LOCATION DISPLAY LIKE V5.9 =====
-function updateMoldLocationDisplay() {
+// ===== V6.5: CONDITIONAL LOCATION DISPLAY LOGIC =====
+// ===== V6.6: CORRECTED HEADER LOCATION DISPLAY =====
+function updateMoldLocationDisplayConditional() {
     const locationElement = document.getElementById('moldLocation');
+    const subtitleElement = document.getElementById('moldSubtitle');
+    
     if (!locationElement) {
-        console.error('V6.3: moldLocation element not found');
+        console.error('V6.6: moldLocation element not found');
         return;
     }
     
     let locationText = '';
     
-    // V6.3: Current location display like V5.9
-    if (currentMold.storage_company == 2 && currentMold.rackInfo && currentMold.rackLayerInfo) {
-        locationText = `📍 ${currentMold.rackInfo.RackLocation} `;
-        locationText += `<span class="rack-circle">${currentMold.rackInfo.RackID}</span>`;
-        locationText += `-${currentMold.rackLayerInfo.RackLayerNumber}層`;
-    } else if (currentMold.storageCompanyInfo) {
-        locationText = `📍 ${currentMold.storageCompanyInfo.CompanyShortName}`;
+    console.log('V6.6: Processing corrected location logic...');
+    console.log('V6.6: storage_company:', currentMold.storage_company);
+    console.log('V6.6: RackLayerID:', currentMold.RackLayerID);
+    console.log('V6.6: storageCompanyInfo:', currentMold.storageCompanyInfo);
+    
+    // Get rack info regardless of company
+    let rackDisplayText = '';
+    if (currentMold.rackInfo && currentMold.rackLayerInfo) {
+        rackDisplayText = ` <span class="rack-circle">${currentMold.rackInfo.RackID}</span>-${currentMold.rackLayerInfo.RackLayerNumber}層`;
+    }
+    
+    // V6.6: Corrected logic according to requirements
+    if (currentMold.storageCompanyInfo && currentMold.storageCompanyInfo.CompanyShortName) {
+        // Case 1: Has storage company → Show company name + rack info
+        locationText = `現在位置: ${currentMold.storageCompanyInfo.CompanyShortName}${rackDisplayText}`;
+    } else if (currentMold.RackLayerID && rackDisplayText) {
+        // Case 2: No storage company but has RackLayerID → Show "その他" + rack info
+        locationText = `その他${rackDisplayText}`;
     } else {
-        locationText = `📍 位置不明 / Vị trí không rõ`;
+        // Case 3: No storage company and no RackLayerID → Show "位置不明"
+        locationText = `位置不明`;
     }
     
     locationElement.innerHTML = locationText;
-    console.log('V6.3: Location info updated in header like V5.9');
+    
+    // V6.6: Always hide subtitle as requested
+    if (subtitleElement) {
+        subtitleElement.classList.add('hidden');
+    }
+    
+    console.log('V6.6: Corrected location display updated:', locationText);
 }
 
-// ===== V6.3: TAB 1 - SUMMARY WITH FIXED DIMENSIONS =====
+// ===== V6.5: TAB 1 - SUMMARY WITH CONDITIONAL LOCATION LOGIC =====
 function displaySummaryTab() {
-    console.log('V6.3: Displaying Summary tab...');
-    displaySummaryBasicInfo();
+    console.log('V6.5: Displaying Summary tab with conditional location logic...');
+    displaySummaryBasicInfoConditional();
     displaySummaryTrayInfo();
     displaySummaryRelatedCutters();
 }
 
-function displaySummaryBasicInfo() {
+// ===== V6.6: CORRECTED BASIC INFO WITH YSD POSITION =====
+function displaySummaryBasicInfoConditional() {
     const container = document.getElementById('summaryBasicInfo');
     if (!container) {
-        console.error('V6.3: summaryBasicInfo container not found');
+        console.error('V6.6: summaryBasicInfo container not found');
         return;
     }
 
-    console.log('V6.3: Populating basic info...');
+    console.log('V6.6: Populating basic info with corrected YSD position logic...');
     
     const design = currentMold.designInfo || {};
     const job = currentMold.jobInfo || {};
     const status = getEnhancedMoldStatus(currentMold);
     const processingStatus = getProcessingStatus(currentMold);
     
-    // V6.3: FIXED DIMENSIONS LOGIC - Check multiple sources
+    // V6.6: Fixed dimensions logic
     let moldDimensions = getMoldDimensionsFixed(design);
-    console.log('V6.3: Mold dimensions result:', moldDimensions);
-    
-    // V6.3: CAV code lookup with fixed dimensions
     const cavCode = getCavCodeFromDimensions(design.MoldDesignLength, design.MoldDesignWidth);
     
-    // Manufacturing date (first delivery date)
+    // Manufacturing date
     let manufacturingDate = 'N/A';
     if (job.DeliveryDeadline) {
         manufacturingDate = formatDate(job.DeliveryDeadline);
+    }
+    
+    // V6.6: YSD Position Logic (always show YSD position regardless of current location)
+    let ysdPositionText = '';
+    
+    // First check current RackLayerID (might be YSD position)
+    if (currentMold.rackInfo && currentMold.rackLayerInfo) {
+        ysdPositionText = `${currentMold.rackInfo.RackLocation} ${currentMold.rackInfo.RackID}-${currentMold.rackLayerInfo.RackLayerNumber}層`;
+    } else {
+        // Check location history for last YSD position
+        const ysdLocationFromHistory = getYSDLocationFromHistory();
+        ysdPositionText = ysdLocationFromHistory || '不明 / Không rõ';
+    }
+    
+    // V6.6: Storage company logic (unchanged)
+    let storageCompanyText = '';
+    if (currentMold.storageCompanyInfo && currentMold.storageCompanyInfo.CompanyShortName) {
+        storageCompanyText = currentMold.storageCompanyInfo.CompanyShortName;
+    } else if (currentMold.storage_company == 2) {
+        storageCompanyText = '(株)ヨシダパッケージ';
+    } else {
+        storageCompanyText = '不明 / Không rõ';
     }
 
     container.innerHTML = `
@@ -363,7 +404,7 @@ function displaySummaryBasicInfo() {
             <div class="info-value-compact highlight">${currentMold.MoldCode || 'N/A'}</div>
         </div>
         
-        <!-- V6.3: FIXED - 3-column layout for size and CAV -->
+        <!-- V6.6: 3-column layout for size and CAV -->
         <div class="size-cav-row">
             <div class="size-cav-label">
                 <div class="label-jp">金型寸法</div>
@@ -373,6 +414,24 @@ function displaySummaryBasicInfo() {
             <div class="size-cav-code">
                 <span class="cav-code">${cavCode}</span>
             </div>
+        </div>
+        
+        <!-- V6.6: CORRECTED - YSD Position field (always shows YSD position) -->
+        <div class="info-row-compact">
+            <div class="info-label-compact">
+                <div class="label-jp">YSDでの位置</div>
+                <div class="label-vn">Vị trí tại YSD</div>
+            </div>
+            <div class="info-value-compact">${ysdPositionText}</div>
+        </div>
+        
+        <!-- V6.6: Storage company (unchanged) -->
+        <div class="info-row-compact">
+            <div class="info-label-compact">
+                <div class="label-jp">保管会社</div>
+                <div class="label-vn">Công ty lưu trữ</div>
+            </div>
+            <div class="info-value-compact">${storageCompanyText}</div>
         </div>
         
         <div class="info-row-compact">
@@ -424,12 +483,57 @@ function displaySummaryBasicInfo() {
         </div>
     `;
     
-    console.log('V6.3: Basic info populated');
+    console.log('V6.6: Basic info populated with corrected YSD position logic');
 }
 
-// ===== V6.3: FIXED MOLD DIMENSIONS LOGIC =====
+// V6.6: Helper function to get YSD location from history
+function getYSDLocationFromHistory() {
+    const history = getMoldLocationHistory(currentMold.MoldID);
+    
+    for (let log of history) {
+        if (log.NewRackLayer) {
+            const layer = moldAllData.racklayers?.find(l => l.RackLayerID === log.NewRackLayer);
+            const rack = layer ? moldAllData.racks?.find(r => r.RackID === layer.RackID) : null;
+            
+            if (rack && layer) {
+                return `${rack.RackLocation} ${rack.RackID}-${layer.RackLayerNumber}層`;
+            }
+        }
+    }
+    
+    return null;
+}
+
+// V6.5: Get original YSD location
+function getOriginalYSDLocation() {
+    // First check current RackLayerID
+    if (currentMold.RackLayerID) {
+        const layer = moldAllData.racklayers?.find(l => l.RackLayerID === currentMold.RackLayerID);
+        const rack = layer ? moldAllData.racks?.find(r => r.RackID === layer.RackID) : null;
+        
+        if (rack && layer) {
+            return `${rack.RackLocation} ${rack.RackID}-${layer.RackLayerNumber}層`;
+        }
+    }
+    
+    // Check location history for last YSD location
+    const history = getMoldLocationHistory(currentMold.MoldID);
+    for (let log of history) {
+        if (log.NewRackLayer) {
+            const layer = moldAllData.racklayers?.find(l => l.RackLayerID === log.NewRackLayer);
+            const rack = layer ? moldAllData.racks?.find(r => r.RackID === layer.RackID) : null;
+            
+            if (rack && layer) {
+                return `${rack.RackLocation} ${rack.RackID}-${layer.RackLayerNumber}層`;
+            }
+        }
+    }
+    
+    return null;
+}
+// ===== V6.5: FIXED MOLD DIMENSIONS LOGIC =====
 function getMoldDimensionsFixed(design) {
-    // V6.3: Check multiple dimension sources in order of priority
+    // V6.5: Check multiple dimension sources in order of priority
     let length = null, width = null, height = null;
     
     // Priority 1: MoldDesignLength, MoldDesignWidth, Height
@@ -463,7 +567,7 @@ function getMoldDimensionsFixed(design) {
         }
     }
     
-    console.log('V6.3: Dimension lookup result:', { length, width, height });
+    console.log('V6.5: Dimension lookup result:', { length, width, height });
     
     // Format dimensions
     if (length && width) {
@@ -480,11 +584,11 @@ function getMoldDimensionsFixed(design) {
 function displaySummaryTrayInfo() {
     const container = document.getElementById('summaryTrayInfo');
     if (!container) {
-        console.error('V6.3: summaryTrayInfo container not found');
+        console.error('V6.5: summaryTrayInfo container not found');
         return;
     }
 
-    console.log('V6.3: Populating tray info...');
+    console.log('V6.5: Populating tray info...');
     
     const design = currentMold.designInfo || {};
     
@@ -519,17 +623,17 @@ function displaySummaryTrayInfo() {
         </div>
     `;
     
-    console.log('V6.3: Tray info populated');
+    console.log('V6.5: Tray info populated');
 }
 
 function displaySummaryRelatedCutters() {
     const container = document.getElementById('summaryRelatedCutters');
     if (!container) {
-        console.error('V6.3: summaryRelatedCutters container not found');
+        console.error('V6.5: summaryRelatedCutters container not found');
         return;
     }
 
-    console.log('V6.3: Populating related cutters...');
+    console.log('V6.5: Populating related cutters...');
     
     const relatedCutters = getMoldRelatedCutters(currentMold.MoldID);
     
@@ -546,7 +650,7 @@ function displaySummaryRelatedCutters() {
             </div>
             <div class="no-data">関連カッターがありません / Không có dao cắt liên quan</div>
         `;
-        console.log('V6.3: No related cutters found');
+        console.log('V6.5: No related cutters found');
         return;
     }
 
@@ -580,16 +684,16 @@ function displaySummaryRelatedCutters() {
         </div>
     `;
     
-    console.log('V6.3: Related cutters populated:', relatedCutters.length, 'items');
+    console.log('V6.5: Related cutters populated:', relatedCutters.length, 'items');
 }
 
-// ===== V6.3: TAB 2 - PRODUCT DISPLAY =====
+// ===== V6.5: TAB 2 - PRODUCT DISPLAY =====
 function displayProductTab() {
-    console.log('V6.3: Displaying Product tab...');
+    console.log('V6.5: Displaying Product tab...');
     
     const container = document.getElementById('productInfo');
     if (!container) {
-        console.error('V6.3: productInfo container not found');
+        console.error('V6.5: productInfo container not found');
         return;
     }
 
@@ -685,23 +789,27 @@ function displayProductTab() {
         </div>
     `;
     
-    console.log('V6.3: Product tab populated');
+    console.log('V6.5: Product tab populated');
 }
 
-// ===== V6.3: TAB 3 - TECHNICAL DISPLAY =====
+// ===== V6.5: TAB 3 - TECHNICAL WITH ENHANCED 2-COLUMN LAYOUT =====
 function displayTechnicalTab() {
-    console.log('V6.3: Displaying Technical tab...');
+    console.log('V6.5: Displaying Technical tab with enhanced 2-column layout...');
     
     const container = document.getElementById('technicalInfo');
     if (!container) {
-        console.error('V6.3: technicalInfo container not found');
+        console.error('V6.5: technicalInfo container not found');
         return;
     }
 
     const design = currentMold.designInfo || {};
     const job = currentMold.jobInfo || {};
 
+    // V6.5: Design dimensions (added as requested)
+    const designDimensions = getMoldDimensionsFixed(design);
+
     container.innerHTML = `
+        <!-- First row: 設計コード (full width) -->
         <div class="info-row-compact">
             <div class="info-label-compact">
                 <div class="label-jp">設計コード</div>
@@ -710,156 +818,128 @@ function displayTechnicalTab() {
             <div class="info-value-compact">${design.MoldDesignCode || 'N/A'}</div>
         </div>
         
+        <!-- V6.5: Design dimensions (full width) -->
         <div class="info-row-compact">
             <div class="info-label-compact">
-                <div class="label-jp">金型方向</div>
-                <div class="label-vn">Khuôn thuận/nghịch</div>
-            </div>  
-            <div class="info-value-compact">${design.MoldOrientation || 'N/A'}</div>
-        </div>
-        
-        <div class="info-row-compact">
-            <div class="info-label-compact">
-                <div class="label-jp">ポケット数</div>
-                <div class="label-vn">Số pockets</div>
+                <div class="label-jp">設計寸法</div>
+                <div class="label-vn">Kích thước thiết kế</div>
             </div>
-            <div class="info-value-compact">${design.PocketNumbers || 'N/A'}</div>
+            <div class="info-value-compact highlight">${designDimensions}</div>
         </div>
         
-        <div class="info-row-compact">
-            <div class="info-label-compact">
-                <div class="label-jp">設置方向</div>
-                <div class="label-vn">Hướng lắp</div>
+        <!-- V6.5: Enhanced 2-column layout optimized for mobile -->
+        <div class="technical-2-column">
+            <!-- Column 1 -->
+            <div class="tech-column">
+                <div class="tech-row">
+                    <div class="tech-label">金型方向</div>
+                    <div class="tech-value">${design.MoldOrientation || 'N/A'}</div>
+                </div>
+                
+                <div class="tech-row">
+                    <div class="tech-label">ポケット数</div>
+                    <div class="tech-value">${design.PocketNumbers || 'N/A'}</div>
+                </div>
+                
+                <div class="tech-row">
+                    <div class="tech-label">設置方向</div>
+                    <div class="tech-value">${design.MoldSetupType || 'N/A'}</div>
+                </div>
+                
+                <div class="tech-row">
+                    <div class="tech-label">設計重量</div>
+                    <div class="tech-value">${design.MoldDesignWeight ? design.MoldDesignWeight + 'kg' : 'N/A'}</div>
+                </div>
+                
+                <div class="tech-row">
+                    <div class="tech-label">ピース数</div>
+                    <div class="tech-value">${design.PieceCount || 'N/A'}</div>
+                </div>
+                
+                <div class="tech-row">
+                    <div class="tech-label">Pitch</div>
+                    <div class="tech-value">${design.Pitch || 'N/A'}</div>
+                </div>
+                
+                <div class="tech-row">
+                    <div class="tech-label">C面取</div>
+                    <div class="tech-value">${design.ChamferC || 'N/A'}</div>
+                </div>
+                
+                <div class="tech-row">
+                    <div class="tech-label">プラグ有無</div>
+                    <div class="tech-value">${job.PlugAri || 'N/A'}</div>
+                </div>
             </div>
-            <div class="info-value-compact">${design.MoldSetupType || 'N/A'}</div>
-        </div>
-        
-        <div class="info-row-compact">
-            <div class="info-label-compact">
-                <div class="label-jp">設計重量</div>
-                <div class="label-vn">KL thiết kế</div>
+            
+            <!-- Column 2 -->
+            <div class="tech-column">
+                <div class="tech-row">
+                    <div class="tech-label">Rコーナー</div>
+                    <div class="tech-value">${design.CornerR || 'N/A'}</div>
+                </div>
+                
+                <div class="tech-row">
+                    <div class="tech-label">深さ</div>
+                    <div class="tech-value">${design.MoldDesignDepth || 'N/A'}</div>
+                </div>
+                
+                <div class="tech-row">
+                    <div class="tech-label">Under深</div>
+                    <div class="tech-value">${design.UnderDepth || 'N/A'}</div>
+                </div>
+                
+                <div class="tech-row">
+                    <div class="tech-label">抜き勾配</div>
+                    <div class="tech-value">${design.DraftAngle || 'N/A'}</div>
+                </div>
+                
+                <div class="tech-row">
+                    <div class="tech-label">公差X,Y</div>
+                    <div class="tech-value">${design.TolerenceX && design.TolerenceY ? design.TolerenceX + ',' + design.TolerenceY : 'N/A'}</div>
+                </div>
+                
+                <div class="tech-row">
+                    <div class="tech-label">図面番号</div>
+                    <div class="tech-value">${design.DrawingNumber || 'N/A'}</div>
+                </div>
+                
+                <div class="tech-row">
+                    <div class="tech-label">設備コード</div>
+                    <div class="tech-value">${design.EquipmentCode || 'N/A'}</div>
+                </div>
+                
+                <div class="tech-row">
+                    <div class="tech-label">試作</div>
+                    <div class="tech-value">${job.PocketTEST || 'N/A'}</div>
+                </div>
             </div>
-            <div class="info-value-compact">${design.MoldDesignWeight ? design.MoldDesignWeight + ' kg' : 'N/A'}</div>
         </div>
         
-        <div class="info-row-compact">
+        <!-- V6.5: Full-width rows for text content (moved to bottom) -->
+        <div class="tech-row-full">
             <div class="info-label-compact">
-                <div class="label-jp">ピース数</div>
-                <div class="label-vn">Số mảnh khuôn</div>
-            </div>
-            <div class="info-value-compact">${design.PieceCount || 'N/A'}</div>
-        </div>
-        
-        <div class="info-row-compact">
-            <div class="info-label-compact">
-                <div class="label-jp">Pitch</div>
-                <div class="label-vn">Khoảng cách</div>
-            </div>
-            <div class="info-value-compact">${design.Pitch || 'N/A'}</div>
-        </div>
-        
-        <div class="info-row-compact">
-            <div class="info-label-compact">
-                <div class="label-jp">C面取</div>
-                <div class="label-vn">Góc vát</div>
-            </div>
-            <div class="info-value-compact">${design.ChamferC || 'N/A'}</div>
-        </div>
-        
-        <div class="info-row-compact">
-            <div class="info-label-compact">
-                <div class="label-jp">Rコーナー</div>
-                <div class="label-vn">Góc bo</div>
-            </div>
-            <div class="info-value-compact">${design.CornerR || 'N/A'}</div>
-        </div>
-        
-        <div class="info-row-compact">
-            <div class="info-label-compact">
-                <div class="label-jp">深さ</div>
-                <div class="label-vn">Chiều sâu</div>
-            </div>
-            <div class="info-value-compact">${design.MoldDesignDepth || 'N/A'}</div>
-        </div>
-        
-        <div class="info-row-compact">
-            <div class="info-label-compact">
-                <div class="label-jp">Under depth</div>
-            </div>
-            <div class="info-value-compact">${design.UnderDepth || 'N/A'}</div>
-        </div>
-        
-        <div class="info-row-compact">
-            <div class="info-label-compact">
-                <div class="label-jp">抜き勾配</div>
-                <div class="label-vn">Góc nghiêng</div>
-            </div>
-            <div class="info-value-compact">${design.DraftAngle || 'N/A'}</div>
-        </div>
-        
-        <div class="info-row-compact">
-            <div class="info-label-compact">
-                <div class="label-jp">刻印</div>
-                <div class="label-vn">Chữ khắc</div>
+                <div class="label-jp">刻印内容</div>
+                <div class="label-vn">Nội dung khắc chữ</div>
             </div>
             <div class="info-value-compact">${design.TextContent || 'N/A'}</div>
         </div>
         
-        <div class="info-row-compact">
-            <div class="info-label-compact">
-                <div class="label-jp">公差</div>
-                <div class="label-vn">Dung sai X,Y</div>
-            </div>
-            <div class="info-value-compact">${design.TolerenceX && design.TolerenceY ? design.TolerenceX + ', ' + design.TolerenceY : 'N/A'}</div>
-        </div>
-        
-        <div class="info-row-compact">
-            <div class="info-label-compact">
-                <div class="label-jp">図面番号</div>
-                <div class="label-vn">Số bản vẽ</div>
-            </div>
-            <div class="info-value-compact">${design.DrawingNumber || 'N/A'}</div>
-        </div>
-        
-        <div class="info-row-compact">
-            <div class="info-label-compact">
-                <div class="label-jp">設備コード</div>
-                <div class="label-vn">Mã thiết bị</div>
-            </div>
-            <div class="info-value-compact">${design.EquipmentCode || 'N/A'}</div>
-        </div>
-        
-        <div class="info-row-compact">
+        <div class="tech-row-full">
             <div class="info-label-compact">
                 <div class="label-jp">設計備考</div>
                 <div class="label-vn">Ghi chú thiết kế</div>
             </div>
             <div class="info-value-compact">${design.VersionNote || 'N/A'}</div>
         </div>
-        
-        <div class="info-row-compact">
-            <div class="info-label-compact">
-                <div class="label-jp">プラグ有無</div>
-                <div class="label-vn">Có nắp</div>
-            </div>
-            <div class="info-value-compact">${job.PlugAri || 'N/A'}</div>
-        </div>
-        
-        <div class="info-row-compact">
-            <div class="info-label-compact">
-                <div class="label-jp">ポケット試作</div>
-                <div class="label-vn">Chạy thử</div>
-            </div>
-            <div class="info-value-compact">${job.PocketTEST || 'N/A'}</div>
-        </div>
     `;
     
-    console.log('V6.3: Technical tab populated');
+    console.log('V6.5: Technical tab populated with enhanced 2-column layout');
 }
 
-// ===== V6.3: TAB 4 - PROCESSING DISPLAY =====
+// ===== V6.5: TAB 4 - PROCESSING WITH COMPACT SPACING =====
 function displayProcessingTab() {
-    console.log('V6.3: Displaying Processing tab...');
+    console.log('V6.5: Displaying Processing tab with compact spacing...');
     displayProcessingStatus();
     displayProcessingLocationHistory(); 
     displayProcessingShipmentHistory();
@@ -869,11 +949,11 @@ function displayProcessingTab() {
 function displayProcessingStatus() {
     const container = document.getElementById('processingStatus');
     if (!container) {
-        console.error('V6.3: processingStatus container not found');
+        console.error('V6.5: processingStatus container not found');
         return;
     }
 
-    console.log('V6.3: Populating processing status...');
+    console.log('V6.5: Populating processing status...');
 
     function formatDate(dateString) {
         if (!dateString || dateString === 'N/A') return 'N/A';
@@ -933,17 +1013,17 @@ function displayProcessingStatus() {
         </div>
     `;
     
-    console.log('V6.3: Processing status populated');
+    console.log('V6.5: Processing status populated');
 }
 
 function displayProcessingLocationHistory() {
     const container = document.getElementById('processingLocationHistory');
     if (!container) {
-        console.error('V6.3: processingLocationHistory container not found');
+        console.error('V6.5: processingLocationHistory container not found');
         return;
     }
 
-    console.log('V6.3: Populating location history...');
+    console.log('V6.5: Populating location history...');
     
     const history = getMoldLocationHistory(currentMold.MoldID);
     
@@ -967,21 +1047,21 @@ function displayProcessingLocationHistory() {
         }).join('');
         
         container.innerHTML = historyHtml;
-        console.log('V6.3: Location history populated:', history.length, 'items');
+        console.log('V6.5: Location history populated:', history.length, 'items');
     } else {
         container.innerHTML = '<div class="no-data">位置履歴がありません / Không có lịch sử vị trí</div>';
-        console.log('V6.3: No location history found');
+        console.log('V6.5: No location history found');
     }
 }
 
 function displayProcessingShipmentHistory() {
     const container = document.getElementById('processingShipmentHistory');
     if (!container) {
-        console.error('V6.3: processingShipmentHistory container not found');
+        console.error('V6.5: processingShipmentHistory container not found');
         return;
     }
 
-    console.log('V6.3: Populating shipment history...');
+    console.log('V6.5: Populating shipment history...');
     
     const history = getMoldShipHistory(currentMold.MoldID);
     
@@ -1006,21 +1086,21 @@ function displayProcessingShipmentHistory() {
         }).join('');
         
         container.innerHTML = historyHtml;
-        console.log('V6.3: Shipment history populated:', history.length, 'items');
+        console.log('V6.5: Shipment history populated:', history.length, 'items');
     } else {
         container.innerHTML = '<div class="no-data">運送履歴がありません / Không có lịch sử vận chuyển</div>';
-        console.log('V6.3: No shipment history found');
+        console.log('V6.5: No shipment history found');
     }
 }
 
 function displayProcessingUserComments() {
     const container = document.getElementById('processingUserComments');
     if (!container) {
-        console.error('V6.3: processingUserComments container not found');
+        console.error('V6.5: processingUserComments container not found');
         return;
     }
 
-    console.log('V6.3: Populating user comments...');
+    console.log('V6.5: Populating user comments...');
     
     const comments = getMoldUserCommentsFromServer(currentMold.MoldID);
     
@@ -1040,25 +1120,25 @@ function displayProcessingUserComments() {
         }).join('');
         
         container.innerHTML = commentsHtml;
-        console.log('V6.3: User comments populated:', comments.length, 'items');
+        console.log('V6.5: User comments populated:', comments.length, 'items');
     } else {
         container.innerHTML = '<div class="no-data">コメントがありません / Không có bình luận</div>';
-        console.log('V6.3: No user comments found');
+        console.log('V6.5: No user comments found');
     }
 }
 
-// ===== V6.3: NEW - COMPREHENSIVE PRINT LAYOUT GENERATOR =====
-function generateComprehensivePrintLayout() {
-    console.log('V6.3: Generating comprehensive print layout...');
+// ===== V6.5: OFFICIAL REPORT LAYOUT USING FORM TEMPLATE =====
+function generateOfficialReportLayout() {
+    console.log('V6.5: Generating official report layout using form template...');
     
     if (!currentMold) {
-        console.error('V6.3: No mold data for print');
+        console.error('V6.5: No mold data for report');
         return;
     }
     
-    const printContainer = document.getElementById('comprehensivePrintContent');
-    if (!printContainer) {
-        console.error('V6.3: Print container not found');
+    const reportContainer = document.getElementById('officialReportContent');
+    if (!reportContainer) {
+        console.error('V6.5: Report container not found');
         return;
     }
     
@@ -1068,300 +1148,318 @@ function generateComprehensivePrintLayout() {
     displayTechnicalTab();
     displayProcessingTab();
     
-    // Generate comprehensive print HTML
-    const printHtml = generatePrintHTML();
-    printContainer.innerHTML = printHtml;
+    // Generate official report HTML using form template structure
+    const reportHtml = generateOfficialFormReportHTML();
+    reportContainer.innerHTML = reportHtml;
     
-    console.log('V6.3: Comprehensive print layout generated');
+    console.log('V6.5: Official report layout generated using form template');
 }
 
-function generatePrintHTML() {
+// ===== V6.6: REDESIGNED PRINT HTML GENERATION =====
+function generateOfficialFormReportHTML() {
     const design = currentMold.designInfo || {};
     const job = currentMold.jobInfo || {};
     const moldDimensions = getMoldDimensionsFixed(design);
     const cavCode = getCavCodeFromDimensions(design.MoldDesignLength, design.MoldDesignWidth);
+    const status = getEnhancedMoldStatus(currentMold);
     
-    // Get location info
-    let locationText = '';
-    if (currentMold.storage_company == 2 && currentMold.rackInfo && currentMold.rackLayerInfo) {
-        locationText = `${currentMold.rackInfo.RackLocation} ${currentMold.rackInfo.RackID}-${currentMold.rackLayerInfo.RackLayerNumber}層`;
-    } else if (currentMold.storageCompanyInfo) {
-        locationText = currentMold.storageCompanyInfo.CompanyShortName;
+    // V6.6: Get corrected location info
+    let currentLocationText = '';
+    let ysdPositionText = '';
+    let storageCompanyText = '';
+    
+    // Current location (header logic)
+    if (currentMold.storageCompanyInfo && currentMold.storageCompanyInfo.CompanyShortName) {
+        currentLocationText = `現在位置: ${currentMold.storageCompanyInfo.CompanyShortName}`;
+    } else if (currentMold.RackLayerID && currentMold.rackInfo && currentMold.rackLayerInfo) {
+        currentLocationText = `その他 ${currentMold.rackInfo.RackID}-${currentMold.rackLayerInfo.RackLayerNumber}層`;
     } else {
-        locationText = '位置不明';
+        currentLocationText = '位置不明';
+    }
+    
+    // YSD position (basic info logic)
+    if (currentMold.rackInfo && currentMold.rackLayerInfo) {
+        ysdPositionText = `${currentMold.rackInfo.RackLocation} ${currentMold.rackInfo.RackID}-${currentMold.rackLayerInfo.RackLayerNumber}層`;
+    } else {
+        ysdPositionText = getYSDLocationFromHistory() || '不明';
+    }
+    
+    // Storage company
+    if (currentMold.storageCompanyInfo && currentMold.storageCompanyInfo.CompanyShortName) {
+        storageCompanyText = currentMold.storageCompanyInfo.CompanyShortName;
+    } else if (currentMold.storage_company == 2) {
+        storageCompanyText = '(株)ヨシダパッケージ';
+    } else {
+        storageCompanyText = '不明';
     }
 
     return `
-        <!-- Print Header -->
-        <div class="print-header">
-            <div class="print-mold-title">${currentMold.MoldCode || 'N/A'} - 金型詳細情報</div>
-            <div class="print-mold-info">位置: ${locationText} | 印刷日時: ${new Date().toLocaleString('ja-JP')}</div>
-        </div>
-
-        <div class="print-content">
-            <!-- Basic Information -->
-            <div class="print-section">
-                <div class="print-section-header">📋 基本情報 / Thông tin cơ bản</div>
-                <div class="print-section-content">
-                    ${generatePrintInfoRow('ID', currentMold.MoldID)}
-                    ${generatePrintInfoRow('型番 / Mã khuôn', currentMold.MoldCode || 'N/A', true)}
-                    ${generatePrintSizeCavRow('金型寸法 / Kích thước', moldDimensions, cavCode)}
-                    ${generatePrintInfoRow('面数 / Số mặt', design.PieceCount || 'N/A')}
-                    ${generatePrintInfoRow('設計重量 / Khối lượng', design.MoldDesignWeight ? design.MoldDesignWeight + ' kg' : 'N/A')}
-                    ${generatePrintInfoRow('製造日 / Ngày chế tạo', job.DeliveryDeadline ? formatDate(job.DeliveryDeadline) : 'N/A')}
-                    ${generatePrintInfoRow('使用状況 / Tình trạng', getEnhancedMoldStatus(currentMold).text)}
-                    ${generatePrintInfoRow('処理状態 / Xử lý', getProcessingStatus(currentMold))}
+        <div class="print-container">
+            <!-- V6.6: Print header -->
+            <div class="print-header">
+                <div class="print-title">金型詳細情報 - ${currentMold.MoldCode || 'N/A'}</div>
+                <div class="print-subtitle">
+                    印刷日時: ${new Date().toLocaleString('ja-JP')} | 
+                    ID: ${currentMold.MoldID} | 
+                    ${currentLocationText}
                 </div>
             </div>
 
-            <!-- Tray Information -->
-            <div class="print-section">
-                <div class="print-section-header">📦 トレイ情報 / Thông tin khay</div>
+            <!-- V6.6: Section 1 - Basic Information -->
+            <div class="print-section no-break">
+                <div class="print-section-header">基本情報</div>
                 <div class="print-section-content">
-                    ${generatePrintInfoRow('トレイ情報', design.TrayInfoForMoldDesign || 'N/A')}
-                    ${generatePrintInfoRow('材質 / Vật liệu', design.DesignForPlasticType || 'N/A')}
-                    ${generatePrintInfoRow('トレイサイズ', design.CutlineX && design.CutlineY ? `${design.CutlineX}×${design.CutlineY}` : 'N/A')}
-                    ${generatePrintInfoRow('トレイ重量 / KL khay', design.TrayWeight ? design.TrayWeight + ' g' : 'N/A')}
+                    <div class="print-grid">
+                        <div class="print-field">
+                            <div class="print-label">型番:</div>
+                            <div class="print-value highlight">${currentMold.MoldCode || 'N/A'}</div>
+                        </div>
+                        <div class="print-field">
+                            <div class="print-label">ID:</div>
+                            <div class="print-value">${currentMold.MoldID}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="print-grid-3col">
+                        <div class="print-field">
+                            <div class="print-label">寸法:</div>
+                            <div class="print-value">${moldDimensions}</div>
+                        </div>
+                        <div class="print-field">
+                            <div class="print-label">CAV:</div>
+                            <div class="print-value"><span class="print-cav">${cavCode}</span></div>
+                        </div>
+                        <div class="print-field">
+                            <div class="print-label">面数:</div>
+                            <div class="print-value">${design.PieceCount || 'N/A'}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="print-grid">
+                        <div class="print-field">
+                            <div class="print-label">YSDでの位置:</div>
+                            <div class="print-value">${ysdPositionText}</div>
+                        </div>
+                        <div class="print-field">
+                            <div class="print-label">保管会社:</div>
+                            <div class="print-value">${storageCompanyText}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="print-grid">
+                        <div class="print-field">
+                            <div class="print-label">重量:</div>
+                            <div class="print-value">${design.MoldDesignWeight ? design.MoldDesignWeight + 'kg' : 'N/A'}</div>
+                        </div>
+                        <div class="print-field">
+                            <div class="print-label">製造日:</div>
+                            <div class="print-value">${job.DeliveryDeadline ? formatDate(job.DeliveryDeadline) : 'N/A'}</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Product Information -->
-            <div class="print-section">
-                <div class="print-section-header">📦 製品情報 / Thông tin sản phẩm</div>
+            <!-- V6.6: Section 2 - Product Information -->
+            <div class="print-section no-break">
+                <div class="print-section-header">製品情報</div>
                 <div class="print-section-content">
-                    ${generatePrintInfoRow('初回出荷日 / Ngày xuất đầu', job.DeliveryDeadline ? formatDate(job.DeliveryDeadline) : 'N/A')}
-                    ${generatePrintInfoRow('別抜き / Dao riêng', getMoldRelatedCutters(currentMold.MoldID).length > 0 ? 'あり / Có' : 'なし / Không')}
-                    ${generatePrintInfoRow('見積 / Báo giá', job.PriceQuote || 'N/A')}
-                    ${generatePrintInfoRow('単価 / Đơn giá', job.UnitPrice || 'N/A')}
-                    ${generatePrintInfoRow('箱の種類 / Loại thùng', job.LoaiThungDong || 'N/A')}
-                    ${generatePrintInfoRow('袋詰め / Bọc túi', job.BaoNilon || 'N/A')}
+                    <div class="print-grid">
+                        <div class="print-field">
+                            <div class="print-label">トレイ情報:</div>
+                            <div class="print-value">${design.TrayInfoForMoldDesign || 'N/A'}</div>
+                        </div>
+                        <div class="print-field">
+                            <div class="print-label">材質:</div>
+                            <div class="print-value">${design.DesignForPlasticType || 'N/A'}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="print-grid">
+                        <div class="print-field">
+                            <div class="print-label">製品寸法:</div>
+                            <div class="print-value">${design.CutlineX && design.CutlineY ? design.CutlineX + '×' + design.CutlineY : 'N/A'}</div>
+                        </div>
+                        <div class="print-field">
+                            <div class="print-label">重量:</div>
+                            <div class="print-value">${design.TrayWeight ? design.TrayWeight + 'g' : 'N/A'}</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Technical Information -->
-            <div class="print-section">
-                <div class="print-section-header">⚙️ 技術情報 / Thông tin kỹ thuật</div>
+            <!-- V6.6: Section 3 - Technical Details -->
+            <div class="print-section no-break">
+                <div class="print-section-header">技術仕様</div>
                 <div class="print-section-content">
-                    ${generatePrintInfoRow('設計コード / Mã thiết kế', design.MoldDesignCode || 'N/A')}
-                    ${generatePrintInfoRow('金型方向 / Hướng khuôn', design.MoldOrientation || 'N/A')}
-                    ${generatePrintInfoRow('ポケット数 / Số pockets', design.PocketNumbers || 'N/A')}
-                    ${generatePrintInfoRow('設置方向 / Hướng lắp', design.MoldSetupType || 'N/A')}
-                    ${generatePrintInfoRow('ピース数 / Số mảnh', design.PieceCount || 'N/A')}
-                    ${generatePrintInfoRow('Pitch / Khoảng cách', design.Pitch || 'N/A')}
-                    ${generatePrintInfoRow('深さ / Chiều sâu', design.MoldDesignDepth || 'N/A')}
-                    ${generatePrintInfoRow('刻印 / Chữ khắc', design.TextContent || 'N/A')}
-                    ${generatePrintInfoRow('図面番号 / Số bản vẽ', design.DrawingNumber || 'N/A')}
+                    <div class="print-field-full">
+                        <div class="print-label">設計コード:</div>
+                        <div class="print-value">${design.MoldDesignCode || 'N/A'}</div>
+                    </div>
+                    
+                    <div class="print-grid">
+                        <div class="print-field">
+                            <div class="print-label">方向:</div>
+                            <div class="print-value">${design.MoldOrientation || 'N/A'}</div>
+                        </div>
+                        <div class="print-field">
+                            <div class="print-label">ポケット数:</div>
+                            <div class="print-value">${design.PocketNumbers || 'N/A'}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="print-grid">
+                        <div class="print-field">
+                            <div class="print-label">Pitch:</div>
+                            <div class="print-value">${design.Pitch || 'N/A'}</div>
+                        </div>
+                        <div class="print-field">
+                            <div class="print-label">深さ:</div>
+                            <div class="print-value">${design.MoldDesignDepth || 'N/A'}</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Processing Status -->
-            <div class="print-section">
-                <div class="print-section-header">🔄 処理状況 / Trạng thái xử lý</div>
+            <!-- V6.6: Section 4 - Status -->
+            <div class="print-section no-break">
+                <div class="print-section-header">状態・処理</div>
                 <div class="print-section-content">
-                    ${generatePrintProcessingStatus()}
+                    <div class="print-grid">
+                        <div class="print-field">
+                            <div class="print-label">使用状況:</div>
+                            <div class="print-value"><span class="print-status ${status.class}">${status.text}</span></div>
+                        </div>
+                        <div class="print-field">
+                            <div class="print-label">処理状態:</div>
+                            <div class="print-value">${getProcessingStatus(currentMold)}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="print-grid">
+                        <div class="print-field">
+                            <div class="print-label">テフロン:</div>
+                            <div class="print-value">${currentMold.TeflonCoating || 'N/A'}</div>
+                        </div>
+                        <div class="print-field">
+                            <div class="print-label">別抜き:</div>
+                            <div class="print-value">${getMoldRelatedCutters(currentMold.MoldID).length > 0 ? 'あり' : 'なし'}</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Related Cutters -->
             ${generatePrintRelatedCutters()}
+            ${generatePrintHistory()}
 
-            <!-- Location History -->
-            ${generatePrintLocationHistory()}
-
-            <!-- Shipment History -->
-            ${generatePrintShipmentHistory()}
-
-            <!-- User Comments -->
-            ${generatePrintUserComments()}
+            <!-- V6.6: Print footer -->
+            <div class="print-footer">
+                MoldCutterSearch V6.6 - 金型詳細情報 | 生成日時: ${new Date().toLocaleString('ja-JP')}
+            </div>
         </div>
     `;
 }
-
-function generatePrintInfoRow(label, value, highlight = false) {
-    const valueClass = highlight ? 'print-highlight' : '';
-    return `
-        <div class="print-info-row">
-            <div class="print-label">${label}</div>
-            <div class="print-value ${valueClass}">${value}</div>
-        </div>
-    `;
-}
-
-function generatePrintSizeCavRow(label, sizeValue, cavValue) {
-    return `
-        <div class="print-size-cav-row">
-            <div class="print-label">${label}</div>
-            <div class="print-value">${sizeValue}</div>
-            <div class="print-cav-code">${cavValue}</div>
-        </div>
-    `;
-}
-
-function generatePrintProcessingStatus() {
-    let html = '';
-    
-    if (currentMold.TeflonCoating && currentMold.TeflonCoating !== 'N/A' && currentMold.TeflonCoating !== 'FALSE') {
-        html += `${generatePrintInfoRow('テフロン加工', currentMold.TeflonCoating)}`;
-        html += `${generatePrintInfoRow('送付日', formatDate(currentMold.TeflonSentDate))}`;
-        html += `${generatePrintInfoRow('受領日', formatDate(currentMold.TeflonReceivedDate))}`;
-    }
-    
-    if (currentMold.MoldReturning && currentMold.MoldReturning !== 'N/A' && currentMold.MoldReturning !== 'FALSE') {
-        html += `${generatePrintInfoRow('返却', currentMold.MoldReturning)}`;
-        html += `${generatePrintInfoRow('返却日', formatDate(currentMold.MoldReturnedDate))}`;
-    }
-    
-    if (currentMold.MoldDisposing && currentMold.MoldDisposing !== 'N/A' && currentMold.MoldDisposing !== 'FALSE') {
-        html += `${generatePrintInfoRow('廃棄', currentMold.MoldDisposing)}`;
-        html += `${generatePrintInfoRow('廃棄日', formatDate(currentMold.MoldDisposedDate))}`;
-    }
-    
-    return html || generatePrintInfoRow('処理状況', '通常 / Bình thường');
-}
-
+// V6.6: Generate print related cutters
 function generatePrintRelatedCutters() {
     const relatedCutters = getMoldRelatedCutters(currentMold.MoldID);
     
     if (!relatedCutters || relatedCutters.length === 0) {
-        return `
-            <div class="print-section">
-                <div class="print-section-header">🔧 関連カッター / Dao cắt liên quan</div>
-                <div class="print-section-content">
-                    ${generatePrintInfoRow('別抜き使用', 'なし / Không')}
-                </div>
-            </div>
-        `;
+        return '';
     }
     
-    let cuttersHtml = '';
-    relatedCutters.slice(0, 10).forEach(cutter => {
-        const cutterLocation = getCutterLocation(cutter);
-        cuttersHtml += `
-            <div class="print-history-item">
-                <div class="print-history-header">${cutter.CutterNo || cutter.CutterID}</div>
-                <div class="print-history-content">${cutter.CutterName || 'N/A'} - ${cutterLocation}</div>
-            </div>
-        `;
-    });
+    const cuttersHtml = relatedCutters.slice(0, 8).map(cutter => {
+        const location = getCutterLocation(cutter);
+        return `<span class="print-related-item">${cutter.CutterNo || cutter.CutterID}: ${location}</span>`;
+    }).join(' ');
 
     return `
-        <div class="print-section">
-            <div class="print-section-header">🔧 関連カッター / Dao cắt liên quan (${relatedCutters.length}個)</div>
+        <div class="print-section no-break">
+            <div class="print-section-header">関連カッター (${relatedCutters.length}個)</div>
             <div class="print-section-content">
                 ${cuttersHtml}
+                ${relatedCutters.length > 8 ? `<span class="print-related-item">他${relatedCutters.length - 8}個...</span>` : ''}
             </div>
         </div>
     `;
 }
 
-function generatePrintLocationHistory() {
-    const history = getMoldLocationHistory(currentMold.MoldID);
-    
-    if (!history || history.length === 0) {
-        return `
-            <div class="print-section">
-                <div class="print-section-header">📍 位置履歴 / Lịch sử vị trí</div>
-                <div class="print-section-content">履歴がありません / Không có lịch sử</div>
-            </div>
-        `;
-    }
+// V6.6: Generate print history
+function generatePrintHistory() {
+    const locationHistory = getMoldLocationHistory(currentMold.MoldID).slice(0, 5);
+    const shipmentHistory = getMoldShipHistory(currentMold.MoldID).slice(0, 5);
     
     let historyHtml = '';
-    history.slice(0, 10).forEach(log => {
-        const oldRack = log.OldRackLayer ? getRackDisplayStringPlain(log.OldRackLayer) : 'N/A';
-        const newRack = log.NewRackLayer ? getRackDisplayStringPlain(log.NewRackLayer) : 'N/A';
+    
+    if (locationHistory.length > 0) {
+        const locationHtml = locationHistory.map(log => 
+            `<div class="print-history">
+                <span class="print-history-date">${formatTimestamp(log.DateEntry)}</span>: 
+                位置変更 ${log.OldRackLayer ? getRackDisplayString(log.OldRackLayer).replace(/<[^>]*>/g, '') : 'N/A'} → ${log.NewRackLayer ? getRackDisplayString(log.NewRackLayer).replace(/<[^>]*>/g, '') : 'N/A'}
+            </div>`
+        ).join('');
         
         historyHtml += `
-            <div class="print-history-item">
-                <div class="print-history-header">${formatTimestamp(log.DateEntry)}</div>
-                <div class="print-history-content">${oldRack} → ${newRack}${log.notes ? ` (${log.notes})` : ''}</div>
-            </div>
-        `;
-    });
-
-    return `
-        <div class="print-section">
-            <div class="print-section-header">📍 位置履歴 / Lịch sử vị trí (${history.length}件)</div>
-            <div class="print-section-content">
-                ${historyHtml}
-            </div>
-        </div>
-    `;
-}
-
-function generatePrintShipmentHistory() {
-    const history = getMoldShipHistory(currentMold.MoldID);
-    
-    if (!history || history.length === 0) {
-        return `
             <div class="print-section">
-                <div class="print-section-header">🚚 出荷履歴 / Lịch sử vận chuyển</div>
-                <div class="print-section-content">履歴がありません / Không có lịch sử</div>
+                <div class="print-section-header">位置履歴 (最新5件)</div>
+                <div class="print-section-content">${locationHtml}</div>
             </div>
         `;
     }
     
-    let historyHtml = '';
-    history.slice(0, 10).forEach(log => {
-        const fromCompany = moldAllData.companies?.find(c => c.CompanyID == log.FromCompanyID)?.CompanyShortName || 'N/A';
-        const toCompany = moldAllData.companies?.find(c => c.CompanyID == log.ToCompanyID)?.CompanyShortName || 'N/A';
+    if (shipmentHistory.length > 0) {
+        const shipmentHtml = shipmentHistory.map(log => {
+            const fromCompany = moldAllData.companies?.find(c => c.CompanyID == log.FromCompanyID)?.CompanyShortName || 'N/A';
+            const toCompany = moldAllData.companies?.find(c => c.CompanyID == log.ToCompanyID)?.CompanyShortName || 'N/A';
+            return `<div class="print-history">
+                <span class="print-history-date">${formatTimestamp(log.DateEntry)}</span>: 
+                運送 ${fromCompany} → ${toCompany}
+            </div>`;
+        }).join('');
         
         historyHtml += `
-            <div class="print-history-item">
-                <div class="print-history-header">${formatTimestamp(log.DateEntry)}</div>
-                <div class="print-history-content">${fromCompany} → ${toCompany}${log.handler ? ` (${log.handler})` : ''}${log.ShipNotes ? ` - ${log.ShipNotes}` : ''}</div>
-            </div>
-        `;
-    });
-
-    return `
-        <div class="print-section">
-            <div class="print-section-header">🚚 出荷履歴 / Lịch sử vận chuyển (${history.length}件)</div>
-            <div class="print-section-content">
-                ${historyHtml}
-            </div>
-        </div>
-    `;
-}
-
-function generatePrintUserComments() {
-    const comments = getMoldUserCommentsFromServer(currentMold.MoldID);
-    
-    if (!comments || comments.length === 0) {
-        return `
             <div class="print-section">
-                <div class="print-section-header">💬 ユーザーコメント / Bình luận người dùng</div>
-                <div class="print-section-content">コメントがありません / Không có bình luận</div>
+                <div class="print-section-header">運送履歴 (最新5件)</div>
+                <div class="print-section-content">${shipmentHtml}</div>
             </div>
         `;
     }
     
-    let commentsHtml = '';
-    comments.slice(0, 10).forEach(comment => {
-        const employee = moldAllData.employees?.find(e => e.EmployeeID == comment.EmployeeID);
-        
-        commentsHtml += `
-            <div class="print-history-item">
-                <div class="print-history-header">${employee?.EmployeeName || 'Unknown'} - ${formatTimestamp(comment.DateEntry)}</div>
-                <div class="print-history-content">${comment.CommentText}</div>
-            </div>
+    return historyHtml;
+}
+function generateOfficialReportRelatedCutters() {
+    const relatedCutters = getMoldRelatedCutters(currentMold.MoldID);
+    
+    if (!relatedCutters || relatedCutters.length === 0) {
+        return `
+            <tr>
+                <td class="report-label">関連カッター</td>
+                <td colspan="12" class="report-value">なし</td>
+            </tr>
         `;
-    });
+    }
+    
+    // Show up to 3 cutters in the official report
+    const cuttersToShow = relatedCutters.slice(0, 3);
+    let cuttersText = cuttersToShow.map(cutter => {
+        const location = getCutterLocation(cutter);
+        return `${cutter.CutterNo || cutter.CutterID}: ${cutter.CutterName || 'N/A'} (${location})`;
+    }).join(' | ');
+    
+    if (relatedCutters.length > 3) {
+        cuttersText += ` | 他${relatedCutters.length - 3}個`;
+    }
 
     return `
-        <div class="print-section">
-            <div class="print-section-header">💬 ユーザーコメント / Bình luận (${comments.length}件)</div>
-            <div class="print-section-content">
-                ${commentsHtml}
-            </div>
-        </div>
+        <tr>
+            <td class="report-label">関連カッター<br>(${relatedCutters.length}個)</td>
+            <td colspan="12" class="report-value">${cuttersText}</td>
+        </tr>
     `;
 }
 
-// ===== V6.3: CAV CODE PROCESSING =====
+// ===== V6.5: CAV CODE PROCESSING =====
 function getCavCodeFromDimensions(length, width) {
     if (!length || !width || !cavData || cavData.length === 0) {
-        console.log('V6.3: CAV lookup failed - missing data');
+        console.log('V6.5: CAV lookup failed - missing data');
         return 'OTHER';
     }
     
@@ -1369,11 +1467,11 @@ function getCavCodeFromDimensions(length, width) {
     const moldWidth = parseFloat(width);
     
     if (isNaN(moldLength) || isNaN(moldWidth)) {
-        console.log('V6.3: CAV lookup failed - invalid dimensions');
+        console.log('V6.5: CAV lookup failed - invalid dimensions');
         return 'OTHER';
     }
     
-    console.log(`V6.3: CAV lookup for ${moldLength}x${moldWidth}...`);
+    console.log(`V6.5: CAV lookup for ${moldLength}x${moldWidth}...`);
     
     // Find matching CAV with tolerance ±5mm
     const tolerance = 5;
@@ -1390,11 +1488,11 @@ function getCavCodeFromDimensions(length, width) {
     });
     
     const result = matchingCav ? matchingCav.CAV : 'OTHER';
-    console.log('V6.3: CAV lookup result:', result);
+    console.log('V6.5: CAV lookup result:', result);
     return result;
 }
 
-// ===== V6.3: PROCESSING STATUS LOGIC =====
+// ===== V6.5: PROCESSING STATUS LOGIC =====
 function getProcessingStatus(mold) {
     const statuses = [];
     
@@ -1410,10 +1508,11 @@ function getProcessingStatus(mold) {
         statuses.push('廃棄済み');
     }
     
-    return statuses.length > 0 ? statuses.join(', ') : '通常 / Bình thường';
+    return statuses.length > 0 ? statuses.join(', ') : '通常';
 }
 
-// ===== V6.3: BUSINESS LOGIC =====
+// Continue with remaining functions in PART 3...
+// ===== V6.5: BUSINESS LOGIC FUNCTIONS =====
 
 async function handleMoldLocationUpdate() {
     if (!currentMold) return;
@@ -1434,7 +1533,7 @@ async function handleMoldLocationUpdate() {
     
     try {
         showLoading(true);
-        console.log('V6.3: Updating mold location...');
+        console.log('V6.5: Updating mold location...');
         
         const newLocationEntry = {
             LocationLogID: String(Date.now()),
@@ -1467,10 +1566,10 @@ async function handleMoldLocationUpdate() {
         employeeSelect.value = '';
         locationNotes.value = '';
         
-        console.log('V6.3: Location update completed');
+        console.log('V6.5: Location update completed');
         
     } catch (error) {
-        console.error('V6.3: Failed to update mold location:', error);
+        console.error('V6.5: Failed to update mold location:', error);
         showError(`位置更新に失敗しました / Cập nhật vị trí thất bại: ${error.message}`);
     } finally {
         showLoading(false);
@@ -1492,7 +1591,7 @@ async function handleMoldShipmentUpdate() {
     
     try {
         showLoading(true);
-        console.log('V6.3: Updating mold shipment...');
+        console.log('V6.5: Updating mold shipment...');
         
         const newShipEntry = {
             ShipID: String(Date.now()),
@@ -1527,10 +1626,10 @@ async function handleMoldShipmentUpdate() {
         handler.value = '';
         shipmentNotes.value = '';
         
-        console.log('V6.3: Shipment update completed');
+        console.log('V6.5: Shipment update completed');
         
     } catch (error) {
-        console.error('V6.3: Failed to update mold shipment:', error);
+        console.error('V6.5: Failed to update mold shipment:', error);
         showError(`出荷登録に失敗しました / Đăng ký vận chuyển thất bại: ${error.message}`);
     } finally {
         showLoading(false);
@@ -1556,7 +1655,7 @@ async function handleMoldCommentSubmit(event) {
     
     try {
         showLoading(true);
-        console.log('V6.3: Adding mold comment...');
+        console.log('V6.5: Adding mold comment...');
         
         const newCommentEntry = {
             UserCommentID: String(Date.now()),
@@ -1582,17 +1681,17 @@ async function handleMoldCommentSubmit(event) {
         commentText.value = '';
         commentEmployeeSelect.value = '';
         
-        console.log('V6.3: Comment submission completed');
+        console.log('V6.5: Comment submission completed');
         
     } catch (error) {
-        console.error('V6.3: Failed to save mold comment:', error);
+        console.error('V6.5: Failed to save mold comment:', error);
         showError(`コメント投稿に失敗しました / Đăng bình luận thất bại: ${error.message}`);
     } finally {
         showLoading(false);
     }
 }
 
-// ===== V6.3: ENHANCED DISPLAY UTILITIES =====
+// ===== V6.5: ENHANCED DISPLAY UTILITIES =====
 
 function getEnhancedMoldStatus(mold) {
     // Check MoldReturning first
@@ -1613,40 +1712,40 @@ function getEnhancedMoldStatus(mold) {
     // Default status based on shipment
     const history = getMoldShipHistory(mold.MoldID);
     if (history.length > 0 && history[0].ToCompanyID && history[0].ToCompanyID !== '2') {
-        return { status: 'shipped', text: '出荷履歴有 / Có lịch sử chuyển khuôn', class: 'warning' };
+        return { status: 'shipped', text: '出荷履歴有', class: 'warning' };
     }
     
-    return { status: 'available', text: '利用可能 / Có sẵn', class: 'success' };
+    return { status: 'available', text: '利用可能', class: 'success' };
 }
 
 function getMoldCurrentStatus(mold) {
     return getEnhancedMoldStatus(mold);
 }
 
-// ===== V6.3: MOLD RELATIONSHIP FUNCTIONS =====
+// ===== V6.5: MOLD RELATIONSHIP FUNCTIONS =====
 
 function getMoldRelatedCutters(moldID) {
     if (!moldID || !moldAllData.moldcutter) {
-        console.log('V6.3: No related cutters - missing data');
+        console.log('V6.5: No related cutters - missing data');
         return [];
     }
     
     // Step 1: Find MoldDesignID from MoldID
     const mold = moldAllData.molds?.find(m => String(m.MoldID).trim() === String(moldID).trim());
     if (!mold || !mold.MoldDesignID) {
-        console.log('V6.3: No related cutters - mold not found or no design ID');
+        console.log('V6.5: No related cutters - mold not found or no design ID');
         return [];
     }
     
     const moldDesignID = String(mold.MoldDesignID).trim();
-    console.log('V6.3: Looking for cutters with MoldDesignID:', moldDesignID);
+    console.log('V6.5: Looking for cutters with MoldDesignID:', moldDesignID);
     
     // Step 2: Find CutterIDs from MoldDesignID in moldcutter.csv
     const cutterRelations = moldAllData.moldcutter.filter(mc => 
         String(mc.MoldDesignID || '').trim() === moldDesignID
     );
     
-    console.log('V6.3: Found', cutterRelations.length, 'cutter relations');
+    console.log('V6.5: Found', cutterRelations.length, 'cutter relations');
     
     // Step 3: Get cutter details
     const relatedCutters = cutterRelations.map(rel => {
@@ -1664,7 +1763,7 @@ function getMoldRelatedCutters(moldID) {
         return null;
     }).filter(Boolean);
     
-    console.log('V6.3: Returned', relatedCutters.length, 'related cutters');
+    console.log('V6.5: Returned', relatedCutters.length, 'related cutters');
     return relatedCutters;
 }
 
@@ -1690,19 +1789,9 @@ function getRackDisplayString(rackLayerId) {
     return 'N/A';
 }
 
-function getRackDisplayStringPlain(rackLayerId) {
-    const layer = moldAllData.racklayers?.find(l => l.RackLayerID == rackLayerId);
-    const rack = layer ? moldAllData.racks?.find(r => r.RackID == layer.RackID) : null;
-    
-    if (rack && layer) {
-        return `${rack.RackLocation} ${rack.RackID}-${layer.RackLayerNumber}層`;
-    }
-    return 'N/A';
-}
-
 function getMoldUserCommentsFromServer(moldId) {
     if (!moldAllData.usercomments) {
-        console.log('V6.3: No usercomments data available');
+        console.log('V6.5: No usercomments data available');
         return [];
     }
     
@@ -1710,37 +1799,37 @@ function getMoldUserCommentsFromServer(moldId) {
         .filter(c => c.ItemID == moldId && c.ItemType === 'mold' && c.CommentStatus === 'active')
         .sort((a, b) => new Date(b.DateEntry) - new Date(a.DateEntry));
     
-    console.log('V6.3: Found', comments.length, 'user comments for mold', moldId);
+    console.log('V6.5: Found', comments.length, 'user comments for mold', moldId);
     return comments;
 }
 
 function getMoldShipHistory(moldID) {
     if (!moldID || !moldAllData.shiplog) {
-        console.log('V6.3: No ship history available');
+        console.log('V6.5: No ship history available');
         return [];
     }
     
     const history = moldAllData.shiplog.filter(log => log.MoldID === moldID)
         .sort((a, b) => new Date(b.DateEntry) - new Date(a.DateEntry));
     
-    console.log('V6.3: Found', history.length, 'ship history records');
+    console.log('V6.5: Found', history.length, 'ship history records');
     return history;
 }
 
 function getMoldLocationHistory(moldID) {
     if (!moldID || !moldAllData.locationlog) {
-        console.log('V6.3: No location history available');
+        console.log('V6.5: No location history available');
         return [];
     }
     
     const history = moldAllData.locationlog.filter(log => log.MoldID === moldID)
         .sort((a, b) => new Date(b.DateEntry) - new Date(a.DateEntry));
     
-    console.log('V6.3: Found', history.length, 'location history records');
+    console.log('V6.5: Found', history.length, 'location history records');
     return history;
 }
 
-// ===== V6.3: DATE FORMATTING UTILITIES =====
+// ===== V6.5: DATE FORMATTING UTILITIES =====
 
 function formatTimestamp(dateString) {
     if (!dateString) return '';
@@ -1765,10 +1854,10 @@ function formatDate(dateString) {
     }
 }
 
-// ===== V6.3: FORM POPULATION & UTILITIES =====
+// ===== V6.5: FORM POPULATION & UTILITIES =====
 
 function populateMoldFormData() {
-    console.log('V6.3: Populating form data...');
+    console.log('V6.5: Populating form data...');
     
     // Populate rack select
     const rackSelect = document.getElementById('rackSelect');
@@ -1776,7 +1865,7 @@ function populateMoldFormData() {
         const rackOptions = '<option value="">選択してください / Vui lòng chọn</option>' + 
             moldAllData.racks.map(r => `<option value="${r.RackID}">${r.RackSymbol} ${r.RackName} - ${r.RackLocation}</option>`).join('');
         rackSelect.innerHTML = rackOptions;
-        console.log('V6.3: Rack select populated with', moldAllData.racks.length, 'options');
+        console.log('V6.5: Rack select populated with', moldAllData.racks.length, 'options');
     }
     
     // Populate employee selects
@@ -1786,7 +1875,7 @@ function populateMoldFormData() {
             const employeeOptions = '<option value="">選択してください / Vui lòng chọn</option>' + 
                 moldAllData.employees.map(e => `<option value="${e.EmployeeID}">${e.EmployeeName}</option>`).join('');
             select.innerHTML = employeeOptions;
-            console.log('V6.3:', id, 'populated with', moldAllData.employees.length, 'options');
+            console.log('V6.5:', id, 'populated with', moldAllData.employees.length, 'options');
         }
     });
     
@@ -1796,14 +1885,14 @@ function populateMoldFormData() {
         const companyOptions = '<option value="">選択してください / Vui lòng chọn</option>' + 
             moldAllData.companies.map(c => `<option value="${c.CompanyID}">${c.CompanyShortName} - ${c.CompanyName}</option>`).join('');
         toCompanySelect.innerHTML = companyOptions;
-        console.log('V6.3: Company select populated with', moldAllData.companies.length, 'options');
+        console.log('V6.5: Company select populated with', moldAllData.companies.length, 'options');
     }
     
     // Set default shipment date
     const shipmentDate = document.getElementById('shipmentDate');
     if (shipmentDate) {
         shipmentDate.value = new Date().toISOString().split('T')[0];
-        console.log('V6.3: Default shipment date set');
+        console.log('V6.5: Default shipment date set');
     }
 }
 
@@ -1812,7 +1901,7 @@ function updateRackLayers() {
     const rackLayerSelect = document.getElementById('rackLayerSelect');
     
     if (!rackSelect || !rackLayerSelect) {
-        console.error('V6.3: Rack select elements not found');
+        console.error('V6.5: Rack select elements not found');
         return;
     }
     
@@ -1825,29 +1914,29 @@ function updateRackLayers() {
             `<option value="${l.RackLayerID}">${l.RackLayerNumber}${l.RackLayerNotes ? ` - ${l.RackLayerNotes}` : ''}</option>`
         ).join('');
         rackLayerSelect.innerHTML += layerOptions;
-        console.log('V6.3: Rack layers updated for rack', selectedRackId, ':', layers.length, 'layers');
+        console.log('V6.5: Rack layers updated for rack', selectedRackId, ':', layers.length, 'layers');
     }
 }
 
-// ===== V6.3: FALLBACK COMMENT FUNCTIONALITY =====
+// ===== V6.5: FALLBACK COMMENT FUNCTIONALITY =====
 
 function loadMoldUserComments() {
     try { 
         moldUserComments = JSON.parse(localStorage.getItem('moldUserComments')) || []; 
-        console.log('V6.3: Loaded', moldUserComments.length, 'local comments from localStorage');
+        console.log('V6.5: Loaded', moldUserComments.length, 'local comments from localStorage');
     }
     catch (e) { 
         moldUserComments = []; 
-        console.log('V6.3: localStorage comments failed, using empty array');
+        console.log('V6.5: localStorage comments failed, using empty array');
     }
 }
 
-// ===== V6.3: CSV PARSER =====
+// ===== V6.5: CSV PARSER =====
 
 function parseCSV(csv) {
     const lines = csv.split('\n').filter(line => line.trim() !== '');
     if (lines.length < 2) {
-        console.warn('V6.3: CSV has insufficient data');
+        console.warn('V6.5: CSV has insufficient data');
         return [];
     }
     
@@ -1877,14 +1966,14 @@ function parseCSV(csv) {
         return obj;
     });
     
-    console.log('V6.3: Parsed CSV with', data.length, 'records');
+    console.log('V6.5: Parsed CSV with', data.length, 'records');
     return data;
 }
 
-// ===== V6.3: ENHANCED UI FUNCTIONS =====
+// ===== V6.5: ENHANCED UI FUNCTIONS =====
 
 function showError(message) {
-    console.error('V6.3: Error -', message);
+    console.error('V6.5: Error -', message);
     
     const errorContainer = document.getElementById('errorContainer');
     if (errorContainer) {
@@ -1899,13 +1988,13 @@ function showError(message) {
 }
 
 function showSuccess(message) {
-    console.log('V6.3: Success -', message);
+    console.log('V6.5: Success -', message);
     
     // Create temporary success notification
     const successDiv = document.createElement('div');
     successDiv.style.cssText = `
         position: fixed;
-        top: 90px;
+        top: 130px;
         left: 15px;
         right: 15px;
         background: #d4edda;
@@ -1932,14 +2021,14 @@ function showLoading(show) {
     const loading = document.getElementById('loadingIndicator');
     if (loading) {
         loading.style.display = show ? 'flex' : 'none';
-        console.log('V6.3: Loading indicator', show ? 'shown' : 'hidden');
+        console.log('V6.5: Loading indicator', show ? 'shown' : 'hidden');
     }
 }
 
-// ===== V6.3: ENHANCED MODAL CONTROLS =====
+// ===== V6.5: ENHANCED MODAL CONTROLS =====
 
 function showLocationModal() {
-    console.log('V6.3: Showing location modal');
+    console.log('V6.5: Showing location modal');
     const modal = document.getElementById('locationModal');
     if (modal) {
         modal.style.display = 'block';
@@ -1947,7 +2036,7 @@ function showLocationModal() {
 }
 
 function hideLocationModal() {
-    console.log('V6.3: Hiding location modal');
+    console.log('V6.5: Hiding location modal');
     const modal = document.getElementById('locationModal');
     if (modal) {
         modal.style.display = 'none';
@@ -1955,7 +2044,7 @@ function hideLocationModal() {
 }
 
 function showShipmentModal() {
-    console.log('V6.3: Showing shipment modal');
+    console.log('V6.5: Showing shipment modal');
     const modal = document.getElementById('shipmentModal');
     if (modal) {
         modal.style.display = 'block';
@@ -1963,7 +2052,7 @@ function showShipmentModal() {
 }
 
 function hideShipmentModal() {
-    console.log('V6.3: Hiding shipment modal');
+    console.log('V6.5: Hiding shipment modal');
     const modal = document.getElementById('shipmentModal');
     if (modal) {
         modal.style.display = 'none';
@@ -1971,7 +2060,7 @@ function hideShipmentModal() {
 }
 
 function showCommentModal() {
-    console.log('V6.3: Showing comment modal');
+    console.log('V6.5: Showing comment modal');
     const modal = document.getElementById('commentModal');
     if (modal) {
         modal.style.display = 'block';
@@ -1979,17 +2068,17 @@ function showCommentModal() {
 }
 
 function hideCommentModal() {
-    console.log('V6.3: Hiding comment modal');
+    console.log('V6.5: Hiding comment modal');
     const modal = document.getElementById('commentModal');
     if (modal) {
         modal.style.display = 'none';
     }
 }
 
-// ===== V6.3: NAVIGATION UTILITY =====
+// ===== V6.5: NAVIGATION UTILITY =====
 
 function goBack() {
-    console.log('V6.3: Navigating back');
+    console.log('V6.5: Navigating back');
     if (document.referrer && document.referrer.includes(window.location.hostname)) {
         window.history.back();
     } else {
@@ -1997,24 +2086,31 @@ function goBack() {
     }
 }
 
-// ===== V6.3: INITIALIZATION LOG =====
+// ===== V6.5: INITIALIZATION LOG =====
 
-console.log('🎯 MoldCutterSearch V6.3 - Complete Detail Mold System');
-console.log('✅ Fixed Mold Dimensions Logic + Comprehensive Print Layout + Simplified Header like V5.9');
-console.log('✅ V4.31 stable backend + CAV processing + Enhanced printing');
-console.log('✅ All V6.3 requirements implemented - Production Ready');
-console.log('📋 Features: Fixed dimensions, comprehensive print, simplified header');
-console.log('🔧 Backend: V4.31 approach with local updates');
-console.log('🎨 UI: 150% font, simplified header, comprehensive print');
+console.log('🎯 MoldCutterSearch V6.5 - FINAL VERSION - Production Ready');
+console.log('✅ Conditional Header Logic + Modern UI + Official Report Template');
+console.log('✅ All V6.5 requirements implemented:');
+console.log('   - Conditional location display based on storage company');
+console.log('   - Modern label/value distinction with visual separation');
+console.log('   - Enhanced 2-column technical layout optimized for mobile');
+console.log('   - Official report template using form structure');
+console.log('   - Original YSD location tracking for shipped molds');
+console.log('📋 Features: Complete location logic, enhanced UI, professional reporting');
+console.log('🔧 Backend: V4.31 approach with local updates and full data persistence');
+console.log('🎨 UI: Modern distinction, compact spacing, conditional subtitle');
+console.log('🖨️ Print: Official form template with comprehensive data layout');
 
 // Export functions for potential external use (if needed)
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         loadMoldDetailData,
         displayMoldDetailData,
-        generateComprehensivePrintLayout,
+        generateOfficialReportLayout,
         getMoldDimensionsFixed,
         getCavCodeFromDimensions,
+        getOriginalYSDLocation,
+        updateMoldLocationDisplayConditional,
         formatDate,
         formatTimestamp,
         showError,
@@ -2023,4 +2119,4 @@ if (typeof module !== 'undefined' && module.exports) {
     };
 }
 
-// ===== END OF FILE - V6.3 COMPLETE =====
+// ===== END OF FILE - V6.5 FINAL COMPLETE =====

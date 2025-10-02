@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>テフロン加工管理 / Quản lý mạ Teflon - V4.31</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="teflon-styles.css">
+<meta name="description" content="テフロン加工管理システム - Teflon Coating Management System">
+</head>
+<body class="teflon-management-page">
+
+<!-- Header -->
+<header class="teflon-header">
+<div class="container">
+<div class="header-row">
+<button class="back-btn" onclick="window.location.href='index.html'" title="戻る / Quay lại">←</button>
+<div class="header-info">
+<h1 class="page-title">🛡️ テフロン加工管理<br><span class="subtitle">Teflon Coating Management</span></h1>
+</div>
+<div class="header-actions">
+<button class="btn-icon-header" onclick="refreshAllData()" title="更新 / Làm mới">⟳</button>
+<button class="btn-icon-header" onclick="exportTeflonData()" title="エクスポート / Xuất dữ liệu">📥</button>
+</div>
+</div>
+</div>
+</header>
+
+<div class="container">
+<!-- Status Filter Tabs -->
+<section class="status-filter-section">
+<div class="status-tabs">
+<button class="status-tab active" data-status="all" onclick="filterByStatus('all')">
+<span class="tab-icon">📋</span>
+<span class="tab-text">すべて<br>Tất cả</span>
+<span class="tab-count" id="countAll">0</span>
+</button>
+<button class="status-tab pending" data-status="テフロン加工承認待ち" onclick="filterByStatus('テフロン加工承認待ち')">
+<span class="tab-icon">⏳</span>
+<span class="tab-text">承認待ち<br>Chờ xác nhận</span>
+<span class="tab-count" id="countPending">0</span>
+</button>
+<button class="status-tab processing" data-status="テフロン加工中" onclick="filterByStatus('テフロン加工中')">
+<span class="tab-icon">⚙️</span>
+<span class="tab-text">加工中<br>Đang mạ</span>
+<span class="tab-count" id="countProcessing">0</span>
+</button>
+<button class="status-tab completed" data-status="テフロン加工済" onclick="filterByStatus('テフロン加工済')">
+<span class="tab-icon">✅</span>
+<span class="tab-text">加工済<br>Đã mạ</span>
+<span class="tab-count" id="countCompleted">0</span>
+</button>
+</div>
+</section>
+
+<!-- Search and Controls -->
+<section class="search-controls-section">
+<div class="search-box">
+<input type="text" id="teflonSearchInput" placeholder="金型ID、名称で検索 / Tìm kiếm theo ID, tên khuôn..." oninput="handleTeflonSearch()">
+<span class="search-icon">🔍</span>
+</div>
+<div class="control-actions">
+<select id="sortSelect" class="sort-select" onchange="handleSortChange()">
+<option value="recent">最新順 / Mới nhất</option>
+<option value="oldest">古い順 / Cũ nhất</option>
+<option value="moldid">金型ID / ID khuôn</option>
+</select>
+<button class="btn-refresh" onclick="refreshAllData()" title="更新 / Làm mới">
+<span>⟳</span> 更新
+</button>
+</div>
+</section>
+
+<!-- Molds List -->
+<section class="molds-list-section">
+<div class="list-header">
+<h2 class="section-title">
+金型リスト<br>
+<span class="section-subtitle">Danh sách khuôn</span>
+</h2>
+<div class="list-stats">
+<span class="stat-item">表示: <strong id="displayCount">0</strong> / <strong id="totalCount">0</strong> 件</span>
+</div>
+</div>
+
+<div class="molds-table-container">
+<table class="molds-table" id="moldsTable">
+<thead>
+<tr>
+<th class="col-id">金型ID<br>Mold ID</th>
+<th class="col-name">名称<br>Tên</th>
+<th class="col-status">状態<br>Trạng thái</th>
+<th class="col-sent-date">送付日<br>Ngày gửi</th>
+<th class="col-return-date">返却日<br>Ngày nhận</th>
+<th class="col-location">現在位置<br>Vị trí hiện tại</th>
+<th class="col-actions">操作<br>Thao tác</th>
+</tr>
+</thead>
+<tbody id="moldsTableBody">
+<!-- Data will be populated by JS -->
+</tbody>
+</table>
+</div>
+
+<!-- Empty State -->
+<div id="emptyState" class="empty-state" style="display: none;">
+<div class="empty-icon">📭</div>
+<h3>データがありません<br>Không có dữ liệu</h3>
+<p>フィルタを変更するか、金型を追加してください<br>Thay đổi bộ lọc hoặc thêm khuôn mới</p>
+</div>
+</section>
+
+<!-- Pagination -->
+<section class="pagination-section">
+<div class="pagination-controls">
+<button class="page-btn" id="prevPageBtn" onclick="prevPage()" disabled>← 前へ</button>
+<span class="page-info">
+ページ <strong id="currentPage">1</strong> / <strong id="totalPages">1</strong>
+</span>
+<button class="page-btn" id="nextPageBtn" onclick="nextPage()" disabled>次へ →</button>
+</div>
+<div class="page-size-control">
+<select id="pageSizeSelect" class="page-size-select" onchange="changePageSize()">
+<option value="20">20 件/ページ</option>
+<option value="50" selected>50 件/ページ</option>
+<option value="100">100 件/ページ</option>
+</select>
+</div>
+</section>
+</div>
+
+<!-- ========================================
+     MODALS 
+     ======================================== -->
+
+<!-- Update Teflon Status Modal -->
+<div id="updateTeflonModal" class="modal-overlay">
+<div class="modal-container teflon">
+<div class="modal-header">
+<h3>テフロン加工情報更新<br>Cập nhật thông tin mạ Teflon</h3>
+<button class="modal-close" onclick="hideUpdateTeflonModal()">×</button>
+</div>
+<form id="updateTeflonForm" class="modal-body">
+<!-- Mold Info Display -->
+<div class="form-info-display">
+<div class="info-row">
+<span class="info-label">金型ID / Mold ID:</span>
+<span class="info-value" id="modalMoldId">-</span>
+</div>
+<div class="info-row">
+<span class="info-label">名称 / Name:</span>
+<span class="info-value" id="modalMoldName">-</span>
+</div>
+</div>
+
+<!-- Status Selection -->
+<div class="form-group">
+<label class="form-label">
+状態<br>
+<span class="label-sub">Trạng thái</span>
+</label>
+<select id="teflonStatusSelect" class="form-select" required onchange="handleStatusChange()">
+<option value="">選択してください / Chọn trạng thái</option>
+<option value="テフロン加工承認待ち">⏳ テフロン加工承認待ち / Chờ xác nhận</option>
+<option value="テフロン加工中">⚙️ テフロン加工中 / Đang mạ</option>
+<option value="テフロン加工済">✅ テフロン加工済 / Đã mạ xong</option>
+<option value="">❌ クリア / Xóa trạng thái</option>
+</select>
+</div>
+
+<!-- Send Date -->
+<div class="form-group" id="sentDateGroup">
+<label class="form-label">
+送付日<br>
+<span class="label-sub">Ngày gửi đi mạ</span>
+</label>
+<input type="date" id="teflonSentDate" class="form-input">
+</div>
+
+<!-- Expected Return Date -->
+<div class="form-group" id="expectedDateGroup">
+<label class="form-label">
+返却予定日<br>
+<span class="label-sub">Ngày dự kiến nhận lại</span>
+</label>
+<input type="date" id="teflonExpectedDate" class="form-input">
+</div>
+
+<!-- Actual Return Date -->
+<div class="form-group" id="returnDateGroup">
+<label class="form-label">
+実際返却日<br>
+<span class="label-sub">Ngày nhận lại thực tế</span>
+</label>
+<input type="date" id="teflonReturnDate" class="form-input">
+</div>
+
+<!-- Supplier -->
+<div class="form-group">
+<label class="form-label">
+加工業者<br>
+<span class="label-sub">Nhà cung cấp</span>
+</label>
+<select id="teflonSupplierSelect" class="form-select">
+<option value="">選択してください / Chọn nhà cung cấp</option>
+<!-- Will be populated from companies data -->
+</select>
+</div>
+
+<!-- Reason -->
+<div class="form-group">
+<label class="form-label">
+理由<br>
+<span class="label-sub">Lý do mạ</span>
+</label>
+<select id="teflonReasonSelect" class="form-select">
+<option value="">選択してください / Chọn lý do</option>
+<option value="新規製造">新規製造 / Sản xuất mới</option>
+<option value="定期メンテナンス">定期メンテナンス / Bảo trì định kỳ</option>
+<option value="劣化対応">劣化対応 / Do xuống cấp</option>
+<option value="製品品質改善">製品品質改善 / Cải thiện chất lượng</option>
+<option value="顧客要求">顧客要求 / Yêu cầu khách hàng</option>
+<option value="その他">その他 / Khác</option>
+</select>
+</div>
+
+<!-- Cost -->
+<div class="form-group">
+<label class="form-label">
+加工費用<br>
+<span class="label-sub">Chi phí mạ</span>
+</label>
+<input type="number" id="teflonCost" class="form-input" placeholder="金額を入力 / Nhập số tiền" min="0" step="0.01">
+</div>
+
+<!-- Quality Check -->
+<div class="form-group">
+<label class="form-label">
+品質<br>
+<span class="label-sub">Chất lượng</span>
+</label>
+<select id="teflonQualitySelect" class="form-select">
+<option value="">選択してください / Chọn chất lượng</option>
+<option value="良好">✅ 良好 / Tốt</option>
+<option value="可">⚠️ 可 / Chấp nhận được</option>
+<option value="不良">❌ 不良 / Không đạt</option>
+</select>
+</div>
+
+<!-- Notes -->
+<div class="form-group">
+<label class="form-label">
+備考<br>
+<span class="label-sub">Ghi chú</span>
+</label>
+<textarea id="teflonNotes" class="form-textarea" rows="3" placeholder="備考を入力してください / Nhập ghi chú..."></textarea>
+</div>
+
+<!-- Handler/Employee -->
+<div class="form-group">
+<label class="form-label">
+担当者<br>
+<span class="label-sub">Người thực hiện</span>
+</label>
+<select id="teflonEmployeeSelect" class="form-select">
+<option value="">選択してください / Chọn nhân viên</option>
+<!-- Will be populated from employees data -->
+</select>
+</div>
+
+<div class="modal-actions">
+<button type="button" class="btn-secondary" onclick="hideUpdateTeflonModal()">
+キャンセル<br>Hủy
+</button>
+<button type="submit" class="btn-primary teflon">
+保存<br>Lưu
+</button>
+</div>
+</form>
+</div>
+</div>
+
+<!-- History Modal -->
+<div id="historyModal" class="modal-overlay">
+<div class="modal-container history-modal">
+<div class="modal-header">
+<h3>テフロン加工履歴<br>Lịch sử mạ Teflon</h3>
+<button class="modal-close" onclick="hideHistoryModal()">×</button>
+</div>
+<div class="modal-body">
+<!-- Mold Info -->
+<div class="history-mold-info">
+<div class="info-row">
+<span class="info-label">金型ID:</span>
+<span class="info-value" id="historyMoldId">-</span>
+</div>
+<div class="info-row">
+<span class="info-label">名称:</span>
+<span class="info-value" id="historyMoldName">-</span>
+</div>
+</div>
+
+<!-- History Timeline -->
+<div class="history-timeline" id="historyTimeline">
+<!-- Timeline items will be populated by JS -->
+</div>
+
+<!-- Empty History -->
+<div id="emptyHistory" class="empty-history" style="display: none;">
+<div class="empty-icon">📋</div>
+<p>履歴がありません<br>Chưa có lịch sử</p>
+</div>
+</div>
+<div class="modal-footer">
+<button class="btn-secondary" onclick="hideHistoryModal()">閉じる / Đóng</button>
+</div>
+</div>
+</div>
+
+<!-- Loading Indicator -->
+<div id="loadingIndicator" class="loading-overlay" style="display: none;">
+<div class="loading-content">
+<div class="spinner teflon"></div>
+<span class="loading-text">読み込み中...<br>Đang tải...</span>
+</div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" class="toast" style="display: none;">
+<span class="toast-icon" id="toastIcon">✓</span>
+<span class="toast-message" id="toastMessage"></span>
+</div>
+
+<!-- Scripts -->
+<script src="teflon.js"></script>
+</body>
+</html>

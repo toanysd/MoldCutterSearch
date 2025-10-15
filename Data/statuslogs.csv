@@ -1,1 +1,3 @@
 ﻿StatusLogID,MoldID,CutterID,ItemType,Status,Timestamp,EmployeeID,DestinationID,Notes
+1,558,,,,,1,AREA-MOLDROOM,廃棄予定
+2,2225,,,,,1,AREA-MOLDROOM,写真撮影

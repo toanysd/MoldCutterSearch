@@ -1561,9 +1561,13 @@ function zoomFit() {
 }
 
 function openDetailPage(itemId, itemType) {
-    const page = itemType === 'mold' ? 'detail-mold.html' : 'detail-cutter.html';
-    window.location.href = `${page}?id=${itemId}`;
+  // Đánh dấu sessionStorage: đang chuyển sang detail
+  sessionStorage.setItem('navigatingFromIndex', 'true');
+  
+  const page = itemType === 'mold' ? 'detail-mold.html' : 'detail-cutter.html';
+  window.location.href = `${page}?id=${itemId}`;
 }
+
 
 // Enhanced state management
 function saveSearchState() {
@@ -1584,35 +1588,90 @@ function saveSearchState() {
 }
 
 function restoreSearchState() {
-    try {
-        const saved = localStorage.getItem('moldSearchState');
-        if (saved) {
-            const state = JSON.parse(saved);
-            
-            const searchInput = document.getElementById('searchInput');
-            if (searchInput && state.query) {
-                searchInput.value = state.query;
-                updateClearSearchButton();
-            }
-            
-            if (state.category) {
-                currentCategory = state.category;
-                updateCategoryDisplay();
-                updateHeaderColor();
-            }
-            
-            const fieldFilterA = document.getElementById('fieldFilterA');
-            if (fieldFilterA && state.fieldFilter) {
-                fieldFilterA.value = state.fieldFilter;
-            }
-            
-            if (state.page) currentPage = state.page;
-            if (state.pageSize) pageSize = state.pageSize;
-            if (state.view) currentView = state.view;
-        }
-    } catch (e) {
-        console.warn('Failed to restore search state:', e);
+  // Kiểm tra xem có phải back từ detail page không
+  const isBackFromDetail = sessionStorage.getItem('navigatingFromIndex') === 'true';
+  
+  if (!isBackFromDetail) {
+    // Mở mới trang (F5, bookmark, URL): XÓA state cũ, bắt đầu sạch
+    console.log('Fresh page load → Clearing search state');
+    localStorage.removeItem('moldSearchState');
+    
+    // Reset về trạng thái mặc định
+    currentCategory = 'all';
+    currentPage = 1;
+    currentView = 'table';
+    
+    // Clear search input
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+      searchInput.value = '';
+      updateClearSearchButton();
     }
+    
+    // Reset UI
+    updateCategoryDisplay();
+    updateHeaderColor();
+    updateFieldFilterA();
+    updateValueFilterB();
+    
+    return; // Không restore gì cả
+  }
+  
+  // Back từ detail: XÓA dấu hiệu và RESTORE state
+  sessionStorage.removeItem('navigatingFromIndex');
+  console.log('Back from detail → Restoring search state');
+  
+  try {
+    const saved = localStorage.getItem('moldSearchState');
+    if (!saved) return;
+    
+    const state = JSON.parse(saved);
+    
+    // Restore search input
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput && state.query) {
+      searchInput.value = state.query;
+      updateClearSearchButton();
+    }
+    
+    // Restore category
+    if (state.category) {
+      currentCategory = state.category;
+      updateCategoryDisplay();
+      updateHeaderColor();
+    }
+    
+    // Restore filters
+    const fieldFilterA = document.getElementById('fieldFilterA');
+    if (fieldFilterA && state.fieldFilter) {
+      fieldFilterA.value = state.fieldFilter;
+    }
+    
+    const valueFilterB = document.getElementById('valueFilterB');
+    if (valueFilterB && state.valueFilter) {
+      updateValueFilterB();
+      valueFilterB.value = state.valueFilter;
+    }
+    
+    // Restore pagination
+    if (state.page) currentPage = state.page;
+    if (state.pageSize) {
+      pageSize = state.pageSize;
+      const pageSizeSelect = document.getElementById('pageSize');
+      if (pageSizeSelect) pageSizeSelect.value = state.pageSize;
+    }
+    
+    // Restore view
+    if (state.view) {
+      currentView = state.view;
+      const viewToggle = document.getElementById('viewToggle');
+      if (viewToggle) viewToggle.checked = (state.view === 'grid');
+    }
+    
+    console.log('Search state restored:', state);
+  } catch (e) {
+    console.warn('Failed to restore search state:', e);
+  }
 }
 
 function sortTable(field) {

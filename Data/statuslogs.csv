@@ -1,3 +1,4 @@
-﻿StatusLogID,MoldID,CutterID,ItemType,Status,Timestamp,EmployeeID,DestinationID,Notes
-1,558,,,,,1,AREA-MOLDROOM,廃棄予定
-2,2225,,,,,1,AREA-MOLDROOM,写真撮影
+StatusLogID,MoldID,Status,EmployeeID,DestinationID,Notes,Timestamp
+SL1761348548241,TIH014,check-in,E001,,Test ghi dữ liệu từ V7.7.7,2025-10-25T08:00:00Z
+,558,,1,AREA-MOLDROOM,廃棄予定,
+,2225,,1,AREA-MOLDROOM,写真撮影,

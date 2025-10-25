@@ -1,4 +1,5 @@
 StatusLogID,MoldID,Status,EmployeeID,DestinationID,Notes,Timestamp
+SL1761434058955,10,check-out,1,FORMING-06,test tải lịch sử,2025-10-25T23:13:56.845Z
 SL1761421648703,10,check-in,2,AREA-MOLDROOM,,2025-10-25T19:47:06.009Z
 SL1761400498000,4218,check-out,2,PRESSOR-03,"Ví dụ checkout V6, đã chỉnh bảng kết quả",2025-10-25T13:54:37.251Z
 SL1761399063760,10,check-out,1,AREA-OFFICE,test checkout V5,2025-10-25T13:30:32.953Z

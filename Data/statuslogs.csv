@@ -1,4 +1,5 @@
 StatusLogID,MoldID,Status,EmployeeID,DestinationID,Notes,Timestamp
+SL1761437714864,10,check-in,1,AREA-MOLDROOM,test Kiểm kê ngày 10/26,2025-10-26T00:15:14.819Z
 SL1761437173876,10,check-in,1,AREA-MOLDROOM,SUA CHUA -  test ban phim. Chuyen trang thai checkout sang vi tri khác,2025-10-26T00:05:51.875Z
 SL1761434058955,10,check-out,1,FORMING-06,test tải lịch sử,2025-10-25T23:13:56.845Z
 SL1761421648703,10,check-in,2,AREA-MOLDROOM,,2025-10-25T19:47:06.009Z

@@ -239,6 +239,29 @@ app.post('/api/checklog', async (req, res) => {
 });
 
 // ========================================
+// XÓA MỘT DÒNG LỊCH SỬ CHECKIN/OUT
+// ========================================
+app.post("/api/deletelog", async (req, res) => {
+  try {
+    const { MoldID, Timestamp } = req.body;
+    const filePath = path.join(__dirname, "checklog.csv");
+    const content = fs.readFileSync(filePath, "utf8").split("\n");
+
+    const header = content.shift();
+    const filtered = content.filter(l => !l.includes(MoldID) || !l.includes(Timestamp));
+    const newCsv = [header, ...filtered].join("\n");
+
+    fs.writeFileSync(filePath, newCsv, "utf8");
+    res.json({ success: true, deleted: Timestamp });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+
+
+
+// ========================================
 // HELPER FUNCTIONS
 // ========================================
 

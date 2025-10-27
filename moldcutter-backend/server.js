@@ -239,24 +239,33 @@ app.post('/api/checklog', async (req, res) => {
 });
 
 // ========================================
-// XÓA MỘT DÒNG LỊCH SỬ CHECKIN/OUT
+// DELETE LOG ENTRY BY MoldID & Timestamp
 // ========================================
 app.post("/api/deletelog", async (req, res) => {
   try {
     const { MoldID, Timestamp } = req.body;
-    const filePath = path.join(__dirname, "checklog.csv");
-    const content = fs.readFileSync(filePath, "utf8").split("\n");
+    if (!MoldID || !Timestamp) {
+      return res.status(400).json({ success: false, message: "Missing MoldID or Timestamp" });
+    }
 
-    const header = content.shift();
-    const filtered = content.filter(l => !l.includes(MoldID) || !l.includes(Timestamp));
-    const newCsv = [header, ...filtered].join("\n");
+    const FILE_PATH = path.join(__dirname, "checklog.csv");
+    const csvContent = fs.readFileSync(FILE_PATH, "utf8").trim().split("\n");
 
-    fs.writeFileSync(filePath, newCsv, "utf8");
-    res.json({ success: true, deleted: Timestamp });
+    // Cấu trúc CSV: MoldID,Timestamp,Status,EmployeeID,DestinationID,Notes...
+    const header = csvContent.shift();
+    const updated = csvContent.filter(line => 
+      !(line.includes(MoldID) && line.includes(Timestamp))
+    );
+
+    const finalCsv = [header, ...updated].join("\n");
+    fs.writeFileSync(FILE_PATH, finalCsv, "utf8");
+
+    res.json({ success: true, deleted: { MoldID, Timestamp } });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
 });
+
 
 
 

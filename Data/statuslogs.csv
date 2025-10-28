@@ -1,2 +1,3 @@
 StatusLogID,MoldID,Status,EmployeeID,DestinationID,Notes,Timestamp
-
+SL1761635507771,10,check-in,1,AREA-MOLDROOM,棚卸し,2025-10-28T07:11:47.241Z
+,,,,,,

@@ -1,8 +1,8 @@
-// server-r6.4.2.js - V7.7.7-r6.4.2 với FIX Type Coercion Bug
+// server-r6.4.3.js - V7.7.7-r6.4.3 với Diagnostic Logs Chi Tiết
 // 
-// ✅ FIX: So sánh MoldID bằng String().trim() thay vì strict comparison (===)
-// ✅ THÊM: Debug logs chi tiết
-// Giữ nguyên 100% logic khác!
+// ✅ CHẨN ĐOÁN: Log chi tiết mọi bước xử lý RackLayerID
+// ✅ DEBUG: In ra chi tiết từng record CSV
+// ✅ TRACE: Theo dõi toàn bộ flow
 
 require('dotenv').config();
 
@@ -34,7 +34,7 @@ const FILE_HEADERS = {
   'molds.csv': [
     'MoldID', 'MoldName', 'MoldCode', 'CustomerID', 'TrayID', 'MoldDesignID',
     'storage_company', 
-    'RackLayerID', // ✅ ĐÚNG! Khớp với CSV thực tế!
+    'RackLayerID',
     'LocationNotes', 'ItemTypeID', 'MoldLengthModified', 'MoldWidthModified',
     'MoldHeightModified', 'MoldWeightModified', 'MoldNotes', 'MoldUsageStatus',
     'MoldOnCheckList', 'JobID', 'TeflonFinish', 'TeflonCoating', 
@@ -50,7 +50,7 @@ const FILE_HEADERS = {
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'OK',
-    message: 'Server V7.7.7-r6.4.2 running (Location Support + Type Coercion Fix)',
+    message: 'Server V7.7.7-r6.4.3 running (Diagnostic Mode)',
     timestamp: new Date().toISOString()
   });
 });
@@ -232,15 +232,22 @@ app.post('/api/checklog', async (req, res) => {
 });
 
 // ========================================
-// ✅ ENDPOINT 5: LOCATION LOG (V7.7.7-r6.4.2)
+// ✅ ENDPOINT 5: LOCATION LOG (V7.7.7-r6.4.3)
 // POST /api/locationlog - Tạo log thay đổi vị trí
-// ✅ FIX: Type coercion bug trong so sánh MoldID
-// ✅ THÊM: Debug logs chi tiết
+// 🔍 DIAGNOSTIC MODE: Log chi tiết mọi bước
 // ========================================
 app.post('/api/locationlog', async (req, res) => {
-  console.log('[SERVER] locationlog POST called with body:', req.body);
+  console.log('[SERVER] ═══════════════════════════════════════════════════════════');
+  console.log('[SERVER] locationlog POST called');
+  console.log('[SERVER] Request body:', JSON.stringify(req.body, null, 2));
+  
   try {
     const { MoldID, OldRackLayer, NewRackLayer, notes, DateEntry } = req.body;
+
+    console.log('[SERVER] 📊 REQUEST PARAMETERS:');
+    console.log(`[SERVER]   - MoldID: "${MoldID}" (type: ${typeof MoldID}, length: ${String(MoldID).length})`);
+    console.log(`[SERVER]   - NewRackLayer: "${NewRackLayer}" (type: ${typeof NewRackLayer})`);
+    console.log(`[SERVER]   - OldRackLayer: "${OldRackLayer}" (type: ${typeof OldRackLayer})`);
 
     // Validate dữ liệu bắt buộc
     if (!MoldID || !NewRackLayer) {
@@ -264,11 +271,11 @@ app.post('/api/locationlog', async (req, res) => {
       NewRackLayer: NewRackLayer || '',
       MoldID: MoldID || '',
       DateEntry: DateEntry || new Date().toISOString(),
-      CutterID: '', // Để trống vì chỉ cập nhật vị trí khuôn
+      CutterID: '',
       notes: notes || ''
     };
 
-    console.log(`[SERVER] Adding locationlog entry:`, normalizedEntry);
+    console.log(`[SERVER] 📝 Adding locationlog entry:`, normalizedEntry);
 
     // Lấy file hiện tại
     const fileData = await getGitHubFile(filePath);
@@ -289,47 +296,89 @@ app.post('/api/locationlog', async (req, res) => {
     );
 
     // ========================================
-    // ✅ CẬP NHẬT MOLDS.CSV - Thay đổi RackLayerID
-    // ✅ FIX: So sánh String().trim() thay vì strict ===
+    // ✅ CẬP NHẬT MOLDS.CSV - DIAGNOSTIC MODE
+    // 🔍 LOG CHI TIẾT TỪNG BƯỚC
     // ========================================
     try {
-      console.log('[SERVER] 🔧 START: Updating molds.csv RackLayerID for MoldID:', MoldID);
-      console.log('[SERVER] 🔧 NewRackLayer:', NewRackLayer);
+      console.log('[SERVER] ═══════════════════════════════════════════════════════════');
+      console.log('[SERVER] 🔧 STEP 1: START Updating molds.csv');
+      console.log(`[SERVER] 🔧 Target MoldID: "${MoldID}"`);
+      console.log(`[SERVER] 🔧 New RackLayer: "${NewRackLayer}"`);
 
       const moldsPath = `${DATA_PATH_PREFIX}molds.csv`;
       const moldsHeaders = FILE_HEADERS['molds.csv'];
       
-      console.log('[SERVER] 📥 Fetching molds.csv from GitHub...');
+      console.log('[SERVER] 🔧 STEP 2: Fetch molds.csv from GitHub');
       const moldsData = await getGitHubFile(moldsPath);
+      console.log('[SERVER] ✅ File fetched successfully');
       
-      console.log('[SERVER] 📋 Parsing molds.csv content...');
+      console.log('[SERVER] 🔧 STEP 3: Parse CSV content');
       let moldsRecords = await parseCsvText(moldsData.content);
-      console.log(`[SERVER] 📋 Total molds records: ${moldsRecords.length}`);
+      console.log(`[SERVER] ✅ Total records parsed: ${moldsRecords.length}`);
 
-      let moldUpdated = false;
+      // 🔍 LOG SAMPLE RECORDS
+      console.log('[SERVER] 🔍 SAMPLE: First 5 MoldID values from CSV:');
+      for (let i = 0; i < Math.min(5, moldsRecords.length); i++) {
+        const recordMoldID = moldsRecords[i].MoldID;
+        const recordRackLayer = moldsRecords[i].RackLayerID;
+        const isCurrentTarget = String(recordMoldID).trim() === String(MoldID).trim();
+        const marker = isCurrentTarget ? '🎯' : '  ';
+        console.log(`[SERVER]   ${marker} [${i}] MoldID="${recordMoldID}" (len:${String(recordMoldID).length}, type:${typeof recordMoldID}) → RackLayerID="${recordRackLayer}"`);
+      }
+
+      console.log('[SERVER] 🔧 STEP 4: Search and compare MoldID');
+      let foundCount = 0;
+      let foundIndex = -1;
       let oldRackLayerID = null;
 
-      moldsRecords = moldsRecords.map(record => {
-        // ✅ FIX: CHUYỂN CẢ 2 SANG STRING VÀ TRIM!
-        // Giải quyết vấn đề csvParser() tự động chuyển "10" → 10
-        if (String(record.MoldID).trim() === String(MoldID).trim()) {
-          oldRackLayerID = record.RackLayerID;
-          console.log(`[SERVER] 📋 FOUND MoldID=${MoldID}! (type: ${typeof record.MoldID})`);
-          console.log(`[SERVER] 📋 BEFORE: RackLayerID="${oldRackLayerID}"`);
-          
-          record.RackLayerID = NewRackLayer;
-          moldUpdated = true;
-          
-          console.log(`[SERVER] ✅ AFTER: RackLayerID="${NewRackLayer}"`);
+      // 🔍 LOOP THROUGH RECORDS
+      moldsRecords = moldsRecords.map((record, index) => {
+        const recordMoldID = String(record.MoldID).trim();
+        const requestMoldID = String(MoldID).trim();
+        const isMatch = recordMoldID === requestMoldID;
+
+        // Log first 10 comparisons OR if match found
+        if (index < 10 || isMatch) {
+          const status = isMatch ? '✅ MATCH' : '❌ no match';
+          console.log(`[SERVER]   [${index}] Compare "${recordMoldID}" (len:${recordMoldID.length}) vs "${requestMoldID}" (len:${requestMoldID.length}) → ${status}`);
+        }
+
+        if (isMatch) {
+          foundCount++;
+          if (foundIndex === -1) {
+            foundIndex = index;
+            oldRackLayerID = record.RackLayerID;
+            console.log(`[SERVER] 🎯 FOUND at index ${index}!`);
+            console.log(`[SERVER]   OLD RackLayerID: "${oldRackLayerID}"`);
+            console.log(`[SERVER]   NEW RackLayerID: "${NewRackLayer}"`);
+            
+            record.RackLayerID = NewRackLayer;
+            
+            console.log(`[SERVER]   ✅ Updated! RackLayerID: "${oldRackLayerID}" → "${NewRackLayer}"`);
+          }
         }
         return record;
       });
 
-      if (moldUpdated) {
-        console.log('[SERVER] 💾 Converting to CSV...');
+      console.log('[SERVER] 🔧 STEP 5: Summary');
+      console.log(`[SERVER]   Total matches found: ${foundCount}`);
+      console.log(`[SERVER]   First match at index: ${foundIndex}`);
+      console.log(`[SERVER]   Update status: ${foundCount > 0 ? '✅ SUCCESS' : '❌ NO MATCH FOUND'}`);
+
+      if (foundCount === 0) {
+        console.log('[SERVER] ⚠️  WARNING: MoldID not found in CSV!');
+        console.log('[SERVER] ⚠️  Possible causes:');
+        console.log('[SERVER]   1. MoldID does not exist in molds.csv');
+        console.log('[SERVER]   2. MoldID has extra spaces (before/after)');
+        console.log('[SERVER]   3. CSV parsing issue');
+        console.log('[SERVER]   4. MoldID case sensitivity issue');
+      }
+
+      if (foundCount > 0) {
+        console.log('[SERVER] 🔧 STEP 6: Convert and upload updated CSV');
         const moldsCsvContent = convertToCsvText(moldsRecords, moldsHeaders);
         
-        console.log('[SERVER] 💾 Updating molds.csv on GitHub...');
+        console.log('[SERVER] 💾 Uploading to GitHub...');
         await updateGitHubFile(
           moldsPath,
           moldsCsvContent,
@@ -337,18 +386,19 @@ app.post('/api/locationlog', async (req, res) => {
           `Update mold ${MoldID} RackLayerID: ${oldRackLayerID} → ${NewRackLayer}`
         );
         
-        console.log('[SERVER] ✅ SAVED: molds.csv updated successfully!');
-        console.log(`[SERVER] ✅ DONE: MoldID=${MoldID}, RackLayerID: ${oldRackLayerID} → ${NewRackLayer}`);
+        console.log('[SERVER] ✅ FINAL: molds.csv updated successfully!');
+        console.log('[SERVER] ═══════════════════════════════════════════════════════════');
       } else {
-        console.log(`[SERVER] ⚠️  NOT FOUND: MoldID ${MoldID} not found in molds.csv!`);
-        console.log(`[SERVER] ⚠️  NOTE: Check if MoldID exists in CSV file`);
+        console.log('[SERVER] ❌ FINAL: NO UPDATE - MoldID not found in CSV!');
+        console.log('[SERVER] ═══════════════════════════════════════════════════════════');
       }
       
     } catch (moldsError) {
       console.error(`[SERVER] ❌ ERROR: Failed to update molds.csv`);
+      console.error(`[SERVER] ❌ Error type: ${moldsError.name}`);
       console.error(`[SERVER] ❌ Error message:`, moldsError.message);
       console.error(`[SERVER] ❌ Error stack:`, moldsError.stack);
-      // Không fail toàn bộ request, chỉ log warning
+      console.log('[SERVER] ═══════════════════════════════════════════════════════════');
     }
 
     res.json({
@@ -367,8 +417,7 @@ app.post('/api/locationlog', async (req, res) => {
 });
 
 // ========================================
-// ✅ ENDPOINT 6: DELETE LOCATION LOG (MỚI - V7.7.7)
-// DELETE /api/locationlog/:id - Xóa log thay đổi vị trí
+// DELETE LOCATION LOG (MỚI - V7.7.7)
 // ========================================
 app.delete('/api/locationlog/:id', async (req, res) => {
   console.log('[SERVER] locationlog DELETE called with id:', req.params.id);
@@ -387,15 +436,12 @@ app.delete('/api/locationlog/:id', async (req, res) => {
     const filePath = `${DATA_PATH_PREFIX}${filename}`;
     const expectedHeaders = FILE_HEADERS[filename];
 
-    // Lấy file hiện tại
     const fileData = await getGitHubFile(filePath);
     let records = await parseCsvText(fileData.content);
 
     const beforeLen = records.length;
 
-    // Xóa entry khớp với MoldID và DateEntry
     records = records.filter(record => {
-      // So sánh cả MoldID và DateEntry để tránh xóa nhầm
       const matchMoldID = String(record.MoldID).trim() === String(MoldID).trim();
       const matchDate = String(record.DateEntry).trim() === String(DateEntry).trim();
       return !(matchMoldID && matchDate);
@@ -412,10 +458,8 @@ app.delete('/api/locationlog/:id', async (req, res) => {
 
     console.log(`[SERVER] Deleted ${beforeLen - afterLen} location log entry`);
 
-    // Chuyển đổi thành CSV
     const csvContent = convertToCsvText(records, expectedHeaders);
 
-    // Cập nhật lên GitHub
     await updateGitHubFile(
       filePath, 
       csvContent, 
@@ -458,7 +502,6 @@ app.post("/api/deletelog", async (req, res) => {
 
     const beforeLen = records.length;
 
-    // Xóa entry khớp với MoldID và Timestamp
     records = records.filter(record => {
       const matchMoldID = String(record.MoldID).trim() === String(MoldID).trim();
       const matchTimestamp = String(record.Timestamp).trim() === String(Timestamp).trim();
@@ -482,7 +525,7 @@ app.post("/api/deletelog", async (req, res) => {
 });
 
 // ========================================
-// HELPER FUNCTIONS (KHÔNG THAY ĐỔI!)
+// HELPER FUNCTIONS
 // ========================================
 
 // Lấy file từ GitHub
@@ -547,7 +590,7 @@ function escapeCsvValue(value) {
 // ========================================
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`✅ Server V7.7.7-r6.4.2 running on port ${PORT}`);
+  console.log(`✅ Server V7.7.7-r6.4.3 running on port ${PORT}`);
   console.log(`🔗 Health check: http://localhost:${PORT}/api/health`);
   console.log(`📋 Endpoints:`);
   console.log(`   - /api/add-log (POST)`);
@@ -555,6 +598,7 @@ app.listen(PORT, () => {
   console.log(`   - /api/add-comment (POST)`);
   console.log(`   - /api/checklog (POST)`);
   console.log(`   - /api/deletelog (POST)`);
-  console.log(`   - /api/locationlog (POST) ✨ FIXED Type Coercion Bug`);
-  console.log(`   - /api/locationlog/:id (DELETE) ✨ NEW`);
+  console.log(`   - /api/locationlog (POST) 🔍 DIAGNOSTIC MODE`);
+  console.log(`   - /api/locationlog/:id (DELETE)`);
+  console.log(`🔍 DIAGNOSTIC LOGS ENABLED - Chi tiết toàn bộ quá trình xử lý`);
 });

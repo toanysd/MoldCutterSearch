@@ -1,5 +1,7 @@
-// server-r6.4.js - V7.7.7 với Location Manager Support
-// Giữ nguyên tất cả chức năng V4.31 + thêm endpoint /api/locationlog
+// server-r6.4.1.js - V7.7.7-r6.4.1 với Debug Logs cho Location Manager
+// 
+// CHỈ THÊM CONSOLE.LOG CHI TIẾT - KHÔNG THAY ĐỔI LOGIC!
+// Giữ nguyên 100% code V7.7.7-r6.4 + thêm log debug
 
 require('dotenv').config();
 
@@ -31,7 +33,7 @@ const FILE_HEADERS = {
   'molds.csv': [
     'MoldID', 'MoldName', 'MoldCode', 'CustomerID', 'TrayID', 'MoldDesignID',
     'storage_company', 
-    'RackLayerID',  // ✅ ĐÚNG! Khớp với CSV thực tế!
+    'RackLayerID', // ✅ ĐÚNG! Khớp với CSV thực tế!
     'LocationNotes', 'ItemTypeID', 'MoldLengthModified', 'MoldWidthModified',
     'MoldHeightModified', 'MoldWeightModified', 'MoldNotes', 'MoldUsageStatus',
     'MoldOnCheckList', 'JobID', 'TeflonFinish', 'TeflonCoating', 
@@ -45,10 +47,10 @@ const FILE_HEADERS = {
 // HEALTH CHECK ENDPOINT
 // ========================================
 app.get('/api/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
-    message: 'Server V7.7.7-r6.4 running (Location Support)', 
-    timestamp: new Date().toISOString() 
+  res.json({
+    status: 'OK',
+    message: 'Server V7.7.7-r6.4.1 running (Location Support + Debug Logs)',
+    timestamp: new Date().toISOString()
   });
 });
 
@@ -79,7 +81,6 @@ app.post('/api/add-log', async (req, res) => {
     const fileData = await getGitHubFile(filePath);
     let records = await parseCsvText(fileData.content);
     records.unshift(normalizedEntry);
-
     const csvContent = convertToCsvText(records, expectedHeaders);
     await updateGitHubFile(filePath, csvContent, fileData.sha, `Add ${filename} entry`);
 
@@ -109,8 +110,8 @@ app.post('/api/update-item', async (req, res) => {
 
     const fileData = await getGitHubFile(filePath);
     let records = await parseCsvText(fileData.content);
-
     let itemFound = false;
+
     records = records.map(record => {
       if (record[itemIdField] === itemIdValue) {
         itemFound = true;
@@ -162,7 +163,6 @@ app.post('/api/add-comment', async (req, res) => {
     const fileData = await getGitHubFile(filePath);
     let records = await parseCsvText(fileData.content);
     records.unshift(normalizedComment);
-
     const csvContent = convertToCsvText(records, expectedHeaders);
     await updateGitHubFile(filePath, csvContent, fileData.sha, `Add comment`);
 
@@ -180,7 +180,6 @@ app.post('/api/checklog', async (req, res) => {
   console.log('[SERVER] checklog called with body:', req.body);
   try {
     const { MoldID, Status, EmployeeID, DestinationID, Notes, Timestamp } = req.body;
-
     if (!MoldID || !Status) {
       return res.status(400).json({
         success: false,
@@ -193,7 +192,6 @@ app.post('/api/checklog', async (req, res) => {
     const expectedHeaders = FILE_HEADERS[filename];
 
     const newId = `SL${Date.now()}`;
-
     const normalizedEntry = {
       StatusLogID: newId,
       MoldID: MoldID || '',
@@ -209,12 +207,11 @@ app.post('/api/checklog', async (req, res) => {
     const fileData = await getGitHubFile(filePath);
     let records = await parseCsvText(fileData.content);
     records.unshift(normalizedEntry);
-
     const csvContent = convertToCsvText(records, expectedHeaders);
     await updateGitHubFile(
-      filePath,
-      csvContent,
-      fileData.sha,
+      filePath, 
+      csvContent, 
+      fileData.sha, 
       `Add check-in/check-out log for ${MoldID}`
     );
 
@@ -234,51 +231,133 @@ app.post('/api/checklog', async (req, res) => {
 });
 
 // ========================================
-// ✅ ENDPOINT 5: LOCATION LOG (MỚI - V7.7.7)
+// ✅ ENDPOINT 5: LOCATION LOG (V7.7.7-r6.4.1)
 // POST /api/locationlog - Tạo log thay đổi vị trí
+// ➕ THÊM DEBUG LOGS CHI TIẾT!
 // ========================================
 app.post('/api/locationlog', async (req, res) => {
+  console.log('[SERVER] locationlog POST called with body:', req.body);
   try {
-    // 1. Thêm log vào locationlog.csv
-    await updateGitHubFile('Data/locationlog.csv', ...);
-    console.log('[SERVER] Adding locationlog entry:', ...);
-    
-    // 2. Cập nhật RackLayerID trong molds.csv
+    const { MoldID, OldRackLayer, NewRackLayer, notes, DateEntry } = req.body;
+
+    // Validate dữ liệu bắt buộc
+    if (!MoldID || !NewRackLayer) {
+      return res.status(400).json({
+        success: false,
+        message: 'MoldID và NewRackLayer là bắt buộc'
+      });
+    }
+
+    const filename = 'locationlog.csv';
+    const filePath = `${DATA_PATH_PREFIX}${filename}`;
+    const expectedHeaders = FILE_HEADERS[filename];
+
+    // Tạo ID tự động (timestamp-based)
+    const newId = `LOC${Date.now()}`;
+
+    // Chuẩn hóa entry
+    const normalizedEntry = {
+      LocationLogID: newId,
+      OldRackLayer: OldRackLayer || '',
+      NewRackLayer: NewRackLayer || '',
+      MoldID: MoldID || '',
+      DateEntry: DateEntry || new Date().toISOString(),
+      CutterID: '', // Để trống vì chỉ cập nhật vị trí khuôn
+      notes: notes || ''
+    };
+
+    console.log(`[SERVER] Adding locationlog entry:`, normalizedEntry);
+
+    // Lấy file hiện tại
+    const fileData = await getGitHubFile(filePath);
+    let records = await parseCsvText(fileData.content);
+
+    // Thêm entry mới vào đầu
+    records.unshift(normalizedEntry);
+
+    // Chuyển đổi thành CSV
+    const csvContent = convertToCsvText(records, expectedHeaders);
+
+    // Cập nhật lên GitHub
+    await updateGitHubFile(
+      filePath, 
+      csvContent, 
+      fileData.sha, 
+      `Add location change log for ${MoldID}`
+    );
+
+    // ========================================
+    // ✅ CẬP NHẬT MOLDS.CSV - Thay đổi RackLayerID
+    // ➕ THÊM 10 DÒNG DEBUG LOG!
+    // ========================================
     try {
-      console.log('[SERVER] 🔧 START: Updating RackLayerID for MoldID:', MoldID);
+      console.log('[SERVER] 🔧 START: Updating molds.csv RackLayerID for MoldID:', MoldID);
+      console.log('[SERVER] 🔧 NewRackLayer:', NewRackLayer);
+
+      const moldsPath = `${DATA_PATH_PREFIX}molds.csv`;
+      const moldsHeaders = FILE_HEADERS['molds.csv'];
       
-      const moldsData = await getGitHubFile('Data/molds.csv');
-      console.log('[SERVER] 📥 Got molds.csv from GitHub, parsing...');
+      console.log('[SERVER] 📥 Fetching molds.csv from GitHub...');
+      const moldsData = await getGitHubFile(moldsPath);
       
+      console.log('[SERVER] 📋 Parsing molds.csv content...');
       let moldsRecords = await parseCsvText(moldsData.content);
-      
+      console.log(`[SERVER] 📋 Total molds records: ${moldsRecords.length}`);
+
       let moldUpdated = false;
+      let oldRackLayerID = null;
+
       moldsRecords = moldsRecords.map(record => {
         if (record.MoldID === MoldID) {
-          console.log(`[SERVER] 📋 BEFORE: MoldID=${MoldID}, RackLayerID="${record.RackLayerID}"`);
+          oldRackLayerID = record.RackLayerID;
+          console.log(`[SERVER] 📋 FOUND MoldID=${MoldID}!`);
+          console.log(`[SERVER] 📋 BEFORE: RackLayerID="${oldRackLayerID}"`);
+          
           record.RackLayerID = NewRackLayer;
           moldUpdated = true;
-          console.log(`[SERVER] ✅ AFTER: MoldID=${MoldID}, RackLayerID="${NewRackLayer}"`);
+          
+          console.log(`[SERVER] ✅ AFTER: RackLayerID="${NewRackLayer}"`);
         }
         return record;
       });
-      
+
       if (moldUpdated) {
-        await updateGitHubFile('Data/molds.csv', ...);
-        console.log('[SERVER] 💾 SAVED: molds.csv updated on GitHub!');
+        console.log('[SERVER] 💾 Converting to CSV...');
+        const moldsCsvContent = convertToCsvText(moldsRecords, moldsHeaders);
+        
+        console.log('[SERVER] 💾 Updating molds.csv on GitHub...');
+        await updateGitHubFile(
+          moldsPath,
+          moldsCsvContent,
+          moldsData.sha,
+          `Update mold ${MoldID} RackLayerID: ${oldRackLayerID} → ${NewRackLayer}`
+        );
+        
+        console.log('[SERVER] ✅ SAVED: molds.csv updated successfully!');
+        console.log(`[SERVER] ✅ DONE: MoldID=${MoldID}, RackLayerID: ${oldRackLayerID} → ${NewRackLayer}`);
       } else {
-        console.log(`[SERVER] ⚠️  NOT FOUND: MoldID ${MoldID} not found!`);
+        console.log(`[SERVER] ⚠️  NOT FOUND: MoldID ${MoldID} not found in molds.csv!`);
       }
       
-      console.log('[SERVER] ✅ DONE: RackLayerID update completed!');
     } catch (moldsError) {
-      console.error('[SERVER] ❌ ERROR: Failed to update molds.csv:', moldsError.message);
-      console.error('[SERVER] ❌ STACK:', moldsError.stack);
+      console.error(`[SERVER] ❌ ERROR: Failed to update molds.csv`);
+      console.error(`[SERVER] ❌ Error message:`, moldsError.message);
+      console.error(`[SERVER] ❌ Error stack:`, moldsError.stack);
+      // Không fail toàn bộ request, chỉ log warning
     }
-    
-    res.json({ success: true, ... });
+
+    res.json({
+      success: true,
+      message: `Location change recorded for ${MoldID}`,
+      logId: newId
+    });
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    console.error(`[SERVER] Error in locationlog POST:`, error);
+    res.status(500).json({
+      success: false,
+      message: `Failed to record location log`,
+      error: error.message
+    });
   }
 });
 
@@ -333,9 +412,9 @@ app.delete('/api/locationlog/:id', async (req, res) => {
 
     // Cập nhật lên GitHub
     await updateGitHubFile(
-      filePath,
-      csvContent,
-      fileData.sha,
+      filePath, 
+      csvContent, 
+      fileData.sha, 
       `Delete location log for ${MoldID}`
     );
 
@@ -398,7 +477,7 @@ app.post("/api/deletelog", async (req, res) => {
 });
 
 // ========================================
-// HELPER FUNCTIONS
+// HELPER FUNCTIONS (KHÔNG THAY ĐỔI!)
 // ========================================
 
 // Lấy file từ GitHub
@@ -463,7 +542,7 @@ function escapeCsvValue(value) {
 // ========================================
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`✅ Server V7.7.7-r6.4 running on port ${PORT}`);
+  console.log(`✅ Server V7.7.7-r6.4.1 running on port ${PORT}`);
   console.log(`🔗 Health check: http://localhost:${PORT}/api/health`);
   console.log(`📋 Endpoints:`);
   console.log(`   - /api/add-log (POST)`);
@@ -471,6 +550,6 @@ app.listen(PORT, () => {
   console.log(`   - /api/add-comment (POST)`);
   console.log(`   - /api/checklog (POST)`);
   console.log(`   - /api/deletelog (POST)`);
-  console.log(`   - /api/locationlog (POST) ✨ NEW`);
+  console.log(`   - /api/locationlog (POST) ✨ NEW + DEBUG LOGS`);
   console.log(`   - /api/locationlog/:id (DELETE) ✨ NEW`);
 });

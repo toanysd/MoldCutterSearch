@@ -1,7 +1,8 @@
-// server-r6.4.1.js - V7.7.7-r6.4.1 với Debug Logs cho Location Manager
+// server-r6.4.2.js - V7.7.7-r6.4.2 với FIX Type Coercion Bug
 // 
-// CHỈ THÊM CONSOLE.LOG CHI TIẾT - KHÔNG THAY ĐỔI LOGIC!
-// Giữ nguyên 100% code V7.7.7-r6.4 + thêm log debug
+// ✅ FIX: So sánh MoldID bằng String().trim() thay vì strict comparison (===)
+// ✅ THÊM: Debug logs chi tiết
+// Giữ nguyên 100% logic khác!
 
 require('dotenv').config();
 
@@ -49,7 +50,7 @@ const FILE_HEADERS = {
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'OK',
-    message: 'Server V7.7.7-r6.4.1 running (Location Support + Debug Logs)',
+    message: 'Server V7.7.7-r6.4.2 running (Location Support + Type Coercion Fix)',
     timestamp: new Date().toISOString()
   });
 });
@@ -231,9 +232,10 @@ app.post('/api/checklog', async (req, res) => {
 });
 
 // ========================================
-// ✅ ENDPOINT 5: LOCATION LOG (V7.7.7-r6.4.1)
+// ✅ ENDPOINT 5: LOCATION LOG (V7.7.7-r6.4.2)
 // POST /api/locationlog - Tạo log thay đổi vị trí
-// ➕ THÊM DEBUG LOGS CHI TIẾT!
+// ✅ FIX: Type coercion bug trong so sánh MoldID
+// ✅ THÊM: Debug logs chi tiết
 // ========================================
 app.post('/api/locationlog', async (req, res) => {
   console.log('[SERVER] locationlog POST called with body:', req.body);
@@ -288,7 +290,7 @@ app.post('/api/locationlog', async (req, res) => {
 
     // ========================================
     // ✅ CẬP NHẬT MOLDS.CSV - Thay đổi RackLayerID
-    // ➕ THÊM 10 DÒNG DEBUG LOG!
+    // ✅ FIX: So sánh String().trim() thay vì strict ===
     // ========================================
     try {
       console.log('[SERVER] 🔧 START: Updating molds.csv RackLayerID for MoldID:', MoldID);
@@ -308,9 +310,11 @@ app.post('/api/locationlog', async (req, res) => {
       let oldRackLayerID = null;
 
       moldsRecords = moldsRecords.map(record => {
-        if (record.MoldID === MoldID) {
+        // ✅ FIX: CHUYỂN CẢ 2 SANG STRING VÀ TRIM!
+        // Giải quyết vấn đề csvParser() tự động chuyển "10" → 10
+        if (String(record.MoldID).trim() === String(MoldID).trim()) {
           oldRackLayerID = record.RackLayerID;
-          console.log(`[SERVER] 📋 FOUND MoldID=${MoldID}!`);
+          console.log(`[SERVER] 📋 FOUND MoldID=${MoldID}! (type: ${typeof record.MoldID})`);
           console.log(`[SERVER] 📋 BEFORE: RackLayerID="${oldRackLayerID}"`);
           
           record.RackLayerID = NewRackLayer;
@@ -337,6 +341,7 @@ app.post('/api/locationlog', async (req, res) => {
         console.log(`[SERVER] ✅ DONE: MoldID=${MoldID}, RackLayerID: ${oldRackLayerID} → ${NewRackLayer}`);
       } else {
         console.log(`[SERVER] ⚠️  NOT FOUND: MoldID ${MoldID} not found in molds.csv!`);
+        console.log(`[SERVER] ⚠️  NOTE: Check if MoldID exists in CSV file`);
       }
       
     } catch (moldsError) {
@@ -542,7 +547,7 @@ function escapeCsvValue(value) {
 // ========================================
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`✅ Server V7.7.7-r6.4.1 running on port ${PORT}`);
+  console.log(`✅ Server V7.7.7-r6.4.2 running on port ${PORT}`);
   console.log(`🔗 Health check: http://localhost:${PORT}/api/health`);
   console.log(`📋 Endpoints:`);
   console.log(`   - /api/add-log (POST)`);
@@ -550,6 +555,6 @@ app.listen(PORT, () => {
   console.log(`   - /api/add-comment (POST)`);
   console.log(`   - /api/checklog (POST)`);
   console.log(`   - /api/deletelog (POST)`);
-  console.log(`   - /api/locationlog (POST) ✨ NEW + DEBUG LOGS`);
+  console.log(`   - /api/locationlog (POST) ✨ FIXED Type Coercion Bug`);
   console.log(`   - /api/locationlog/:id (DELETE) ✨ NEW`);
 });

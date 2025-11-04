@@ -27,8 +27,8 @@ const DATA_PATH_PREFIX = 'Data/';
 // FILE HEADERS - Cố định theo V4.31
 // ========================================
 const FILE_HEADERS = {
-  'locationlog.csv': ['LocationLogID', 'OldRackLayer', 'NewRackLayer', 'MoldID', 'DateEntry', 'CutterID', 'notes'],
-  'shiplog.csv': ['ShipID', 'MoldID', 'CutterID', 'FromCompanyID', 'ToCompanyID', 'FromCompany', 'ToCompany', 'ShipDate', 'handler', 'ShipNotes', 'DateEntry'],
+  'locationlog.csv': ['LocationLogID', 'OldRackLayer', 'NewRackLayer', 'MoldID', 'DateEntry', 'CutterID', 'notes', 'EmployeeID'],
+  'shiplog.csv': ['ShipID', 'MoldID', 'CutterID', 'FromCompanyID', 'ToCompanyID', 'FromCompany', 'ToCompany', 'ShipDate', 'EmployeeID', 'ShipNotes', 'DateEntry'],
   'usercomments.csv': ['UserCommentID', 'ItemType', 'ItemID', 'CommentText', 'CreatedByEmployeeID', 'CreatedDate'],
   'cutters.csv': ['CutterID', 'CutterName', 'CutterCode', 'MainBladeStatus', 'OtherStatus', 'Length', 'Width', 'NumberOfBlades', 'NumberOfOtherUnits', 'TypeOfOther', 'LastReceivedDate', 'LastShipDate', 'currentRackLayer', 'MoldFrameID', 'notes', 'ProductCode', 'cutterstyle', 'CurrentCompanyID', 'CutterDesignID', 'StockStatusID', 'CurrentUserID'],
   'molds.csv': [
@@ -221,7 +221,8 @@ app.post('/api/locationlog', async (req, res) => {
   console.log('[SERVER] Request:', req.body);
 
   try {
-    const { MoldID, OldRackLayer, NewRackLayer, notes, DateEntry } = req.body;
+    const { MoldID, OldRackLayer, NewRackLayer, notes, DateEntry, Employee, EmployeeID } = req.body;
+
 
     if (!MoldID || !NewRackLayer) {
       return res.status(400).json({
@@ -239,14 +240,16 @@ app.post('/api/locationlog', async (req, res) => {
 
     const newId = `LOC${Date.now()}`;
     const normalizedEntry = {
-      LocationLogID: newId,
-      OldRackLayer: OldRackLayer || '',
-      NewRackLayer: NewRackLayer || '',
-      MoldID: MoldID || '',
-      DateEntry: DateEntry || new Date().toISOString(),
-      CutterID: '',
-      notes: notes || ''
-    };
+    LocationLogID: newId,
+    OldRackLayer: OldRackLayer || '',
+    NewRackLayer: NewRackLayer || '',
+    MoldID: MoldID || '',
+    DateEntry: DateEntry || new Date().toISOString(),
+    CutterID: '',
+    notes: notes || '',
+    EmployeeID: Employee || EmployeeID || ''  // ✅ THÊM TRƯỜNG NÀY
+  };
+
 
     console.log('[SERVER] Adding locationlog entry');
     const locFileData = await getGitHubFile(filePath);

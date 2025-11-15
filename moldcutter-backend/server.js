@@ -1,8 +1,9 @@
-// server-r6.5.0.js - V7.7.7-r6.5.0 FIX COMPLETE!
-// 
+// server-r6.9.9.js - V7.7.7-r6.9.9 AUDIT BATCH SUPPORT
+
 // ✅ FIX: Sử dụng chiến lược parse CSV từ V3.0 (hoạt động tốt)
 // ✅ THÊM: csvParser options với mapHeaders để trim header
 // ✅ LOGIC: Tương tự add-log, update-item nhưng cho molds.csv
+// ✅ NEW: Endpoint /api/audit-batch cho kiểm kê hàng loạt
 
 require('dotenv').config();
 
@@ -23,9 +24,27 @@ const repo = process.env.GITHUB_REPO;
 const branch = process.env.GITHUB_BRANCH;
 const DATA_PATH_PREFIX = 'Data/';
 
+// ============================================
+// TIMEZONE CONFIGURATION (JST = UTC+9)
+// ============================================
+function getJSTTimestamp() {
+    const now = new Date();
+    // JST is UTC+9 hours
+    const jstOffset = 9 * 60 * 60 * 1000; // 9 hours in milliseconds
+    const jstTime = new Date(now.getTime() + jstOffset);
+    return jstTime.toISOString();
+}
+
+function getJSTDate() {
+    return getJSTTimestamp().split('T')[0]; // YYYY-MM-DD in JST
+}
+
+console.log('[Server] Timezone helpers loaded (JST = UTC+9)');
+
 // ========================================
-// FILE HEADERS - Cố định theo V4.31
+// FILE HEADERS - Cố định theo V4.31 + AUDIT SUPPORT
 // ========================================
+
 const FILE_HEADERS = {
   'locationlog.csv': ['LocationLogID', 'OldRackLayer', 'NewRackLayer', 'MoldID', 'DateEntry', 'CutterID', 'notes', 'EmployeeID'],
   'shiplog.csv': ['ShipID', 'MoldID', 'CutterID', 'FromCompanyID', 'ToCompanyID', 'FromCompany', 'ToCompany', 'ShipDate', 'EmployeeID', 'ShipNotes', 'DateEntry'],
@@ -33,24 +52,26 @@ const FILE_HEADERS = {
   'cutters.csv': ['CutterID', 'CutterName', 'CutterCode', 'MainBladeStatus', 'OtherStatus', 'Length', 'Width', 'NumberOfBlades', 'NumberOfOtherUnits', 'TypeOfOther', 'LastReceivedDate', 'LastShipDate', 'currentRackLayer', 'MoldFrameID', 'notes', 'ProductCode', 'cutterstyle', 'CurrentCompanyID', 'CutterDesignID', 'StockStatusID', 'CurrentUserID'],
   'molds.csv': [
     'MoldID', 'MoldName', 'MoldCode', 'CustomerID', 'TrayID', 'MoldDesignID',
-    'storage_company', 
+    'storage_company',
     'RackLayerID',
     'LocationNotes', 'ItemTypeID', 'MoldLengthModified', 'MoldWidthModified',
     'MoldHeightModified', 'MoldWeightModified', 'MoldNotes', 'MoldUsageStatus',
-    'MoldOnCheckList', 'JobID', 'TeflonFinish', 'TeflonCoating', 
+    'MoldOnCheckList', 'JobID', 'TeflonFinish', 'TeflonCoating',
     'TeflonSentDate', 'TeflonExpectedDate', 'TeflonReceivedDate',
     'MoldReturning', 'MoldReturnedDate', 'MoldDisposing', 'MoldDisposedDate', 'MoldEntry'
   ],
-  'statuslogs.csv': ['StatusLogID', 'MoldID', 'Status', 'EmployeeID', 'DestinationID', 'Notes', 'Timestamp']
+  // ✅ UPDATED: Thêm AuditDate và AuditType
+  'statuslogs.csv': ['StatusLogID', 'MoldID', 'CutterID', 'ItemType', 'Status', 'Timestamp', 'EmployeeID', 'DestinationID', 'Notes', 'AuditDate', 'AuditType']
 };
 
 // ========================================
 // HEALTH CHECK
 // ========================================
+
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'OK',
-    message: 'Server V7.7.7-r6.5.0 running',
+    message: 'Server V7.7.7-r6.9.8 running (Audit Batch Support)',
     timestamp: new Date().toISOString()
   });
 });
@@ -58,6 +79,7 @@ app.get('/api/health', (req, res) => {
 // ========================================
 // ENDPOINT 1: ADD LOG (Legacy V4.31)
 // ========================================
+
 app.post('/api/add-log', async (req, res) => {
   console.log('[SERVER] add-log called');
   try {
@@ -78,7 +100,6 @@ app.post('/api/add-log', async (req, res) => {
     });
 
     console.log(`[SERVER] Adding log to ${filename}`);
-
     const fileData = await getGitHubFile(filePath);
     let records = await parseCsvText(fileData.content);
     records.unshift(normalizedEntry);
@@ -95,6 +116,7 @@ app.post('/api/add-log', async (req, res) => {
 // ========================================
 // ENDPOINT 2: UPDATE ITEM (Legacy V4.31)
 // ========================================
+
 app.post('/api/update-item', async (req, res) => {
   console.log('[SERVER] update-item called');
   try {
@@ -142,6 +164,7 @@ app.post('/api/update-item', async (req, res) => {
 // ========================================
 // ENDPOINT 3: ADD COMMENT (Legacy V4.31)
 // ========================================
+
 app.post('/api/add-comment', async (req, res) => {
   console.log('[SERVER] add-comment called');
   try {
@@ -174,13 +197,18 @@ app.post('/api/add-comment', async (req, res) => {
 
 // ========================================
 // ENDPOINT 4: CHECK-IN / CHECK-OUT (V7.7.7)
+// ✅ UPDATED: Hỗ trợ AuditDate và AuditType
 // ========================================
+
 app.post('/api/checklog', async (req, res) => {
   console.log('[SERVER] checklog called');
   try {
-    const { MoldID, Status, EmployeeID, DestinationID, Notes, Timestamp } = req.body;
-    if (!MoldID || !Status) {
-      return res.status(400).json({ success: false, message: 'MoldID and Status required' });
+    const { MoldID, CutterID, ItemType, Status, EmployeeID, DestinationID, Notes, Timestamp, AuditDate, AuditType } = req.body;
+    if (!MoldID && !CutterID) {
+      return res.status(400).json({ success: false, message: 'MoldID or CutterID required' });
+    }
+    if (!Status) {
+      return res.status(400).json({ success: false, message: 'Status required' });
     }
 
     const filename = 'statuslogs.csv';
@@ -191,18 +219,22 @@ app.post('/api/checklog', async (req, res) => {
     const normalizedEntry = {
       StatusLogID: newId,
       MoldID: MoldID || '',
+      CutterID: CutterID || '',
+      ItemType: ItemType || '',
       Status: Status || '',
+      Timestamp: Timestamp || new Date().toISOString(),
       EmployeeID: EmployeeID || '',
       DestinationID: DestinationID || '',
       Notes: Notes || '',
-      Timestamp: Timestamp || new Date().toISOString()
+      AuditDate: AuditDate || '', // ✅ NEW
+      AuditType: AuditType || ''  // ✅ NEW
     };
 
     const fileData = await getGitHubFile(filePath);
     let records = await parseCsvText(fileData.content);
     records.unshift(normalizedEntry);
     const csvContent = convertToCsvText(records, expectedHeaders);
-    await updateGitHubFile(filePath, csvContent, fileData.sha, `Add checklog for ${MoldID}`);
+    await updateGitHubFile(filePath, csvContent, fileData.sha, `Add checklog for ${MoldID || CutterID}`);
 
     res.json({ success: true, message: `Check recorded`, entryId: newId });
   } catch (error) {
@@ -216,13 +248,12 @@ app.post('/api/checklog', async (req, res) => {
 // POST /api/locationlog - Tạo log + Cập nhật RackLayerID
 // 🔧 FIX: Sử dụng mapHeaders và logic giống add-log
 // ========================================
+
 app.post('/api/locationlog', async (req, res) => {
   console.log('[SERVER] locationlog POST called');
   console.log('[SERVER] Request:', req.body);
-
   try {
     const { MoldID, OldRackLayer, NewRackLayer, notes, DateEntry, Employee, EmployeeID } = req.body;
-
 
     if (!MoldID || !NewRackLayer) {
       return res.status(400).json({
@@ -240,16 +271,15 @@ app.post('/api/locationlog', async (req, res) => {
 
     const newId = `LOC${Date.now()}`;
     const normalizedEntry = {
-    LocationLogID: newId,
-    OldRackLayer: OldRackLayer || '',
-    NewRackLayer: NewRackLayer || '',
-    MoldID: MoldID || '',
-    DateEntry: DateEntry || new Date().toISOString(),
-    CutterID: '',
-    notes: notes || '',
-    EmployeeID: Employee || EmployeeID || ''  // ✅ THÊM TRƯỜNG NÀY
-  };
-
+      LocationLogID: newId,
+      OldRackLayer: OldRackLayer || '',
+      NewRackLayer: NewRackLayer || '',
+      MoldID: MoldID || '',
+      DateEntry: DateEntry || new Date().toISOString(),
+      CutterID: '',
+      notes: notes || '',
+      EmployeeID: Employee || EmployeeID || ''
+    };
 
     console.log('[SERVER] Adding locationlog entry');
     const locFileData = await getGitHubFile(filePath);
@@ -274,12 +304,6 @@ app.post('/api/locationlog', async (req, res) => {
       let moldsRecords = await parseCsvText(moldsData.content);
       console.log(`[SERVER] ✅ Total molds: ${moldsRecords.length}`);
 
-      // Log first few records to verify parsing
-      console.log(`[SERVER] Sample records:`);
-      for (let i = 0; i < Math.min(3, moldsRecords.length); i++) {
-        console.log(`[SERVER]   [${i}] MoldID="${moldsRecords[i].MoldID}" (type:${typeof moldsRecords[i].MoldID}, len:${String(moldsRecords[i].MoldID).length})`);
-      }
-
       // Search and update
       console.log(`[SERVER] Searching for MoldID="${MoldID}"...`);
       let foundIndex = -1;
@@ -293,10 +317,9 @@ app.post('/api/locationlog', async (req, res) => {
           foundIndex = index;
           oldRackLayer = record.RackLayerID;
           console.log(`[SERVER] ✅ FOUND at index ${index}`);
-          console.log(`[SERVER]   OLD RackLayerID: "${oldRackLayer}" → NEW: "${NewRackLayer}"`);
+          console.log(`[SERVER] OLD RackLayerID: "${oldRackLayer}" → NEW: "${NewRackLayer}"`);
           record.RackLayerID = NewRackLayer;
         }
-
         return record;
       });
 
@@ -313,11 +336,11 @@ app.post('/api/locationlog', async (req, res) => {
         );
         console.log(`[SERVER] ✅ molds.csv updated successfully!`);
       } else {
-        console.log(`[SERVER] ⚠️  WARNING: MoldID ${MoldID} not found in molds.csv`);
+        console.log(`[SERVER] ⚠️ WARNING: MoldID ${MoldID} not found in molds.csv`);
       }
 
     } catch (moldsError) {
-      console.error(`[SERVER] ⚠️  Error updating molds.csv:`, moldsError.message);
+      console.error(`[SERVER] ⚠️ Error updating molds.csv:`, moldsError.message);
       // Don't fail the entire request, just log the warning
     }
 
@@ -337,12 +360,172 @@ app.post('/api/locationlog', async (req, res) => {
 });
 
 // ========================================
+// ✅ NEW ENDPOINT 6: AUDIT BATCH (V7.7.7-r6.9.8)
+// POST /api/audit-batch - Kiểm kê hàng loạt
+// Input: { statusLogs: [], locationLogs: [] }
+// ========================================
+
+app.post('/api/audit-batch', async (req, res) => {
+  console.log('[SERVER] audit-batch called');
+  console.log('[SERVER] Request:', JSON.stringify(req.body, null, 2));
+  
+  try {
+    const { statusLogs, locationLogs } = req.body;
+    
+    if (!statusLogs && !locationLogs) {
+      return res.status(400).json({
+        success: false,
+        message: 'At least one of statusLogs or locationLogs required'
+      });
+    }
+
+    let statusCount = 0;
+    let locationCount = 0;
+    let moldUpdateCount = 0;
+
+    // ========================================
+    // STEP 1: Batch Add statuslogs
+    // ========================================
+    if (statusLogs && Array.isArray(statusLogs) && statusLogs.length > 0) {
+      console.log(`[SERVER] Processing ${statusLogs.length} audit status logs...`);
+      
+      const filename = 'statuslogs.csv';
+      const filePath = `${DATA_PATH_PREFIX}${filename}`;
+      const expectedHeaders = FILE_HEADERS[filename];
+
+      const fileData = await getGitHubFile(filePath);
+      let records = await parseCsvText(fileData.content);
+
+      // Normalize and add all status logs
+      for (const log of statusLogs) {
+        const newId = `SL${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        const normalizedEntry = {
+          StatusLogID: newId,
+          MoldID: log.MoldID || '',
+          CutterID: log.CutterID || '',
+          ItemType: log.ItemType || '',
+          Status: log.Status || 'AUDIT',
+          Timestamp: log.Timestamp || new Date().toISOString(),
+          EmployeeID: log.EmployeeID || '',
+          DestinationID: log.DestinationID || '',
+          Notes: log.Notes || '棚卸 | Kiểm kê',
+          AuditDate: log.AuditDate || new Date().toISOString().split('T')[0],
+          AuditType: log.AuditType || 'AUDIT_ONLY'
+        };
+        records.unshift(normalizedEntry);
+        statusCount++;
+      }
+
+      const csvContent = convertToCsvText(records, expectedHeaders);
+      await updateGitHubFile(filePath, csvContent, fileData.sha, `Batch add ${statusCount} audit logs`);
+      console.log(`[SERVER] ✅ Added ${statusCount} status logs`);
+    }
+
+    // ========================================
+    // STEP 2: Batch Add locationlogs + Update RackLayerID
+    // ========================================
+    if (locationLogs && Array.isArray(locationLogs) && locationLogs.length > 0) {
+      console.log(`[SERVER] Processing ${locationLogs.length} location logs...`);
+
+      const filename = 'locationlog.csv';
+      const filePath = `${DATA_PATH_PREFIX}${filename}`;
+      const expectedHeaders = FILE_HEADERS[filename];
+
+      const fileData = await getGitHubFile(filePath);
+      let records = await parseCsvText(fileData.content);
+
+      // Add all location logs
+      const moldUpdates = []; // Track molds to update
+      for (const log of locationLogs) {
+        const newId = `LOC${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        const normalizedEntry = {
+          LocationLogID: newId,
+          OldRackLayer: log.OldRackLayer || '',
+          NewRackLayer: log.NewRackLayer || '',
+          MoldID: log.MoldID || '',
+          DateEntry: log.DateEntry || new Date().toISOString(),
+          CutterID: log.CutterID || '',
+          notes: log.notes || '棚卸時移動 | Di chuyển khi kiểm kê',
+          EmployeeID: log.EmployeeID || ''
+        };
+        records.unshift(normalizedEntry);
+        locationCount++;
+
+        // Track for molds.csv update
+        if (log.MoldID && log.NewRackLayer) {
+          moldUpdates.push({
+            MoldID: log.MoldID,
+            NewRackLayer: log.NewRackLayer,
+            OldRackLayer: log.OldRackLayer
+          });
+        }
+      }
+
+      const csvContent = convertToCsvText(records, expectedHeaders);
+      await updateGitHubFile(filePath, csvContent, fileData.sha, `Batch add ${locationCount} location logs`);
+      console.log(`[SERVER] ✅ Added ${locationCount} location logs`);
+
+      // ========================================
+      // STEP 3: Update molds.csv for all changed positions
+      // ========================================
+      if (moldUpdates.length > 0) {
+        console.log(`[SERVER] Updating RackLayerID for ${moldUpdates.length} molds...`);
+        
+        const moldsPath = `${DATA_PATH_PREFIX}molds.csv`;
+        const moldsHeaders = FILE_HEADERS['molds.csv'];
+        const moldsData = await getGitHubFile(moldsPath);
+        let moldsRecords = await parseCsvText(moldsData.content);
+
+        // Update each mold
+        moldsRecords = moldsRecords.map(record => {
+          const update = moldUpdates.find(u => String(u.MoldID).trim() === String(record.MoldID).trim());
+          if (update) {
+            console.log(`[SERVER] Updating MoldID ${update.MoldID}: ${update.OldRackLayer} → ${update.NewRackLayer}`);
+            record.RackLayerID = update.NewRackLayer;
+            moldUpdateCount++;
+          }
+          return record;
+        });
+
+        const moldsCsvContent = convertToCsvText(moldsRecords, moldsHeaders);
+        await updateGitHubFile(
+          moldsPath,
+          moldsCsvContent,
+          moldsData.sha,
+          `Batch update ${moldUpdateCount} molds RackLayerID (Audit)`
+        );
+        console.log(`[SERVER] ✅ Updated ${moldUpdateCount} molds in molds.csv`);
+      }
+    }
+
+    res.json({
+      success: true,
+      message: `Audit batch completed`,
+      saved: {
+        statusLogs: statusCount,
+        locationLogs: locationCount,
+        moldsUpdated: moldUpdateCount
+      }
+    });
+
+  } catch (error) {
+    console.error(`[SERVER] Error in audit-batch:`, error);
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+
+// ========================================
 // DELETE LOCATION LOG
 // ========================================
+
 app.delete('/api/locationlog/:id', async (req, res) => {
   console.log('[SERVER] locationlog DELETE called');
   try {
     const { MoldID, DateEntry } = req.body;
+
     if (!MoldID || !DateEntry) {
       return res.status(400).json({ success: false, message: 'Missing MoldID or DateEntry' });
     }
@@ -378,10 +561,12 @@ app.delete('/api/locationlog/:id', async (req, res) => {
 // ========================================
 // DELETE STATUS LOG
 // ========================================
+
 app.post("/api/deletelog", async (req, res) => {
   console.log('[SERVER] deletelog called');
   try {
     const { MoldID, Timestamp } = req.body;
+
     if (!MoldID || !Timestamp) {
       return res.status(400).json({ success: false, message: "Missing MoldID or Timestamp" });
     }
@@ -429,7 +614,7 @@ function parseCsvText(csvText) {
 
     const readableStream = stream.Readable.from(csvText);
     readableStream
-      .pipe(csvParser({ mapHeaders: ({ header }) => header.trim() }))  // ✅ KEY FIX!
+      .pipe(csvParser({ mapHeaders: ({ header }) => header.trim() })) // ✅ KEY FIX!
       .on('data', (data) => results.push(data))
       .on('end', () => resolve(results))
       .on('error', (error) => reject(error));
@@ -496,20 +681,104 @@ async function updateGitHubFile(filePath, content, sha, message) {
   }
 }
 
-// ========================================
+// ============================================
+// POST: BULK AUDIT (R6.9.9)
+// ============================================
+app.post('/api/audit-batch', async (req, res) => {
+    try {
+        const { statusLogs } = req.body;
+        
+        if (!statusLogs || !Array.isArray(statusLogs)) {
+            return res.status(400).json({
+                success: false,
+                message: 'statusLogs must be an array'
+            });
+        }
+        
+        console.log(`[Bulk Audit] Received ${statusLogs.length} items`);
+        
+        // Validate and prepare logs
+        const validLogs = statusLogs.filter(log => {
+            const hasId = log.MoldID || log.CutterID;
+            const hasStatus = log.Status;
+            return hasId && hasStatus;
+        });
+        
+        if (validLogs.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'No valid logs found'
+            });
+        }
+        
+        console.log(`[Bulk Audit] Valid logs: ${validLogs.length} / ${statusLogs.length}`);
+        
+        // Generate CSV rows
+        const csvRows = validLogs.map(log => {
+            const statusLogID = `SL${Date.now()}${Math.random().toString(36).substr(2, 9)}`;
+            const timestamp = log.Timestamp || getJSTTimestamp();
+            const auditDate = log.AuditDate || getJSTDate();
+            const notes = (log.Notes || '棚卸 | Kiểm kê').replace(/"/g, '""'); // Escape quotes
+            
+            return [
+                statusLogID,
+                log.MoldID || '',
+                log.Status || 'AUDIT',
+                timestamp,
+                log.EmployeeID || '',
+                log.DestinationID || '',
+                `"${notes}"`
+            ].join(',');
+        });
+        
+        const csvContent = csvRows.join('\n') + '\n';
+        
+        console.log('[Bulk Audit] CSV prepared, appending to file...');
+        
+        // Append to statuslogs.csv
+        const filename = 'statuslogs.csv';
+        const result = await appendToFile(filename, csvContent, `Bulk audit: ${validLogs.length} items`);
+        
+        if (result.success) {
+            console.log(`[Bulk Audit] ✅ Success: ${validLogs.length} items saved`);
+            return res.json({
+                success: true,
+                saved: validLogs.length,
+                skipped: statusLogs.length - validLogs.length,
+                message: `Bulk audit completed: ${validLogs.length} items`
+            });
+        } else {
+            throw new Error(result.message || 'Append failed');
+        }
+        
+    } catch (error) {
+        console.error('[Bulk Audit] ❌ Error:', error);
+        return res.status(500).json({
+            success: false,
+            message: error.message || 'Bulk audit failed'
+        });
+    }
+});
+
+console.log('[Server] ✅ Bulk audit endpoint registered: POST /api/audit-batch');
+
+// ============================================
 // START SERVER
-// ========================================
+// ============================================
+
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`✅ Server V7.7.7-r6.5.0 running on port ${PORT}`);
+  console.log(`✅ Server V7.7.7-r6.9.8 running on port ${PORT}`);
   console.log(`📋 Endpoints:`);
-  console.log(`   - /api/health (GET)`);
-  console.log(`   - /api/add-log (POST)`);
-  console.log(`   - /api/update-item (POST)`);
-  console.log(`   - /api/add-comment (POST)`);
-  console.log(`   - /api/checklog (POST)`);
-  console.log(`   - /api/deletelog (POST)`);
-  console.log(`   - /api/locationlog (POST) ✨ FIXED!`);
-  console.log(`   - /api/locationlog/:id (DELETE)`);
+  console.log(`  - /api/health (GET)`);
+  console.log(`  - /api/add-log (POST)`);
+  console.log(`  - /api/update-item (POST)`);
+  console.log(`  - /api/add-comment (POST)`);
+  console.log(`  - /api/checklog (POST) ✨ UPDATED: Audit support`);
+  console.log(`  - /api/deletelog (POST)`);
+  console.log(`  - /api/locationlog (POST) ✅ FIXED`);
+  console.log(`  - /api/locationlog/:id (DELETE)`);
+  console.log(`  - /api/audit-batch (POST) ✨ NEW: Batch audit support`);
   console.log(`🔧 CSV Parser: mapHeaders enabled to trim column names`);
 });

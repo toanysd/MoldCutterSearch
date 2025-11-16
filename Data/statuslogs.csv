@@ -1,4 +1,5 @@
 StatusLogID,MoldID,CutterID,ItemType,Status,Timestamp,EmployeeID,DestinationID,Notes,AuditDate,AuditType
+SL1763334714618,10,,mold,check-in,2025-11-16T23:11:53.902Z,1,AREA-MOLDROOM,8.11 r6.9.9,,
 SL1763196996936,10,,mold,AUDIT,2025-11-15T08:56:12.312Z,1,,棚卸 | Kiểm kê,2025-11-15,AUDIT_ONLY
 SL1763180092438_09xk4ausr,16,,mold,AUDIT,2025-11-15T04:14:51.805Z,1,,棚卸 | Kiểm kê (hàng loạt),2025-11-15,AUDIT_ONLY
 SL1763180092438_kxfav74jc,15,,mold,AUDIT,2025-11-15T04:14:51.805Z,1,,棚卸 | Kiểm kê (hàng loạt),2025-11-15,AUDIT_ONLY

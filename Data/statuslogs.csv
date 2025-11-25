@@ -1,4 +1,5 @@
 StatusLogID,MoldID,CutterID,ItemType,Status,Timestamp,EmployeeID,DestinationID,Notes,AuditDate,AuditType
+SL1764065915698,10,,mold,check-in,2025-11-25T10:18:08.740Z,1,AREA-MOLDROOM,在庫確認 / Kiểm kê,,
 SL1764034060735,12,,mold,checkout,2025-11-25T01:27:40.237Z,1,,11/25,,
 SL1764034040273,10,,mold,checkin,2025-11-25T01:26:57.601Z,1,,11/25,,
 SL1763894693459,10,,mold,check-in,2025-11-23T10:44:54.255Z,1,AREA-MOLDROOM,,,

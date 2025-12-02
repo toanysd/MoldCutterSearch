@@ -4,7 +4,7 @@ MoldID,MoldName,MoldCode,CustomerID,TrayID,MoldDesignID,storage_company,RackLaye
 13,TYJ-001,TYJ001,,2664,3172,2,15,,2,,,,,,,TRUE,,FALSE,,,,,,,,,
 14,THP-004,THP004,,2512,2998,2,12,,2,,,,,,,TRUE,,FALSE,,,,,,,,,
 15,THP-005,THP005,,2514,3000,2,15,,2,,,,,,,TRUE,,FALSE,,,,,,,,,
-16,YSD-C-50-1,YSDC501,,2806,3351,2,11,,2,,,,,,,TRUE,,FALSE,,,,,,,,,
+16,YSD-C-50-1,YSDC501,,2806,3351,2,15,,2,,,,,,,TRUE,,FALSE,,,,,,,,,
 17,TOK-001,TOK001,,2624,3129,2,11,,2,,,,,,,TRUE,,FALSE,,,,,,,,,
 18,TOK-004,TOK004,,2627,3132,2,11,,2,,,,,,,TRUE,,FALSE,,,,,,,,,
 19,TWD-001,TWD001,,2662,3169,,704,,2,,,,,金型廃棄2024.4.11,,TRUE,,FALSE,,,,,,,廃棄済,,

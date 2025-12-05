@@ -1,4 +1,5 @@
 StatusLogID,MoldID,CutterID,ItemType,Status,Timestamp,EmployeeID,DestinationID,Notes,AuditDate,AuditType
+SL1764921948240,10,,mold,IN,2025-12-05T08:05:38.555Z,1,AREA-MOLDROOM,在庫確認 / Kiểm kê,,
 SL1764920012603,10,,mold,AUDIT,2025-12-05T07:33:31.663Z,1,AREA-MOLDROOM,在庫確認 / Kiểm kê,2025-12-05,AUDIT-ONLY
 SL1764845385332,10,,mold,IN,2025-12-04T10:49:44.862Z,1,AREA-MOLDROOM,在庫確認 / Kiểm kê,,
 ,10,,mold,CHECK_OUT,2025-12-04T10:49:03.024Z,1,,出荷（他社へ移動）/ Vận chuyển ra công ty khác: SAKATA → YSD,2025-12-04,SHIP-TO-COMPANY

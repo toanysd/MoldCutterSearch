@@ -1,4 +1,5 @@
 LocationLogID,OldRackLayer,NewRackLayer,MoldID,DateEntry,CutterID,notes,EmployeeID
+LOC1764919348331,11,15,10,2025-12-05T07:22:27.551Z,,7.0.8,1
 LOC1764904807029,12,11,10,2025-12-05T03:19:45.057Z,,,1
 LOC1764679602173,11,15,17,2025-12-02T12:46:20.373Z,,Thay đổi vị trí khi kiểm kê / 棚卸時の位置変更,1
 LOC1764653839325,11,15,16,2025-12-02T05:36:57.474Z,,Thay đổi vị trí khi kiểm kê / 棚卸時の位置変更,1

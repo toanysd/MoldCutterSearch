@@ -1,4 +1,5 @@
 StatusLogID,MoldID,CutterID,ItemType,Status,Timestamp,EmployeeID,DestinationID,Notes,AuditDate,AuditType
+,5566,,mold,CHECK_OUT,2025-12-05T10:15:46.870Z,1,,出荷（他社へ移動）/ Vận chuyển ra công ty khác: YSD → MARUDAI,2025-12-05,SHIP-TO-COMPANY
 SL1764929687258,248,,mold,OUT,2025-12-05T10:14:46.755Z,グエン　ダン　トアン (1),金型室-梱包・出荷準備 (18),返却・出荷手配,,
 SL1764921948240,10,,mold,IN,2025-12-05T08:05:38.555Z,1,AREA-MOLDROOM,在庫確認 / Kiểm kê,,
 SL1764920012603,10,,mold,AUDIT,2025-12-05T07:33:31.663Z,1,AREA-MOLDROOM,在庫確認 / Kiểm kê,2025-12-05,AUDIT-ONLY

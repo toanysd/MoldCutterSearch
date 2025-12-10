@@ -47,22 +47,30 @@ console.log('[Server] Timezone helpers loaded (JST = UTC+9)');
 
 const FILE_HEADERS = {
   'locationlog.csv': ['LocationLogID', 'OldRackLayer', 'NewRackLayer', 'MoldID', 'DateEntry', 'CutterID', 'notes', 'EmployeeID'],
+  
   'shiplog.csv': ['ShipID', 'MoldID', 'CutterID', 'FromCompanyID', 'ToCompanyID', 'FromCompany', 'ToCompany', 'ShipDate', 'EmployeeID', 'ShipNotes', 'DateEntry'],
+  
   'usercomments.csv': ['UserCommentID', 'ItemType', 'ItemID', 'CommentText', 'CreatedByEmployeeID', 'CreatedDate'],
+  
   'cutters.csv': ['CutterID', 'CutterName', 'CutterCode', 'MainBladeStatus', 'OtherStatus', 'Length', 'Width', 'NumberOfBlades', 'NumberOfOtherUnits', 'TypeOfOther', 'LastReceivedDate', 'LastShipDate', 'currentRackLayer', 'MoldFrameID', 'notes', 'ProductCode', 'cutterstyle', 'CurrentCompanyID', 'CutterDesignID', 'StockStatusID', 'CurrentUserID'],
+  
   'molds.csv': [
     'MoldID', 'MoldName', 'MoldCode', 'CustomerID', 'TrayID', 'MoldDesignID',
-    'storage_company',
-    'RackLayerID',
+    'storage_company', 'RackLayerID',
     'LocationNotes', 'ItemTypeID', 'MoldLengthModified', 'MoldWidthModified',
     'MoldHeightModified', 'MoldWeightModified', 'MoldNotes', 'MoldUsageStatus',
     'MoldOnCheckList', 'JobID', 'TeflonFinish', 'TeflonCoating',
     'TeflonSentDate', 'TeflonExpectedDate', 'TeflonReceivedDate',
     'MoldReturning', 'MoldReturnedDate', 'MoldDisposing', 'MoldDisposedDate', 'MoldEntry'
   ],
+  
   // ✅ UPDATED: Thêm AuditDate và AuditType
-  'statuslogs.csv': ['StatusLogID', 'MoldID', 'CutterID', 'ItemType', 'Status', 'Timestamp', 'EmployeeID', 'DestinationID', 'Notes', 'AuditDate', 'AuditType']
+  'statuslogs.csv': ['StatusLogID', 'MoldID', 'CutterID', 'ItemType', 'Status', 'Timestamp', 'EmployeeID', 'DestinationID', 'Notes', 'AuditDate', 'AuditType'],
+  
+  // ✅ NEW: TeflonLog Support V7.7.7
+  'teflonlog.csv': ['TeflonLogID', 'MoldID', 'TeflonStatus', 'RequestedBy', 'RequestedDate', 'SentBy', 'SentDate', 'ExpectedDate', 'ReceivedDate', 'SupplierID', 'CoatingType', 'Reason', 'TeflonCost', 'Quality', 'TeflonNotes', 'CreatedDate', 'UpdatedBy', 'UpdatedDate']
 };
+
 
 // ========================================
 // HEALTH CHECK

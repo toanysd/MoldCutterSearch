@@ -1,5 +1,4 @@
 TeflonLogID,MoldID,TeflonStatus,RequestedBy,RequestedDate,SentBy,SentDate,ExpectedDate,ReceivedDate,SupplierID,CoatingType,Reason,TeflonCost,Quality,TeflonNotes,CreatedDate,UpdatedBy,UpdatedDate
-104,4218,Completed,,2025-12-10,,,,,7,,データ移行 / Migration from old format,,,Auto-migrated from molds.TeflonCoating,2025-12-10,,2025-12-10
 103,5673,Pending,4,2025-12-10,1,,,,7,,,,,Đi mạ khuôn / テフロン加工へ出荷,2025-12-10,4,2025-12-10
 102,5671,Pending,4,2025-12-10,4,,,,7,,,,,Đi mạ khuôn / テフロン加工へ出荷,2025-12-10,4,2025-12-10
 101,5632,Completed,,2025-12-10,,2025-12-10,,2025-11-26,7,,,,,Hoàn tất mạ khuôn / テフロン加工完了,2025-12-10,1,2025-12-10

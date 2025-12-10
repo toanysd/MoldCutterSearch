@@ -1,4 +1,5 @@
 StatusLogID,MoldID,CutterID,ItemType,Status,Timestamp,EmployeeID,DestinationID,Notes,AuditDate,AuditType
+,,604,cutter,CHECK_OUT,2025-12-10T23:29:19.165Z,1,,出荷（他社へ移動）/ Vận chuyển ra công ty khác: YSD → SAKATA,2025-12-10,SHIP-TO-COMPANY
 SL1765338898109,5404,,mold,IN,2025-12-10T03:54:57.837Z,グエン　ダン　トアン (1),AREA-MOLDROOM,,,
 SL1765338896574,5404,,mold,AUDIT,2025-12-10T03:54:33.829Z,1,,棚卸 | Kiểm kê,2025-12-10,AUDIT_ONLY
 ,5632,,mold,CHECKIN,2025-12-10T02:58:13.347Z,1,,Khuôn mạ Teflon đã về kho / テフロン加工済み金型入庫,2025-11-26,TEFLON-RETURN

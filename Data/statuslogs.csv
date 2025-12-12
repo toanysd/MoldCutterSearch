@@ -1,4 +1,5 @@
-﻿StatusLogID,MoldID,CutterID,ItemType,Status,Timestamp,EmployeeID,DestinationID,Notes,AuditDate,AuditType
+StatusLogID,MoldID,CutterID,ItemType,Status,Timestamp,EmployeeID,DestinationID,Notes,AuditDate,AuditType
+,5671,,mold,CHECKOUT,2025-12-12T01:18:31.272Z,1,,Quick send Teflon | クイック出荷,2025-12-12,TEFLON-SEND
 7,3192,,,,,1,13,台車,,
 8,5604,,,,,4,09,Viet,,
 11,3331,,,,,1,13,,,

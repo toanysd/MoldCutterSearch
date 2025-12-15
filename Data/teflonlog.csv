@@ -1,4 +1,5 @@
 TeflonLogID,MoldID,TeflonStatus,RequestedBy,RequestedDate,SentBy,SentDate,ExpectedDate,ReceivedDate,SupplierID,CoatingType,Reason,TeflonCost,Quality,TeflonNotes,CreatedDate,UpdatedBy,UpdatedDate
+4571,5670,Pending,,2025-12-15,,,,,7,,,,,テフロン工程登録 / Ghi nhận Teflon,2025-12-15,1,2025-12-15
 4570,5650,Pending,,2025-12-15,,,,,7,,,,,テフロン工程登録 / Ghi nhận Teflon,2025-12-15,1,2025-12-15
 4569,5650,Approved,1,2025-12-15,,,,,7,,Quick approve / クイック承認,,,承認済(発送待ち) / Đã duyệt (chờ gửi),2025-12-15,1,2025-12-15
 4568,5650,Pending,,2025-12-15,,,,,7,,,,,テフロン工程登録 / Ghi nhận Teflon,2025-12-15,1,2025-12-15

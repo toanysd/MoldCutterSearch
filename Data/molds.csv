@@ -1,4 +1,4 @@
-﻿MoldID,MoldName,MoldCode,CustomerID,TrayID,MoldDesignID,storage_company,RackLayerID,LocationNotes,ItemTypeID,MoldLengthModified,MoldWidthModified,MoldHeightModified,MoldWeightModified,MoldNotes,MoldUsageStatus,MoldOnCheckList,JobID,TeflonFinish,TeflonCoating,TeflonSentDate,TeflonExpectedDate,TeflonReceivedDate,MoldReturning,MoldReturnedDate,MoldDisposing,MoldDisposedDate,MoldEntry
+MoldID,MoldName,MoldCode,CustomerID,TrayID,MoldDesignID,storage_company,RackLayerID,LocationNotes,ItemTypeID,MoldLengthModified,MoldWidthModified,MoldHeightModified,MoldWeightModified,MoldNotes,MoldUsageStatus,MoldOnCheckList,JobID,TeflonFinish,TeflonCoating,TeflonSentDate,TeflonExpectedDate,TeflonReceivedDate,MoldReturning,MoldReturnedDate,MoldDisposing,MoldDisposedDate,MoldEntry
 10,TIH-014,TIH014,,2528,3018,2,12,,2,,,,,,,TRUE,,FALSE,,,,,,,,,
 12,TKO-009T,TKO009T,,2579,3078,2,11,,2,,,,,,,TRUE,,FALSE,,,,,,,,,
 13,TYJ-001,TYJ001,,2664,3172,2,11,,2,,,,,,,TRUE,,FALSE,,,,,,,,,
@@ -4473,7 +4473,7 @@
 5563,BMI-003,BMI003,,4734,4582,2,181,,2,,,,,,,FALSE,,FALSE,,,,,,,,,9/19/2025
 5566,JAE-355R1,JAE355R1,,5088,4583,3,703,,2,,,,,,,FALSE,0,FALSE,,,,,,,,,9/22/2025
 5569,JAE-356,JAE356,,5089,4584,2,121,,0,,,,,,,FALSE,0,FALSE,,,,,,,,,9/22/2025
-5573,KDS-142 R3,KDS142R3,,5090,4585,0,700,,2,,,,,,,FALSE,0,FALSE,,,,,,,,,9/24/2025
+5573,KDS-142 R3,KDS142R3,,5090,4585,0,240,,2,,,,,,,FALSE,0,FALSE,,,,,,,,,9/24/2025
 5578,KDS-032,KDS032,,2,4587,2,331,,0,,,,,,,FALSE,0,FALSE,,,,,,,,,9/29/2025
 5580,KDS-058,KDS058,248,4734,4588,0,331,,2,,,,,,,FALSE,0,FALSE,,,,,,,,,9/29/2025
 5581,KDS-022,KDS022,248,2,4589,2,331,,0,,,,,,,FALSE,0,FALSE,,,,,,,,,9/29/2025

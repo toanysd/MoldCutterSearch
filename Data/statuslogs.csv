@@ -1,4 +1,5 @@
 StatusLogID,MoldID,CutterID,ItemType,Status,Timestamp,EmployeeID,DestinationID,Notes,AuditDate,AuditType
+SL1765930559289,5687,,mold,IN,2025-12-17T00:15:30.921Z,1,AREA-MOLDROOM,在庫確認 / Kiểm kê,,
 SL1765884696869,5670,,mold,IN,2025-12-16T11:31:36.478Z,グエン　ダン　トアン (1),AREA-MOLDROOM,,,
 ,5420,,mold,CHECKOUT,2025-12-16T06:51:07.014Z,1,,Quick send Teflon | クイック出荷,2025-12-16,TEFLON-SEND
 SL1765793419756,5677,,mold,IN,2025-12-15T10:09:57.005Z,グエン　ダン　トアン (1),AREA-MOLDROOM,,,

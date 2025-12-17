@@ -1,4 +1,5 @@
 TeflonLogID,MoldID,TeflonStatus,RequestedBy,RequestedDate,SentBy,SentDate,ExpectedDate,ReceivedDate,SupplierID,CoatingType,Reason,TeflonCost,Quality,TeflonNotes,CreatedDate,UpdatedBy,UpdatedDate
+4575,5671,Completed,1,2025-12-12,1,2025-12-12,2025-12-19,2025-12-17,7,,Quick send via Quick Action,,OK,クイック受入 / Quick receive,2025-12-17,,2025-12-17
 4575,5673,Completed,,2025-12-12,1,2025-12-12,2025-12-19,2025-12-17,7,,,,OK,クイック受入 / Quick receive,2025-12-17,,2025-12-17
 4574,5670,,,2025-12-16,1,,,,,,,,,,2025-12-16,,2025-12-16
 4573,5420,Sent,1,2025-12-16,1,2025-12-16,2025-12-23,,7,,Quick approve / クイック承認,,,クイック出荷 / Quick send,2025-12-16,1,2025-12-16

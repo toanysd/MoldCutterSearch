@@ -1,4 +1,5 @@
 TeflonLogID,MoldID,TeflonStatus,RequestedBy,RequestedDate,SentBy,SentDate,ExpectedDate,ReceivedDate,SupplierID,CoatingType,Reason,TeflonCost,Quality,TeflonNotes,CreatedDate,UpdatedBy,UpdatedDate
+4567,5420,Completed,4,12/16/2025,1,12/16/2025,12/23/2025,2025-12-19,7,テフロン加工承認待ち,,,OK,クイック受入 / Quick receive,2025-12-19,,2025-12-19
 4566,5683,Pending,4,2025-12-18,,,,,7,,,,,テフロン工程登録 / Ghi nhận Teflon,2025-12-18,4,2025-12-18
 1,261,テフロン加工済,,,,1/5/2024,,1/11/2024,7,テフロン加工済,Historical Data,,,,9/26/2025,,12/10/2025
 2,263,テフロン加工済,,,,4/3/2023,,4/6/2023,7,テフロン加工済,Historical Data,,,,9/26/2025,,12/10/2025

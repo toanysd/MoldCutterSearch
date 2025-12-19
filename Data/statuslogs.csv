@@ -1,4 +1,5 @@
 StatusLogID,MoldID,CutterID,ItemType,Status,Timestamp,EmployeeID,DestinationID,Notes,AuditDate,AuditType
+,5420,,mold,CHECKIN,2025-12-19T01:42:14.269Z,,,Quick receive Teflon | クイック受入,2025-12-19,TEFLON-RETURN
 SL1766016920495,2027,,mold,AUDIT,2025-12-18T00:14:57.455Z,1,,棚卸 | Kiểm kê,2025-12-18,AUDIT_ONLY
 7,3192,,,,,1,13,台車,,
 8,5604,,,,,4,09,Viet,,

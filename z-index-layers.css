@@ -1,0 +1,144 @@
+/**
+ * ================================================================
+ * Z-INDEX LAYER SYSTEM - Unified Modal Stack Management
+ * ================================================================
+ * Updated: 2025-12-19 13:50 JST
+ * 
+ * LAYER 1: Base modals (History, Teflon Manager)      = 9999
+ * LAYER 2: Mobile Detail Modal                        = 10500
+ * LAYER 3: Action Modules (CheckIn, Location...)     = 11000
+ * LAYER 4: Filter Module                              = 11500
+ * LAYER 5: Overlays/Toasts                           = 12000
+ */
+
+/* ===== LAYER 1: BASE MODALS ===== */
+.hist-root,
+.hist-backdrop,
+.hist-dialog,
+.tef-root,
+.tef-backdrop,
+.tef-dialog {
+  z-index: 9999 !important;
+}
+
+/* ===== LAYER 2: MOBILE DETAIL MODAL ===== */
+.mobile-detail-modal {
+  z-index: 10500 !important;
+}
+
+.mobile-detail-modal .mobile-modal-header,
+.mobile-detail-modal .mobile-modal-body {
+  z-index: auto; /* relative to parent */
+}
+
+.mobile-detail-modal .mobile-modal-actions {
+  z-index: 10501 !important; /* nổi trên body */
+}
+
+/* ===== LAYER 3: ACTION MODULES (CheckIn, Location, Teflon Process...) ===== */
+/* ✅ CheckIn/CheckOut Module - DÙNG CLASS THỰC TẾ */
+.checkio-panel,
+#check-in-modal,
+#checkin-modal,
+.checkin-overlay,
+.checkout-modal {
+  z-index: 11000 !important;
+}
+
+.checkio-panel .checkio-header {
+  z-index: 11001 !important;
+}
+
+/* ✅ Teflon Process Manager - DÙNG CLASS THỰC TẾ */
+.tefproc-panel,
+#teflon-process-modal,
+#teflon-manager-modal,
+.teflon-overlay {
+  z-index: 11000 !important;
+}
+
+/* Location Update Module */
+.location-panel,
+#location-modal,
+#location-update-modal,
+.location-overlay {
+  z-index: 11000 !important;
+}
+
+/* Shipping Module */
+.shipping-panel,
+#shipping-modal,
+.shipping-overlay {
+  z-index: 11000 !important;
+}
+
+/* Comments Module */
+.comments-panel,
+#comments-modal,
+.comments-overlay {
+  z-index: 11000 !important;
+}
+
+/* QR Code Module */
+.qr-panel,
+#qr-modal,
+.qr-code-overlay {
+  z-index: 11000 !important;
+}
+
+/* Print Module */
+.print-panel,
+#print-modal,
+.print-overlay {
+  z-index: 11000 !important;
+}
+
+/* ===== LAYER 4: FILTER MODULE (CAO NHẤT) ===== */
+.filter-fullscreen-modal,
+#filter-modal {
+  z-index: 11500 !important;
+}
+
+/* ===== LAYER 5: SYSTEM OVERLAYS ===== */
+.toast-notification,
+.loading-overlay,
+.error-overlay,
+.system-alert,
+.confirm-dialog {
+  z-index: 12000 !important;
+}
+
+/* ===== FAB CLOSE BUTTON (BÊN NGOÀI MODAL) ===== */
+.mobile-modal-fab-close {
+  z-index: 10502 !important; /* cao hơn actions */
+}
+
+/* ===== DEBUGGING HELPER ===== */
+/* Uncomment để debug z-index */
+/*
+body.debug-z-index [class*="modal"],
+body.debug-z-index [class*="overlay"],
+body.debug-z-index [class*="dialog"],
+body.debug-z-index [class*="panel"] {
+  outline: 2px solid red !important;
+  position: relative;
+}
+
+body.debug-z-index [class*="modal"]::after,
+body.debug-z-index [class*="overlay"]::after,
+body.debug-z-index [class*="dialog"]::after,
+body.debug-z-index [class*="panel"]::after {
+  content: attr(class) " z-index: " attr(style);
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: yellow;
+  padding: 4px;
+  font-size: 10px;
+  color: black;
+  z-index: 999999;
+  pointer-events: none;
+  max-width: 300px;
+  word-break: break-all;
+}
+*/

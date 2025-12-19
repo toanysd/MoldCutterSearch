@@ -1,0 +1,7 @@
+/* keyboard-panel.css (minimal-safe) */
+/* Chỉ bổ sung style QR modal, không đụng các selector của stylesheet chính */
+.qr-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 9999; }
+.qr-modal.hidden { display: none; }
+.qr-dialog { background: #fff; border-radius: 10px; padding: 8px; width: min(420px, 92vw); box-shadow: 0 20px 25px rgba(0,0,0,0.15); }
+.qr-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.qr-reader { width: 100%; min-height: 320px; }

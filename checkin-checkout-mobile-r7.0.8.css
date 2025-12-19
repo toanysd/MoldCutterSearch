@@ -1,0 +1,621 @@
+/* ========================================
+   CHECK-IN/CHECK-OUT - MOBILE R7.0.6
+   - INPUTS TOP, HISTORY BOTTOM
+   - UPWARD DROPDOWN for destinations
+   - Clear mode button colors
+   ======================================== */
+
+@media (max-width: 767px) {
+    
+    /* Z-INDEX */
+    .checkio-panel {
+        position: fixed !important;
+        inset: 0 !important;
+        width: 100% !important;
+        height: 100dvh !important;
+        border-radius: 0 !important;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        z-index: 11000 !important;
+        background: var(--color-surface, #fcfcf9);
+    }
+    
+    /* HEADER */
+    .checkio-header {
+        padding: 10px 14px;
+        flex-shrink: 0;
+        z-index: 11001 !important; /* ✅ THÊM Z-INDEX CHO HEADER */
+        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    /* Tiêu đề song ngữ Check-in / Check-out */
+    .checkio-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: #ffffff;
+    }
+
+    /* Màu header cho từng mode (JS sẽ gán class) */
+    .checkio-header-check-in {
+        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    }
+
+    .checkio-header-check-out {
+        background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+    }
+
+    /* Hàng nút mode nằm trong nội dung */
+    .cio-mode-row {
+        margin: 8px 0 4px;
+    }
+
+    .cio-mode-row .checkio-mode {
+        display: flex;
+        gap: 6px;
+    }
+
+    
+    /* R7.0.6: COMPACT MODE BUTTONS */
+    .mode-btn {
+        flex: 1;
+        padding: 6px 10px; /* Giảm từ 8px → 6px */
+        border: 1.5px solid rgba(255,255,255,0.4); /* Giảm từ 2px → 1.5px */
+        border-radius: 6px; /* Giảm từ 8px → 6px */
+        font-size: 11px; /* Giảm từ 13px → 11px */
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        background: rgba(255,255,255,0.15);
+        color: rgba(255,255,255,0.85);
+        line-height: 1.2;
+    }
+
+    .mode-btn:active {
+        transform: scale(0.97);
+    }
+
+    /* CHECK-IN ACTIVE = GREEN */
+    .mode-btn.active[data-mode="check-in"],
+    .mode-btn[data-mode="check-in"].active {
+        background: #ffffff !important;
+        color: #16a34a !important;
+        border-color: #ffffff !important;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    }
+
+    /* CHECK-OUT ACTIVE = RED */
+    .mode-btn.active[data-mode="check-out"],
+    .mode-btn[data-mode="check-out"].active {
+        background: #ef4444 !important;
+        color: #ffffff !important;
+        border-color: #dc2626 !important;
+        box-shadow: 0 2px 6px rgba(239, 68, 68, 0.35);
+    }
+
+    /* Override màu cho nút mode khi đặt trong nội dung (nền trắng) */
+    .cio-mode-row .mode-btn {
+        background: #ffffff;           /* Nền trắng rõ ràng */
+        border-color: #cbd5e1;        /* Viền xám nhạt */
+        color: #0f172a;               /* Chữ xám đậm */
+    }
+
+    /* Nút Check-out chưa được chọn: viền & chữ đỏ nhưng nền vẫn trắng */
+    .cio-mode-row .mode-btn[data-mode="check-out"] {
+        color: #b91c1c;
+        border-color: #fecaca;
+    }
+
+    /* Trạng thái active giữ nguyên logic xanh/đỏ đã có */
+    .mode-btn.active[data-mode="check-in"],
+    .mode-btn[data-mode="check-in"].active {
+        background: #16a34a !important;
+        color: #ffffff !important;
+        border-color: #16a34a !important;
+    }
+
+    .mode-btn.active[data-mode="check-out"],
+    .mode-btn[data-mode="check-out"].active {
+        background: #ef4444 !important;
+        color: #ffffff !important;
+        border-color: #dc2626 !important;
+    }
+
+
+    
+    /* BODY - R7.0.6: INPUTS FIRST, HISTORY LAST */
+    .checkio-body {
+        flex-direction: column !important;
+        gap: 12px !important;
+        padding: 12px !important;
+        padding-bottom: 80px !important;
+        overflow-y: auto;
+        overflow-x: hidden;
+        flex: 1;
+        min-height: 0;
+    }
+    
+    /* ========================================
+       R7.0.6: SECTION 1 - INPUTS (TOP)
+       ======================================== */
+    .cio-inputs {
+        flex: 0 0 auto !important;
+        width: 100% !important;
+        order: 1 !important; /* FIRST */
+        overflow-y: visible;
+        padding-bottom: 0;
+    }
+    
+    .cio-inputs h4 {
+        font-size: 13px;
+        margin-bottom: 10px;
+        color: #16a34a;
+        font-weight: 700;
+    }
+    
+    .form-group {
+        margin-bottom: 14px;
+        position: relative;
+    }
+    
+    .form-group.hidden {
+        display: none !important;
+    }
+    
+    .form-label {
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        color: #334155;
+        margin-bottom: 6px;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1.5px solid rgba(94, 82, 64, 0.25);
+        border-radius: 8px;
+        font-size: 14px;
+        background: white;
+        transition: all 0.2s ease;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: #22c55e;
+        box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+    }
+    
+    /* Notes */
+    textarea.form-control {
+        resize: none;
+        min-height: 60px;
+        max-height: 60px;
+        font-family: inherit;
+    }
+    
+    /* ========================================
+       R7.0.6: SEARCHABLE SELECT - UPWARD DROPDOWN
+       ======================================== */
+    .searchable-select-wrapper {
+        position: relative;
+    }
+    
+    .searchable-select-wrapper input.search-input {
+        width: 100%;
+        padding: 10px 36px 10px 12px;
+        border: 1.5px solid rgba(94, 82, 64, 0.25);
+        border-radius: 8px;
+        font-size: 14px;
+        background: white;
+        transition: all 0.2s ease;
+    }
+    
+    .searchable-select-wrapper input.search-input:focus {
+        border-color: #22c55e;
+        box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+    }
+    
+    .searchable-select-wrapper .dropdown-icon {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        pointer-events: none;
+        font-size: 14px;
+        color: #64748b;
+        transition: transform 0.2s ease;
+    }
+    
+    .searchable-select-wrapper.open .dropdown-icon {
+        transform: translateY(-50%) rotate(180deg);
+    }
+    
+    /* R7.0.6: DOWNWARD DROPDOWN - 50vh MAX */
+    .searchable-select-wrapper .options-list {
+        position: absolute;
+        top: calc(100% + 4px) !important; /* SHOW BELOW */
+        bottom: auto !important;
+        left: 0;
+        right: 0;
+        max-height: 50vh !important; /* 50% viewport height - vừa đủ không che buttons */
+        overflow-y: auto;
+        background: white;
+        border: 1.5px solid rgba(94, 82, 64, 0.25);
+        border-radius: 8px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15); /* Shadow xuống dưới */
+        z-index: 1000;
+        display: none;
+    }
+
+    
+    .searchable-select-wrapper .options-list.show {
+        display: block;
+    }
+    
+    /* R7.0.7: OPTION ITEMS */
+.searchable-select-wrapper .option-item {
+    padding: 10px 12px;
+    cursor: pointer;
+    font-size: 13px;
+    border-bottom: 1px solid rgba(94, 82, 64, 0.08);
+    transition: background 0.15s ease;
+    background: white; /* Default background */
+}
+
+.searchable-select-wrapper .option-item:last-child {
+    border-bottom: none;
+}
+
+/* R7.0.7: MATCHED ROW - Highlight entire row with yellow background */
+.searchable-select-wrapper .option-item.matched {
+    background: #fef9c3 !important; /* Light yellow - Zinc 100 */
+    font-weight: 500;
+    border-left: 3px solid #eab308; /* Yellow accent */
+}
+
+/* Hover state */
+.searchable-select-wrapper .option-item:hover,
+.searchable-select-wrapper .option-item:active {
+    background: rgba(34, 197, 94, 0.1);
+}
+
+/* Matched + Hover */
+.searchable-select-wrapper .option-item.matched:hover {
+    background: #fde047 !important; /* Brighter yellow on hover */
+}
+
+/* Selected state */
+.searchable-select-wrapper .option-item.selected {
+    background: rgba(34, 197, 94, 0.15);
+    font-weight: 600;
+    color: #16a34a;
+    border-left: 3px solid #22c55e;
+}
+
+/* Selected + Matched */
+.searchable-select-wrapper .option-item.selected.matched {
+    background: #d9f99d !important; /* Green-yellow mix */
+    border-left-color: #84cc16;
+}
+
+    
+    .searchable-select-wrapper .no-results {
+        padding: 16px;
+        text-align: center;
+        color: #94a3b8;
+        font-size: 13px;
+    }
+    
+    /* Face ID – bố cục nhỏ gọn cạnh trường Nhân viên (ưu tiên cho mobile) */
+
+    /* Hàng Nhân viên + Face ID chiếm full chiều ngang */
+    .form-group-employee .employee-row {
+        display: flex;
+        flex-direction: row;          /* Nằm ngang */
+        align-items: center;
+        gap: 8px;
+        width: 100%;                  /* Ăn hết bề ngang form */
+    }
+
+    /* Container và ô tìm nhân viên chiếm toàn bộ phần còn lại */
+    .form-group-employee #employee-select-container,
+    .form-group-employee .employee-row .searchable-select-wrapper {
+        flex: 1 1 auto;
+        min-width: 0;                 /* Tránh tràn ngang */
+    }
+
+
+    /* Nút Face ID nền nhạt, ít gây chú ý hơn */
+    .form-group-employee .btn-face {
+        flex: 0 0 auto;
+        padding: 6px 12px;
+        background: #e0f2fe;             /* Xanh nhạt */
+        color: #1d4ed8;                  /* Chữ xanh đậm */
+        border: 1px solid #bfdbfe;       /* Viền xanh nhạt */
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.15s ease, transform 0.15s ease;
+        white-space: nowrap;
+        width: auto !important;
+        max-width: 140px;
+        text-align: center;
+    }
+
+    .form-group-employee .btn-face:active {
+        transform: scale(0.97);
+        background: #dbeafe;             /* Hơi đậm hơn khi nhấn */
+    }
+
+
+    /* Ghi chú trạng thái nhập/Face ID */
+    .form-group-employee .face-status {
+        display: block;
+        margin-top: 4px;
+        font-size: 11px;
+        color: #64748b;
+        text-align: left !important;
+        font-weight: 400;
+    }
+
+    .form-group-employee .face-status.confirmed {
+        color: #16a34a;
+        font-weight: 600;
+    }
+
+    
+    /* ========================================
+       R7.0.6: SECTION 2 - HISTORY (BOTTOM)
+       ======================================== */
+    .cio-history {
+        flex: 0 0 auto !important;
+        width: 100% !important;
+        max-height: 30vh;
+        order: 2 !important; /* LAST */
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .cio-history h4 {
+        font-size: 12px;
+        margin-bottom: 6px;
+        color: #64748b;
+    }
+    
+    .history-wrap {
+        flex: 1;
+        overflow-y: auto;
+        min-height: 0;
+    }
+    
+    .filter-row {
+        margin-bottom: 6px;
+    }
+    
+    .filter-row input {
+        padding: 6px 10px;
+        font-size: 12px;
+        border: 1px solid rgba(94, 82, 64, 0.2);
+        border-radius: 6px;
+    }
+    
+    .history-table {
+        font-size: 10px;
+        width: 100%;
+    }
+    
+    .history-table th,
+    .history-table td {
+        padding: 4px 3px;
+    }
+    
+    /* Hide destination column */
+    .history-table th:nth-child(4),
+    .history-table td:nth-child(4) {
+        display: none;
+    }
+    
+    /* STATUS - HIDDEN */
+    .cio-status {
+        display: none !important;
+    }
+    
+    /* ========================================
+       FIXED BOTTOM BUTTONS
+       ======================================== */
+    .btn-row {
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        margin: 0 !important;
+        padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px)) 12px !important;
+        background: linear-gradient(to bottom, 
+            rgba(255,255,255,0) 0%, 
+            rgba(255,255,255,0.96) 15%, 
+            rgba(255,255,255,0.99) 100%);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-top: 1px solid rgba(0,0,0,0.08);
+        display: flex !important;
+        gap: 10px !important;
+        z-index: 10002 !important;
+        box-shadow: 0 -3px 14px rgba(0,0,0,0.1);
+    }
+    
+    .btn-confirm,
+    .btn-cancel {
+        flex: 1 !important;
+        padding: 13px 18px !important;
+        font-size: 15px !important;
+        font-weight: 700 !important;
+        border-radius: 10px !important;
+        min-height: 50px !important;
+        border: none !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+    }
+    
+    .btn-confirm {
+        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
+        color: white !important;
+        box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
+    }
+    
+    .btn-confirm:active {
+        transform: scale(0.97) !important;
+    }
+    
+    .btn-cancel {
+        background: rgba(148, 163, 184, 0.15) !important;
+        color: #475569 !important;
+        border: 1.5px solid rgba(148, 163, 184, 0.3) !important;
+    }
+    
+    .btn-cancel:active {
+        transform: scale(0.97) !important;
+    }
+    
+    /* SCROLLBAR */
+    .checkio-body::-webkit-scrollbar,
+    .history-wrap::-webkit-scrollbar,
+    .options-list::-webkit-scrollbar {
+        width: 4px;
+    }
+    
+    .checkio-body::-webkit-scrollbar-thumb,
+    .history-wrap::-webkit-scrollbar-thumb,
+    .options-list::-webkit-scrollbar-thumb {
+        background: rgba(0,0,0,0.2);
+        border-radius: 2px;
+    }
+}
+
+/* TABLET/DESKTOP */
+@media (min-width: 768px) {
+    .checkio-body {
+        flex-direction: row !important;
+    }
+    
+    .cio-history {
+        flex: 0 0 calc(50% - 8px) !important;
+        order: 1 !important;
+    }
+    
+    .cio-status {
+        flex: 0 0 calc(25% - 8px) !important;
+        display: flex !important;
+        order: 2 !important;
+    }
+    
+    .cio-inputs {
+        flex: 0 0 calc(25% - 8px) !important;
+        order: 3 !important;
+    }
+    
+    .btn-row {
+        position: relative !important;
+        background: none !important;
+        box-shadow: none !important;
+    }
+    
+    /* Dropdown normal (downward) on desktop */
+    .searchable-select-wrapper .options-list {
+        bottom: auto !important;
+        top: calc(100% + 4px) !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+}
+
+/* R7.0.6: COMPACT STATUS BADGES */
+.status-badge {
+    display: inline-block;
+    padding: 2px 6px; /* Giảm từ 3px 8px */
+    border-radius: 4px; /* Giảm từ 5px */
+    font-size: 9px; /* Giảm từ 10px */
+    font-weight: 700;
+    text-align: center;
+    min-width: 30px; /* Giảm từ 36px */
+    border: 1px solid;
+    letter-spacing: 0.3px;
+}
+
+.status-badge.badge-in {
+    background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+    color: #15803d;
+    border-color: #43A047;
+    box-shadow: 0 1px 2px rgba(67, 160, 71, 0.15);
+}
+
+.status-badge.badge-out {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    color: #991b1b;
+    border-color: #ef4444;
+    box-shadow: 0 1px 2px rgba(239, 68, 68, 0.15);
+}
+
+.status-badge.badge-audit {
+    background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+    color: #0369a1;
+    border-color: #0ea5e9;
+    box-shadow: 0 1px 2px rgba(14, 165, 233, 0.15);
+}
+
+/* R7.0.7: HIGHLIGHT MATCHED TEXT */
+.searchable-select-wrapper .option-item mark {
+    background: #fef08a; /* Yellow highlight */
+    color: #854d0e;
+    font-weight: 700;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+.searchable-select-wrapper .option-item:hover mark,
+.searchable-select-wrapper .option-item:active mark {
+    background: #fde047; /* Brighter yellow on hover */
+}
+
+.searchable-select-wrapper .option-item.selected mark {
+    background: #86efac; /* Green highlight for selected item */
+    color: #15803d;
+}
+
+
+/* R7.0.8: AUTOCOMPLETE GHOST INPUT */
+.searchable-select-wrapper {
+    position: relative;
+}
+
+.searchable-select-wrapper .search-input-ghost {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 10px 36px 10px 12px;
+    border: 1.5px solid transparent; /* Invisible border */
+    border-radius: 8px;
+    font-size: 14px;
+    background: transparent;
+    color: rgba(0, 0, 0, 0.3); /* Gray suggestion text */
+    pointer-events: none; /* Don't block main input */
+    z-index: 1;
+    font-family: inherit;
+}
+
+.searchable-select-wrapper .search-input {
+    position: relative;
+    z-index: 2;
+    background: transparent; /* Show ghost behind */
+}
+
+/* Dark mode ghost */
+@media (prefers-color-scheme: dark) {
+    .searchable-select-wrapper .search-input-ghost {
+        color: rgba(255, 255, 255, 0.3);
+    }
+}

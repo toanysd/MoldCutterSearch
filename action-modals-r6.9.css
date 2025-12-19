@@ -1,0 +1,802 @@
+/**
+ * action-modals.css V7.7.7
+ * ===================================================
+ * SHARED STYLES cho tất cả action modules:
+ * - Check-in/Check-out
+ * - Location Update
+ * - Shipment
+ * - Comment/Teflon
+ * - Export/Print
+ * 
+ * LAYOUT: 2-column modal (Form bên trái + History bên phải)
+ * ===================================================
+ */
+
+/* ============================================
+   1. MODAL OVERLAY
+   ============================================ */
+.action-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 20px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ============================================
+   2. MODAL CONTAINER
+   ============================================ */
+.action-modal-container {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  max-width: 1100px;
+  width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
+   3. MODAL HEADER
+   ============================================ */
+.action-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 2px solid #e5e7eb;
+  background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+}
+
+.action-modal-header h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.modal-close-btn {
+  background: transparent;
+  border: none;
+  font-size: 32px;
+  line-height: 1;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 0;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.modal-close-btn:hover {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+/* ============================================
+   4. MODAL BODY - 2 COLUMN SPLIT
+   ============================================ */
+.action-modal-body-split {
+  display: flex;
+  gap: 0;
+  overflow: hidden;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ============================================
+   5. LEFT SECTION - FORM (55%)
+   ============================================ */
+.modal-form-section {
+  flex: 0 0 55%;
+  padding: 24px;
+  overflow-y: auto;
+  background: #ffffff;
+  
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e0 #f7fafc;
+}
+
+.modal-form-section::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-form-section::-webkit-scrollbar-track {
+  background: #f7fafc;
+}
+
+.modal-form-section::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 3px;
+}
+
+/* ============================================
+   6. RIGHT SECTION - HISTORY (45%)
+   ============================================ */
+.modal-history-section {
+  flex: 0 0 45%;
+  padding: 24px;
+  background: #f9fafb;
+  border-left: 2px solid #e5e7eb;
+  overflow-y: auto;
+  
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e0 #f7fafc;
+}
+
+.modal-history-section::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-history-section::-webkit-scrollbar-track {
+  background: #f7fafc;
+}
+
+.modal-history-section::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 3px;
+}
+
+.modal-history-section h4 {
+  margin: 0 0 16px 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ============================================
+   7. FORM STYLES
+   ============================================ */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.form-group .required {
+  color: #ef4444;
+  margin-left: 2px;
+}
+
+.form-value-display {
+  padding: 10px 14px;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.form-select,
+.form-textarea,
+.form-input {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 14px;
+  color: #111827;
+  background: #ffffff;
+  border: 2px solid #e5e7eb;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.form-select:focus,
+.form-textarea:focus,
+.form-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.form-hint {
+  display: block;
+  font-size: 11px;
+  color: #6b7280;
+  margin-top: 6px;
+  font-style: italic;
+}
+
+/* ============================================
+   8. RADIO GROUP
+   ============================================ */
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: #f9fafb;
+  border: 2px solid #e5e7eb;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.radio-label:hover {
+  background: #f3f4f6;
+  border-color: #cbd5e0;
+}
+
+.radio-label input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.radio-label input[type="radio"]:checked + span {
+  font-weight: 700;
+  color: #1e40af;
+}
+
+.radio-label:has(input[type="radio"]:checked) {
+  background: #dbeafe;
+  border-color: #3b82f6;
+}
+
+/* ============================================
+   9. FORM ACTIONS
+   ============================================ */
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 2px solid #f3f4f6;
+}
+
+.btn {
+  flex: 1;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-primary {
+  background: #3b82f6;
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background: #2563eb;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.btn-secondary {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.btn-secondary:hover {
+  background: #e5e7eb;
+}
+
+/* ============================================
+   10. STATUS BADGE
+   ============================================ */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.status-in {
+  background: #d1fae5;
+  color: #065f46;
+  border: 1px solid #6ee7b7;
+}
+
+.status-out {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fbbf24;
+}
+
+.status-shipped {
+  background: #dbeafe;
+  color: #1e40af;
+  border: 1px solid #93c5fd;
+}
+
+/* ============================================
+   11. HISTORY LIST
+   ============================================ */
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.history-item {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border-left: 4px solid #e5e7eb;
+  transition: all 0.15s ease;
+}
+
+.history-item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.history-item.checkout {
+  border-left-color: #fbbf24;
+  background: #fffbeb;
+}
+
+.history-item.checkin {
+  border-left-color: #6ee7b7;
+  background: #f0fdf4;
+}
+
+.history-date {
+  font-size: 11px;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+
+.history-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.history-action {
+  font-size: 13px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.history-destination {
+  font-size: 12px;
+  color: #374151;
+  font-weight: 500;
+}
+
+.history-notes {
+  font-size: 11px;
+  color: #6b7280;
+  font-style: italic;
+  margin-top: 4px;
+  padding: 6px 8px;
+  background: #f9fafb;
+  border-radius: 4px;
+}
+
+.history-employee {
+  font-size: 11px;
+  color: #6b7280;
+  margin-top: 6px;
+}
+
+.history-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  color: #9ca3af;
+}
+
+.history-empty i {
+  font-size: 48px;
+  margin-bottom: 12px;
+  opacity: 0.5;
+}
+
+.history-empty p {
+  margin: 0;
+  font-size: 13px;
+}
+
+/* ============================================
+   12. RESPONSIVE
+   ============================================ */
+@media (max-width: 1024px) {
+  .action-modal-body-split {
+    flex-direction: column;
+  }
+  
+  .modal-form-section {
+    flex: 1 1 auto;
+  }
+  
+  .modal-history-section {
+    flex: 0 0 300px;
+    border-left: none;
+    border-top: 2px solid #e5e7eb;
+  }
+}
+
+@media (max-width: 768px) {
+  .action-modal-overlay {
+    padding: 0;
+  }
+  
+  .action-modal-container {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 0;
+  }
+  
+  .action-modal-header {
+    padding: 16px 20px;
+  }
+  
+  .action-modal-header h3 {
+    font-size: 18px;
+  }
+  
+  .modal-form-section,
+  .modal-history-section {
+    padding: 20px;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .btn {
+    width: 100%;
+  }
+}
+
+/* ============================================
+   13. ANIMATION FOR SUBMIT
+   ============================================ */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.btn.loading {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.btn.loading::before {
+  content: "";
+  width: 16px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+/* ============================================
+   14. PRINT STYLES
+   ============================================ */
+@media print {
+  .action-modal-overlay {
+    position: relative;
+    background: transparent;
+    backdrop-filter: none;
+  }
+  
+  .action-modal-container {
+    box-shadow: none;
+    max-height: none;
+  }
+  
+  .action-modal-header {
+    background: transparent;
+  }
+  
+  .modal-close-btn {
+    display: none;
+  }
+  
+  .form-actions {
+    display: none;
+  }
+  
+  .action-modal-body-split {
+    flex-direction: column;
+  }
+  
+  .modal-form-section,
+  .modal-history-section {
+    border: none;
+    padding: 0;
+  }
+}
+/* ============================================
+   COMPACT MODAL - NỬA TRÊN MÀN HÌNH
+   ============================================ */
+
+.action-modal-compact .action-modal-container {
+  max-height: 50vh; /* Chỉ chiếm nửa màn hình */
+  min-height: 400px;
+  position: absolute;
+  top: 20px; /* Gắn lên trên */
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.action-modal-compact .action-modal-overlay {
+  align-items: flex-start; /* Không center theo chiều dọc */
+  padding-top: 0;
+}
+
+/* ============================================
+   COMPACT HEADER
+   ============================================ */
+
+.action-modal-compact .action-modal-header {
+  padding: 12px 18px;
+  min-height: auto;
+}
+
+.action-modal-compact .action-modal-header h3 {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.action-modal-compact .modal-close-btn {
+  width: 28px;
+  height: 28px;
+  font-size: 24px;
+}
+
+/* ============================================
+   FORM SECTION - FIXED (NO SCROLL)
+   ============================================ */
+
+.modal-form-fixed {
+  overflow-y: visible !important; /* Không scroll */
+  padding: 16px;
+}
+
+/* ============================================
+   COMPACT FORM GROUPS
+   ============================================ */
+
+.form-group-compact {
+  margin-bottom: 12px;
+}
+
+.form-group-compact label {
+  font-size: 11px;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.form-group-compact .form-value-display {
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
+.form-select-compact,
+.form-textarea-compact {
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
+.form-textarea-compact {
+  min-height: 50px;
+}
+
+.form-hint {
+  font-size: 10px;
+  margin-top: 3px;
+}
+
+/* ============================================
+   2-COLUMN FORM ROW
+   ============================================ */
+
+.form-row-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.form-row-2col .form-group {
+  margin-bottom: 0;
+}
+
+/* ============================================
+   RACK LOCATION DISPLAY
+   ============================================ */
+
+.rack-location {
+  background: #eff6ff !important;
+  border: 1px solid #93c5fd !important;
+  color: #1e40af;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.rack-location i {
+  color: #3b82f6;
+}
+
+.rack-detail {
+  display: block;
+  font-size: 10px;
+  color: #6b7280;
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+/* ============================================
+   RADIO GROUP INLINE (2 COLUMNS)
+   ============================================ */
+
+.radio-group-inline {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.radio-group-inline .radio-label {
+  padding: 8px 10px;
+  font-size: 13px;
+}
+
+.radio-group-inline .radio-label input[type="radio"] {
+  width: 16px;
+  height: 16px;
+}
+
+/* ============================================
+   COMPACT BUTTONS
+   ============================================ */
+
+.form-actions-compact {
+  margin-top: 16px;
+  padding-top: 12px;
+  gap: 8px;
+}
+
+.form-actions-compact .btn {
+  padding: 8px 16px;
+  font-size: 13px;
+}
+
+/* ============================================
+   HISTORY SECTION - SCROLLABLE
+   ============================================ */
+
+.action-modal-compact .modal-history-section {
+  max-height: calc(50vh - 80px); /* Trừ header */
+  overflow-y: auto;
+  padding: 16px;
+}
+
+.action-modal-compact .modal-history-section h4 {
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+
+/* ============================================
+   COMPACT HISTORY ITEMS
+   ============================================ */
+
+.history-item-compact {
+  padding: 8px;
+  margin-bottom: 8px;
+}
+
+.history-item-compact .history-date {
+  font-size: 10px;
+  margin-bottom: 4px;
+}
+
+.history-item-compact .history-action {
+  font-size: 12px;
+}
+
+.history-item-compact .history-destination {
+  font-size: 11px;
+}
+
+.history-item-compact .history-notes {
+  font-size: 10px;
+  padding: 4px 6px;
+  margin-top: 3px;
+}
+
+.history-item-compact .history-employee {
+  font-size: 10px;
+  margin-top: 4px;
+}
+
+/* ============================================
+   RESPONSIVE FOR TABLET
+   ============================================ */
+
+@media (max-width: 1024px) {
+  .action-modal-compact .action-modal-container {
+    max-height: 55vh;
+  }
+  
+  .form-row-2col {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  
+  .radio-group-inline {
+    grid-template-columns: 1fr;
+  }
+}

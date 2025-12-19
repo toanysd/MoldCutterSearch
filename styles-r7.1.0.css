@@ -1,0 +1,3446 @@
+/* ========================================
+   V7.7.5-KIOSK-OPTIMIZED STYLESHEET
+   Created: 2025.10.16 17:55 JST
+   iPad専用 + iPhone対応
+
+   CHANGES:
+   - Header: 80px → 60px
+   - Panel headers: Reduced height
+   - Search box: Compact + Yellow highlight
+   - Filter: 2 dynamic comboboxes
+   - Category tabs: Color-coded
+   - Column 2: Single column, full info
+   - Column 3: Fixed split layout
+   - Column 4: Reduced button heights
+   - Keyboard: 3-column layout
+   - Table: Sortable columns
+   ======================================== */
+
+/* ========================================
+   1. RESET & BASE STYLES
+   ======================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+
+      /* 🌈 CORE BRAND COLOR SYSTEM */
+    --clr-primary: #6a5acd;    /* Header tím đặc trưng hệ thống */
+    --clr-background: #f4f6fa;
+    --clr-surface: #ffffff;
+    --clr-text-dark: #212121;
+    --clr-text-light: #fdfdfd;
+
+    /* 🟢 STATUS COLORS (và badge tone chuẩn hóa) */
+    --clr-success: #43a047;        /* xanh lá dịu mắt, khác header */
+    --clr-success-light: #81c784;
+    --clr-warning: #ffa726;        /* cam cảnh báo */
+    --clr-warning-dark: #f57c00;
+    --clr-error: #e53935;          /* đỏ lỗi */
+    --clr-gray: #9e9e9e;           /* xám trung tính */
+
+    /* 🌐 Kiosk Accent cập nhật (đồng bộ các module khác) */
+    --clr-accent: #26a69a;         /* Màu nhấn tổng thể – teal */
+    --clr-border: #e0e0e0;
+    
+    /* Kiosk Color Palette */
+    --kiosk-primary: #7B68EE;
+    --kiosk-primary-dark: #6A5ACD;
+    --kiosk-green: #4CAF50;
+    --kiosk-green-dark: #2E7D32;
+    --kiosk-orange: #FF9800;
+    --kiosk-orange-dark: #F57C00;
+    --kiosk-blue: #2196F3;
+    --kiosk-cyan: #00BCD4;
+    --kiosk-purple: #9C27B0;
+    --kiosk-pink: #E91E63;
+    --kiosk-gray: #607D8B;
+    --kiosk-red: #F44336;
+
+    /* Search Box Highlight */
+    --search-bg: #FEF9C3;
+    --search-border: #FCD34D;
+
+    /* Neutral Colors */
+    --color-bg: #F5F5F5;
+    --color-surface: #FFFFFF;
+    --color-border: #E0E0E0;
+    --color-text: #212121;
+    --color-text-secondary: #757575;
+    --color-shadow: rgba(0, 0, 0, 0.1);
+
+    /* Spacing */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 12px;
+    --spacing-lg: 16px;
+    --spacing-xl: 24px;
+
+    /* Border Radius */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --radius-round: 50%;
+
+    /* Transitions */
+    --transition-fast: 150ms ease;
+    --transition-normal: 300ms ease;
+
+    /* Z-index */
+    --z-header: 100;
+    --z-modal: 1000;
+    --z-toast: 2000;
+--z-loading: 3000;
+
+/* Safe Area Insets (iPhone notch/Dynamic Island) */
+--safe-area-top: env(safe-area-inset-top, 0px);
+--safe-area-bottom: env(safe-area-inset-bottom, 0px);
+--safe-area-left: env(safe-area-inset-left, 0px);
+--safe-area-right: env(safe-area-inset-right, 0px);
+
+/* Font Scaling (Desktop default) */
+--font-scale: 1; /* 100% on desktop */
+}
+
+/* ========================================
+   MOBILE FONT SCALING - 90%
+   ======================================== */
+@media (max-width: 767px) {
+  :root {
+    --font-scale: 0.9; /* 90% on mobile */
+  }
+}
+
+body {
+    font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+    font-size: calc(14px * var(--font-scale)); /* Responsive font */
+    line-height: 1.5;
+    color: var(--color-text);
+    background: var(--color-bg);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+button {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    outline: none;
+    transition: all var(--transition-fast);
+}
+
+input, select, textarea {
+    font-family: inherit;
+    font-size: calc(14px * var(--font-scale)); /* Responsive */
+    border: 1px solid var(--color-border);
+
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    outline: none;
+    transition: border-color var(--transition-fast);
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: var(--kiosk-primary);
+}
+
+/* ========================================
+   2. HEADER STYLES - OPTIMIZED
+   ======================================== */
+.app-header {
+    background: linear-gradient(135deg, var(--kiosk-primary) 0%, var(--kiosk-primary-dark) 100%);
+    color: white;
+    padding: 10px var(--spacing-xl); /* GIẢM từ 16px → 10px */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 8px var(--color-shadow);
+    position: sticky;
+    top: 0;
+    z-index: var(--z-header);
+    height: 60px; /* GIẢM từ 80px → 60px */
+}
+
+.header-title {
+    display: flex;
+    flex-direction: column;
+    gap: 2px; /* GIẢM từ 4px → 2px */
+}
+
+.title-main {
+    font-size: 22px; /* GIẢM từ 24px → 22px */
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.title-main i {
+    font-size: 24px; /* GIẢM từ 28px → 24px */
+}
+
+.version-badge {
+    background: rgba(255, 255, 255, 0.2);
+    padding: var(--spacing-xs) var(--spacing-md);
+    border-radius: var(--radius-lg);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.title-sub {
+    font-size: 11px; /* GIẢM từ 12px → 11px */
+    opacity: 0.8;
+    margin-left: 36px; /* GIẢM từ 42px → 36px */
+    font-style: italic; /* THÊM: italic cho tiếng Việt */
+}
+
+.header-status {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xl);
+}
+
+/* R7.0.7: Header selection toggles */
+.header-selection-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 16px;
+  flex-shrink: 0;
+}
+
+.header-toggle-block {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.header-toggle-label {
+  display: flex;
+  flex-direction: column;
+  font-size: 10px;
+  line-height: 1.2;
+  color: #fdfdfd; /* chữ trắng trên nền header */
+}
+
+.header-toggle-label .jp-text {
+  font-weight: 700;
+}
+
+.header-toggle-label .vi-text {
+  opacity: 0.8;
+  font-style: italic;
+}
+
+/* Thu nhỏ công tắc để phù hợp header */
+.inv-toggle-switch.inv-toggle-switch-xs {
+  transform: scale(0.75);
+  transform-origin: left center;
+}
+
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: 14px;
+}
+
+.status-dot {
+    width: 10px;
+    height: 10px;
+    background: #4CAF50;
+    border-radius: var(--radius-round);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.status-counts {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    font-size: 13px;
+}
+
+.status-counts strong {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.divider {
+    opacity: 0.5;
+}
+
+
+
+/* ========================================
+   4. MAIN CONTAINER - GRID LAYOUT
+   ======================================== */
+.main-container {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 60px); /* CẬP NHẬT: 80px → 60px */
+    padding: var(--spacing-lg);
+    gap: var(--spacing-lg);
+}
+
+/* Upper Section - 50vh */
+.upper-section {
+    height: 50vh;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-lg);
+}
+
+/* Lower Section - 50vh */
+.lower-section {
+    height: 50vh;
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 2px 8px var(--color-shadow);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* ========================================
+   5. PANEL STYLES - OPTIMIZED
+   ======================================== */
+.panel {
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 2px 8px var(--color-shadow);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.panel-header {
+    background: var(--kiosk-green-dark);
+    color: white;
+    padding: 4px var(--spacing-lg); /* GIẢM từ 12px → 8px */
+    font-weight: 600;
+    font-size: 13px; /* GIẢM từ 14px → 13px */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+    min-height: 12px; /* GIẢM từ 44px → 32px */
+}
+
+.panel-header i {
+    font-size: 16px; /* GIẢM từ 18px → 16px */
+}
+
+.result-count-badge {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 2px 8px;
+    border-radius: var(--radius-lg);
+    font-size: 12px;
+}
+
+.panel-body {
+    flex: 1;
+    padding: var(--spacing-md); /* GIẢM từ 16px → 12px */
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm); /* GIẢM từ 12px → 8px */
+}
+
+/* Custom Scrollbar */
+.panel-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.panel-body::-webkit-scrollbar-track {
+    background: var(--color-bg);
+}
+
+.panel-body::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 3px;
+}
+
+.panel-body::-webkit-scrollbar-thumb:hover {
+    background: var(--kiosk-gray);
+}
+
+/* ========================================
+   6. SEARCH & FILTER PANEL - OPTIMIZED
+   ======================================== */
+
+/* Category Tabs - COLOR CODED */
+/* FIX 1: Category Tabs - 60% height, full background color */
+.category-tabs {
+    display: flex;  /* ĐỔI từ grid */
+    gap: 6px;  /* GIẢM từ 8px → 6px */
+    margin-bottom: 8px;  /* GIẢM từ 12px → 8px */
+}
+
+.category-tab {
+    flex: 1;
+    padding: 6px 8px;  /* GIẢM từ 10px → 6px (60%) */
+    border: 2px solid transparent;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--color-text);
+    transition: all var(--transition-fast);
+    text-align: center;
+}
+
+/* All Tab - Blue when active */
+.category-tab[data-category="all"] {
+    background: #E3F2FD;
+    color: #1565C0;
+}
+
+.category-tab[data-category="all"].active {
+    background: #2196F3;  /* TOÀN BỘ màu xanh */
+    color: white;
+    border-color: #2196F3;
+}
+
+/* Mold Tab - Cyan background when active */
+.category-tab[data-category="mold"] {
+    background: #E0F7FA;
+    color: #00838F;
+}
+
+.category-tab[data-category="mold"].active {
+    background: var(--kiosk-cyan);  /* TOÀN BỘ màu cyan */
+    color: white;
+    border-color: var(--kiosk-cyan);
+}
+
+
+/* Cutter Tab - Orange background when active */
+.category-tab[data-category="cutter"] {
+    background: #FFF3E0;
+    color: #E65100;
+}
+
+.category-tab[data-category="cutter"].active {
+    background: var(--kiosk-orange);  /* TOÀN BỘ màu cam */
+    color: white;
+    border-color: var(--kiosk-orange);
+}
+
+/* Search Box - YELLOW HIGHLIGHT + COMPACT */
+.search-section {
+    margin-bottom: 8px;  /* GIẢM từ 12px → 8px */
+}
+
+.search-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    margin-bottom: 3px;  /* GIẢM từ 4px → 3px */
+    display: flex;  /* THAY ĐỔI: để sub không xuống dòng */
+    align-items: baseline;
+    gap: 4px;
+}
+
+
+/* FIX 4: Vietnamese subtitle - smaller, faded, no wrap */
+.search-label-sub,
+.detail-label-sub {
+    font-size: 10px;  /* GIẢM từ 10px → 9px */
+    color: var(--color-text-secondary);
+    opacity: 0.7;  /* THÊM: mờ hơn */
+    font-style: italic;
+    white-space: nowrap;  /* KHÔNG xuống dòng */
+}
+
+.search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 6px;  /* GIẢM từ 8px → 6px */
+}
+
+
+.search-input {
+    flex: 1;
+    min-width: 0;  /* THÊM: cho phép shrink */
+    padding: 8px 36px 8px 8px;  /* GIẢM padding */
+    border: 2px solid var(--search-border);
+    border-radius: var(--radius-md);
+    font-size: 16px;
+    background: var(--search-bg);  /* YELLOW */
+    transition: all var(--transition-fast);
+}
+
+.search-input:focus {
+    background: white;
+    border-color: var(--kiosk-orange);
+    box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.1);
+}
+
+
+
+.search-clear-btn {
+    position: absolute;
+    right: 50px;  /* ĐIỀU CHỈNH cho vừa QR button */
+    width: 24px;
+    height: 24px;
+    background: var(--color-border);
+    border-radius: var(--radius-round);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-secondary);
+    font-size: 11px;
+}
+
+.qr-btn, #qr-scan-btn {
+    width: 40px;  /* FIXED width */
+    height: 40px;
+    background: var(--kiosk-cyan);
+    color: white;
+    border-radius: var(--radius-md);
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* Filter Section - 2 DYNAMIC COMBOBOXES */
+.filter-section {
+    margin-bottom: 8px;  /* GIẢM từ 12px → 8px */
+}
+
+.filter-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    margin-bottom: 3px;  /* GIẢM từ 4px → 3px */
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+}
+
+.filter-select {
+    width: 100%;
+    padding: 8px;  /* GIẢM từ 10px → 8px */
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: white;
+    cursor: pointer;
+    font-size: 14px;
+    margin-bottom: 6px;  /* GIẢM từ 8px → 6px */
+}
+
+.filter-select:focus {
+    border-color: var(--kiosk-primary);
+}
+
+/* Action Buttons - ĐƯA LÊN TRÊN ADVANCED */
+/* FIX 5: Action Buttons - VISIBLE WITHOUT SCROLL */
+.action-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;  /* GIẢM từ 8px → 6px */
+    margin-bottom: 8px;  /* ĐẢM BẢO visible */
+}
+
+.btn {
+    padding: 8px 10px;  /* GIẢM từ 10px → 8px */
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 12px;  /* GIẢM từ 13px → 12px */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.btn-reset {
+    background: var(--kiosk-cyan);
+    color: white;
+}
+
+.btn-reset-all {
+    background: var(--kiosk-orange);
+    color: white;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--color-shadow);
+}
+
+/* Advanced Section - SCROLLABLE */
+/* Advanced Section - Compact */
+.advanced-section {
+    padding-top: 8px;  /* GIẢM từ 12px → 8px */
+    border-top: 1px solid var(--color-border);
+}
+
+.advanced-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    margin-bottom: 6px;  /* GIẢM từ 8px → 6px */
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+}
+
+/* ========================================
+   7. QUICK RESULTS GRID - SINGLE COLUMN
+   ======================================== */
+.quick-results-grid {
+    display: flex; /* ĐỔI: grid → flex */
+    flex-direction: column;
+    gap: var(--spacing-sm); /* GIẢM từ 12px → 8px */
+}
+
+.result-card {
+    background: var(--color-surface);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 8px; /* GIẢM từ 12px → 10px */
+    cursor: pointer;
+     /* transition: all var(--transition-fast);
+        /* ✅ Hardware acceleration */
+    transform: translateZ(0);
+    will-change: transform, opacity;
+    
+    /* ✅ Smooth transitions */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    opacity: 1 !important; /* THÊM: Giữ màu sắc đầy đủ */
+}
+.result-card * {
+    pointer-events: none;  /* All clicks go to parent card */
+}
+
+/* Màu nền theo loại thiết bị – dịu, ít tương phản */
+.result-card.card-mold {
+    /* Xanh rất nhạt → gần như trắng, chuyển chậm tới cuối card */
+    background: linear-gradient(135deg, #daeefc 30%, #e7eefa 30%, #ffffff 70%);
+
+}
+
+.result-card.card-cutter {
+    /* Cam pastel → trắng, chuyển chậm để không bị chia mảng */
+    background: linear-gradient(135deg, #f7e5c9 30%, #fdf4e3 30%, #ffffff 70%);
+    border-color: #ff9800;
+}
+
+/* Hover: chỉ thêm shadow, không đổi nền */
+.result-card.card-mold:hover {
+    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.35);
+}
+
+.result-card.card-cutter:hover {
+    box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.35);
+}
+
+/* ✅ Reduce animation complexity */
+.result-card:active {
+    transform: scale(0.98) translateZ(0);
+}
+
+.inv-audit-badge-inline {
+    display: inline-block;
+    background: linear-gradient(135deg, #4CAF50 0%, #66BB6A 100%);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-left: 8px;
+    
+    /* ✅ Performance optimization */
+    transform: translateZ(0);
+    will-change: opacity;
+    transition: opacity 0.2s ease;
+}
+
+/* ✅ Fade in animation */
+@keyframes badgeFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px) translateZ(0);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) translateZ(0);
+    }
+}
+
+.inv-audit-badge-inline {
+    animation: badgeFadeIn 0.3s ease;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px; /* GIẢM từ 8px → 6px */
+}
+
+.card-type {
+    padding: 3px 8px; /* GIẢM */
+    border-radius: var(--radius-lg);
+    font-size: 11px;
+    font-weight: 600;
+    color: white;
+}
+
+.card-type.mold {
+    background: var(--kiosk-cyan);
+}
+
+.card-type.cutter {
+    background: var(--kiosk-orange);
+}
+
+.card-code {
+    font-size: 15px; /* GIẢM từ 16px → 15px */
+    font-weight: 700;
+    color: var(--color-text);
+}
+
+.card-name {
+    font-size: 12px; /* GIẢM từ 13px → 12px */
+    color: var(--color-text-secondary);
+    margin-bottom: 4px; /* GIẢM */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.card-dimensions {
+    font-size: 13px; /* GIẢM từ 14px → 13px */
+    font-weight: 600;
+    color: var(--kiosk-green-dark);
+    margin-bottom: 4px; /* GIẢM */
+}
+
+.card-location {
+    font-size: 12px;
+    color: var(--kiosk-blue);
+    font-weight: 500;
+}
+
+/* ========================================
+   8. DETAIL INFO PANEL - SPLIT LAYOUT
+   ======================================== */
+
+/* UPPER HALF - Location Info */
+/* FIX 8: Split Layout - Upper Fixed + Lower Scrollable */
+.detail-panel {
+    display: flex;
+    flex-direction: column;
+}
+
+.detail-upper {
+    height: auto;  /* ĐỔI từ 45% → auto để fit content */
+    max-height: 45%;
+    padding: 10px;  /* GIẢM từ 12px → 10px */
+    border-bottom: 2px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;  /* GIẢM từ 8px → 6px */
+    background: linear-gradient(135deg, #f5f7fa 0%, #e8eef3 100%);
+    flex-shrink: 0;  /* KHÔNG co lại */
+}
+
+.detail-lower {
+    flex: 1;
+    padding: 10px;  /* GIẢM từ 12px → 10px */
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;  /* GIẢM từ 6px → 4px */
+}
+
+/* Row 1: Company + Checkin Status 
+/* FIX 9: Row 1 - Company Badge with Color Coding */
+
+/* Row 2: POS-Style Location Display */
+/* FIX 10: Row 2 - Location Badges 60% + Labels */
+.location-display {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;  /* ĐỔI: để label ở dưới */
+    gap: var(--spacing-md);
+    padding: 8px 0;  /* GIẢM từ 16px → 10px */
+}
+.location-badge-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+}
+.location-circle {
+    min-width: 50px;  /* GIẢM 60%: 70px → 42px */
+    height: 50px;
+    padding: 0 var(--spacing-sm);
+    background: var(--kiosk-blue);
+    border-radius: var(--radius-round);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;  /* GIẢM 60%: 36px → 22px */
+    font-weight: 700;
+    color: white;
+    box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
+}
+
+.location-label {
+    font-size: 10px;
+    color: var(--color-text-secondary);
+    font-weight: 600;
+    white-space: nowrap;
+}
+.location-divider {
+    font-size: 22px;  /* GIẢM 60%: 28px → 18px */
+    font-weight: 300;
+    color: var(--color-text-secondary);
+    margin-top: 10px;  /* ALIGN với badges */
+}
+
+.location-rectangle {
+    min-width: 100px;  /* GIẢM 60%: 80px → 48px */
+    height: 50px;
+    padding: 0 var(--spacing-sm);
+    background: var(--kiosk-orange);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;  /* GIẢM 60%: 40px → 24px */
+    font-weight: 700;
+    color: white;
+    box-shadow: 0 2px 8px rgba(255, 152, 0, 0.3);
+}
+
+/* Row 3: Rack Info */
+
+/* Storage Group (2 columns on desktop, 1 column on mobile) */
+.detail-storage-group {
+
+  gap: 8px;
+  font-size: 12px;
+  color: var(--color-text);
+  padding: 4px 8px;
+  background: #FFFBEB;
+  border-radius: var(--radius-sm);
+}
+
+.detail-storage-group .storage-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.detail-storage-group .field-title {
+  font-weight: 600;
+  color: var(--color-text);
+  white-space: nowrap;
+}
+
+.detail-storage-group .divider {
+  opacity: .6;
+}
+
+.detail-storage-group #detail-rack-location,
+.detail-storage-group #detail-rack-notes,
+.detail-storage-group #detail-layer-notes {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+
+
+
+/* FIX 11: Rows 3-4 - Titles for fields */
+.detail-rack-info {
+    font-size: 12px;
+    color: var(--color-text);
+    font-style: italic;
+    padding: 4px 8px;
+    background: #FFFBEB;
+    /*border-left: 3px solid var(--kiosk-orange);*/
+    border-radius: var(--radius-sm);
+        
+}
+
+.detail-rack-info .field-title {
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+
+/* Row 4: Rack Layer Notes */
+.detail-layer-notes {
+    font-size: 12px;
+    color: var(--color-text);
+    font-style: italic;
+    padding: 4px 8px;
+    background: #FFFBEB;
+    /*border-left: 3px solid var(--kiosk-orange);*/
+    border-radius: var(--radius-sm);
+    
+}
+
+.detail-layer-notes .field-title {
+    font-weight: 600;
+
+    margin-bottom: 2px;
+}
+
+/* LOWER HALF - Basic Info */
+.detail-lower {
+    height: 55%; /* 55% */
+    padding: var(--spacing-md);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2px; /* GIẢM từ 8px → 6px */
+}
+
+.upper-section {
+    grid-template-columns: 0.9fr 0.9fr 1.2fr 1.2fr;
+    /* Kich thuoc 4 cot theo ti le Cột 1: 90%, Cột 2: 100%, Cột 3: 130%, Cột 4: 90% */
+}
+/* FIX 12: Rows 5-13 - Left-Right Layout */
+.detail-info-section {
+    background: white;
+    padding: 0;  /* XÓA padding */
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+}
+
+.detail-info-row {
+    display: grid;
+    grid-template-columns: 90px 1fr;  /* LEFT: Title | RIGHT: Value */
+    gap: 6px;
+    padding: 4px 10px;  /* GIẢM từ 8px → 6px */
+    border-bottom: 1px solid var(--color-border);
+}
+
+.detail-info-row:last-child {
+    border-bottom: none;
+}
+
+/* LEFT: Japanese Title + Vietnamese subtitle */
+.detail-label {
+    font-size: 11px;  /* GIẢM từ 11px → 12px */
+    color: var(--color-text);
+    font-weight: 600;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+/* Tiếng Việt mờ nhỏ */
+.detail-label-sub {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    opacity: 0.7;
+    font-style: italic;
+ 
+    white-space: nowrap;
+}
+
+/* RIGHT: Value */
+.detail-value {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text);
+    text-align: right;
+    word-break: break-word;
+}
+
+.detail-value.highlight {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--kiosk-primary);
+}
+
+/* ========================================
+   9. ACTIONS PANEL - SPLIT 60/40
+   ======================================== */
+
+/* === Column 4 – Actions (v7.7.5 style, cleaned) === */
+
+/* Panel 4 đồng bộ container */
+.actions-panel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;                 /* để bo góc hiển thị đẹp */
+}
+
+/* Header bám top, bo tròn như cột khác */
+/* 1) Header cột 4 cố định kích thước */
+.actions-panel .panel-header{
+  height: 34px; min-height: 34px; padding: 6px 12px;
+  display:flex; align-items:center; gap:8px;
+  line-height: 1; /* tránh dãn dòng thay đổi chiều cao */
+}
+
+/* 2) Nhóm nút: chiều cao ổn định, không wrap chữ */
+.actions-body { flex: 0 0 auto !important; overflow: visible !important; }
+.actions-row-3col button, .action-btn-large{
+  min-height: 56px; white-space: nowrap; line-height: 1.1;
+}
+
+
+
+/* 1) Panel body chỉ cao theo nội dung (auto), KHÔNG cuộn */
+.actions-panel .panel-body.actions-body{
+  flex: 0 0 auto !important;
+  overflow: visible !important;
+}
+
+/* 2) Khu thiết bị liên quan chiếm phần còn lại và không tự cuộn */
+.actions-panel .actions-lower{
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;    /* bỏ overflow-y:auto cũ */
+  padding: var(--spacing-md) !important;
+  gap: 8px !important;
+}
+
+/* 3) Ghi đè container do JS chèn (#related-list) để full-height và xếp theo cột */
+.actions-panel .actions-lower #related-list.related-eq-wrap{
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  margin-top: 0 !important;
+}
+
+/* 4) Header cố định khi cuộn (sticky) */
+.actions-panel #related-list .related-eq-header{
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 1 !important;
+  background: #fff !important;
+  padding-bottom: 6px !important;
+  border-bottom: 1px solid var(--color-border) !important;
+}
+
+/* 5) Chỉ danh sách cuộn; bỏ max-height 38vh do JS inject */
+.actions-panel #related-list .related-eq-list{
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  max-height: none !important;
+}
+
+/* 6) Vô hiệu hóa tàn dư bố cục 60/40 cũ nếu còn */
+.actions-upper{ display: contents !important; height: auto !important; padding: 0 !important; border: 0 !important; }
+
+
+
+
+
+/* ✅ R6.9.10: Support 4-column layout for separated buttons */
+.actions-row-4col {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px; /* Slightly smaller gap for 4 buttons */
+}
+
+/* Adjust font size for 4-button layout */
+.actions-row-4col .action-btn {
+    font-size: 11px;
+    padding: 8px 4px;
+}
+
+.actions-row-4col .action-icon {
+    font-size: 18px;
+    margin-bottom: 4px;
+}
+
+.actions-row-4col .btn-label-vi {
+    font-size: 9px;
+}
+
+/* Responsive: Stack on very small tablets */
+@media (max-width: 900px) {
+    .actions-row-4col {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+}
+
+
+/* Hàng nút lớn – lùi mép, chiều cao vừa đủ */
+.checkin-checkout-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-sm); }
+.action-btn-large {
+  padding: 10px 8px; border-radius: var(--radius-lg); min-height: 56px;
+  font-size: 14px; font-weight: 700; color: #fff;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  transition: all var(--transition-fast);
+}
+.action-btn-large i { display: none; }
+.action-btn-large .btn-text-main { font-size: 16px; font-weight: 700; }
+.action-btn-large .btn-text-sub  { font-size: 11px; opacity: .9; }
+.btn-checkin  { background: var(--kiosk-green); }
+.btn-checkout { background: var(--kiosk-orange); }
+.action-btn-large:hover { transform: translateY(-2px); box-shadow: 0 4px 12px var(--color-shadow); }
+
+/* Xóa rule cũ còn sót gây tràn (nếu đang tồn tại) */
+.actions-upper { height: auto; padding: 0; border-bottom: 0; }
+
+
+
+
+/* FIX 17: Related Equipment Section */
+.actions-lower {
+    flex: 1;
+    padding: 10px;
+    background: var(--color-bg);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow-y: auto;
+}
+
+.related-section {
+    background: white;
+    border-radius: var(--radius-md);
+    padding: 10px;
+    border: 1px solid var(--color-border);
+}
+
+.related-header {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+/* なし - Gray */
+.dedicated-cutter-badge.no {
+    background: #E0E0E0;
+    color: #616161;
+}
+
+/* あり - Amber Warning với Pulse Animation */
+.dedicated-cutter-badge.yes {
+    background: #FFA000;
+    color: white;
+    animation: pulse-warning 2s ease-in-out infinite;
+}
+
+@keyframes pulse-warning {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(255, 160, 0, 0.7);
+    }
+    50% {
+        box-shadow: 0 0 0 6px rgba(255, 160, 0, 0);
+    }
+}
+.dedicated-cutter-badge {
+    padding: 3px 8px;
+    border-radius: var(--radius-full);
+    font-size: 10px;
+    font-weight: 600;
+    background: var(--kiosk-green);
+    color: white;
+}
+
+.dedicated-cutter-badge.no {
+    background: var(--color-border);
+    color: var(--color-text-secondary);
+}
+
+.related-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.related-item {
+    background: var(--color-bg);
+    padding: 6px 10px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.related-item:hover {
+    border-color: var(--kiosk-primary);
+    background: rgba(123, 104, 238, 0.05);
+}
+
+.related-item-icon {
+    font-size: 14px;
+    color: var(--kiosk-cyan);
+}
+
+
+/* ========================================
+   9. ACTIONS PANEL - R6.9.10 UPDATED
+   ======================================== */
+
+/* Panel 4 đồng bộ container */
+.actions-panel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Header bám top, bo tròn như cột khác */
+.actions-panel .panel-header {
+  height: 34px;
+  min-height: 34px;
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  line-height: 1;
+}
+
+/* Panel body chỉ cao theo nội dung (auto), KHÔNG cuộn */
+.actions-panel .panel-body.actions-body {
+  flex: 0 0 auto !important;
+  overflow: visible !important;
+}
+
+/* Khu thiết bị liên quan chiếm phần còn lại */
+.actions-panel .actions-lower {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  padding: var(--spacing-md) !important;
+  gap: 8px !important;
+}
+
+/* Container do JS chèn (#related-list) */
+.actions-panel .actions-lower #related-list.related-eq-wrap {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  margin-top: 0 !important;
+}
+
+/* Header cố định khi cuộn (sticky) */
+.actions-panel #related-list .related-eq-header {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 1 !important;
+  background: #fff !important;
+  padding-bottom: 6px !important;
+  border-bottom: 1px solid var(--color-border) !important;
+}
+
+/* Chỉ danh sách cuộn */
+.actions-panel #related-list .related-eq-list {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  max-height: none !important;
+}
+
+/* Vô hiệu hóa tàn dư bố cục cũ */
+.actions-upper {
+  display: contents !important;
+  height: auto !important;
+  padding: 0 !important;
+  border: 0 !important;
+}
+
+/* ========================================
+   ✅ R6.9.10: 4-COLUMN GRID (4 NÚT MỚI)
+   ======================================== */
+
+.actions-row-4col {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-bottom: var(--spacing-sm);
+}
+
+/* Base style cho tất cả buttons trong 4-col grid */
+.actions-row-4col .action-btn {
+  --btn-color: var(--color-text);
+  background: #fff;
+  color: var(--btn-color);
+  border: 2px solid var(--btn-color);
+  padding: 8px 4px;
+  border-radius: var(--radius-md);
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: 60px;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  line-height: 1.2;
+}
+
+/* Icon styles */
+.actions-row-4col .action-icon {
+  color: inherit;
+  font-size: 18px;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+/* Label styles */
+.actions-row-4col .btn-label-ja {
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.actions-row-4col .btn-label-vi {
+  font-size: 9px;
+  font-weight: 500;
+  opacity: 0.85;
+  line-height: 1;
+}
+
+/* Hover effect - đồng nhất với design cũ */
+.actions-row-4col .action-btn:hover {
+  background: var(--btn-color);
+  color: #fff;
+  border-color: var(--btn-color);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* ✅ MÀU SẮC CỤ THỂ - Giống thiết kế cũ */
+.actions-row-4col .btn-location {
+  --btn-color: var(--kiosk-blue);  /* Xanh dương */
+}
+
+.actions-row-4col .btn-inventory-settings {
+  --btn-color: var(--kiosk-purple);  /* Tím - giống inventory */
+}
+
+.actions-row-4col .btn-check-in-out {
+  --btn-color: var(--kiosk-orange);  /* Cam - giống check in/out */
+}
+
+.actions-row-4col .btn-teflon {
+  --btn-color: var(--kiosk-pink);  /* Hồng */
+}
+
+/* Responsive: Stack thành 2x2 trên tablet nhỏ */
+@media (max-width: 900px) {
+  .actions-row-4col {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  
+  .actions-row-4col .action-btn {
+    font-size: 12px;
+    padding: 10px 6px;
+  }
+  
+  .actions-row-4col .btn-label-ja {
+    font-size: 12px;
+  }
+  
+  .actions-row-4col .btn-label-vi {
+    font-size: 10px;
+  }
+}
+
+/* ========================================
+   ❌ XÓA: .actions-row-3col CŨ (KHÔNG DÙNG NỮA)
+   HTML đã đổi sang .actions-row-4col
+   ======================================== */
+/* REMOVED - Không còn dùng .actions-row-3col cho Row 1 */
+
+/* ========================================
+   ✅ GIỮ NGUYÊN: CHECK-IN/CHECK-OUT ROW
+   ======================================== */
+
+.checkin-checkout-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-sm);
+}
+
+.action-btn-large {
+  padding: 10px 8px;
+  border-radius: var(--radius-lg);
+  min-height: 56px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  border: none;
+}
+
+.action-btn-large i {
+  display: none;
+}
+
+.action-btn-large .btn-text-main {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.action-btn-large .btn-text-sub {
+  font-size: 11px;
+  opacity: 0.9;
+  line-height: 1;
+}
+
+.btn-checkin {
+  background: var(--kiosk-green);
+}
+
+.btn-checkout {
+  background: var(--kiosk-orange);
+}
+
+.action-btn-large:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--color-shadow);
+}
+
+/* ========================================
+   ✅ HỖ TRỢ: NỤT SHIPMENT, COMMENT (Row 2)
+   Giữ nguyên nếu còn dùng grid 3 cột
+   ======================================== */
+
+.actions-row-3col {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-sm);
+}
+
+/* Style cho các nút Row 2 (nếu còn) - Shipment, Comment, Print/QR */
+.actions-row-3col .action-btn {
+  --btn-color: var(--color-text);
+  background: #fff;
+  color: var(--btn-color);
+  border: 2px solid var(--btn-color);
+  padding: 8px;
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 60px;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.actions-row-3col .action-icon {
+  color: inherit;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.actions-row-3col .action-btn:hover {
+  background: var(--btn-color);
+  color: #fff;
+  border-color: var(--btn-color);
+  transform: translateY(-1px);
+}
+
+/* Màu sắc cho từng nút Row 2 */
+.actions-row-3col .btn-shipment {
+  --btn-color: var(--kiosk-purple);
+}
+
+.actions-row-3col .btn-comment {
+  --btn-color: var(--kiosk-gray);
+}
+
+.actions-row-3col .btn-print {
+  --btn-color: var(--kiosk-red);
+}
+
+.actions-row-3col .btn-qr {
+  --btn-color: var(--kiosk-purple);
+}
+
+
+/* ============================================
+   GENERAL SPACING FIXES
+   ============================================ */
+
+/* Reduce all gaps */
+.panel-body {
+    gap: 6px;  /* GIẢM từ 8px → 6px */
+}
+
+/* Compact panel headers */
+.panel-header {
+    padding: 6px var(--spacing-md);  /* GIẢM từ 8px → 6px */
+    min-height: 28px;  /* GIẢM từ 32px → 28px */
+}
+
+
+/* ========================================
+   10. LOWER SECTION - TABS
+   ======================================== */
+.lower-tabs {
+    display: flex;
+    background: var(--color-bg);
+    border-bottom: 2px solid var(--color-border);
+    flex-shrink: 0;
+}
+
+.lower-tab {
+    flex: 1;
+    padding: 10px var(--spacing-lg); /* GIẢM từ 12px → 10px */
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.lower-tab:hover {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.lower-tab.active {
+    color: var(--kiosk-green-dark);
+    border-bottom-color: var(--kiosk-green-dark);
+    background: white;
+}
+
+.tab-count {
+    background: var(--kiosk-green);
+    color: white;
+    padding: 2px 8px;
+    border-radius: var(--radius-lg);
+    font-size: 11px;
+}
+
+.lower-content {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+}
+
+.tab-pane {
+    display: none;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.tab-pane.active {
+    display: block;
+}
+
+/* ========================================
+   11. RESULTS TABLE - SORTABLE
+   ======================================== */
+.results-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.results-table thead {
+    background: var(--kiosk-green-dark);
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.results-table th {
+    padding: 10px var(--spacing-md); /* GIẢM từ 12px → 10px */
+    text-align: left;
+    font-weight: 600;
+    font-size: 13px;
+    white-space: nowrap;
+    cursor: pointer; /* SORTABLE */
+    user-select: none;
+    position: relative;
+    transition: background var(--transition-fast);
+}
+
+.results-table th:hover {
+    background: var(--kiosk-green);
+}
+
+/* Sortable indicator */
+.results-table th.sortable::after {
+    content: '⇅';
+    margin-left: 6px;
+    opacity: 0.5;
+    font-size: 12px;
+}
+
+.results-table th.sorted-asc::after {
+    content: '↑';
+    opacity: 1;
+}
+
+.results-table th.sorted-desc::after {
+    content: '↓';
+    opacity: 1;
+}
+
+.results-table td {
+    padding: 10px var(--spacing-md); /* GIẢM từ 12px → 10px */
+    border-bottom: 1px solid var(--color-border);
+}
+
+.results-table tbody tr {
+    cursor: pointer;
+    transition: background var(--transition-fast);
+}
+
+.results-table tbody tr:hover {
+    background: var(--color-bg);
+}
+
+.results-table tbody tr.active {
+    background: rgba(76, 175, 80, 0.1);
+}
+
+.type-badge {
+    padding: 4px 8px;
+    border-radius: var(--radius-md);
+    font-size: 11px;
+    font-weight: 600;
+    color: rgb(37, 35, 182);
+    display: inline-block;
+}
+
+.type-badge.mold {
+    background: var(--kiosk-cyan);
+}
+
+.type-badge.cutter {
+    background: var(--kiosk-orange);
+}
+
+
+
+.status-available {
+    background: var(--kiosk-green);
+    color: white;
+}
+
+.status-in-use {
+    background: var(--kiosk-orange);
+    color: white;
+}
+
+.detail-btn {
+    padding: 6px 12px;
+    background: var(--kiosk-blue);
+    color: white;
+    border-radius: var(--radius-md);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* ========================================
+   12. VIRTUAL KEYBOARD - 3 COLUMNS
+   ======================================== */
+.keyboard-layout {
+    display: grid;
+    grid-template-columns: 200px 1fr 200px; /* LEFT-CENTER-RIGHT */
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    height: 100%;
+}
+
+/* LEFT COLUMN - History & Suggestions */
+.keyboard-left {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    overflow-y: auto;
+}
+
+.keyboard-section h4 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: var(--spacing-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.history-chips {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.history-chip {
+    background: var(--color-bg);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    font-size: 12px;
+}
+
+.history-chip:hover {
+    background: var(--kiosk-primary);
+    color: white;
+}
+
+.chip-text {
+    font-size: 12px;
+}
+
+.chip-count {
+    background: var(--kiosk-green);
+    color: white;
+    padding: 2px 6px;
+    border-radius: var(--radius-lg);
+    font-size: 10px;
+}
+
+.chip-remove {
+    color: var(--color-text-secondary);
+    cursor: pointer;
+}
+
+/* CENTER COLUMN - Virtual Keyboard */
+.keyboard-center {
+    display: flex;
+    flex-direction: column;
+    gap: 6px; /* GIẢM từ 8px → 6px */
+    justify-content: center;
+}
+
+.keyboard-row {
+    display: flex;
+    justify-content: center;
+    gap: 6px; /* GIẢM từ 8px → 6px */
+}
+
+.keyboard-row.staggered-1 {
+    padding-left: 15px;
+}
+
+.keyboard-row.staggered-2 {
+    padding-left: 30px;
+}
+
+.keyboard-row.staggered-3 {
+    padding-left: 45px;
+}
+
+.key-btn {
+    min-width: 45px; /* GIẢM từ 50px → 45px */
+    height: 45px; /* GIẢM từ 50px → 45px */
+    background: white;
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-size: 16px; /* GIẢM từ 18px → 16px */
+    font-weight: 600;
+    color: var(--color-text);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.key-btn:hover {
+    background: var(--color-bg);
+    border-color: var(--kiosk-primary);
+}
+
+.key-btn:active, .key-btn.pressed {
+    transform: scale(0.95);
+    background: var(--kiosk-primary);
+    color: white;
+}
+
+.key-special {
+    background: var(--color-bg);
+}
+
+.key-danger {
+    background: var(--kiosk-red);
+    color: white;
+    border-color: var(--kiosk-red);
+}
+
+.key-reset {
+    background: var(--kiosk-cyan);
+    color: white;
+    border-color: var(--kiosk-cyan);
+}
+
+.key-warning {
+    background: var(--kiosk-orange);
+    color: white;
+    border-color: var(--kiosk-orange);
+}
+
+.key-success {
+    background: var(--kiosk-green);
+    color: white;
+    border-color: var(--kiosk-green);
+    min-width: 120px; /* TĂNG nút Search */
+    font-size: 14px;
+}
+
+.space-key {
+    min-width: 250px; /* GIẢM từ 300px → 250px */
+}
+
+/* RIGHT COLUMN - Quick Phrases & QR */
+.keyboard-right {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.quick-phrases {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.quick-btn {
+    padding: 8px 10px;  /* GIẢM từ var(--spacing-md) */
+    font-size: 12px;  /* GIẢM từ 13px */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.quick-btn:hover {
+    background: var(--kiosk-primary);
+}
+
+.qr-scan-large {
+    width: 100%;
+    padding: 14px;  /* GIẢM từ padding: var(--spacing-xl) */
+    background: var(--kiosk-purple);
+    color: white;
+    border-radius: var(--radius-lg);
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-top: auto;
+}
+
+
+.qr-scan-large i {
+    font-size: 32px;
+}
+
+/* ============================================
+   FIX 4: Detail Tab Content
+   ============================================ */
+
+#detail-pane {
+    padding: var(--spacing-md);
+    overflow-y: auto;
+}
+
+.detail-full-view {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: var(--spacing-md);
+}
+
+.detail-full-view.empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+}
+
+
+
+/* ========================================
+   13. MODAL STYLES
+   ======================================== */
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: var(--z-modal);
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-lg);
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: white;
+    border-radius: var(--radius-xl);
+    max-width: 600px;
+    width: 100%;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    padding: var(--spacing-lg) var(--spacing-xl);
+    border-bottom: 1px solid var(--color-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    font-size: 18px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.modal-close {
+    width: 32px;
+    height: 32px;
+    background: var(--color-bg);
+    border-radius: var(--radius-round);
+    font-size: 24px;
+    color: var(--color-text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.modal-close:hover {
+    background: var(--kiosk-red);
+    color: white;
+}
+
+.modal-body {
+    padding: var(--spacing-xl);
+    overflow-y: auto;
+    flex: 1;
+}
+
+.modal-footer {
+    padding: var(--spacing-lg) var(--spacing-xl);
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-md);
+}
+
+/* ========================================
+   14. LOADING OVERLAY
+   ======================================== */
+
+.loading-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: var(--z-loading);
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.loading-overlay.active {
+    display: flex;
+}
+
+.loading-spinner {
+    width: 60px;
+    height: 60px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: var(--radius-round);
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loading-text {
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+/* ========================================
+   15. TOAST NOTIFICATION
+   ======================================== */
+
+.toast {
+    position: fixed;
+    top: 100px;
+    right: var(--spacing-xl);
+    min-width: 300px;
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+    padding: var(--spacing-lg);
+    display: none;
+    align-items: center;
+    gap: var(--spacing-md);
+    z-index: var(--z-toast);
+    animation: toastSlideIn 0.3s ease;
+}
+
+.toast.show {
+    display: flex;
+}
+
+@keyframes toastSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.toast-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-round);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.toast.success .toast-icon {
+    background: var(--kiosk-green);
+    color: white;
+}
+
+.toast.error .toast-icon {
+    background: var(--kiosk-red);
+    color: white;
+}
+
+.toast.info .toast-icon {
+    background: var(--kiosk-blue);
+    color: white;
+}
+
+.toast.warning .toast-icon {
+    background: var(--kiosk-orange);
+    color: white;
+}
+
+.toast-content {
+    flex: 1;
+}
+
+.toast-title {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: var(--spacing-xs);
+}
+
+.toast-message {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+}
+
+/* ========================================
+   16. UTILITY CLASSES
+   ======================================== */
+
+.empty-hint {
+    text-align: center;
+    padding: var(--spacing-xl);
+    color: var(--color-text-secondary);
+    font-style: italic;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.mt-0 { margin-top: 0 !important; }
+.mt-1 { margin-top: var(--spacing-xs) !important; }
+.mt-2 { margin-top: var(--spacing-sm) !important; }
+.mt-3 { margin-top: var(--spacing-md) !important; }
+.mt-4 { margin-top: var(--spacing-lg) !important; }
+
+.mb-0 { margin-bottom: 0 !important; }
+.mb-1 { margin-bottom: var(--spacing-xs) !important; }
+.mb-2 { margin-bottom: var(--spacing-sm) !important; }
+.mb-3 { margin-bottom: var(--spacing-md) !important; }
+.mb-4 { margin-bottom: var(--spacing-lg) !important; }
+
+.p-0 { padding: 0 !important; }
+.p-1 { padding: var(--spacing-xs) !important; }
+.p-2 { padding: var(--spacing-sm) !important; }
+.p-3 { padding: var(--spacing-md) !important; }
+.p-4 { padding: var(--spacing-lg) !important; }
+
+/* ========================================
+   17. RESPONSIVE BREAKPOINTS
+   ======================================== */
+
+/* iPad Portrait (768px - 1023px) */
+@media (max-width: 1023px) and (min-width: 768px) {
+    .upper-section {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+    }
+
+    .search-filter-panel {
+        grid-column: 1 / 2;
+        grid-row: 1 / 3;
+    }
+
+    .quick-results-panel {
+        grid-column: 2 / 3;
+        grid-row: 1 / 2;
+    }
+
+    .detail-panel {
+        grid-column: 2 / 3;
+        grid-row: 2 / 3;
+    }
+
+    .actions-panel {
+        display: none; /* Move actions to modal */
+    }
+
+    .location-circle,
+    .location-rectangle {
+        width: 80px;
+        height: 80px;
+        font-size: 36px;
+    }
+}
+
+
+
+/* Large Desktop (> 1440px) */
+@media (min-width: 1440px) {
+    .main-container {
+        max-width: 1600px;
+        margin: 0 auto;
+    }
+
+    .quick-results-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .actions-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Print Styles */
+@media print {
+    .app-header,
+    .mobile-header,
+    .action-buttons,
+    .lower-tabs,
+    .no-print {
+        display: none !important;
+    }
+
+    .main-container {
+        height: auto;
+    }
+
+    .panel {
+        page-break-inside: avoid;
+    }
+}
+
+/* ========================================
+   18. ANIMATIONS
+   ======================================== */
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease;
+}
+
+.slide-up {
+    animation: slideUp 0.3s ease;
+}
+
+.slide-down {
+    animation: slideDown 0.3s ease;
+}
+
+/* ========================================
+   19. ACCESSIBILITY
+   ======================================== */
+
+*:focus {
+    outline: 2px solid var(--kiosk-primary);
+    outline-offset: 2px;
+}
+
+button:focus-visible {
+    outline: 2px solid var(--kiosk-primary);
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+    :root {
+        --color-border: #000;
+    }
+
+    .panel {
+        border: 2px solid #000;
+    }
+}
+
+/* ============================================
+   FIX 5: Ensure All Buttons Are Clickable
+   ============================================ */
+
+.action-btn,
+.action-btn-large,
+.toggle-view-btn,
+.export-btn,
+.detail-btn,
+button {
+    cursor: pointer !important;
+    pointer-events: auto !important;
+}
+
+.action-btn i,
+.action-btn-large i {
+    pointer-events: none;
+}
+
+/* ============================================
+   FIX 6: Tab Switching
+   ============================================ */
+
+.lower-tab {
+    cursor: pointer !important;
+}
+
+.lower-tab.active {
+    pointer-events: auto !important;
+}
+
+/* ============================================
+   FIX 7: Table Row Click
+   ============================================ */
+
+.results-table tbody tr {
+    cursor: pointer !important;
+}
+
+.results-table tbody tr * {
+    pointer-events: none;
+}
+
+/* ============================================
+   FIX 8: Prevent Empty State From Breaking
+   ============================================ */
+
+.empty-hint {
+    padding: var(--spacing-lg);
+    text-align: center;
+    color: var(--color-text-secondary);
+    font-style: italic;
+}
+
+/* ============================================
+   FIX 9: Related Equipment Clickability
+   ============================================ */
+
+.related-item {
+    cursor: pointer !important;
+    pointer-events: auto !important;
+}
+
+.related-item * {
+    pointer-events: none;
+}
+/* ============================================
+   KEYBOARD COMPACT FIXES
+   ============================================ */
+
+.quick-phrases {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.quick-btn {
+    padding: 8px 10px !important;
+    font-size: 12px !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.qr-scan-large {
+    padding: 16px !important;
+    font-size: 14px !important;
+}
+
+.qr-scan-large i {
+    font-size: 24px !important;
+}
+
+/* ============================================
+   SEARCH HISTORY DROPDOWN STYLES
+   ============================================ */
+
+/* Dropdown container */
+.search-history-dropdown {
+    position: absolute;
+    top: 100%;  /* Ngay dưới search box */
+    left: 0;
+    right: 0;
+    background: white;
+    border: 2px solid var(--kiosk-primary);
+    border-top: none;
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.search-history-dropdown.hidden {
+    display: none;
+}
+
+/* History item */
+.search-history-dropdown .history-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+    border-bottom: 1px solid #eee;
+}
+
+.search-history-dropdown .history-item:hover {
+    background: #f5f5f5;
+}
+
+.search-history-dropdown .history-query {
+    flex: 1;
+    font-size: 13px;
+}
+
+.search-history-dropdown .history-count {
+    font-size: 11px;
+    color: #666;
+    background: #f0f0f0;
+    padding: 2px 6px;
+    border-radius: 10px;
+}
+
+.search-history-dropdown .history-empty {
+    padding: 16px;
+    text-align: center;
+    color: #999;
+    font-style: italic;
+}
+
+/* Search box positioning */
+.search-box {
+    position: relative;
+}
+
+/* ✅ THÊM đoạn CSS mới - KHỚP với JS */
+/* ==========================================
+   ✅ COMPANY STORAGE BADGE COLORS - R6.2 FIX
+   ========================================== */
+.detail-company-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+    transition: all 0.3s ease;
+    min-width: 80px;
+}
+
+/* YSD = Xanh dương */
+.detail-company-badge.company-ysd {
+    background-color: #2563EB !important;
+    color: white !important;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+}
+
+/* Other = Cam */
+.detail-company-badge.company-other {
+    background-color: #EA580C !important;
+    color: white !important;
+    box-shadow: 0 2px 8px rgba(234, 88, 12, 0.3);
+}
+
+/* ✅ CHECK-IN/OUT STATUS BADGE - Row 2 */
+
+
+
+.checkin-status-badge {
+    padding: 2px 5px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 14px;
+    color: white;
+    background-color: #9E9E9E; /* Default gray when no status */
+    transition: all 0.3s ease;
+}
+
+/* Check-IN state */
+.checkin-status-badge.checkin-in {
+    background-color: #28a745 !important; /* Green for IN */
+}
+
+/* Check-OUT state */
+.checkin-status-badge.checkin-out {
+    background-color: #dc3545 !important; /* Red for OUT */
+}
+
+.checkin-badge-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    padding: 0 4px;
+}
+
+/* Common label styles */
+.jp-text {
+    color: #1976D2;
+    font-weight: 600;
+}
+
+.vn-text {
+    color: #757575;
+    font-style: italic;
+    font-size: 10px;
+}
+
+
+/* ✅ CHECK-IN/OUT BADGE - NEW COLORS */
+.checkin-status-badge.checkin-in {
+    background-color: #43A047 !important; /* Green tông mới */
+    box-shadow: 0 2px 8px rgba(67, 160, 71, 0.3);
+}
+
+.checkin-status-badge.checkin-out {
+    background-color: #E53935 !important; /* Red - giữ nguyên */
+    box-shadow: 0 2px 8px rgba(229, 57, 53, 0.3);
+}
+
+
+/* ✅ 2x2 GRID LAYOUT */
+.badges-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding: 4px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e8eef3 100%);
+    border-radius: 8px;
+}
+
+.badge-col {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+
+
+
+
+.checkin-status-badge.checkin-in {
+    background-color: #43A047 !important; /* Green */
+    box-shadow: 0 2px 8px rgba(67, 160, 71, 0.3);
+}
+
+.checkin-status-badge.checkin-out {
+    background-color: #E53935 !important; /* Red */
+    box-shadow: 0 2px 8px rgba(229, 57, 53, 0.3);
+}
+
+/* ✅ R6.9.10: AUDIT STATUS - Màu vàng cam */
+.checkin-status-badge.checkin-audit {
+    background-color: #FF9800 !important; /* Orange - Kiểm kê */
+    box-shadow: 0 2px 8px rgba(255, 152, 0, 0.3);
+}
+
+/* ✅ NO HISTORY - Màu xám nhạt */
+.checkin-status-badge.no-history {
+    background-color: #9E9E9E !important; /* Gray - Không có lịch sử */
+    opacity: 0.7;
+}
+
+
+/* Badge Labels */
+.badge-label {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    padding: 2px 4px;
+}
+
+.jp-text {
+    color: #1976D2;
+    font-weight: 600;
+}
+
+.vn-text {
+    color: #757575;
+    font-style: italic;
+    font-size: 10px;
+}
+
+/* Badge pending state */
+#detail-status-badge.badge-pending {
+    opacity: 0.7;
+    animation: pulse-pending 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-pending {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+}
+
+/* ==========================================
+   ✅ COMPANY STORAGE BADGE COLORS - R6.2 FINAL
+   ========================================== */
+#detail-company-storage {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+    transition: all 0.3s ease;
+    min-width: 80px;
+    background-color: #607D8B; /* Default gray */
+    color: white;
+}
+
+/* YSD = Xanh dương */
+#detail-company-storage.ysd {
+    background-color: #2563EB !important;
+    color: white !important;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+}
+
+/* Other = Cam */
+#detail-company-storage.external {
+    background-color: #EA580C !important;
+    color: white !important;
+    box-shadow: 0 2px 8px rgba(234, 88, 12, 0.3);
+}
+
+/* ==========================================
+   ✅ CHECK-IN STATUS BADGE - NO HISTORY STYLE
+   ========================================== */
+.status-badge.no-history {
+    background-color: #6B7280 !important;
+    color: white !important;
+    opacity: 0.85;
+    padding: 8px 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    min-height: 50px;
+}
+
+.status-badge.no-history .badge-text-main {
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.status-badge.no-history .badge-text-sub {
+    font-size: 10px;
+    font-weight: 500;
+    font-style: italic;
+    opacity: 0.9;
+    line-height: 1.2;
+}
+
+/* ========================================
+   3. MOBILE STICKY HEADER (iPhone only)
+   ======================================== */
+.mobile-header {
+    display: none;
+    background: white;
+    padding: var(--spacing-md);
+    box-shadow: 0 2px 8px var(--color-shadow);
+    position: sticky;
+    top: 0;
+    z-index: var(--z-header);
+    gap: var(--spacing-md);
+}
+
+
+
+.mobile-search-row {
+    display: flex;
+    gap: var(--spacing-md);
+    padding: 8px 12px 4px 12px; /* ← GIẢM padding-bottom: 8px → 4px */
+    align-items: center;
+    }
+
+
+.mobile-search-box {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.mobile-search-input {
+    width: 100%;
+    padding: var(--spacing-md) 40px var(--spacing-md) var(--spacing-md);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    font-size: 16px;
+    margin-bottom: 4px;
+}
+
+.mobile-clear-btn {
+    position: absolute;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    background: var(--color-border);
+    border-radius: var(--radius-round);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-secondary);
+}
+
+.mobile-qr-btn {
+    width: 50px;
+    height: 50px;
+    background: var(--kiosk-cyan);
+    color: white;
+    border-radius: var(--radius-lg);
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mobile-actions-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.mobile-action-btn {
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border: 2px solid;
+    transition: all 0.2s ease;
+}
+
+/* Reset Filter Button - Cyan */
+.mobile-action-btn.reset-filter {
+    background: #E0F7FA;
+    color: #00838F;
+    border-color: #00BCD4;
+}
+
+.mobile-action-btn.reset-filter:active {
+    background: #00BCD4;
+    color: white;
+}
+
+/* Clear All Button - Orange */
+.mobile-action-btn.clear-all {
+    background: #FFF3E0;
+    color: #E65100;
+    border-color: #FF9800;
+}
+
+.mobile-action-btn.clear-all:active {
+    background: #FF9800;
+    color: white;
+}
+
+.mobile-action-btn i {
+    font-size: 16px;
+}
+
+/* ========================================
+   MOBILE FILTER PANEL (Collapsible)
+   ======================================== */
+.mobile-filter-panel {
+    display: none; /* ⭐ THÊM DÒNG NÀY - ẩn mặc định trên iPad */
+    background: white;
+    border-bottom: 1px solid var(--color-border);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    
+}
+
+.mobile-filter-toggle {
+    width: 100%;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: white;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.mobile-filter-toggle:active {
+    background: var(--color-bg);
+}
+
+.mobile-filter-toggle i:first-child {
+    color: var(--kiosk-cyan);
+    font-size: 18px;
+}
+
+.mobile-filter-toggle span {
+    flex: 1;
+    text-align: left;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.mobile-filter-toggle .toggle-icon {
+    color: var(--color-text-secondary);
+    font-size: 14px;
+    transition: transform 0.3s ease;
+}
+
+/* Collapsed state */
+.mobile-filter-panel.collapsed .toggle-icon {
+    transform: rotate(-90deg);
+}
+
+/* Expanded state */
+.mobile-filter-panel:not(.collapsed) .toggle-icon {
+    transform: rotate(0deg);
+}
+
+/* Filter Content */
+.mobile-filter-content {
+    padding: 0;
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+}
+
+.mobile-filter-panel:not(.collapsed) .mobile-filter-content {
+    max-height: 400px;
+    padding: 16px;
+}
+
+/* Category Tabs */
+.mobile-category-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.mobile-category-tab {
+    padding: 10px 8px;
+    border: 2px solid var(--color-border);
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.mobile-category-tab i {
+    font-size: 20px;
+    color: var(--color-text-secondary);
+}
+
+.mobile-category-tab span {
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    text-align: center;
+    line-height: 1.2;
+}
+
+/* All Tab - Blue */
+.mobile-category-tab[data-category="all"].active {
+    border-color: #2196F3;
+    background: #2196F3;
+}
+
+.mobile-category-tab[data-category="all"].active i,
+.mobile-category-tab[data-category="all"].active span {
+    color: white;
+}
+
+/* Mold Tab - Cyan */
+.mobile-category-tab[data-category="mold"].active {
+    border-color: var(--kiosk-cyan);
+    background: var(--kiosk-cyan);
+}
+
+.mobile-category-tab[data-category="mold"].active i,
+.mobile-category-tab[data-category="mold"].active span {
+    color: white;
+}
+
+/* Cutter Tab - Orange */
+.mobile-category-tab[data-category="cutter"].active {
+    border-color: var(--kiosk-orange);
+    background: var(--kiosk-orange);
+}
+
+.mobile-category-tab[data-category="cutter"].active i,
+.mobile-category-tab[data-category="cutter"].active span {
+    color: white;
+}
+
+/* Filter Fields */
+.mobile-filter-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.mobile-filter-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.mobile-filter-row label {
+    font-size: calc(12px * 0.9) !important; /* 10.8px - 90% */
+    font-weight: 600;
+    color: var(--color-text-dark);
+    }
+
+.mobile-filter-select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    background: white;
+    font-size: calc(14px * 0.9) !important; /* 12.6px - 90% */
+    color: var(--color-text-dark);
+    transition: border-color 0.2s ease;
+}
+
+.mobile-filter-select:focus {
+    outline: none;
+    border-color: var(--kiosk-primary);
+    box-shadow: 0 0 0 3px rgba(106, 90, 205, 0.1);
+}
+
+.mobile-filter-select:disabled {
+    background: var(--color-bg);
+    color: var(--color-text-secondary);
+    cursor: not-allowed;
+}
+
+/* ========================================
+   R6.9.10: ẨN MOBILE NAVIGATION TRÊN iPAD
+   ======================================== */
+
+/* ✅ Ẩn Bottom Navigation Bar trên iPad (≥768px) */
+@media (min-width: 768px) {
+    #bottom-nav-bar,
+    .bottom-nav-item,
+    .lower-tabs {
+        display: none !important;
+        
+    }
+}
+
+/* ✅ Ẩn Floating Action Bar trên iPad (≥768px) */
+@media (min-width: 768px) {
+    #floating-action-bar,
+    .floating-action-btn,
+    .mobile-action-bar {
+        display: none !important;
+    }
+}
+
+/* ✅ Chỉ hiển thị trên iPhone (<768px) */
+@media (max-width: 767px) {
+    #bottom-nav-bar {
+        display: flex !important;
+                justify-content: space-around !important;
+        align-items: center !important;
+    }
+    
+    #floating-action-bar {
+        display: flex !important;
+    }
+}
+
+
+
+/* ========================================
+   MOBILE RESPONSIVE (iPhone ONLY - < 768px)
+   Consolidated & Optimized
+   ======================================== */
+@media (max-width: 767px) {
+
+    
+    /* ========== HIDE DESKTOP/IPAD ELEMENTS ========== */
+    .app-header,
+    .search-filter-panel,
+    .detail-panel,
+    .actions-panel,
+    .lower-section,
+    .lower-tabs,
+    .lower-content {
+        display: none !important;
+    }
+
+    /* ========== SHOW MOBILE HEADER ========== */
+    .mobile-header {
+        display: flex !important;
+        flex-direction: column;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: white;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    
+
+    /* ========== MOBILE SEARCH ROW ========== */
+    /* MOBILE SEARCH ROW */
+
+    .mobile-search-row .search-box {
+        flex: 1;
+        display: flex;
+        align-items: stretch;
+        position: relative;
+        height: 44px;
+    }
+
+    .mobile-search-row .search-input {
+         flex: 1;
+        width: 100%;
+        height: 100%;
+        padding: 0 40px 0 12px;
+        font-size: 16px;
+        border: 2px solid #00BCD4 !important;
+        border-radius: 8px;
+        line-height: normal;
+    }
+
+    
+
+    .search-box .search-clear-btn {
+        position: absolute;
+        right: 6px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 26px;
+        height: 26px;
+        border: none;
+        background: transparent;
+        color: #999;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        padding: 0;
+        line-height: 1;
+        pointer-events: auto;  /* ⭐ THÊM DÒNG NÀY */
+    }
+
+    .search-box .search-clear-btn:hover {
+        color: #333;
+    }
+
+
+    .mobile-search-row .search-clear-btn:active {
+        background: #f5f5f5;
+    }
+
+    .mobile-search-row .qr-btn {
+        width: 44px;
+        height: 44px;
+        border: 2px solid #00BCD4;
+        border-radius: 8px;
+        background: white;
+        color: #00BCD4;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        transition: all 0.2s ease;
+        flex-shrink: 0;
+    }
+
+    .mobile-search-row .qr-btn:active {
+        background: #FFF3E0;
+        transform: scale(0.95);
+    }
+
+
+    /* ========== CATEGORY TABS (moved to header) ========== */
+    .category-tabs-mobile {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        padding: 0 12px 8px 12px;
+    }
+
+    .category-tabs-mobile .category-tab {
+        padding: 8px 6px;
+        border: 2px solid #c0c0c0;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: calc(13px * 0.9) !important; /* 11.7px - 90% */
+        font-weight: 600;
+        }
+
+
+    
+
+    .category-tabs-mobile .category-tab.active {
+        color: white;
+    }
+
+    .category-tabs-mobile .category-tab[data-category="all"].active {
+        background: #2196F3;
+        border-color: #2196F3;
+    }
+
+    .category-tabs-mobile .category-tab[data-category="mold"].active {
+        background: var(--kiosk-cyan);
+        border-color: var(--kiosk-cyan);
+    }
+
+    .category-tabs-mobile .category-tab[data-category="cutter"].active {
+        background: var(--kiosk-orange);
+        border-color: var(--kiosk-orange);
+    }
+    
+
+    /* ========== MOBILE FILTER PANEL ========== */
+    .mobile-filter-panel {
+        display: block !important;
+        position: sticky;
+        top: 110px; /* Below mobile-header */
+        z-index: 99;
+        background: white;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .mobile-filter-toggle {
+        width: 100%;
+        padding: 10px 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: white;
+        border: none;
+        cursor: pointer;
+    }
+
+    .mobile-filter-toggle i:first-child {
+        color: var(--kiosk-cyan);
+        font-size: 16px;
+    }
+
+    .mobile-filter-toggle span {
+        flex: 1;
+        text-align: left;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .mobile-filter-toggle .toggle-icon {
+        color: #757575;
+        font-size: 12px;
+        transition: transform 0.3s ease;
+    }
+
+    .mobile-filter-panel.collapsed .toggle-icon {
+        transform: rotate(-90deg);
+    }
+
+    .mobile-filter-content {
+        padding: 0;
+        overflow: hidden;
+        max-height: 0;
+        transition: max-height 0.3s ease-out;
+    }
+
+    .mobile-filter-panel:not(.collapsed) .mobile-filter-content {
+        max-height: 400px;
+        padding: 12px;
+    }
+
+    /* ========== LAYOUT ADJUSTMENTS ========== */
+    .main-container {
+        height: calc(100vh - 160px); /* mobile-header + filter-toggle */
+        padding: 8px;
+    }
+
+    .upper-section {
+        display: flex !important;
+        flex-direction: column;
+        height: auto;
+        gap: 12px;
+    }
+
+    /* ========== QUICK RESULTS - FULL WIDTH ========== */
+    .quick-results-panel {
+        width: 100% !important;
+        min-height: 300px;
+    }
+
+    .quick-results-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px;
+        max-height: calc(100vh - 200px);
+        overflow-y: auto;
+    }
+
+    /* ========== DETAIL STORAGE GROUP ========== */
+    .detail-storage-group {
+        grid-template-columns: 1fr;
+    }
+
+    
+    
+}
+
+
+
+/* ========================================
+   R6.8 FIX - iPad Detail Panel Header (Green)
+   Apply green header ONLY for iPad/Desktop
+   ======================================== */
+
+@media (min-width: 768px) {
+  /* Force green header for iPad */
+  .detail-panel .detail-header-r6-5 {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    background: var(--kiosk-green-dark) !important;  /* #2E7D32 green */
+    color: #fff !important;
+    padding: 6px 12px !important;
+    
+    gap: 8px !important;
+  }
+
+  .detail-header-r6-5 .detail-header-left {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #fff !important;
+  }
+
+  .detail-header-r6-5 .detail-title {
+    color: #fff !important;
+    font-weight: 700;
+    font-size: 14px;
+  }
+
+  .detail-header-r6-5 .detail-separator {
+    color: rgba(255,255,255,0.6);
+  }
+
+  /* Badges - MoldID + MoldCode */
+  .detail-header-r6-5 .detail-moldid-badge,
+  .detail-header-r6-5 .detail-moldcode-badge {
+    background: rgba(255,255,255,0.25) !important;
+    color: #fff !important;
+    border: 1.5px solid rgba(255,255,255,0.5) !important;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  /* Right buttons */
+  .detail-header-r6-5 .detail-header-right {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .detail-header-r6-5 .detail-collapse-btn,
+  .detail-header-r6-5 .detail-view-full-link,
+  .detail-header-r6-5 .detail-close-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 1.5px solid rgba(255,255,255,0.6) !important;
+    background: transparent !important;
+    color: #fff !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease-out;
+  }
+
+  .detail-header-r6-5 .detail-collapse-btn:hover,
+  .detail-header-r6-5 .detail-view-full-link:hover,
+  .detail-header-r6-5 .detail-close-btn:hover {
+    background: rgba(255,255,255,0.15) !important;
+    border-color: #fff !important;
+  }
+
+  .detail-header-right .detail-collapse-btn,
+  .detail-header-right .detail-close-btn,
+  .detail-header-right .detail-view-full-link {
+    display: none !important;
+  }
+}
+
+/* END R6.8 iPad Green Header Fix */
+
+/* ======================================== 
+   TOAST NOTIFICATION r6.9.8
+   ======================================== */
+.inv-toast {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    z-index: 10000;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    animation: inv-toast-in 0.3s ease;
+}
+
+@keyframes inv-toast-in {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+.inv-toast-hide {
+    animation: inv-toast-out 0.3s ease;
+}
+
+@keyframes inv-toast-out {
+    from {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-20px);
+    }
+}
+
+.inv-toast-success {
+    background: #4caf50;
+}
+
+.inv-toast-error {
+    background: #f44336;
+}
+
+.inv-toast-warning {
+    background: #ff9800;
+}
+
+
+
+.badge-unknown {
+    background: #f5f5f5;
+    color: #757575;
+    border: 1px solid #e0e0e0;
+}
+
+/* ✅ R7.0.3: Simulated Fullscreen Mode */
+body.simulated-fullscreen {
+    /* Fix iOS viewport height */
+    height: 100vh;
+    height: calc(var(--vh, 1vh) * 100);
+    overflow: hidden;
+}
+
+/* Hide address bar on iOS Safari */
+@supports (-webkit-touch-callout: none) {
+    body {
+        min-height: -webkit-fill-available;
+    }
+    
+    body.simulated-fullscreen {
+        height: -webkit-fill-available;
+    }
+}
+
+/* Ensure main container fills screen */
+body.simulated-fullscreen #app-container,
+body.simulated-fullscreen .main-container {
+    height: 100vh;
+    height: calc(var(--vh, 1vh) * 100);
+}

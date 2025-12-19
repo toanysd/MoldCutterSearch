@@ -1,0 +1,145 @@
+/* styles-lower-section.css - Lower section layout */
+
+.lower-section {
+  height: 45vh;
+  background: var(--color-surface, #fff);
+  border-top: 1px solid var(--color-border, #e0e0e0);
+}
+
+.lower-panel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Tabs header */
+.lower-tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--color-border, #e0e0e0);
+  background: #f8f9fa;
+  min-height: 46px;
+}
+
+.lower-tab {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #6b7280;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.lower-tab.active {
+  background: #fff;
+  color: var(--kiosk-primary, #7B68EE);
+  border-color: var(--color-border, #e0e0e0);
+}
+
+.lower-tab .tab-count {
+  background: var(--kiosk-green, #4CAF50);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-size: 11px;
+  margin-left: 4px;
+}
+
+.lower-tab .tab-count.off {
+  background: #9ca3af;
+}
+
+.kb-toggle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.kb-toggle input {
+  cursor: pointer;
+}
+
+/* Content area */
+.lower-content {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.tab-pane {
+  display: none;
+  height: 100%;
+  overflow: auto;
+}
+
+.tab-pane.active {
+  display: block;
+}
+
+/* Keyboard layout: 3 columns */
+.keyboard-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr 200px;
+  gap: 12px;
+  height: 100%;
+  padding: 8px;
+}
+
+.keyboard-left,
+.keyboard-center,
+.keyboard-right {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+}
+
+.keyboard-section {
+  background: #fafbfc;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* Responsive */
+@media (max-width: 1280px) {
+  .keyboard-layout {
+    grid-template-columns: 240px 1fr 180px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .keyboard-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+  }
+  
+  .keyboard-left {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  
+  .keyboard-right {
+    flex-direction: row !important;
+    max-width: 100% !important;
+  }
+  
+  .quick-input-wrap {
+    flex: 1;
+  }
+  
+  .qr-scan-btn {
+    min-width: 160px;
+  }
+}

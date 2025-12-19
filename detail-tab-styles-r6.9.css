@@ -1,0 +1,505 @@
+/**
+ * detail-tab-styles.css V7.7.7 CARD SECTIONS
+ * ===================================================
+ * MODERN 2025 DESIGN: Card-based sections
+ * - Section headers with background
+ * - Row-based property list
+ * - Visual hierarchy clear
+ * - Compact but readable
+ * ===================================================
+ */
+
+/* ============================================
+   1. TAB PANE CONTAINER
+   ============================================ */
+#detail-pane {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #f5f5f7;
+  overflow: hidden;
+}
+
+/* ============================================
+   2. DETAIL CONTENT - 2 COLUMN LAYOUT
+   ============================================ */
+#detail-content,
+.detail-content-area {
+  height: 100%;
+  display: flex;
+  gap: 0;
+  overflow: hidden;
+  background: #f5f5f7;
+}
+
+/* ============================================
+   3. LEFT SIDEBAR - VERTICAL TABS (22%)
+   ============================================ */
+.detail-sidebar {
+  width: 22%;
+  min-width: 180px;
+  max-width: 250px;
+  background: #ffffff;
+  border-right: 1px solid #e5e7eb;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 8px 4px;
+  
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e0 #f7fafc;
+}
+
+.detail-sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.detail-sidebar::-webkit-scrollbar-track {
+  background: #f7fafc;
+}
+
+.detail-sidebar::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 2px;
+}
+
+/* ============================================
+   4. TAB BUTTONS - FLAT STRUCTURE
+   ============================================ */
+.detail-tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  margin-bottom: 3px;
+  background: transparent;
+  border-left: 3px solid transparent;
+  border-radius: 0 6px 6px 0;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.detail-tab-btn:hover {
+  background: #f9fafb;
+  border-left-color: #cbd5e0;
+}
+
+.detail-tab-btn.active {
+  background: #ede9fe;
+  border-left-color: #7c3aed;
+}
+
+.tab-icon {
+  font-size: 16px;
+  min-width: 18px;
+  text-align: center;
+}
+
+.tab-labels {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+}
+
+.tab-label-jp {
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+  line-height: 1.2;
+}
+
+.tab-label-vn {
+  font-size: 10px;
+  color: #9ca3af;
+  font-style: italic;
+  line-height: 1.1;
+}
+
+.detail-tab-btn.active .tab-label-jp {
+  color: #5b21b6;
+}
+
+.detail-tab-btn.active .tab-label-vn {
+  color: #7c3aed;
+}
+
+/* ============================================
+   5. RIGHT CONTENT AREA (78%)
+   ============================================ */
+.detail-content-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 12px;
+  background: #f5f5f7;
+  
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e0 #f7fafc;
+}
+
+.detail-content-wrapper::-webkit-scrollbar {
+  width: 6px;
+}
+
+.detail-content-wrapper::-webkit-scrollbar-track {
+  background: #f7fafc;
+}
+
+.detail-content-wrapper::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 3px;
+}
+
+/* ============================================
+   6. SECTION CARD - 2025 STYLE
+   ============================================ */
+.detail-section {
+  background: #ffffff;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.detail-section:last-child {
+  margin-bottom: 0;
+}
+
+/* ============================================
+   7. SECTION HEADER
+   ============================================ */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.section-icon {
+  font-size: 16px;
+  color: #6b7280;
+}
+
+.section-title {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+}
+
+.section-title-jp {
+  font-size: 13px;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.2;
+}
+
+.section-title-vn {
+  font-size: 11px;
+  color: #6b7280;
+  font-style: italic;
+  line-height: 1.1;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* ============================================
+   8. PROPERTY ROWS - ROW-BASED LAYOUT
+   ============================================ */
+.property-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.property-row {
+  display: flex;
+  align-items: center;
+  padding: 10px 14px;
+  border-bottom: 1px solid #f3f4f6;
+  transition: background 0.1s ease;
+}
+
+.property-row:last-child {
+  border-bottom: none;
+}
+
+.property-row:hover {
+  background: #f9fafb;
+}
+
+/* Zebra striping for better readability */
+.property-row:nth-child(even) {
+  background: #fafbfc;
+}
+
+.property-row:nth-child(even):hover {
+  background: #f3f4f6;
+}
+
+/* ============================================
+   9. PROPERTY LABEL & VALUE
+   ============================================ */
+.property-label {
+  flex-shrink: 0;
+  width: 35%;
+  max-width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-right: 12px;
+}
+
+.property-label-jp {
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+  line-height: 1.2;
+}
+
+.property-label-vn {
+  font-size: 10px;
+  color: #9ca3af;
+  font-style: italic;
+  line-height: 1.1;
+}
+
+.property-value {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 500;
+  color: #111827;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.property-value.empty {
+  color: #d1d5db;
+  font-style: italic;
+}
+
+.property-value.highlight {
+  font-weight: 700;
+  color: #2563eb;
+  font-size: 14px;
+}
+
+/* ============================================
+   10. SPECIAL ROWS
+   ============================================ */
+.property-row.full-width .property-label {
+  width: 25%;
+  max-width: 150px;
+}
+
+.property-row.full-width .property-value {
+  flex: 1;
+}
+
+/* ============================================
+   11. EMPTY STATE
+   ============================================ */
+.detail-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 100%;
+  min-height: 250px;
+  font-size: 14px;
+  color: #9ca3af;
+  padding: 40px 20px;
+  text-align: center;
+  background: #ffffff;
+  border-radius: 8px;
+}
+
+.detail-empty i {
+  font-size: 32px;
+  color: #d1d5db;
+  margin-bottom: 8px;
+}
+
+/* ============================================
+   12. HISTORY / LIST SECTIONS
+   ============================================ */
+.history-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.history-item {
+  display: flex;
+  gap: 12px;
+  padding: 10px 14px;
+  border-bottom: 1px solid #f3f4f6;
+  transition: background 0.1s ease;
+}
+
+.history-item:last-child {
+  border-bottom: none;
+}
+
+.history-item:hover {
+  background: #f9fafb;
+}
+
+.history-date {
+  flex-shrink: 0;
+  font-size: 11px;
+  color: #6b7280;
+  min-width: 90px;
+  font-weight: 500;
+}
+
+.history-content {
+  flex: 1;
+}
+
+.history-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 2px;
+}
+
+.history-note {
+  font-size: 11px;
+  color: #9ca3af;
+  line-height: 1.3;
+}
+
+.history-user {
+  flex-shrink: 0;
+  font-size: 11px;
+  color: #6b7280;
+}
+
+/* ============================================
+   13. MOLD vs CUTTER THEMING
+   ============================================ */
+.detail-content-area.type-mold .detail-tab-btn.active {
+  background: #dbeafe;
+  border-left-color: #3b82f6;
+}
+
+.detail-content-area.type-mold .detail-tab-btn.active .tab-label-jp {
+  color: #1e40af;
+}
+
+.detail-content-area.type-mold .section-header {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  border-bottom-color: #3b82f6;
+}
+
+.detail-content-area.type-mold .property-value.highlight {
+  color: #1e40af;
+}
+
+.detail-content-area.type-cutter .detail-tab-btn.active {
+  background: #ffedd5;
+  border-left-color: #f97316;
+}
+
+.detail-content-area.type-cutter .detail-tab-btn.active .tab-label-jp {
+  color: #ea580c;
+}
+
+.detail-content-area.type-cutter .section-header {
+  background: linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%);
+  border-bottom-color: #f97316;
+}
+
+.detail-content-area.type-cutter .property-value.highlight {
+  color: #ea580c;
+}
+
+/* ============================================
+   14. RESPONSIVE
+   ============================================ */
+@media (max-width: 1024px) {
+  .detail-sidebar {
+    width: 25%;
+    min-width: 160px;
+  }
+  
+  .property-label {
+    width: 40%;
+  }
+}
+
+@media (max-width: 768px) {
+  #detail-content,
+  .detail-content-area {
+    flex-direction: column;
+  }
+  
+  .detail-sidebar {
+    width: 100%;
+    max-width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #e5e7eb;
+    max-height: 150px;
+  }
+  
+  .property-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .property-label {
+    width: 100%;
+    max-width: 100%;
+    padding-right: 0;
+    margin-bottom: 4px;
+  }
+}
+
+/* ============================================
+   15. ANIMATION
+   ============================================ */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.detail-section {
+  animation: slideIn 0.2s ease-out;
+}
+
+/* ============================================
+   16. PRINT STYLES
+   ============================================ */
+@media print {
+  #detail-content,
+  .detail-content-area {
+    flex-direction: column;
+  }
+  
+  .detail-sidebar {
+    display: none;
+  }
+  
+  .detail-content-wrapper {
+    overflow: visible;
+    padding: 0;
+  }
+  
+  .detail-section {
+    page-break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid #e5e7eb;
+  }
+  
+  .property-row {
+    page-break-inside: avoid;
+  }
+}

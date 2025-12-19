@@ -1,0 +1,467 @@
+/* ========================================
+ * SHIPPING - MOBILE R7.0.8
+ * - Ưu tiên iPhone: full screen, nút cố định dễ bấm
+ * - Bố cục giống Check-in: Nhập liệu / Trạng thái / Lịch sử
+ * - Áp dụng riêng cho .ship-panel (không phá Check-in)
+ * ======================================== */
+
+@media (max-width: 767px) {
+
+  /* PANEL CƠ BẢN - FULLSCREEN */
+
+  .ship-panel.checkio-panel {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100dvh !important;
+    border-radius: 0 !important;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 11000 !important;
+    background: var(--color-surface, #f8fafc);
+  }
+
+  /* HEADER */
+
+  .ship-panel .checkio-header {
+    padding: 8px 12px;
+    flex-shrink: 0;
+    z-index: 10001;
+    background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 40%, #38bdf8 100%);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .ship-panel .checkio-mode {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .ship-panel .mode-btn {
+    flex: 1;
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1.5px solid rgba(255, 255, 255, 0.4);
+    font-size: 11px;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.16);
+    color: rgba(255, 255, 255, 0.96);
+    line-height: 1.3;
+    text-align: center;
+    cursor: default;
+  }
+
+  .ship-panel .mode-btn:active {
+    transform: none;
+  }
+
+  .ship-panel .btn-close-compact {
+    border: none;
+    background: rgba(15, 23, 42, 0.14);
+    color: #ffffff;
+    width: 32px;
+    height: 32px;
+    border-radius: 16px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease, transform 0.1s ease;
+  }
+
+  .ship-panel .btn-close-compact:active {
+    background: rgba(15, 23, 42, 0.3);
+    transform: scale(0.96);
+  }
+
+  /* BODY */
+
+  .ship-panel .checkio-body {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column !important;
+    gap: 10px !important;
+    padding: 10px 12px 80px 12px !important; /* chừa chỗ cho nút dưới */
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  /* ========== 1. INPUTS (TOP) ========== */
+
+  .ship-panel .cio-inputs {
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    order: 1 !important;
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 10px 10px 12px 10px;
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08);
+  }
+
+  .ship-panel .cio-inputs h4 {
+    font-size: 13px;
+    margin-bottom: 8px;
+    color: #0f766e;
+    font-weight: 700;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.45);
+    padding-bottom: 4px;
+  }
+
+  .ship-panel .form-group {
+    margin-bottom: 12px;
+    position: relative;
+  }
+
+  .ship-panel .form-group.hidden {
+    display: none !important;
+  }
+
+  .ship-panel .form-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 4px;
+  }
+
+  .ship-panel .form-control {
+    width: 100%;
+    padding: 9px 11px;
+    border-radius: 8px;
+    border: 1.4px solid rgba(148, 163, 184, 0.7);
+    font-size: 14px;
+    background: #ffffff;
+    transition: all 0.18s ease;
+  }
+
+  .ship-panel .form-control:focus {
+    outline: none;
+    border-color: #0ea5e9;
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.18);
+  }
+
+  .ship-panel textarea.form-control {
+    resize: none;
+    min-height: 60px;
+    max-height: 80px;
+    font-family: inherit;
+    line-height: 1.4;
+  }
+
+  /* Searchable select (tái sử dụng layout Check-in) */
+
+  .ship-panel .searchable-select-wrapper {
+    position: relative;
+  }
+
+  .ship-panel .searchable-select-wrapper input.search-input {
+    width: 100%;
+    padding: 9px 34px 9px 11px;
+    border-radius: 8px;
+    border: 1.4px solid rgba(148, 163, 184, 0.7);
+    font-size: 14px;
+    background: #ffffff;
+    transition: all 0.18s ease;
+  }
+
+  .ship-panel .searchable-select-wrapper input.search-input:focus {
+    border-color: #0ea5e9;
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.18);
+  }
+
+  .ship-panel .searchable-select-wrapper .dropdown-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    font-size: 14px;
+    color: #64748b;
+    transition: transform 0.2s ease;
+  }
+
+  .ship-panel .searchable-select-wrapper.open .dropdown-icon {
+    transform: translateY(-50%) rotate(180deg);
+  }
+
+  .ship-panel .searchable-select-wrapper .options-list {
+    position: absolute;
+    top: calc(100% + 4px) !important;
+    bottom: auto !important;
+    left: 0;
+    right: 0;
+    max-height: 45vh !important;
+    overflow-y: auto;
+    background: #ffffff;
+    border-radius: 8px;
+    border: 1.4px solid rgba(148, 163, 184, 0.7);
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.18);
+    z-index: 1000;
+    display: none;
+  }
+
+  .ship-panel .searchable-select-wrapper .options-list.show {
+    display: block;
+  }
+
+  .ship-panel .searchable-select-wrapper .option-item {
+    padding: 9px 11px;
+    cursor: pointer;
+    font-size: 13px;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.23);
+    background: #ffffff;
+    transition: background 0.15s ease;
+  }
+
+  .ship-panel .searchable-select-wrapper .option-item:last-child {
+    border-bottom: none;
+  }
+
+  .ship-panel .searchable-select-wrapper .option-item.matched {
+    background: #eff6ff !important;
+    border-left: 3px solid #2563eb;
+    font-weight: 500;
+  }
+
+  .ship-panel .searchable-select-wrapper .option-item:hover,
+  .ship-panel .searchable-select-wrapper .option-item:active {
+    background: rgba(37, 99, 235, 0.1);
+  }
+
+  .ship-panel .searchable-select-wrapper .option-item.selected {
+    background: rgba(37, 99, 235, 0.16);
+    color: #1d4ed8;
+    font-weight: 600;
+    border-left: 3px solid #1d4ed8;
+  }
+
+  .ship-panel .searchable-select-wrapper .no-results {
+    padding: 14px;
+    text-align: center;
+    font-size: 13px;
+    color: #94a3b8;
+  }
+
+  /* NÚT HÀNH ĐỘNG DƯỚI CÙNG */
+
+  .ship-panel .btn-row {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 10px 12px;
+    padding-bottom: max(10px, env(safe-area-inset-bottom, 0px));
+    background: #ffffff;
+    border-top: 1px solid rgba(148, 163, 184, 0.35);
+    display: flex;
+    gap: 8px;
+    z-index: 10002;
+    box-shadow: 0 -2px 8px rgba(15, 23, 42, 0.15);
+  }
+
+  .ship-panel .btn-cancel,
+  .ship-panel .btn-confirm {
+    flex: 1;
+    min-height: 44px;
+    border-radius: 999px;
+    border: none;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.1s ease, box-shadow 0.15s ease, background 0.15s ease;
+  }
+
+  .ship-panel .btn-cancel {
+    background: rgba(148, 163, 184, 0.15);
+    color: #475569;
+    border: 1px solid rgba(148, 163, 184, 0.35);
+  }
+
+  .ship-panel .btn-confirm {
+    background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 50%, #1d4ed8 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.4);
+  }
+
+  .ship-panel .btn-cancel:active,
+  .ship-panel .btn-confirm:active {
+    transform: scale(0.97);
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.25);
+  }
+
+  /* ========== 2. STATUS (GIỮ NGẮN GỌN) ========== */
+
+  .ship-panel .cio-status {
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    order: 2 !important;
+    background: #f9fafb;
+    border-radius: 10px;
+    padding: 8px 10px;
+    border: 1px dashed rgba(148, 163, 184, 0.7);
+  }
+
+  .ship-panel .cio-status h4 {
+    font-size: 12px;
+    margin-bottom: 6px;
+    color: #0f172a;
+    font-weight: 700;
+  }
+
+  .ship-panel .status-badges {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 11px;
+  }
+
+  .ship-panel .badge-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .ship-panel .badge-label {
+    font-weight: 600;
+    color: #475569;
+    min-width: 70px;
+  }
+
+  .ship-panel .badge {
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .ship-panel .badge-mold {
+    background: #e0f2fe;
+    color: #0369a1;
+  }
+
+  .ship-panel .badge-mold-name {
+    background: #eef2ff;
+    color: #4338ca;
+  }
+
+  .ship-panel .badge-company {
+    background: #ecfdf3;
+    color: #166534;
+    border: 1px solid rgba(22, 101, 52, 0.25);
+  }
+
+  /* ========== 3. HISTORY (DƯỚI CÙNG) ========== */
+
+  .ship-panel .cio-history {
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    max-height: 32vh;
+    order: 3 !important;
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 8px 8px 8px 8px;
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.06);
+  }
+
+  .ship-panel .cio-history h4 {
+    font-size: 12px;
+    margin-bottom: 4px;
+    color: #4b5563;
+  }
+
+  .ship-panel .filter-row {
+    margin-bottom: 4px;
+  }
+
+  .ship-panel .filter-row input {
+    width: 100%;
+    padding: 6px 10px;
+    font-size: 12px;
+    border-radius: 8px;
+    border: 1.2px solid rgba(148, 163, 184, 0.9);
+    background: #f9fafb;
+  }
+
+  .ship-panel .history-wrap {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  .ship-panel .history-wrap::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .ship-panel .history-wrap::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.6);
+    border-radius: 2px;
+  }
+
+  .ship-panel .history-wrap::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .ship-panel .history-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+  }
+
+  .ship-panel .history-table thead th {
+    position: sticky;
+    top: 0;
+    background: #eff6ff;
+    color: #1e3a8a;
+    font-weight: 700;
+    padding: 4px 6px;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.9);
+    z-index: 1;
+    white-space: nowrap;
+  }
+
+  .ship-panel .history-table tbody td {
+    padding: 4px 6px;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
+  .ship-panel .history-table tbody tr:nth-child(even) {
+    background: #f9fafb;
+  }
+
+  .ship-panel .history-table .note-cell {
+    max-width: 140px;
+  }
+
+  .ship-panel .no-history {
+    padding: 10px;
+    text-align: center;
+    font-size: 12px;
+    color: #94a3b8;
+  }
+
+  /* TOAST */
+
+  #ship-toast {
+    /* style đã set inline trong JS; ở đây chỉ đảm bảo không bị override */
+  }
+}

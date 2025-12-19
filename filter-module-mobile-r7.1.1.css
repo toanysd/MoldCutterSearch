@@ -1,0 +1,608 @@
+/*
+============================================================================
+FILTER-MODULE-MOBILE-R7.1.1.CSS
+============================================================================
+Mục tiêu:
+- Full-screen Filter + Sort modal cho iPhone/Android (mở từ #filter-nav-btn)
+- Action buttons bám đáy màn hình, có safe-area cho iPhone notch/home-indicator
+- Nhóm chức năng tách màu dịu mắt: Category (Blue), Filter (Green), Sort (Purple)
+- GIỮ logic màu category tabs và badge ON theo filter-module-mobile-r7.1.0.css
+- TƯƠNG THÍCH selector/class do filter-module-r7.1.1.js inject
+
+Ghi chú:
+- CSS này cố tình dùng @media (max-width: 1024px) để iPhone landscape vẫn áp dụng.
+============================================================================
+*/
+
+@media (max-width: 1024px) {
+
+    /* =========================================================
+    A) Typography + iOS --vh support (sync với JS viewport fix)
+    ========================================================= */
+    :root {
+    --vh: 100vh; /* fallback nếu JS chưa set */
+    }
+
+    #filter-fullscreen-modal {
+    /* Ưu tiên font hệ thống (hỗ trợ tốt JP + VI) */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                "Noto Sans", "Noto Sans JP", "Hiragino Sans", "Yu Gothic",
+                Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    font-kerning: normal;
+    }
+
+    /* Fix hiện tượng chữ VI bị “tách/khoảng cách lạ” trên một số thiết bị */
+    #filter-fullscreen-modal .title-vi,
+    #filter-fullscreen-modal .section-title-vi,
+    #filter-fullscreen-modal .label-vi,
+    #filter-fullscreen-modal .text-vi,
+    #filter-fullscreen-modal .filter-category-tabs .vi {
+    letter-spacing: 0;
+    word-spacing: 0;
+    font-variant-ligatures: none;
+    }
+
+  /* =========================================================
+     0) Ẩn panel filter inline cũ trên iPhone (nếu vẫn còn)
+     ========================================================= */
+  #mobile-filter-panel {
+    display: none !important;
+  }
+
+  /* =========================================================
+     1) Root overlay modal
+     - Dùng display none/show để tránh tình huống iOS render “mất lớp”
+     ========================================================= */
+  #filter-fullscreen-modal.filter-fullscreen-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 11500; /* cao hơn các bar cố định khác */
+    background: rgba(0, 0, 0, 0.84);
+
+    display: none; /* default: không hiện */
+    flex-direction: column;
+
+    /* Hạn chế scroll “lọt” ra nền iOS */
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+
+    /* iOS fixed stability */
+    transform: translateZ(0);
+  }
+
+  /* JS: showModal() sẽ remove 'hidden' và add 'show' */
+  #filter-fullscreen-modal.filter-fullscreen-modal.show {
+    display: flex;
+  }
+
+  /* JS: hideModal() sẽ remove 'show' và add 'hidden' */
+  #filter-fullscreen-modal.filter-fullscreen-modal.hidden {
+    display: none;
+  }
+
+  /* Backdrop click area (JS có gắn listener) */
+  #filter-fullscreen-modal .filter-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: transparent;
+  }
+
+  /* =========================================================
+     2) Container nội dung trắng full-screen
+     ========================================================= */
+    #filter-fullscreen-modal .filter-modal-container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+
+    /* Ưu tiên --vh (JS set theo visualViewport), fallback về dvh/vh */
+    height: var(--vh, 100dvh);
+    max-height: var(--vh, 100dvh);
+
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: #f5f7fa;
+    border-radius: 0;
+    box-shadow: none;
+    }
+
+
+  /* =========================================================
+     3) Header (học phong cách mobile-detail-modal)
+     ========================================================= */
+  #filter-fullscreen-modal .filter-modal-header {
+    flex-shrink: 0;
+
+    background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
+    color: #ffffff;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 18px 14px 10px;
+    padding-top: max(18px, env(safe-area-inset-top, 0px));
+
+    border-bottom: 2px solid rgba(13, 71, 161, 0.65);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+
+    position: relative;
+  }
+
+  /* Swipe handle indicator */
+  #filter-fullscreen-modal .filter-modal-header::before {
+    content: "";
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 38px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.42);
+    border-radius: 99px;
+  }
+
+  #filter-fullscreen-modal .filter-modal-title {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  #filter-fullscreen-modal .filter-modal-title .title-ja {
+    font-size: 14px;
+    font-weight: 800;
+    line-height: 1.2;
+  }
+
+  #filter-fullscreen-modal .filter-modal-title .title-vi {
+    font-size: 10px;
+    font-weight: 500;
+    opacity: 0.92;
+    line-height: 1.15;
+  }
+
+  #filter-fullscreen-modal .filter-modal-close-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+
+    border: 1.5px solid rgba(255, 255, 255, 0.35);
+    background: rgba(255, 255, 255, 0.14);
+    color: #ffffff;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 18px;
+    cursor: pointer;
+    flex-shrink: 0;
+
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  #filter-fullscreen-modal .filter-modal-close-btn:active {
+    transform: scale(0.96);
+    background: rgba(255, 255, 255, 0.22);
+  }
+
+  /* =========================================================
+     4) Body (khu cuộn)
+     - Chừa khoảng cho footer bám đáy + safe-area
+     ========================================================= */
+  #filter-fullscreen-modal .filter-modal-body {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+
+    padding: 10px 12px 12px;
+    background: #f5f7fa;
+
+    /* chừa footer */
+    padding-bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* =========================================================
+     5) Section card chung
+     ========================================================= */
+  #filter-fullscreen-modal .filter-section {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 10px;
+
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+  }
+
+  /* Header của section: 2 dòng JP/VI */
+  #filter-fullscreen-modal .filter-section .section-label {
+    margin: 0;
+    padding: 8px 12px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    color: #ffffff;
+  }
+
+  #filter-fullscreen-modal .filter-section .section-label .section-title-ja {
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1.2;
+  }
+
+  #filter-fullscreen-modal .filter-section .section-label .section-title-vi {
+    font-size: 10px;
+    font-weight: 600;
+    opacity: 0.92;
+    line-height: 1.15;
+  }
+
+  #filter-fullscreen-modal .filter-section .section-body {
+    padding: 10px 12px 12px;
+    background: #ffffff;
+  }
+
+  /* Màu phân nhóm */
+  #filter-fullscreen-modal .filter-section.category-section {
+    border-color: rgba(21, 101, 192, 0.6);
+  }
+  #filter-fullscreen-modal .filter-section.category-section .section-label {
+    background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
+  }
+
+  #filter-fullscreen-modal .filter-section.filter-main-section {
+    border-color: rgba(56, 142, 60, 0.55);
+  }
+  #filter-fullscreen-modal .filter-section.filter-main-section .section-label {
+    background: linear-gradient(135deg, #388e3c 0%, #2e7d32 100%);
+  }
+
+  #filter-fullscreen-modal .filter-section.sort-section {
+    border-color: rgba(123, 31, 162, 0.55);
+  }
+  #filter-fullscreen-modal .filter-section.sort-section .section-label {
+    background: linear-gradient(135deg, #7b1fa2 0%, #4a148c 100%);
+  }
+
+  /* Accent border-left giống detail modal */
+    #filter-fullscreen-modal .filter-section {
+    border-left: 4px solid #e5e7eb; /* default */
+    }
+
+    #filter-fullscreen-modal .filter-section.category-section { border-left-color: #1565c0; }
+    #filter-fullscreen-modal .filter-section.filter-main-section { border-left-color: #388e3c; }
+    #filter-fullscreen-modal .filter-section.sort-section { border-left-color: #7b1fa2; }
+
+
+  /* =========================================================
+     6) Dòng field: label trái / control phải
+     ========================================================= */
+  #filter-fullscreen-modal .filter-row {
+    display: grid;
+    grid-template-columns: 1.05fr 1.75fr;
+    column-gap: 10px;
+    align-items: center;
+
+    padding: 6px 0;
+  }
+
+  #filter-fullscreen-modal .filter-row + .filter-row {
+    border-top: 1px dashed #e5e7eb;
+    margin-top: 6px;
+    padding-top: 10px;
+  }
+
+  #filter-fullscreen-modal .filter-row-label {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    }
+
+    #filter-fullscreen-modal .filter-row-label .label-ja {
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1.2;
+    color: #424242;
+    }
+
+    #filter-fullscreen-modal .filter-row-label .label-vi {
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 1.15;
+    color: #666;
+    opacity: 1;
+    }
+
+
+  #filter-fullscreen-modal select.filter-select {
+    width: 100%;
+    min-height: 38px;
+    font-size: 14px;
+    padding: 8px 10px;
+
+    border-radius: 10px;
+    border: 1px solid #d1d5db;
+    background: #ffffff;
+    color: #111827;
+
+    outline: none;
+  }
+
+  #filter-fullscreen-modal select.filter-select:focus {
+    border-color: rgba(21, 101, 192, 0.65);
+    box-shadow: 0 0 0 3px rgba(21, 101, 192, 0.12);
+  }
+
+  /* =========================================================
+     7) CATEGORY TABS (GIỮ LOGIC MÀU theo r7.1.0)
+     ========================================================= */
+  #filter-fullscreen-modal .filter-category-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  #filter-fullscreen-modal .filter-category-tabs .category-tab {
+    border-radius: 999px;
+    padding: 8px 6px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    border: 1.5px solid #d1d5db;
+    background: #e5e7eb;
+    color: #111827;
+
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  #filter-fullscreen-modal .filter-category-tabs .category-tab .ja {
+    font-size: 12px;
+    font-weight: 900;
+    line-height: 1.1;
+  }
+
+  #filter-fullscreen-modal .filter-category-tabs .category-tab .vi {
+    font-size: 10px;
+    font-weight: 600;
+    opacity: 0.92;
+    line-height: 1.1;
+  }
+
+  /* All */
+  #filter-fullscreen-modal .filter-category-tabs .category-tab[data-category="all"] {
+    background: #e5e7eb;
+    border-color: #d1d5db;
+    color: #111827;
+  }
+  #filter-fullscreen-modal .filter-category-tabs .category-tab[data-category="all"].active {
+    background: #d1d5db;
+    border-color: #9ca3af;
+  }
+
+  /* Mold (blue) */
+  #filter-fullscreen-modal .filter-category-tabs .category-tab[data-category="mold"] {
+    background: #dbeafe;
+    border-color: #93c5fd;
+    color: #1d4ed8;
+  }
+  #filter-fullscreen-modal .filter-category-tabs .category-tab[data-category="mold"].active {
+    background: #1d4ed8;
+    border-color: #1e40af;
+    color: #ffffff;
+  }
+
+  /* Cutter (orange) */
+  #filter-fullscreen-modal .filter-category-tabs .category-tab[data-category="cutter"] {
+    background: #ffedd5;
+    border-color: #fed7aa;
+    color: #c2410c;
+  }
+  #filter-fullscreen-modal .filter-category-tabs .category-tab[data-category="cutter"].active {
+    background: #f97316;
+    border-color: #ea580c;
+    color: #ffffff;
+  }
+
+  /* =========================================================
+     8) FOOTER bám đáy (học style action buttons)
+     ========================================================= */
+  #filter-fullscreen-modal .filter-modal-footer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    z-index: 2;
+    background: #ffffff;
+
+    border-top: 1px solid #e5e7eb;
+    box-shadow: 0 -3px 14px rgba(0, 0, 0, 0.14);
+
+    padding: 8px 10px;
+    padding-bottom: max(10px, env(safe-area-inset-bottom, 0px));
+  }
+
+  #filter-fullscreen-modal .filter-modal-actions {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+
+  /* Nút hành động: icon trái + text JP/VI */
+  #filter-fullscreen-modal .modal-action-btn {
+    min-height: 56px;
+    border-radius: 12px;
+
+    border: 2px solid #cfd8dc;
+    background: #ffffff;
+
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    column-gap: 8px;
+    align-items: center;
+
+    padding: 8px 8px;
+
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  #filter-fullscreen-modal .modal-action-btn:active {
+    transform: scale(0.98);
+    background: #f5f5f5;
+  }
+
+  #filter-fullscreen-modal .modal-action-btn .btn-icon {
+    width: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+  }
+
+  #filter-fullscreen-modal .modal-action-btn .btn-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  #filter-fullscreen-modal .modal-action-btn .btn-text .text-ja {
+    font-size: 12px;
+    font-weight: 900;
+    line-height: 1.15;
+  }
+
+
+  /* =========================================================
+    C) Footer buttons: JA theo màu chức năng, VI luôn muted giống detail modal
+    ========================================================= */
+    #filter-fullscreen-modal .modal-action-btn .btn-text .text-ja {
+    color: currentColor;
+    }
+
+    #filter-fullscreen-modal .modal-action-btn .btn-text .text-vi {
+    color: #666;     /* giống detail modal */
+    opacity: 1;      /* tránh “mờ quá” */
+    font-weight: 500;
+    }
+
+    /* Icon cũng theo màu chức năng (nhìn giống hệ action buttons của detail modal) */
+    #filter-fullscreen-modal .modal-action-btn.action-close .btn-icon { color: #455a64; }
+    #filter-fullscreen-modal .modal-action-btn.action-reset-filter .btn-icon { color: #ad1457; }
+    #filter-fullscreen-modal .modal-action-btn.action-reset-sort .btn-icon { color: #1565c0; }
+    #filter-fullscreen-modal .modal-action-btn.action-reset-all .btn-icon { color: #e65100; }
+
+
+    
+  
+
+  /* Màn rất nhỏ: chuyển 2x2 để dễ bấm */
+  @media (max-width: 380px) {
+    #filter-fullscreen-modal .filter-modal-actions {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  /* =========================================================
+     9) Badge ON trên nút Filter ở bottom nav
+     - JS toggle class: #filter-nav-btn.has-active-filter
+     - JS cũng show/hide span.filter-active-badge
+     ========================================================= */
+  #filter-nav-btn {
+    position: relative;
+    overflow: visible;
+  }
+
+  #filter-nav-btn.has-active-filter,
+  #filter-nav-btn.has-active-filter i,
+  #filter-nav-btn.has-active-filter span {
+    color: #ff9800 !important;
+  }
+
+  /* Badge dạng pill dùng span (ưu tiên vì JS có điều khiển display) */
+  #filter-nav-btn .filter-active-badge {
+    position: absolute;
+    top: -6px;
+    right: -4px;
+
+    min-width: 18px;
+    height: 18px;
+    padding: 0 6px;
+
+    border-radius: 999px;
+    background: #ff7043;
+    color: #ffffff;
+
+    font-size: 10px;
+    font-weight: 900;
+    line-height: 18px;
+    text-align: center;
+
+    box-shadow: 0 0 0 2px #ffffff;
+    pointer-events: none;
+  }
+
+  /* Fallback: nếu vì lý do nào đó span không render, vẫn có thể dùng pseudo */
+  #filter-nav-btn.has-active-filter::after {
+    content: "ON";
+    position: absolute;
+    top: -6px;
+    right: -4px;
+
+    min-width: 18px;
+    height: 18px;
+    padding: 0 6px;
+
+    border-radius: 999px;
+    background: #ff7043;
+    color: #ffffff;
+
+    font-size: 10px;
+    font-weight: 900;
+    line-height: 18px;
+    text-align: center;
+
+    box-shadow: 0 0 0 2px #ffffff;
+    pointer-events: none;
+  }
+
+  /* =========================================================
+    ANIMATION (match mobile-detail-modal feel)
+    ========================================================= */
+    @keyframes filterModalSlideDown {
+    from { transform: translateY(14px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+    }
+
+    @keyframes filterModalFadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+    }
+
+    /* Khi show: animate container + body */
+    #filter-fullscreen-modal.filter-fullscreen-modal.show .filter-modal-container {
+    animation: filterModalSlideDown 0.25s ease;
+    }
+
+    #filter-fullscreen-modal.filter-fullscreen-modal.show .filter-modal-body {
+    animation: filterModalFadeIn 0.35s ease;
+    }
+
+}

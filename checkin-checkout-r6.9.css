@@ -1,0 +1,943 @@
+/* ========================================
+   CHECK-IN / CHECK-OUT MODAL - V7.FINAL
+   - KHỚP PADDING VỚI UPPER-SECTION LAYOUT
+   - Lề trái = lề phải = 16px (spacing-lg)
+   ======================================== */
+
+/* ========================================
+   PANEL CONTAINER
+   ======================================== */
+/* PANEL CONTAINER */
+.checkio-panel {
+    position: absolute;
+    inset: 0;  /* ✅ THÊM: Bám trọn vào upper-section (giống location) */
+    max-height: 100%;  /* ✅ THÊM: Đảm bảo không tràn */
+    background: var(--color-surface, #fcfcf9);
+    border: 1px solid rgba(94, 82, 64, 0.2);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    font-family: var(--font-family-base, Geist, sans-serif);
+    padding-bottom: env(safe-area-inset-bottom, 0px);  /* ✅ THÊM: iOS safe area */
+}
+
+
+/* ========================================
+   HEADER
+   ======================================== */
+.checkio-header {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  flex-shrink: 0;
+}
+
+.checkio-mode {
+  display: flex;
+  gap: 6px;
+  flex: 1;
+}
+
+.mode-btn {
+  padding: 6px 16px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mode-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.mode-btn.active {
+  background: white;
+  color: #16a34a;
+  border-color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-close-compact {
+  width: 28px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.btn-close-compact:hover {
+  background: rgba(255, 255, 255, 0.35);
+  transform: scale(1.05);
+}
+
+.btn-close-compact:active {
+  transform: scale(0.95);
+}
+
+/* ========================================
+   BODY - 3 CỘT (KHỚP VỚI UPPER-SECTION)
+   ======================================== */
+.checkio-body {
+  display: flex;
+  gap: 16px; /* ← GIỮ NGUYÊN gap như upper-section (--spacing-lg) */
+  padding: 16px; /* ← GIỮ NGUYÊN padding như upper-section (--spacing-lg) */
+  overflow: hidden;
+  flex: 1;
+  min-height: 0;
+}
+
+/* CỘT 1: LỊCH SỬ - 50% width */
+.cio-history {
+  flex: 0 0 calc(50% - 8px); /* ← Trừ đi nửa gap để căn đúng */
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-1, rgba(59, 130, 246, 0.05));
+  border: 1px solid rgba(94, 82, 64, 0.12);
+  border-radius: 10px;
+  padding: 8px;
+  overflow: hidden;
+}
+
+/* CỘT 2: TRẠNG THÁI - 25% width */
+.cio-status {
+  flex: 0 0 calc(25% - 8px); /* ← Trừ đi nửa gap */
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-3, rgba(34, 197, 94, 0.05));
+  border: 1px solid rgba(94, 82, 64, 0.12);
+  border-radius: 10px;
+  padding: 8px;
+  overflow: hidden;
+}
+
+/* CỘT 3: NHẬP LIỆU - 25% width */
+.cio-inputs {
+  flex: 0 0 calc(25% - 8px); /* ← Trừ đi nửa gap */
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-2, rgba(245, 158, 11, 0.05));
+  border: 1px solid rgba(94, 82, 64, 0.12);
+  border-radius: 10px;
+  padding: 8px;
+  overflow-y: auto;
+}
+
+/* ========================================
+   SECTION HEADERS
+   ======================================== */
+.cio-history h4,
+.cio-status h4,
+.cio-inputs h4 {
+  margin: 0 0 6px 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text, #134252);
+  border-bottom: 2px solid rgba(94, 82, 64, 0.15);
+  padding-bottom: 4px;
+}
+
+/* ========================================
+   LỊCH SỬ - TABLE + FILTER
+   ======================================== */
+.filter-row {
+  margin-bottom: 6px;
+  flex-shrink: 0;
+}
+
+.filter-row input {
+  width: 100%;
+  padding: 5px 8px;
+  border: 1px solid rgba(94, 82, 64, 0.2);
+  border-radius: 6px;
+  font-size: 12px;
+  background: white;
+}
+
+.history-wrap {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+  background: white;
+  table-layout: fixed;  /* ✅ THÊM DÒNG NÀY */
+}
+
+.history-table thead {
+  position: sticky;
+  top: 0;
+  background: rgba(255, 255, 255, 0.95);
+  z-index: 10;
+}
+
+.history-table th {
+  padding: 5px 3px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 10px;
+  color: #134252;
+  border-bottom: 2px solid rgba(94, 82, 64, 0.2);
+  white-space: nowrap;
+}
+
+.history-table th::after {
+  content: ' ⇅';
+  opacity: 0.4;
+  font-size: 9px;
+}
+
+.history-table th.asc::after {
+  content: ' ▲';
+  opacity: 1;
+  color: #16a34a;
+}
+
+.history-table th.desc::after {
+  content: ' ▼';
+  opacity: 1;
+  color: #16a34a;
+}
+
+.history-table td {
+  padding: 5px 3px;
+  border-bottom: 1px solid rgba(94, 82, 64, 0.1);
+  vertical-align: top;
+}
+
+/* ===================================================
+   ✅ FIX: Cố định độ rộng cột - Ngăn nhảy UX
+   =================================================== */
+
+/* FIX: Cố định rộng cột - Ngăn nhảy UX */
+/* Cột DateTime */
+.history-table thead th:nth-child(1),
+.history-table tbody td:nth-child(1) {
+    min-width: 110px; /* Giảm từ 160px → 110px */
+    width: 110px;
+    font-size: 10px; /* Thu nhỏ font */
+}
+
+/* Cột Type (Check-in/Check-out) */
+.history-table thead th:nth-child(2),
+.history-table tbody td:nth-child(2) {
+    min-width: 55px; /* Giảm từ 100px → 55px */
+    width: 55px;
+    text-align: center;
+}
+
+/* Cột Employee */
+.history-table thead th:nth-child(3),
+.history-table tbody td:nth-child(3) {
+    min-width: 100px;
+    max-width: 100px;
+    width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Cột Notes */
+.history-table thead th:nth-child(4),
+.history-table tbody td:nth-child(4) {
+    min-width: 80px;
+    width: auto;
+}
+
+/* Cột Sync */
+.history-table thead th:nth-child(5),
+.history-table tbody td:nth-child(5) {
+    width: 35px;
+    min-width: 35px;
+    max-width: 35px;
+    text-align: center;
+}
+
+/* Cột Delete */
+.history-table thead th:nth-child(6),
+.history-table tbody td:nth-child(6) {
+    width: 40px;
+    min-width: 40px;
+    max-width: 40px;
+    text-align: center;
+}
+
+
+
+.history-table tbody tr:hover {
+  background: rgba(34, 197, 94, 0.08);
+}
+
+.history-table td.action-cell {
+  text-align: center;
+  padding: 5px 3px;
+  width: 40px;
+}
+.history-table .btn-delete-history {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 1px solid #dc2626;
+  background: #fee2e2;
+  color: #dc2626;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  padding: 0;
+  line-height: 1;
+}
+.history-table .btn-delete-history:hover {
+  background: #dc2626;
+  color: white;
+  transform: scale(1.15);
+  box-shadow: 0 2px 6px rgba(220, 38, 38, 0.4);
+}
+.history-table .btn-delete-history:active {
+  transform: scale(0.95);
+}
+.history-table tr.deleting {
+  animation: slideOutRight 0.3s ease-out forwards;
+}
+@keyframes slideOutRight {
+  from { opacity: 1; transform: translateX(0); }
+  to { opacity: 0; transform: translateX(100%); }
+}
+
+/* ========================================
+   BADGE IN/OUT
+   ======================================== */
+.status-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 5px;
+  font-size: 10px;
+  font-weight: 700;
+  text-align: center;
+  min-width: 36px;
+  border: 1px solid;
+  letter-spacing: 0.4px;
+}
+
+.status-badge.badge-in {
+    background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+    color: #15803d;
+    border-color: #43A047; /* Màu mới */
+    box-shadow: 0 1px 3px rgba(67, 160, 71, 0.2);
+}
+
+.status-badge.badge-out {
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  color: #991b1b;
+  border-color: #ef4444;
+  box-shadow: 0 1px 3px rgba(239, 68, 68, 0.2);
+}
+
+.note-cell {
+  font-size: 10px;
+  color: #626c7c;
+  max-width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.no-history {
+  padding: 16px;
+  text-align: center;
+  color: #626c7c;
+  font-size: 12px;
+}
+
+/* ========================================
+   TRẠNG THÁI - BADGES
+   ======================================== */
+.status-badges {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.badge-row {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.badge-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #626c7c;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid;
+  word-break: break-word;
+}
+
+.badge-mold {
+  background: #eff6ff;
+  color: #1e40af;
+  border-color: #3b82f6;
+}
+
+.badge-mold-name {
+  background: #f0fdf4;
+  color: #15803d;
+  border-color: #22c55e;
+  font-size: 11px;
+}
+
+.badge-green {
+  background: #dcfce7;
+  color: #15803d;
+  border-color: #22c55e;
+}
+
+.badge-red {
+  background: #fee2e2;
+  color: #991b1b;
+  border-color: #ef4444;
+}
+
+/* Badge vị trí Giá-Tầng */
+.badge-group {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.badge-rack {
+  background: #fef3c7;
+  color: #92400e;
+  border-color: #f59e0b;
+  padding: 5px 8px;
+  font-weight: 700;
+}
+
+.badge-sep {
+  font-size: 14px;
+  font-weight: 700;
+  color: #92400e;
+}
+
+.badge-layer {
+  background: #fef3c7;
+  color: #92400e;
+  border-color: #f59e0b;
+  padding: 5px 8px;
+  font-weight: 700;
+}
+
+/* RackLocation */
+.rack-location {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 8px;
+  background: rgba(245, 158, 11, 0.08);
+  border-radius: 5px;
+  margin-top: 3px;
+  font-size: 11px;
+}
+
+.loc-label {
+  font-weight: 600;
+  color: #92400e;
+}
+
+.loc-value {
+  color: #134252;
+  font-weight: 500;
+}
+
+/* ========================================
+   NHẬP LIỆU - FORM
+   ======================================== */
+.form-group {
+  margin-bottom: 6px;
+}
+
+.form-group.hidden {
+  display: none;
+}
+
+.form-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: #134252;
+  margin-bottom: 3px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid rgba(94, 82, 64, 0.2);
+  border-radius: 5px;
+  font-size: 12px;
+  background: white;
+  font-family: inherit;
+  transition: border-color 0.2s ease;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+}
+
+textarea.form-control {
+  resize: vertical;
+  min-height: 40px;
+  max-height: 60px;
+}
+
+/* R7.0.5: Employee row - Fixed for iPhone layout */
+.employee-row {
+    display: flex;
+    flex-direction: column; /* Stack vertically on mobile */
+    gap: 8px;
+    align-items: stretch;
+}
+
+.employee-row .form-control {
+    flex: 1;
+    width: 100%; /* Full width on mobile */
+    min-width: 0; /* Prevent overflow */
+}
+
+.btn-face {
+    padding: 8px 12px;
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    width: 100%; /* Full width on mobile */
+    text-align: center;
+}
+
+.btn-face:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.btn-face:active {
+    transform: translateY(0);
+}
+
+.face-status {
+    display: block;
+    margin-top: 3px;
+    font-size: 10px;
+    color: #626c7c;
+    text-align: center; /* Center on mobile */
+}
+
+/* iPad and larger: Horizontal layout */
+@media (min-width: 768px) {
+    .employee-row {
+        flex-direction: row; /* Side by side on iPad */
+        gap: 5px;
+    }
+    
+    .btn-face {
+        width: auto; /* Auto width on iPad */
+        padding: 6px 10px;
+        font-size: 11px;
+    }
+    
+    .face-status {
+        text-align: left; /* Left align on iPad */
+    }
+}
+
+
+/* ========================================
+   NÚT XÁC NHẬN / HỦY
+   ======================================== */
+.btn-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(94, 82, 64, 0.1);
+}
+
+.btn-confirm,
+.btn-cancel {
+  flex: 1;
+  padding: 7px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-confirm {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  color: white;
+}
+
+.btn-confirm:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
+.btn-confirm:active {
+  transform: translateY(0);
+}
+
+.btn-cancel {
+  background: rgba(148, 163, 184, 0.15);
+  color: #475569;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.btn-cancel:hover {
+  background: rgba(148, 163, 184, 0.25);
+}
+
+/* ========================================
+   TOAST NOTIFICATIONS
+   ======================================== */
+.cio-toast {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: white;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  z-index: 10000;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cio-toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.cio-toast-info {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+}
+
+.cio-toast-success {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+}
+
+.cio-toast-error {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+/* ========================================
+   DARK MODE
+   ======================================== */
+@media (prefers-color-scheme: dark) {
+  .checkio-panel {
+    background: var(--color-surface, #262828);
+    border-color: rgba(119, 124, 124, 0.3);
+  }
+
+  .cio-history,
+  .cio-status,
+  .cio-inputs {
+    background: rgba(119, 124, 124, 0.08);
+    border-color: rgba(119, 124, 124, 0.2);
+  }
+
+  .cio-history h4,
+  .cio-status h4,
+  .cio-inputs h4 {
+    color: var(--color-text, #f5f5f5);
+    border-bottom-color: rgba(119, 124, 124, 0.3);
+  }
+
+  .form-control,
+  .filter-row input {
+    background: rgba(119, 124, 124, 0.1);
+    border-color: rgba(119, 124, 124, 0.3);
+    color: #f5f5f5;
+  }
+
+  .history-table thead {
+    background: rgba(38, 40, 40, 0.95);
+  }
+
+  .history-table th,
+  .history-table td {
+    color: #f5f5f5;
+    border-color: rgba(119, 124, 124, 0.2);
+  }
+
+  .badge {
+    opacity: 0.95;
+  }
+
+  .status-badge {
+    opacity: 0.95;
+  }
+
+  .rack-location {
+    background: rgba(245, 158, 11, 0.15);
+  }
+
+  .btn-cancel {
+    background: rgba(148, 163, 184, 0.2);
+    color: #cbd5e1;
+  }
+}
+
+/* ========================================
+   SCROLLBAR STYLING
+   ======================================== */
+.history-wrap::-webkit-scrollbar,
+.cio-inputs::-webkit-scrollbar {
+  width: 5px;
+}
+
+.history-wrap::-webkit-scrollbar-track,
+.cio-inputs::-webkit-scrollbar-track {
+  background: rgba(94, 82, 64, 0.05);
+  border-radius: 3px;
+}
+
+.history-wrap::-webkit-scrollbar-thumb,
+.cio-inputs::-webkit-scrollbar-thumb {
+  background: rgba(94, 82, 64, 0.3);
+  border-radius: 3px;
+}
+
+.history-wrap::-webkit-scrollbar-thumb:hover,
+.cio-inputs::-webkit-scrollbar-thumb:hover {
+  background: rgba(94, 82, 64, 0.5);
+}
+
+/* SYNC STATUS INDICATOR */
+.sync-cell {
+    text-align: center;
+    padding: 5px;
+}
+
+.sync-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.sync-dot.pending {
+    background-color: #EF4444; /* Đỏ - chờ sync */
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.sync-dot.synced {
+    background-color: #43A047; /* Xanh - đã sync */
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.9); }
+}
+
+/* ==========================================
+   ✅ SYNC INDICATOR STYLES - R6.2
+   ========================================== */
+
+/* Sync cell */
+.sync-cell {
+    text-align: center;
+    padding: 8px 4px;
+}
+
+/* Sync dots */
+.sync-dot {
+    display: inline-block;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+/* Pending state - rotating animation */
+.sync-dot.pending {
+    animation: rotate-sync 1.5s linear infinite;
+}
+
+/* Synced state - green checkmark */
+.sync-dot.synced {
+    color: #43A047;
+}
+
+/* Error state - red warning */
+.sync-dot.error {
+    color: #EF4444;
+    animation: shake-error 0.5s ease-in-out;
+}
+
+/* Animations */
+@keyframes rotate-sync {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes shake-error {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+}
+
+/* Pending row highlight */
+.row-pending {
+    background-color: #FFF9C4 !important;
+    border-left: 3px solid #FFC107;
+}
+
+.row-pending td {
+    font-style: italic;
+    opacity: 0.85;
+}
+
+/* Action cell */
+.action-cell {
+    text-align: center;
+    padding: 4px;
+}
+
+.btn-delete-history {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 4px;
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+}
+
+.btn-delete-history:hover {
+    opacity: 1;
+}
+
+/* Deleting state */
+.deleting {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+/* ==========================================
+   ✅ BADGE SYNC INDICATOR - R6.2
+   ========================================== */
+
+#detail-checkin-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 13px;
+    transition: all 0.3s ease;
+}
+
+.badge-text {
+    display: inline-block;
+}
+
+.sync-icon {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: normal;
+    transition: all 0.3s ease;
+}
+
+/* Pending state - rotating animation */
+.sync-icon.pending {
+    animation: rotate-sync 1.5s linear infinite;
+}
+
+/* Synced state - subtle checkmark */
+.sync-icon.synced {
+    color: rgba(0, 0, 0, 0.4);
+    font-size: 10px;
+}
+
+/* Badge pending state - pulsing */
+.badge-pending {
+    animation: pulse-badge 1.5s ease-in-out infinite;
+}
+
+/* Animations */
+@keyframes rotate-sync {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes pulse-badge {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 1; }
+}
+
+/* Badge colors */
+.status-in {
+    background: #43A047;
+    color: white;
+}
+
+.status-out {
+    background: #EF4444;
+    color: white;
+}
+
+.status-in .sync-icon.synced,
+.status-out .sync-icon.synced {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.status-badge.no-history {
+    background-color: #6B7280;
+    color: white;
+    opacity: 0.7;
+}

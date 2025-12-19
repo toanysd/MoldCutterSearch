@@ -1,0 +1,738 @@
+/* ==========================================================
+ * LOCATION MANAGER - MOBILE R7.0.8 FIX CUỘN
+ * - ✅ Ngăn location-body cuộn
+ * - ✅ Đảm bảo loc-inputs không bị overflow
+ * - ✅ Chỉ loc-history cuộn
+ * ========================================================== */
+
+@media (max-width: 767px) {
+
+/* =========================================
+ * 1. GỠ RÀNG BUỘC UPPER-SECTION & PANEL
+ * ========================================= */
+body.modal-open .upper-section {
+  position: static !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+body.modal-open #loc-panel,
+body.modal-open .location-panel {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100dvh !important;
+  max-height: 100dvh !important;
+  border-radius: 0 !important;
+  border: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  z-index: 11000 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  background: var(--color-surface, #fcfcf9) !important;
+  overflow: hidden !important; /* ⬅ QUAN TRỌNG: panel không cuộn */
+}
+
+/* =========================================
+ * 2. HEADER
+ * ========================================= */
+body.modal-open .location-header {
+  flex-shrink: 0 !important;
+  padding: 6px 12px !important;
+  padding-top: calc(6px + env(safe-area-inset-top, 0px)) !important;
+  background: linear-gradient(135deg, #f97316 0%, #fb923c 40%, #f97316 100%) !important;
+  color: #ffffff !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 10px !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16) !important;
+}
+
+body.modal-open .location-title {
+  flex: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+body.modal-open .location-title i {
+  font-size: 18px !important;
+  color: #ffffff !important;
+}
+
+body.modal-open .location-title-main {
+  display: block !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  color: #ffffff !important;
+}
+
+body.modal-open .location-title-sub {
+  display: block !important;
+  font-size: 11px !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+body.modal-open .btn-close-location {
+  width: 32px !important;
+  height: 32px !important;
+  font-size: 18px !important;
+  background: rgba(15, 23, 42, 0.22) !important;
+  border-radius: 16px !important;
+  color: #ffffff !important;
+  border: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  transition: background 0.15s ease, transform 0.1s ease !important;
+}
+
+body.modal-open .btn-close-location:active {
+  background: rgba(15, 23, 42, 0.35) !important;
+  transform: scale(0.96) !important;
+}
+
+/* =========================================
+ * 3. BODY CHUNG - NGUYÊN NHÂN CHÍNH
+ * ========================================= */
+body.modal-open .location-body {
+  flex: 1 !important;
+  min-height: 0 !important; /* ⬅ BẮT BUỘC để flex hoạt động đúng */
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important; /* ⬅ GIẢM từ 8px xuống 6px để tiết kiệm không gian */
+  padding: 6px 10px 80px 10px !important; /* ⬅ GIẢM padding trên từ 8px → 6px */
+  overflow-y: hidden !important; /* ⬅ NGĂN BODY CUỘN */
+  overflow-x: hidden !important;
+  background: #f3f4f6 !important;
+  -webkit-overflow-scrolling: auto !important; /* ⬅ TẮT smooth scroll cho body */
+}
+
+/* =========================================
+ * 4. SECTION 1: TRẠNG THÁI (TOP) - GIẢM CHIỀU CAO
+ * ========================================= */
+body.modal-open .loc-status {
+  order: 1 !important;
+  flex: 0 0 auto !important; /* ⬅ KHÔNG co giãn */
+  width: 100% !important;
+  background: #ffffff !important;
+  border-radius: 8px !important; /* ⬅ GIẢM từ 10px → 8px */
+  padding: 6px 10px 8px 10px !important; /* ⬅ GIẢM padding từ 8px 10px 10px → 6px 10px 8px */
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08) !important;
+  border: 1px solid rgba(252, 165, 94, 0.45) !important;
+  max-height: none !important; /* ⬅ QUAN TRỌNG: không giới hạn */
+  overflow: visible !important; /* ⬅ QUAN TRỌNG: không ẩn nội dung */
+}
+
+body.modal-open .loc-status h4 {
+  font-size: 12px !important; /* ⬅ GIẢM từ 13px → 12px */
+  font-weight: 700 !important;
+  color: #c05621 !important;
+  margin: 0 0 4px 0 !important; /* ⬅ GIẢM từ 6px → 4px */
+  padding-bottom: 3px !important; /* ⬅ GIẢM từ 4px → 3px */
+  border-bottom: 1px solid rgba(248, 153, 72, 0.45) !important;
+}
+
+body.modal-open .loc-inline-status {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 3px !important; /* ⬅ GIẢM từ 4px → 3px */
+  font-size: 11px !important; /* ⬅ GIẢM từ 12px → 11px */
+}
+
+body.modal-open .loc-inline-row {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  gap: 4px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+body.modal-open .loc-inline-label {
+  font-weight: 600 !important;
+  font-size: 10px !important;
+  color: #4b5563 !important;
+}
+
+body.modal-open .loc-inline-value {
+  font-weight: 700 !important;
+  font-size: 11px !important;
+  color: #111827 !important;
+}
+
+body.modal-open .loc-inline-sep {
+  color: #9ca3af !important;
+  padding: 0 2px !important;
+}
+
+/* =========================================
+ * 5. SECTION 2: INPUTS (GIỮA) - GIẢM CHIỀU CAO
+ * ========================================= */
+body.modal-open .loc-inputs {
+  order: 2 !important;
+  flex: 0 0 auto !important; /* ⬅ KHÔNG co giãn */
+  width: 100% !important;
+  background: #ffffff !important;
+  border-radius: 8px !important; /* ⬅ GIẢM từ 10px → 8px */
+  padding: 8px 10px 10px 10px !important; /* ⬅ GIẢM từ 10px 10px 12px → 8px 10px 10px */
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08) !important;
+  border: 1px solid rgba(248, 153, 72, 0.45) !important;
+  max-height: none !important; /* ⬅ QUAN TRỌNG: không giới hạn */
+  overflow: visible !important; /* ⬅ QUAN TRỌNG: không ẩn nội dung */
+}
+
+body.modal-open .loc-inputs h4 {
+  font-size: 12px !important; /* ⬅ GIẢM từ 13px → 12px */
+  font-weight: 700 !important;
+  color: #d97706 !important;
+  margin: 0 0 6px 0 !important; /* ⬅ GIẢM từ 8px → 6px */
+  padding-bottom: 3px !important; /* ⬅ GIẢM từ 4px → 3px */
+  border-bottom: 1px solid rgba(248, 153, 72, 0.55) !important;
+}
+
+body.modal-open .location-form-group {
+  margin-bottom: 8px !important; /* ⬅ GIẢM từ 10px → 8px */
+  position: relative !important;
+}
+
+body.modal-open .location-form-group:last-of-type {
+  margin-bottom: 0 !important; /* ⬅ THÊM: loại bỏ margin cuối */
+}
+
+body.modal-open .location-form-label {
+  display: block !important;
+  font-size: 11px !important; /* ⬅ GIẢM từ 12px → 11px */
+  font-weight: 600 !important;
+  color: #374151 !important;
+  margin-bottom: 3px !important; /* ⬅ GIẢM từ 4px → 3px */
+}
+
+body.modal-open .location-form-control {
+  width: 100% !important;
+  padding: 8px 10px !important; /* ⬅ GIẢM từ 9px 11px → 8px 10px */
+  border-radius: 7px !important; /* ⬅ GIẢM từ 8px → 7px */
+  border: 1.4px solid rgba(148, 163, 184, 0.9) !important;
+  font-size: 13px !important; /* ⬅ GIẢM từ 14px → 13px */
+  background: #ffffff !important;
+  transition: all 0.18s ease !important;
+  box-sizing: border-box !important; /* ⬅ THÊM: đảm bảo padding không làm tràn */
+}
+
+body.modal-open .location-form-control:focus {
+  outline: none !important;
+  border-color: #fb923c !important;
+  box-shadow: 0 0 0 3px rgba(248, 153, 72, 0.25) !important;
+}
+
+body.modal-open select.location-form-control {
+  height: 36px !important; /* ⬅ GIẢM từ 38px → 36px */
+}
+
+body.modal-open textarea.location-form-control {
+  min-height: 54px !important; /* ⬅ GIẢM từ 60px → 54px */
+  max-height: 72px !important; /* ⬅ GIẢM từ 80px → 72px */
+  resize: vertical !important;
+  font-family: inherit !important;
+  line-height: 1.3 !important; /* ⬅ GIẢM từ 1.4 → 1.3 */
+}
+
+/* =========================================
+ * 6. SECTION 3: HISTORY (DƯỚI) - CHIẾM PHẦN CÒN LẠI
+ * ========================================= */
+body.modal-open .loc-history {
+  order: 3 !important;
+  flex: 1 1 auto !important; /* ⬅ CO GIÃN để chiếm phần còn lại */
+  min-height: 100px !important; /* ⬅ GIẢM từ 120px → 100px */
+  width: 100% !important;
+  background: #fff7ed !important;
+  border-radius: 8px !important; /* ⬅ GIẢM từ 10px → 8px */
+  padding: 6px 8px 8px 8px !important; /* ⬅ GIẢM padding */
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08) !important;
+  border: 1px solid rgba(248, 153, 72, 0.55) !important;
+  max-height: none !important; /* ⬅ KHÔNG giới hạn */
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important; /* ⬅ NGĂN chính section này cuộn */
+}
+
+body.modal-open .loc-history h4 {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: #c05621 !important;
+  margin: 0 0 5px 0 !important; /* ⬅ GIẢM từ 6px → 5px */
+  padding-bottom: 3px !important; /* ⬅ GIẢM từ 4px → 3px */
+  border-bottom: 1px solid rgba(248, 153, 72, 0.5) !important;
+  flex-shrink: 0 !important;
+}
+
+body.modal-open .location-filter-row {
+  margin-bottom: 5px !important; /* ⬅ GIẢM từ 6px → 5px */
+  flex-shrink: 0 !important;
+}
+
+body.modal-open .location-filter-row .location-form-control {
+  padding: 6px 9px !important; /* ⬅ GIẢM từ 7px 10px → 6px 9px */
+  font-size: 12px !important; /* ⬅ GIẢM từ 13px → 12px */
+  height: 32px !important; /* ⬅ THÊM: cố định chiều cao */
+}
+
+/* ✅ QUAN TRỌNG NHẤT: CHỈ PHẦN NÀY CUỘN */
+body.modal-open .location-history-wrap {
+  flex: 1 !important; /* ⬅ CHIẾM TOÀN BỘ KHÔNG GIAN CÒN LẠI */
+  min-height: 0 !important; /* ⬅ BẮT BUỘC để flex hoạt động */
+  overflow-y: auto !important; /* ⬅ CHỈ PHẦN NÀY CUỘN */
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+body.modal-open .location-history-table {
+  width: 100% !important;
+  font-size: 9px !important;
+  border-collapse: collapse !important;
+}
+
+body.modal-open .location-history-table th {
+  position: sticky !important;
+  top: 0 !important;
+  background: #ffffff !important;
+  padding: 5px 4px !important;
+  font-weight: 600 !important;
+  color: #4b5563 !important;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.6) !important;
+  z-index: 2 !important;
+}
+
+body.modal-open .location-history-table td {
+  padding: 4px 3px !important;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.3) !important;
+  white-space: nowrap !important;
+}
+
+body.modal-open .btn-delete-history {
+  width: 26px !important;
+  height: 26px !important;
+  border-radius: 13px !important;
+  border: none !important;
+  font-size: 13px !important;
+  color: #b91c1c !important;
+  background: rgba(248, 113, 113, 0.12) !important;
+}
+
+/* =========================================
+ * 7. NÚT DƯỚI CÙNG
+ * ========================================= */
+body.modal-open .location-btn-row {
+  position: fixed !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  padding: 8px 12px !important; /* ⬅ GIẢM từ 10px → 8px */
+  padding-bottom: max(8px, env(safe-area-inset-bottom, 0px)) !important;
+  background: #ffffff !important;
+  border-top: 1px solid rgba(148, 163, 184, 0.4) !important;
+  display: flex !important;
+  gap: 8px !important;
+  z-index: 10002 !important;
+  box-shadow: 0 -2px 8px rgba(15, 23, 42, 0.16) !important;
+}
+
+body.modal-open .btn-cancel-location,
+body.modal-open .btn-confirm-location {
+  flex: 1 !important;
+  min-height: 42px !important; /* ⬅ GIẢM từ 44px → 42px */
+  border-radius: 999px !important;
+  border: none !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  transition: transform 0.1s ease, box-shadow 0.15s ease,
+              background 0.15s ease !important;
+}
+
+body.modal-open .btn-cancel-location {
+  background: rgba(148, 163, 184, 0.16) !important;
+  color: #475569 !important;
+  border: 1px solid rgba(148, 163, 184, 0.45) !important;
+}
+
+body.modal-open .btn-confirm-location {
+  background: linear-gradient(135deg, #fb923c 0%, #f97316 50%, #ea580c 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 6px rgba(248, 153, 72, 0.4) !important;
+}
+
+body.modal-open .btn-cancel-location:active,
+body.modal-open .btn-confirm-location:active {
+  transform: scale(0.97) !important;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.25) !important;
+}
+
+/* =========================================
+ * 8. SCROLLBAR LỊCH SỬ
+ * ========================================= */
+body.modal-open .location-history-wrap::-webkit-scrollbar {
+  width: 4px !important;
+}
+
+body.modal-open .location-history-wrap::-webkit-scrollbar-thumb {
+  background: rgba(248, 153, 72, 0.7) !important;
+  border-radius: 2px !important;
+}
+
+body.modal-open .location-history-wrap::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+/* =========================================
+ * 6. HISTORY SECTION - Amber Card
+ * ========================================= */
+body.modal-open .loc-history {
+  order: 3 !important;
+  flex: 1 1 auto !important;
+  min-height: 120px !important;
+  width: 100% !important;
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%) !important;
+  border-radius: 12px !important;
+  padding: 8px 10px !important;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.15),
+              0 0 0 1px rgba(245, 158, 11, 0.1) !important;
+  border: 1px solid rgba(245, 158, 11, 0.3) !important;
+  max-height: none !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+body.modal-open .loc-history h4 {
+  font-size: 11px !important;            /* ↓ nhỏ hơn một cấp */
+  font-weight: 700 !important;
+  color: #c2410c !important;
+  margin: 0 0 4px 0 !important;          /* ↓ giảm khoảng dưới tiêu đề */
+  padding-bottom: 3px !important;        /* ↓ mỏng hơn */
+  border-bottom: 1px solid rgba(11, 27, 245, 0.25) !important;
+  flex-shrink: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;                   /* ↓ giảm khoảng cách icon–text */
+}
+
+body.modal-open .loc-history h4::before {
+  content: "📜" !important;
+  font-size: 14px !important;
+}
+
+body.modal-open .location-filter-row {
+  margin-bottom: 4px !important;          /* ↓ ít chiếm chiều cao hơn */
+  flex-shrink: 0 !important;
+}
+
+body.modal-open .location-filter-row .location-form-control {
+  padding: 4px 8px !important;            /* ↓ padding dọc & ngang */
+  font-size: 11px !important;             /* ↓ chữ nhỏ hơn một chút */
+  height: 28px !important;                /* ↓ giảm từ 34px → 28px */
+  background: #ffffff !important;
+  border: 1.5px solid #fbbf24 !important;
+}
+
+
+body.modal-open .location-filter-row .location-form-control:focus {
+  border-color: #f59e0b !important;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15) !important;
+}
+
+/* ✅ HISTORY TABLE WRAPPER - Scrollable */
+body.modal-open .location-history-wrap {
+  flex: 1 !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  background: #ffffff !important;
+  border-radius: 8px !important;
+  border: 1px solid rgba(245, 158, 11, 0.2) !important;
+}
+
+/* ✅ HISTORY TABLE - Optimized Columns */
+body.modal-open .location-history-table {
+  width: 100% !important;
+  font-size: 10px !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+}
+
+body.modal-open .location-history-table th {
+  position: sticky !important;
+  top: 0 !important;
+  background: linear-gradient(180deg, #fef3c7 0%, #fde68a 100%) !important;
+  padding: 4px 4px !important;                 /* ↓ header mỏng hơn */
+  font-weight: 700 !important;
+  color: #92400e !important;
+  border-bottom: 1px solid #fbbf24 !important; /* ↓ đường kẻ mảnh hơn */
+  z-index: 2 !important;
+  text-align: left !important;
+  white-space: nowrap !important;
+  font-size: 8.5px !important;                 /* ↓ nhẹ */
+  text-transform: uppercase !important;
+  letter-spacing: 0.03em !important;
+}
+
+/* ✅ COLUMN WIDTHS - Optimized for Mobile */
+body.modal-open .location-history-table th:nth-child(1),
+body.modal-open .location-history-table td:nth-child(1) {
+  width: 20% !important; /* Date/Time */
+  min-width: 90px !important;
+}
+
+body.modal-open .location-history-table th:nth-child(2),
+body.modal-open .location-history-table td:nth-child(2) {
+  width: 15% !important; /* Old → New */
+  min-width: 80px !important;
+}
+
+body.modal-open .location-history-table th:nth-child(3),
+body.modal-open .location-history-table td:nth-child(3) {
+  width: 25% !important; /* Employee */
+  min-width: 50px !important;
+}
+
+body.modal-open .location-history-table th:nth-child(4),
+body.modal-open .location-history-table td:nth-child(4) {
+  width: 25% !important; /* Notes */
+  min-width: 50px !important;
+}
+
+body.modal-open .location-history-table th:nth-child(5),
+body.modal-open .location-history-table td:nth-child(5) {
+  width: 5% !important; /* Sync Status */
+  min-width: 30px !important;
+  text-align: center !important;
+}
+
+body.modal-open .location-history-table td {
+  padding: 4px 4px !important;                 /* ↓ giảm padding dọc */
+  border-bottom: 1px solid rgba(245, 159, 11, 0.45) !important;
+  color: #0f172a !important;
+  font-size: 9.5px !important;                 /* ↓ nhỏ hơn chút để thêm dòng */
+  line-height: 1.2 !important;                 /* ↓ khoảng cách dòng */
+  vertical-align: middle !important;
+}
+
+body.modal-open .location-history-table tr:hover td {
+  background: rgba(254, 243, 199, 0.5) !important;
+}
+
+body.modal-open .location-history-table tr:last-child td {
+  border-bottom: none !important;
+}
+
+/* ✅ DATE/TIME CELL */
+body.modal-open .location-history-table td:nth-child(1) {
+  font-weight: 600 !important;
+  color: #92400e !important;
+  white-space: nowrap !important;
+}
+
+/* ✅ LOCATION CHANGE CELL */
+body.modal-open .location-history-table td:nth-child(2) {
+  font-weight: 500 !important;
+  word-break: break-word !important;
+}
+
+/* ✅ EMPLOYEE CELL */
+body.modal-open .location-history-table td:nth-child(3) {
+  color: #475569 !important;
+  font-size: 9px !important;
+  word-break: break-word !important;
+}
+
+/* ✅ NOTES CELL */
+body.modal-open .location-history-table td:nth-child(4) {
+  color: #64748b !important;
+  font-size: 9px !important;
+  word-break: break-word !important;
+  font-style: italic !important;
+}
+
+/* ✅ SYNC STATUS BADGES */
+body.modal-open .loc-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 3px 6px !important;
+  border-radius: 10px !important;
+  font-size: 8px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.03em !important;
+  white-space: nowrap !important;
+  border: 1px solid !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.2s ease !important;
+}
+
+/* Synced Badge - Green */
+body.modal-open .loc-badge.synced {
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%) !important;
+  color: #065f46 !important;
+  border-color: #6ee7b7 !important;
+}
+
+body.modal-open .loc-badge.synced::before {
+  content: "✓ " !important;
+  font-weight: 900 !important;
+}
+
+/* Pending Badge - Amber with Animation */
+body.modal-open .loc-badge.pending {
+  background: linear-gradient(135deg, #c7cffe 0%, #9f8afd 100%) !important;
+  color: #92400e !important;
+  border-color: #fbbf24 !important;
+  animation: pulse-pending 2s ease-in-out infinite !important;
+}
+
+body.modal-open .loc-badge.pending::before {
+  content: "⏳ " !important;
+}
+
+@keyframes pulse-pending {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(0.98); }
+}
+
+/* Error Badge - Red */
+body.modal-open .loc-badge.error {
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%) !important;
+  color: #991b1b !important;
+  border-color: #f87171 !important;
+}
+
+body.modal-open .loc-badge.error::before {
+  content: "✗ " !important;
+  font-weight: 900 !important;
+}
+
+/* Delete Button in History */
+body.modal-open .btn-delete-history {
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 14px !important;
+  border: none !important;
+  font-size: 14px !important;
+  color: #dc2626 !important;
+  background: rgba(248, 113, 113, 0.15) !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+body.modal-open .btn-delete-history:active {
+  background: rgba(248, 113, 113, 0.3) !important;
+  transform: scale(0.95) !important;
+}
+
+/* =========================================
+ * 9. SEARCHABLE DROPDOWN
+ * ========================================= */
+body.modal-open .searchable-select-wrapper {
+  position: relative !important;
+}
+
+body.modal-open .searchable-select-wrapper input.search-input {
+  width: 100% !important;
+  padding: 8px 32px 8px 10px !important; /* ⬅ GIẢM từ 9px 34px 9px 11px */
+  border-radius: 7px !important;
+  border: 1.4px solid rgba(148, 163, 184, 0.9) !important;
+  font-size: 13px !important; /* ⬅ GIẢM từ 14px → 13px */
+  background: #ffffff !important;
+  transition: all 0.18s ease !important;
+  height: 36px !important; /* ⬅ THÊM: cố định chiều cao */
+  box-sizing: border-box !important;
+}
+
+body.modal-open .searchable-select-wrapper input.search-input:focus {
+  border-color: #fb923c !important;
+  box-shadow: 0 0 0 3px rgba(248, 153, 72, 0.25) !important;
+  outline: none !important;
+}
+
+body.modal-open .searchable-select-wrapper .dropdown-icon {
+  position: absolute !important;
+  right: 10px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  pointer-events: none !important;
+  font-size: 13px !important; /* ⬅ GIẢM từ 14px → 13px */
+  color: #64748b !important;
+  transition: transform 0.2s ease !important;
+}
+
+body.modal-open .searchable-select-wrapper.open .dropdown-icon {
+  transform: translateY(-50%) rotate(180deg) !important;
+}
+
+body.modal-open .searchable-select-wrapper .options-list {
+  position: absolute !important;
+  top: calc(100% + 4px) !important;
+  left: 0 !important;
+  right: 0 !important;
+  max-height: 40vh !important; /* ⬅ GIẢM từ 50vh → 40vh */
+  overflow-y: auto !important;
+  background: #ffffff !important;
+  border-radius: 8px !important;
+  border: 1.4px solid rgba(148, 163, 184, 0.9) !important;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.2) !important;
+  z-index: 10001 !important; /* ⬅ TĂNG z-index để đè lên phần khác */
+  display: none !important;
+}
+
+body.modal-open .searchable-select-wrapper .options-list.show {
+  display: block !important;
+}
+
+body.modal-open .searchable-select-wrapper .option-item {
+  padding: 8px 10px !important; /* ⬅ GIẢM từ 9px 11px → 8px 10px */
+  cursor: pointer !important;
+  font-size: 12px !important; /* ⬅ GIẢM từ 13px → 12px */
+  border-bottom: 1px solid rgba(148, 163, 184, 0.28) !important;
+  background: #ffffff !important;
+  transition: background 0.15s ease !important;
+}
+
+body.modal-open .searchable-select-wrapper .option-item:last-child {
+  border-bottom: none !important;
+}
+
+body.modal-open .searchable-select-wrapper .option-item.matched {
+  background: #fffbeb !important;
+  border-left: 3px solid #f59e0b !important;
+  font-weight: 500 !important;
+}
+
+body.modal-open .searchable-select-wrapper .option-item:hover,
+body.modal-open .searchable-select-wrapper .option-item:active {
+  background: rgba(248, 153, 72, 0.12) !important;
+}
+
+body.modal-open .searchable-select-wrapper .option-item.selected {
+  background: rgba(248, 153, 72, 0.18) !important;
+  color: #c05621 !important;
+  font-weight: 600 !important;
+  border-left: 3px solid #ea580c !important;
+}
+
+body.modal-open .searchable-select-wrapper .no-results {
+  padding: 10px 12px !important;
+  text-align: center !important;
+  font-size: 12px !important; /* ⬅ GIẢM từ 13px → 12px */
+  color: #9ca3af !important;
+}
+
+} /* end @media max-width:767px */

@@ -1,0 +1,345 @@
+/**
+ * teflon-process-manager-r7.0.9.css
+ * ------------------------------------------
+ * Style cho teflon-process-manager-r7.0.9.js
+ * - Panel dạng .checkio-panel (tương thích mobile/desktop hiện tại)
+ * - 3 khu vực: 入力 / Trạng thái / Lịch sử
+ * - Thanh nút dưới cùng + button song ngữ
+ * - Bảng lịch sử mạ Teflon
+ */
+
+/* ========== Panel layout chung ========== */
+
+.tefproc-panel {
+  position: relative;
+  z-index: 5000;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+
+/* Body 3 khu vực: Inputs / Status / History */
+.tefproc-body {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1.4fr;
+  grid-template-rows: auto;
+  gap: 8px 12px;
+  padding: 8px 10px 10px;
+  box-sizing: border-box;
+}
+
+/* Mỗi section bên trong body */
+.tefproc-inputs,
+.tefproc-status,
+.tefproc-history {
+  background: #f9fafb;
+  border-radius: 8px;
+  padding: 8px 10px;
+  box-sizing: border-box;
+  min-height: 0;
+}
+
+.tefproc-inputs h4,
+.tefproc-status h4,
+.tefproc-history h4 {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* ========== Form nhập liệu (Inputs) ========== */
+
+.tefproc-inputs .form-group {
+  margin-bottom: 6px;
+}
+
+.tefproc-inputs .form-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 2px;
+}
+
+.tefproc-inputs .form-control {
+  width: 100%;
+  font-size: 12px;
+  padding: 3px 6px;
+  border-radius: 4px;
+  border: 1px solid #d1d5db;
+  box-sizing: border-box;
+}
+
+.tefproc-inputs .form-control:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.25);
+}
+
+/* Vùng nút trong form */
+.tefproc-inputs .btn-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+/* Nút cơ bản */
+.tefproc-inputs .btn-confirm,
+.tefproc-inputs .btn-cancel,
+.tefproc-inputs .btn-secondary {
+  min-width: 110px;
+  font-size: 12px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  box-sizing: border-box;
+  white-space: nowrap;
+}
+
+/* Nút xác nhận chính */
+.tefproc-inputs .btn-confirm {
+  background: #059669;
+  border-color: #059669;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* Nút hủy */
+.tefproc-inputs .btn-cancel {
+  background: #ffffff;
+  border-color: #d1d5db;
+  color: #374151;
+}
+
+/* Nút phụ (ví dụ: cập nhật vị trí) */
+.tefproc-inputs .btn-secondary {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #1d4ed8;
+}
+
+/* Chú thích nhỏ */
+.tefproc-inputs .note-small {
+  font-size: 10px;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+/* ========== Khu vực trạng thái khuôn (Status) ========== */
+
+.tefproc-status .status-badges {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tefproc-status .badge-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tefproc-status .badge-label {
+  min-width: 90px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.tefproc-status .badge {
+  flex: 1;
+  font-size: 12px;
+  padding: 3px 6px;
+  border-radius: 999px;
+  background: #f3f4f6;
+  color: #111827;
+  box-sizing: border-box;
+}
+
+.tefproc-status .badge-mold,
+.tefproc-status .badge-mold-code {
+  background: #ecfeff;
+  color: #0369a1;
+  font-weight: 600;
+}
+
+.tefproc-status .badge-mold-name {
+  background: #eef2ff;
+  color: #3730a3;
+}
+
+.tefproc-status .badge-company {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.tefproc-status .badge-rack {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+/* ========== Khu vực lịch sử (History) ========== */
+
+.tefproc-history .history-wrap {
+  max-height: 260px;
+  overflow: auto;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+}
+
+/* Bảng lịch sử mạ Teflon */
+.tefproc-history .history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+
+.tefproc-history .history-table th,
+.tefproc-history .history-table td {
+  border-bottom: 1px solid #e5e7eb;
+  padding: 3px 5px;
+  vertical-align: top;
+}
+
+.tefproc-history .history-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #f3f4f6;
+  font-weight: 600;
+  color: #111827;
+}
+
+.tefproc-history .history-table tbody tr:nth-child(odd) {
+  background-color: #f9fafb;
+}
+
+.tefproc-history .history-table tbody tr:hover {
+  background-color: #e5f3ff;
+}
+
+.tefproc-history .note-cell {
+  max-width: 260px;
+  word-break: break-word;
+}
+
+/* Khi không có lịch sử */
+.tefproc-history .no-history {
+  padding: 8px 10px;
+  font-size: 11px;
+  color: #6b7280;
+  text-align: left;
+}
+
+/* ========== Header & nút trên header (kế thừa checkio-header) ========== */
+
+.tefproc-panel .checkio-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 10px;
+  border-bottom: 1px solid #e5e7eb;
+  background: linear-gradient(90deg, #0ea5e9 0%, #22c55e 100%);
+  color: #ffffff;
+}
+
+.tefproc-panel .checkio-mode {
+  display: flex;
+  gap: 6px;
+}
+
+/* Nút chọn mode (send / complete) */
+.tefproc-panel .mode-btn {
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  padding: 4px 10px;
+  font-size: 11px;
+  background: transparent;
+  color: #e0f2fe;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.tefproc-panel .mode-btn.active {
+  background: #ffffff;
+  color: #047857;
+}
+
+/* Nút đóng nhỏ bên phải header */
+.tefproc-panel .btn-close-compact {
+  border: none;
+  background: transparent;
+  color: #ffffff;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+/* ========== Thanh nút phía dưới (bottom bar) ========== */
+
+.tefproc-bottom-bar {
+  border-top: 1px solid #e5e7eb;
+  padding: 6px 10px;
+  background: #f9fafb;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.tefproc-bottom-bar .btn-cancel {
+  min-width: 120px;
+  font-size: 12px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #374151;
+  cursor: pointer;
+}
+
+/* ========== Toast (class cho JS sử dụng) ========== */
+
+.tefproc-toast {
+  /* màu nền, radius, shadow set trong JS;
+     CSS này chỉ để fallback nếu cần */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* ========== Responsive (Mobile) ========== */
+
+@media (max-width: 767px) {
+  .tefproc-panel {
+    position: fixed;
+    inset: 0;
+    border-radius: 0;
+    max-width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .tefproc-body {
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+    overflow-y: auto;
+    padding: 8px 8px 4px;
+  }
+
+  .tefproc-history .history-wrap {
+    max-height: none;
+  }
+
+  .tefproc-bottom-bar {
+    padding: 6px 8px 10px;
+  }
+
+  .tefproc-bottom-bar .btn-cancel {
+    width: 100%;
+    justify-content: center;
+  }
+}

@@ -1,0 +1,1475 @@
+/* ========================================================================
+   MOBILE DETAIL MODAL STYLES R7.0.2 - FINAL
+   ========================================================================
+   Modern, color-coded, compact design with clear section headers
+   
+   🎨 COLOR SCHEME:
+   - Location: Blue (#1565C0)
+   - Basic Info: Green (#388E3C)
+   - Design Info: Purple (#7B1FA2)
+   - Product Info: Orange (#F57C00)
+   - Status/Notes: Red/Cyan (varies by status)
+   - Related Equipment: Blue (Mold) / Orange (Cutter)
+   
+   Created: 2025-11-17 (R7.0.2 Final)
+   ======================================================================== */
+
+/* ========================================
+   1. MODAL CONTAINER & OVERLAY
+   ======================================== */
+
+@media (max-width: 767px) {
+  .mobile-detail-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 10500;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    visibility: hidden;
+    /* ✅ CHỈ ANIMATE OPACITY, KHÔNG TRANSFORM */
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+  }
+
+  .mobile-detail-modal.show {
+    opacity: 1;
+    visibility: visible;
+  }
+    
+    .mobile-detail-modal.hidden {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+    .mobile-detail-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: calc(100vh - 180px);
+        background: rgba(0, 0, 0, 0.85);
+        z-index: 10500;
+        display: flex;
+        flex-direction: column;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.25s ease;
+    }
+    
+    .mobile-detail-modal.show {
+        opacity: 1;
+        visibility: visible;
+    }
+}
+
+/* ✅ 2. MODAL HEADER - FIXED LAYOUT */
+@media (max-width: 1024px) {
+    .mobile-modal-header {
+        background: linear-gradient(135deg, #1565C0 0%, #0D47A1 100%);
+        color: white;
+        padding: 20px 16px 12px; /* Tăng top padding từ 12px → 20px */
+        position: relative; /* Thêm để có thể đặt ::before */
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        flex-shrink: 0;
+    }
+
+    /* Swipe handle indicator */
+    .mobile-modal-header::before {
+        content: '';
+        position: absolute;
+        top: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 36px;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.4);
+        border-radius: 2px;
+        transition: all 0.2s ease;
+    }
+
+    .mobile-modal-header.pulling::before {
+        background: rgba(255, 255, 255, 0.7);
+        width: 48px;
+    }
+
+    
+    .modal-title {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    /* ✅ Left: 詳細情報 / Chi tiết */
+    .title-left {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        flex-shrink: 0;
+    }
+    
+    .title-label-ja {
+        font-size: 13px;
+        font-weight: 700;
+        color: white;
+        line-height: 1.2;
+    }
+    
+    .title-label-vi {
+        font-size: 9px;
+        font-weight: 400;
+        color: rgba(255, 255, 255, 0.9);
+        line-height: 1;
+    }
+    
+    /* ✅ Center: 金型: 2895 JAE-317 R1 */
+    .title-center {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding-left: 12px;
+        border-left: 2px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .item-type-label {
+        font-size: 11px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.85);
+        flex-shrink: 0;
+    }
+    
+    .item-id-code {
+        font-size: 13px;
+        font-weight: 700;
+        color: white;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    
+    .modal-close-btn {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        border: 1.5px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        width: 40px; /* Tăng từ 34px → 40px */
+        height: 40px;
+        border-radius: 50%; /* Đổi từ 8px → 50% (tròn) */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px; /* Tăng từ 18px */
+        cursor: pointer;
+        transition: all 0.2s ease;
+        flex-shrink: 0;
+        /* Larger touch target */
+        padding: 0;
+    }
+
+    .modal-close-btn:active {
+        transform: scale(0.92);
+        background: rgba(255, 255, 255, 0.25);
+    }
+
+}
+
+
+
+/* R7.0.3 Mode Toggle - Compact iOS-style in Header */
+@media (max-width: 1024px) {
+    .mode-toggle-container {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: transparent;
+        border: none;
+        border-radius: 0;
+        padding: 0;
+        margin: 0;
+        box-shadow: none;
+    }
+    
+    .mode-toggle-label {
+        display: 0; /* Ẩn label để tiết kiệm không gian */
+        
+    }
+    
+    .mode-toggle-switch {
+        display: inline-flex;
+        background: rgba(46, 152, 223, 0.2);
+        border-radius: 16px;
+        padding: 3px;
+        gap: 3px;
+        backdrop-filter: blur(10px);
+    }
+    
+    .toggle-btn {
+        padding: 5px 12px;
+        border: none;
+        background: transparent;
+        font-size: 11px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border-radius: 13px;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        min-height: 26px;
+        color: rgba(58, 6, 78, 0.75);
+    }
+    
+    .toggle-btn i {
+        font-size: 12px;
+        line-height: 1;
+    }
+    
+    .toggle-btn .btn-label-ja,
+    .toggle-btn .btn-label-vi {
+        font-size: 10px;
+    }
+    
+    /* Active state - White pill */
+    .toggle-btn[data-mode="checkin"].active {
+        background: white;
+        color: #1976D2;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+    
+    .toggle-btn[data-mode="inventory"].active {
+        background: white;
+        color: #F57C00;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+}
+
+
+
+/* ========================================
+   4. MODAL BODY
+   ======================================== */
+
+@media (max-width: 767px) {
+    .mobile-modal-body {
+        flex: 1;
+        background: #F5F7FA;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: 10px;
+        padding-bottom: 175px;
+    }
+    
+    .mobile-modal-body.inventory-mode {
+        padding-bottom: 115px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+    .mobile-modal-body {
+        flex: 1;
+        background: #F5F7FA;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: 12px;
+        padding-bottom: 155px;
+    }
+}
+
+/* Loading state */
+@media (max-width: 1024px) {
+    .modal-loading {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 60px 20px;
+        color: #0D47A1;
+    }
+    
+    .modal-loading i {
+        font-size: 40px;
+        margin-bottom: 16px;
+    }
+}
+
+/* ========================================
+   5. SECTION - COMMON STYLES WITH HEADERS
+   ======================================== */
+
+@media (max-width: 1024px) {
+    .modal-section {
+        background: white;
+        border-radius: 10px;
+        padding: 0;
+        margin-bottom: 10px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        border: 1px solid #E0E0E0;
+    }
+    
+    .section-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        font-weight: 700;
+        color: white;
+        padding: 10px 14px;
+        margin-bottom: 0;
+        border-bottom: none;
+        background: linear-gradient(135deg, #424242 0%, #212121 100%);
+    }
+    
+    .section-header i {
+        font-size: 14px;
+        flex-shrink: 0;
+    }
+    
+    .section-header span {
+        flex: 1;
+        line-height: 1.3;
+        font-size: 12px;
+    }
+    
+    
+    /* ✅ R7.0.3: Equipment Header - Blue gradient */
+    .equipment-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 12px;
+        background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+        color: white;
+        border-radius: 6px 6px 0 0;
+        font-size: 13px;
+        font-weight: 700;
+        margin-bottom: 12px;
+    }
+
+    .equipment-header i {
+        font-size: 16px;
+    }
+
+    /* ✅ R7.0.3: Status Header - Red/Cyan gradient */
+    .status-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 12px;
+        background: linear-gradient(135deg, #00897B 0%, #00796B 100%);
+        color: white;
+        border-radius: 6px 6px 0 0;
+        font-size: 13px;
+        font-weight: 700;
+        margin-bottom: 12px;
+    }
+
+    .status-header i {
+        font-size: 16px;
+    }
+
+}
+
+/* ========================================================================
+   ✅ R7.0.3: LOCATION SECTION - SIMPLE TEXT-BASED LAYOUT
+   ======================================================================== */
+
+@media (max-width: 1024px) {
+
+    /* Main Container */
+    .location-section {
+        background: white;
+        border-radius: 10px;
+        padding: 0;
+        margin-bottom: 10px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        border: 1px solid #E0E0E0;
+        border-left: 4px solid #1565C0;
+    }
+
+    .location-section .section-header {
+        background: linear-gradient(135deg, #42A5F5 0%, #1565C0 100%);
+        color: white;
+        padding: 8px 12px;
+        font-size: 11px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .location-section .section-header i {
+        font-size: 13px;
+    }
+
+    /* Content Container */
+    .location-content {
+        padding: 0;
+        margin: 0;
+    }
+
+    /* --------------------------------------------------
+    INFO LINES - Simple Text Layout
+    -------------------------------------------------- */
+    .info-line {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-bottom: 1px solid #F5F5F5;
+        font-size: 11px;
+        line-height: 1.3;
+    }
+
+    .info-line:last-child {
+        border-bottom: none;
+    }
+
+    .info-line i {
+        font-size: 10px;
+        color: #1565C0;
+        flex-shrink: 0;
+    }
+
+    .info-line .label {
+        font-weight: 700;
+        color: #616161;
+        flex-shrink: 0;
+    }
+
+    .info-line .value {
+        flex: 1;
+        color: #212121;
+        font-weight: 500;
+        word-break: break-word;
+    }
+
+    /* Company Line */
+    .company-line {
+        background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+        border-bottom: 1px solid #90CAF9;
+        padding: 5px 10px;
+    }
+
+    .company-value {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 7px;
+        border-radius: 4px;
+        font-weight: 700;
+        font-size: 10px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+
+    .company-value i {
+        font-size: 9px;
+    }
+
+    .company-value.ysd {
+        background: linear-gradient(135deg, #90CAF9 0%, #64B5F6 100%);
+        color: #0D47A1;
+        border: 1px solid #42A5F5;
+    }
+
+    .company-value.external {
+        background: linear-gradient(135deg, #FFCC80 0%, #FFB74D 100%);
+        color: #E65100;
+        border: 1px solid #FF9800;
+        animation: pulse-soft 2s infinite;
+    }
+
+    @keyframes pulse-soft {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.85; }
+    }
+
+    /* YSD Header Line */
+    .ysd-header {
+        background: linear-gradient(135deg, #F5F5F5 0%, #FAFAFA 100%);
+        border-bottom: 1px solid #E0E0E0;
+        font-weight: 700;
+        color: #616161;
+        font-size: 9px;
+        padding: 4px 10px;
+    }
+
+    /* Location Value Highlight */
+    .location-value {
+        padding: 3px 8px;
+        background: linear-gradient(135deg, #E8EAF6 0%, #C5CAE9 100%);
+        border: 1px solid #7986CB;
+        border-radius: 4px;
+        color: #1A237E;
+        font-weight: 700;
+        font-size: 10px;
+    }
+
+    /* Warning Line */
+    .warning-line {
+        background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+        border: 1px solid #FFB74D;
+        border-left: 3px solid #F57C00;
+        font-weight: 600;
+        color: #E65100;
+        font-size: 10px;
+        padding: 5px 10px;
+        margin: 4px 6px;
+        border-radius: 4px;
+    }
+
+    .warning-line i {
+        color: #E65100;
+    }
+
+    /* --------------------------------------------------
+    BADGES ROW - Rack-Layer + Status (Same Row)
+    ✅ R7.0.3: ALIGNED LAYOUT - Labels + Badges on same baseline
+    -------------------------------------------------- */
+    .badges-row {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-around;
+        gap: 15px;
+        padding: 6px 10px 8px 10px;
+        background: #FAFAFA;
+        border-bottom: 1px solid #E0E0E0;
+    }
+
+    .badge-group,
+    .status-group {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex: 1;
+    }
+
+    /* ✅ Labels - Căn cùng hàng */
+    .badge-label {
+        font-size: 9px;
+        font-weight: 700;
+        color: #616161;
+        text-align: center;
+        line-height: 1.1;
+        margin-bottom: 5px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* ✅ Badge Container - Cùng chiều cao */
+    .badge-inline,
+    .status-badge-compact {
+        height: 36px;
+        display: flex;
+        align-items: center;
+    }
+
+    /* Rack-Layer Badges */
+    .badge-inline {
+        gap: 3px;
+    }
+
+    .badge-circle {
+        min-width: 32px;
+        height: 32px;
+        padding: 0 8px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #42A5F5 0%, #1E88E5 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: 700;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    }
+
+    .badge-sep {
+        font-size: 16px;
+        font-weight: 700;
+        color: #616161;
+        margin: 0 2px;
+    }
+
+    .badge-rectangle {
+        min-width: 32px;
+        height: 32px;
+        padding: 0 8px;
+        border-radius: 6px;
+        background: linear-gradient(135deg, #FFA726 0%, #FB8C00 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: 700;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    }
+
+    /* ✅ Status Badge - HORIZONTAL layout + Fixed Height */
+    .status-badge-compact {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        padding: 0 10px;
+        border-radius: 6px;
+        font-size: 10px;
+        font-weight: 700;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        min-width: 90px;
+        height: 32px;
+        white-space: nowrap;
+    }
+
+    .status-badge-compact i {
+        font-size: 14px;
+    }
+
+    /* ========================================
+    ✅ MÀUSẮC THEO TRẠNG THÁI
+    Class names từ JavaScript:
+    - badge-checkin
+    - badge-checkout
+    - badge-audit
+    - no-history
+    ======================================== */
+
+    /* Check-in (チェックイン) - Xanh lá */
+    .status-badge-compact.badge-checkin {
+        background: linear-gradient(135deg, #66BB6A 0%, #4CAF50 100%);
+        color: white;
+        border: 2px solid #43A047;
+    }
+
+    /* Check-out (チェックアウト) - Đỏ */
+    .status-badge-compact.badge-checkout {
+        background: linear-gradient(135deg, #EF5350 0%, #E53935 100%);
+        color: white;
+        border: 2px solid #D32F2F;
+    }
+
+    /* Audit (棚卸) - Xanh nhạt */
+    .status-badge-compact.badge-audit {
+        background: linear-gradient(135deg, #4FC3F7 0%, #29B6F6 100%);
+        color: white;
+        border: 2px solid #0288D1;
+    }
+
+    /* No History (未確認) - Xám nhẹ */
+    .status-badge-compact.no-history {
+        background: linear-gradient(135deg, #BDBDBD 0%, #fffdfd 100%);
+        color: #3d3939;
+        border: 2px solid #dbd7d7;
+    }
+
+    /* R7.1.0: Badges Row 3 cột cân đều + Ngày xác nhận dạng badge */
+    .location-section .badges-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 6px 8px 8px 8px;
+    background: #FAFAFA;
+    border-bottom: 1px solid #E0E0E0;
+    }
+
+    /* Mỗi nhóm (Giá–Tầng, Trạng thái, Ngày) là 1 cột bằng nhau */
+    .location-section .badge-group,
+    .location-section .status-group,
+    .location-section .confirm-date-group {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    }
+
+    /* Nhãn song ngữ JA + VI trên 2 dòng nhỏ */
+    .location-section .badge-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.1;
+    margin-bottom: 4px;
+    height: auto;
+    }
+
+    .location-section .badge-label .ja {
+    font-size: 9px;
+    font-weight: 700;
+    color: #616161;
+    }
+
+    .location-section .badge-label .vi {
+    font-size: 8px;
+    font-weight: 500;
+    color: #757575;
+    }
+
+    /* Badge ngày xác nhận – dạng pill giống status badge nhưng hẹp hơn */
+    .location-section .date-badge-compact {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 0 8px;
+    min-width: 90px;
+    height: 32px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid #B0BEC5;
+    font-size: 10px;
+    font-weight: 700;
+    color: #37474F;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+    white-space: nowrap;
+    }
+
+    .location-section .date-badge-compact i {
+    font-size: 12px;
+    }
+
+    /* Quá 11 tháng: nền đỏ, chữ trắng để cảnh báo */
+    .location-section .confirm-date-group.expired .date-badge-compact {
+    background: linear-gradient(135deg, #EF5350 0, #E53935 100);
+    border-color: #D32F2F;
+    color: #fff;
+    }
+
+
+
+} /* End @media (max-width: 1024px) */
+
+
+/* ========================================
+   RESPONSIVE ADJUSTMENTS FOR iPAD
+   ======================================== */
+@media (min-width: 768px) and (max-width: 1024px) {
+    
+.info-line {
+    padding: 7px 12px;
+    font-size: 10px;
+}
+
+.company-line,
+.ysd-header {
+    padding: 8px 12px;
+}
+
+.company-value {
+    font-size: 11px;
+    padding: 4px 8px;
+}
+
+.badges-row {
+    padding: 12px;
+    gap: 12px;
+}
+
+.badge-label {
+    font-size: 8px;
+}
+
+.badge-circle,
+.badge-rectangle {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+}
+
+.status-badge-compact {
+    padding: 8px 12px;
+    font-size: 10px;
+    min-width: 80px;
+}
+
+.status-badge-compact i {
+    font-size: 18px;
+}
+
+.location-value {
+    font-size: 11px;
+    padding: 4px 10px;
+}
+
+} /* End iPad adjustments */
+
+
+
+
+/* ========================================
+   7. BASIC INFO SECTION - GREEN THEME
+   ======================================== */
+
+@media (max-width: 1024px) {
+    .modal-section:has(.fa-info-circle) {
+        border-left: 4px solid #388E3C;
+    }
+    
+    .modal-section:has(.fa-info-circle) .section-header {
+        background: linear-gradient(135deg, #66BB6A 0%, #388E3C 100%);
+    }
+}
+
+/* ========================================
+   8. DESIGN INFO SECTION - PURPLE THEME
+   ======================================== */
+
+@media (max-width: 1024px) {
+    .modal-section:has(.fa-drafting-compass) {
+        border-left: 4px solid #7B1FA2;
+    }
+    
+    .modal-section:has(.fa-drafting-compass) .section-header {
+        background: linear-gradient(135deg, #AB47BC 0%, #7B1FA2 100%);
+    }
+}
+
+/* ========================================
+   9. PRODUCT INFO SECTION - ORANGE THEME
+   ======================================== */
+
+@media (max-width: 1024px) {
+    .modal-section:has(.fa-box-open) {
+        border-left: 4px solid #F57C00;
+    }
+    
+    .modal-section:has(.fa-box-open) .section-header {
+        background: linear-gradient(135deg, #FFB74D 0%, #F57C00 100%);
+    }
+}
+
+/* ========================================
+   10. INFO GRID - TABLE LAYOUT (COMPACT)
+   ======================================== */
+
+@media (max-width: 1024px) {
+    .info-grid-2col {
+        display: block;
+        margin: 0;
+        background: white;
+    }
+    
+    .info-grid {
+        display: block;
+        margin: 0;
+        background: white;
+    }
+    
+    .info-item,
+    .info-row {
+        display: flex;
+        align-items: stretch;
+        border-bottom: 1px solid #F0F0F0;
+        background: white;
+        padding: 0;
+        margin: 0;
+        gap: 0;
+        min-height: 34px;
+    }
+    
+    .info-item:last-child,
+    .info-row:last-child {
+        border-bottom: none;
+    }
+    
+    .info-item:nth-child(even),
+    .info-row:nth-child(even) {
+        background: #FAFAFA;
+    }
+    
+    .info-item.full-width {
+        display: flex;
+    }
+    
+    .info-label {
+        flex: 0 0 175px;
+        font-size: 10px;
+        color: #424242;
+        font-weight: 600;
+        line-height: 1.3;
+        padding: 8px 12px;
+        background: linear-gradient(to right, #F5F5F5 0%, #FAFAFA 100%);
+        border-right: 2px solid #E0E0E0;
+        margin-bottom: 0;
+        display: flex;
+        align-items: center;
+    }
+    
+    .info-value {
+        flex: 1;
+        font-size: 12px;
+        color: #212121;
+        font-weight: 600;
+        line-height: 1.4;
+        word-break: break-word;
+        padding: 8px 12px;
+        display: flex;
+        align-items: center;
+    }
+    
+    .info-value.empty {
+        color: #BDBDBD;
+        font-style: italic;
+        font-weight: 400;
+    }
+    
+    .info-value.note-text {
+        color: #F57C00;
+        font-style: italic;
+        font-size: 11px;
+        font-weight: 500;
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 374px) {
+    .info-label {
+        flex: 0 0 135px;
+        font-size: 9px;
+        padding: 6px 8px;
+    }
+    
+    .info-value {
+        font-size: 11px;
+        padding: 6px 8px;
+    }
+}
+
+@media (min-width: 415px) and (max-width: 767px) {
+    .info-label {
+        flex: 0 0 185px;
+        font-size: 10px;
+    }
+    
+    .info-value {
+        font-size: 12px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+    .info-label {
+        flex: 0 0 230px;
+        font-size: 11px;
+        padding: 10px 14px;
+    }
+    
+    .info-value {
+        font-size: 13px;
+        padding: 10px 14px;
+    }
+}
+
+/* ========================================
+   11. RELATED EQUIPMENT - COLOR CODED
+   ======================================== */
+
+@media (max-width: 1024px) {
+    /* ✅ R7.0.3: Equipment and Status Section Headers - Unified Style */
+    .related-equipment-section .section-header,
+    .status-notes-section .section-header {
+        background: linear-gradient(135deg, #424242 0%, #616161 100%);
+        color: white;
+        padding: 10px 12px;
+        border-radius: 8px 8px 0 0;
+        font-size: 13px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 0;
+    }
+
+    .related-equipment-section .section-header i,
+    .status-notes-section .section-header i {
+        font-size: 16px;
+    }
+
+
+    .related-equipment-section {
+        border-left: 4px solid #1976D2;
+    }
+    
+    .related-equipment-section .section-header {
+        background: linear-gradient(135deg, #42A5F5 0%, #1976D2 100%);
+    }
+    
+    .related-equipment-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 10px;
+    }
+    
+    /* ✅ R7.0.3: Related Equipment - Color Coding */
+.related-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: white;
+    border-radius: 8px;
+    border: 2px solid #E0E0E0;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* Mold - Blue Theme */
+.related-item[data-item-type="mold"] {
+    background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+    border-color: #42A5F5;
+}
+
+.related-item[data-item-type="mold"]:active {
+    background: linear-gradient(135deg, #BBDEFB 0%, #90CAF9 100%);
+    transform: scale(0.98);
+}
+
+.related-item[data-item-type="mold"] .item-icon {
+    background: #1976D2;
+    color: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+
+/* Cutter - Orange Theme */
+.related-item[data-item-type="cutter"] {
+    background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+    border-color: #FFB74D;
+}
+
+.related-item[data-item-type="cutter"]:active {
+    background: linear-gradient(135deg, #FFE0B2 0%, #FFCC80 100%);
+    transform: scale(0.98);
+}
+
+.related-item[data-item-type="cutter"] .item-icon {
+    background: #F57C00;
+    color: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+
+/* Item Details */
+.related-item .item-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.related-item .item-code {
+    font-size: 13px;
+    font-weight: 700;
+    color: #212121;
+}
+
+.related-item .item-name {
+    font-size: 11px;
+    color: #616161;
+}
+
+/* Arrow Icon */
+.related-item .item-arrow {
+    color: #9E9E9E;
+    font-size: 16px;
+}
+
+}
+
+/* ========================================
+   12. STATUS & NOTES - THEMED SECTIONS
+   ======================================== */
+
+@media (max-width: 1024px) {
+    .status-notes-section {
+        border-left: 4px solid #00897B;
+    }
+    
+    .status-notes-section .section-header {
+        background: linear-gradient(135deg, #26A69A 0%, #00897B 100%);
+    }
+    
+    .additional-data-section {
+        border-left: 4px solid #5E35B1;
+    }
+    
+    .additional-data-section .section-header {
+        background: linear-gradient(135deg, #7E57C2 0%, #5E35B1 100%);
+    }
+    
+    .status-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        padding: 10px;
+    }
+    
+    .status-item {
+        background: #FAFAFA;
+        border-radius: 6px;
+        padding: 8px;
+        border: 1px solid #E0E0E0;
+    }
+    
+    .status-label {
+        font-size: 10px;
+        color: #666;
+        margin-bottom: 4px;
+        font-weight: 600;
+    }
+    
+    .status-value {
+        font-size: 12px;
+        font-weight: 700;
+        color: #212121;
+    }
+    
+    .notes-area {
+        background: linear-gradient(135deg, #FFFBF0 0%, #FFF9E0 100%);
+        border: 2px solid #FFD54F;
+        border-radius: 8px;
+        padding: 10px;
+        margin: 10px;
+    }
+    
+    .notes-label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        font-weight: 700;
+        color: #F57C00;
+        margin-bottom: 8px;
+    }
+    
+    .notes-label i {
+        font-size: 13px;
+    }
+    
+    .notes-content {
+        font-size: 12px;
+        color: #666;
+        line-height: 1.5;
+        white-space: pre-wrap;
+    }
+}
+
+/* ========================================
+   13. ACTION BUTTONS - COMPACT (4x2)
+   ======================================== */
+
+@media (max-width: 767px) {
+  .mobile-modal-actions {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    padding: 4px; /* ✅ 6px → 4px */
+    box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.15);
+    z-index: 100;
+    border-top: 2px solid #E0E0E0;
+  }
+
+  .action-buttons-grid.normal-mode {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px; /* ✅ 6px → 4px */
+  }
+
+  /* ✅ LAYOUT MỚI: CHỈ 1 DÒNG - ICON + TEXT TIẾNG NHẬT */
+  .action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 4px 2px; /* ✅ 8px 6px → 4px 2px */
+    background: white;
+    border: 1px solid #90CAF9; /* ✅ 2px → 1px */
+    border-radius: 6px; /* ✅ 8px → 6px */
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: 42px; /* ✅ 56px → 42px (giảm 25%) */
+  }
+
+    .action-btn i {
+        display: none !important;
+        grid-row: 1 / 3;
+        grid-column: 1;
+        font-size: 16px;
+        color: #0D47A1;
+        margin: 0;
+        line-height: 1;
+    }
+
+    .action-btn .btn-label-ja {
+        grid-row: 1;
+        grid-column: 2;
+        font-size: 10px;
+        font-weight: 700;
+        color: #0D47A1;
+        text-align: center;
+        line-height: 1.2;
+        margin: 0;
+    }
+
+    .action-btn .btn-label-vi {
+        grid-row: 2;
+        grid-column: 2;
+        font-size: 10px;
+        font-weight: 500;
+        color: #666;
+        text-align: center;
+        line-height: 1.1;
+        margin: 0;
+    }
+
+    
+    .action-btn:active {
+        transform: scale(0.93);
+    }
+    
+    /* Button-specific colors */
+    .btn-checkin {
+        border-color: #66BB6A;
+        background: linear-gradient(to bottom, #E8F5E9 0%, #C8E6C9 100%);
+    }
+    .btn-checkin i, .btn-checkin .btn-label-ja { color: #2E7D32; }
+    
+    .btn-checkout {
+        border-color: #EF5350;
+        background: linear-gradient(to bottom, #FFEBEE 0%, #FFCDD2 100%);
+    }
+    .btn-checkout i, .btn-checkout .btn-label-ja { color: #C62828; }
+    
+    .btn-location {
+        border-color: #FFA726;
+        background: linear-gradient(to bottom, #FFF3E0 0%, #FFE0B2 100%);
+    }
+    .btn-location i, .btn-location .btn-label-ja { color: #E65100; }
+    
+    .btn-transport {
+        border-color: #AB47BC;
+        background: linear-gradient(to bottom, #F3E5F5 0%, #E1BEE7 100%);
+    }
+    .btn-transport i, .btn-transport .btn-label-ja { color: #6A1B9A; }
+    
+    .btn-teflon {
+        border-color: #26C6DA;
+        background: linear-gradient(to bottom, #E0F7FA 0%, #B2EBF2 100%);
+    }
+    .btn-teflon i, .btn-teflon .btn-label-ja { color: #00838F; }
+    
+    .btn-print {
+        border-color: #78909C;
+        background: linear-gradient(to bottom, #ECEFF1 0%, #CFD8DC 100%);
+    }
+    .btn-print i, .btn-print .btn-label-ja { color: #37474F; }
+    
+    .btn-qrcode {
+        border-color: #5C6BC0;
+        background: linear-gradient(to bottom, #E8EAF6 0%, #C5CAE9 100%);
+    }
+    .btn-qrcode i, .btn-qrcode .btn-label-ja { color: #1A237E; }
+    
+    .btn-comments {
+        border-color: #42A5F5;
+        background: linear-gradient(to bottom, #E3F2FD 0%, #BBDEFB 100%);
+    }
+    .btn-comments i, .btn-comments .btn-label-ja { color: #0D47A1; }
+}
+
+/* iPad */
+@media (min-width: 768px) and (max-width: 1024px) {
+    .mobile-modal-actions {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: white;
+        padding: 12px;
+        box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.15);
+        z-index: 100;
+        border-top: 2px solid #E0E0E0;
+    }
+    
+    .action-buttons-grid.normal-mode {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+    }
+    
+    .action-btn {
+        padding: 12px 8px;
+        min-height: 74px;
+    }
+    
+    .action-btn i {
+        font-size: 22px;
+        margin-bottom: 5px;
+    }
+    
+    .action-btn .btn-label-ja {
+        font-size: 11px;
+    }
+    
+    .action-btn .btn-label-vi {
+        font-size: 9px;
+    }
+}
+
+/* ========================================
+   14. INVENTORY MODE (1x2)
+   ======================================== */
+
+@media (max-width: 1024px) {
+  .action-buttons-grid.inventory-mode {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px; /* ✅ 12px → 8px */
+  }
+
+  .action-buttons-grid.inventory-mode .action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    min-height: 50px; /* ✅ 60px → 50px */
+    padding: 6px 8px; /* ✅ 10px 12px → 6px 8px */
+  }
+    .action-buttons-grid.inventory-mode .action-btn i {
+        display: none !important;
+        grid-row: 1 / 3;
+        grid-column: 1;
+        font-size: 28px;
+        margin: 0;
+    }
+
+    .action-buttons-grid.inventory-mode .btn-label-ja {
+        grid-row: 1;
+        grid-column: 2;
+        font-size: 12px;
+        font-weight: 700;
+        text-align: center;
+        line-height: 1.2;
+        margin: 0;
+    }
+
+    .action-buttons-grid.inventory-mode .btn-label-vi {
+        grid-row: 2;
+        grid-column: 2;
+        font-size: 12px;
+        font-weight: 500;
+        text-align: center;
+        line-height: 1.1;
+        margin: 0;
+    }
+
+    
+    .btn-inv-audit {
+        border-color: #FFA726;
+        background: linear-gradient(to bottom, #FFF3E0 0%, #FFE0B2 100%);
+    }
+    .btn-inv-audit i, .btn-inv-audit .btn-label-ja { color: #E65100; }
+    
+    .btn-inv-relocate {
+        border-color: #42A5F5;
+        background: linear-gradient(to bottom, #E3F2FD 0%, #BBDEFB 100%);
+    }
+    .btn-inv-relocate i, .btn-inv-relocate .btn-label-ja { color: #0D47A1; }
+}
+
+/* ========================================
+   15. SCROLLBAR
+   ======================================== */
+
+@media (max-width: 1024px) {
+    .mobile-modal-body::-webkit-scrollbar {
+        width: 4px;
+    }
+    
+    .mobile-modal-body::-webkit-scrollbar-track {
+        background: #F5F7FA;
+    }
+    
+    .mobile-modal-body::-webkit-scrollbar-thumb {
+        background: linear-gradient(to bottom, #90CAF9 0%, #42A5F5 100%);
+        border-radius: 2px;
+    }
+}
+
+/* ========================================
+   16. SAFE AREA INSETS
+   ======================================== */
+
+@supports (padding: max(0px)) {
+    @media (max-width: 767px) {
+        .mobile-modal-header {
+            padding-top: max(12px, env(safe-area-inset-top));
+        }
+        
+        .mobile-modal-actions {
+            padding-bottom: max(8px, env(safe-area-inset-bottom));
+        }
+    }
+}
+
+
+
+/* ========================================
+   18. DISABLE ON DESKTOP
+   ======================================== */
+
+@media (min-width: 1025px) {
+    .mobile-detail-modal {
+        display: none !important;
+    }
+}
+
+/* ========================================
+   19. UTILITY CLASSES
+   ======================================== */
+
+@media (max-width: 1024px) {
+    .text-center { text-align: center; }
+    .text-muted { color: #999; }
+    .font-weight-bold { font-weight: 700; }
+    .mb-0 { margin-bottom: 0; }
+    .hidden { display: none !important; }
+}
+
+/* ========================================
+   END OF FILE - R7.0.2 FINAL (COLOR-CODED)
+   ======================================== */

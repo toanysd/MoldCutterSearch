@@ -1,0 +1,751 @@
+/* =====================================================
+   LOCATION MANAGER R1.4 - STYLESHEET
+   Tạo ngày: 2025.11.04 16:03 | Hybrid Architecture
+   Tương thích: V7.7.7-r6.3 | Based on checkin-checkout-r6.2.css
+   Mục đích: Module cập nhật vị trí Giá-Tầng (RackLayerID)
+   ===================================================== */
+
+/* ===========================
+   PANEL CONTAINER
+   =========================== */
+.upper-section { position: relative; } /* Đảm bảo có positioning context */
+
+.location-panel {
+  position: absolute;
+  inset: 0; /* Bám mép trái/phải/trên/dưới của upper-section */
+  max-height: 100%;
+  background: var(--color-surface, #fcfcf9);
+  border: 1px solid rgba(94, 82, 64, 0.2);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: var(--font-family-base, 'Geist', sans-serif);
+  padding-bottom: env(safe-area-inset-bottom, 0px); /* iOS safe area */
+}
+
+
+
+
+/* ===========================
+   HEADER - ORANGE THEME (Vị trí)
+   =========================== */
+.location-header {
+  background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%); /* Orange gradient */
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  flex-shrink: 0;
+}
+
+.location-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.location-title i {
+  font-size: 18px;
+}
+
+.location-title-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.location-title-main {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.location-title-sub {
+  font-size: 11px;
+  opacity: 0.85;
+  font-style: italic;
+}
+
+.btn-close-location {
+  width: 28px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.btn-close-location:hover {
+  background: rgba(255, 255, 255, 0.35);
+  transform: scale(1.05);
+}
+
+.btn-close-location:active {
+  transform: scale(0.95);
+}
+
+/* ===========================
+   BODY - 3 COLUMNS
+   =========================== */
+.location-body {
+  display: flex;
+  gap: 16px; /* Giống upper-section spacing-lg */
+  padding: 16px;
+  overflow: hidden;
+  flex: 1;
+  min-height: 0;
+}
+
+/* CỘT 1: LỊCH SỬ - 50% width */
+.loc-history {
+  flex: 0 0 calc(50% - 8px);
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-1, rgba(255, 152, 0, 0.05)); /* Orange tint */
+  border: 1px solid rgba(94, 82, 64, 0.12);
+  border-radius: 10px;
+  padding: 8px;
+  overflow: hidden;
+}
+
+/* CỘT 2: TRẠNG THÁI - 25% width */
+.loc-status {
+  flex: 0 0 calc(25% - 8px);
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-3, rgba(245, 158, 11, 0.05)); /* Amber tint */
+  border: 1px solid rgba(94, 82, 64, 0.12);
+  border-radius: 10px;
+  padding: 8px;
+  overflow: hidden;
+}
+
+/* CỘT 3: NHẬP LIỆU - 25% width */
+.loc-inputs {
+  flex: 0 0 calc(25% - 8px);
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-2, rgba(255, 152, 0, 0.08));
+  border: 1px solid rgba(94, 82, 64, 0.12);
+  border-radius: 10px;
+  padding: 8px;
+  overflow-y: auto;
+}
+
+/* ===========================
+   SECTION HEADERS
+   =========================== */
+.loc-history h4,
+.loc-status h4,
+.loc-inputs h4 {
+  margin: 0 0 6px 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text, #134252);
+  border-bottom: 2px solid rgba(94, 82, 64, 0.15);
+  padding-bottom: 4px;
+}
+
+/* ===========================
+   LỊCH SỬ - TABLE + FILTER
+   =========================== */
+.location-filter-row {
+  margin-bottom: 6px;
+  flex-shrink: 0;
+}
+
+.location-filter-row input {
+  width: 100%;
+  padding: 5px 8px;
+  border: 1px solid rgba(94, 82, 64, 0.2);
+  border-radius: 6px;
+  font-size: 12px;
+  background: white;
+}
+
+.location-history-wrap {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+}
+
+.location-history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+
+.location-history-table thead {
+  position: sticky;
+  top: 0;
+  background: rgba(255, 255, 255, 0.95);
+  z-index: 10;
+}
+
+.location-history-table th {
+  padding: 5px 3px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 10px;
+  color: #134252;
+  border-bottom: 2px solid rgba(94, 82, 64, 0.2);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.location-history-table th::after {
+  content: " ⇅";
+  opacity: 0.4;
+  font-size: 9px;
+}
+
+.location-history-table th.asc::after {
+  content: " ▲";
+  opacity: 1;
+  color: #FF9800;
+}
+
+.location-history-table th.desc::after {
+  content: " ▼";
+  opacity: 1;
+  color: #FF9800;
+}
+
+.location-history-table td {
+  padding: 5px 3px;
+  border-bottom: 1px solid rgba(94, 82, 64, 0.1);
+  vertical-align: top;
+}
+
+.location-history-table tbody tr:hover {
+  background: rgba(255, 152, 0, 0.08); /* Orange hover */
+}
+
+.location-history-table td.action-cell {
+  text-align: center;
+  padding: 5px 3px;
+  width: 40px;
+}
+
+.location-history-table .btn-delete-history {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 1px solid #dc2626;
+  background: #fee2e2;
+  color: #dc2626;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  padding: 0;
+  line-height: 1;
+}
+
+.location-history-table .btn-delete-history:hover {
+  background: #dc2626;
+  color: white;
+  transform: scale(1.15);
+  box-shadow: 0 2px 6px rgba(220, 38, 38, 0.4);
+}
+
+.location-history-table .btn-delete-history:active {
+  transform: scale(0.95);
+}
+
+.location-history-table tr.deleting {
+  animation: slideOutRight 0.3s ease-out forwards;
+}
+
+@keyframes slideOutRight {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+/* Location-specific badge cho OldRackLayer / NewRackLayer */
+.location-badge {
+  display: inline-block;
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  border: 1px solid;
+}
+
+.location-badge.old-location {
+  background: #fee2e2;
+  color: #991b1b;
+  border-color: #ef4444;
+}
+
+.location-badge.new-location {
+  background: #dcfce7;
+  color: #15803d;
+  border-color: #22c55e;
+}
+
+.note-cell {
+  font-size: 10px;
+  color: #626c7c;
+  max-width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.no-location-history {
+  padding: 16px;
+  text-align: center;
+  color: #626c7c;
+  font-size: 12px;
+}
+
+/* ===========================
+   TRẠNG THÁI - BADGES
+   =========================== */
+.location-status-badges {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.location-badge-row {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.location-badge-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #626c7c;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid;
+  word-break: break-word;
+}
+
+.badge-mold {
+  background: #eff6ff;
+  color: #1e40af;
+  border-color: #3b82f6;
+}
+
+.badge-mold-name {
+  background: #f0fdf4;
+  color: #15803d;
+  border-color: #22c55e;
+  font-size: 11px;
+}
+
+/* Badge vị trí Giá-Tầng HIỆN TẠI */
+.current-location-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+  background: rgba(255, 152, 0, 0.08);
+  border-radius: 6px;
+  border: 1px solid rgba(255, 152, 0, 0.3);
+}
+
+.badge-group {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  justify-content: center;
+}
+
+.badge-rack {
+  background: #fef3c7;
+  color: #92400e;
+  border-color: #f59e0b;
+  padding: 5px 8px;
+  font-weight: 700;
+}
+
+.badge-sep {
+  font-size: 14px;
+  font-weight: 700;
+  color: #92400e;
+}
+
+.badge-layer {
+  background: #fef3c7;
+  color: #92400e;
+  border-color: #f59e0b;
+  padding: 5px 8px;
+  font-weight: 700;
+}
+
+/* RackLocation info */
+.rack-location {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 8px;
+  background: rgba(245, 158, 11, 0.08);
+  border-radius: 5px;
+  margin-top: 3px;
+  font-size: 11px;
+}
+
+.loc-label {
+  font-weight: 600;
+  color: #92400e;
+}
+
+.loc-value {
+  color: #134252;
+  font-weight: 500;
+}
+
+/* ===========================
+   NHẬP LIỆU - FORM
+   =========================== */
+.location-form-group {
+  margin-bottom: 8px;
+}
+
+.location-form-group.hidden {
+  display: none;
+}
+
+.location-form-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: #134252;
+  margin-bottom: 3px;
+}
+
+.location-form-control {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid rgba(94, 82, 64, 0.2);
+  border-radius: 5px;
+  font-size: 12px;
+  background: white;
+  font-family: inherit;
+  transition: border-color 0.2s ease;
+}
+
+.location-form-control:focus {
+  outline: none;
+  border-color: #FF9800;
+  box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.1);
+}
+
+textarea.location-form-control {
+  resize: vertical;
+  min-height: 40px;
+  max-height: 60px;
+}
+
+/* ===========================
+   NÚT XÁC NHẬN / HỦY
+   =========================== */
+.location-btn-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(94, 82, 64, 0.1);
+}
+
+.btn-confirm-location,
+.btn-cancel-location {
+  flex: 1;
+  padding: 7px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-confirm-location {
+  background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%); /* Orange gradient */
+  color: white;
+}
+
+.btn-confirm-location:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+}
+
+.btn-confirm-location:active {
+  transform: translateY(0);
+}
+
+.btn-cancel-location {
+  background: rgba(148, 163, 184, 0.15);
+  color: #475569;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.btn-cancel-location:hover {
+  background: rgba(148, 163, 184, 0.25);
+}
+
+/* ===========================
+   TOAST NOTIFICATIONS
+   =========================== */
+.loc-toast {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: white;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  z-index: 10000;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.loc-toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.loc-toast-info {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+}
+
+.loc-toast-success {
+  background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%); /* Orange for location success */
+}
+
+.loc-toast-error {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+/* ===========================
+   DARK MODE
+   =========================== */
+@media (prefers-color-scheme: dark) {
+  .location-panel {
+    background: var(--color-surface, #262828);
+    border-color: rgba(119, 124, 124, 0.3);
+  }
+
+  .loc-history,
+  .loc-status,
+  .loc-inputs {
+    background: rgba(119, 124, 124, 0.08);
+    border-color: rgba(119, 124, 124, 0.2);
+  }
+
+  .loc-history h4,
+  .loc-status h4,
+  .loc-inputs h4 {
+    color: var(--color-text, #f5f5f5);
+    border-bottom-color: rgba(119, 124, 124, 0.3);
+  }
+
+  .location-form-control,
+  .location-filter-row input {
+    background: rgba(119, 124, 124, 0.1);
+    border-color: rgba(119, 124, 124, 0.3);
+    color: #f5f5f5;
+  }
+
+  .location-history-table thead {
+    background: rgba(38, 40, 40, 0.95);
+  }
+
+  .location-history-table th,
+  .location-history-table td {
+    color: #f5f5f5;
+    border-color: rgba(119, 124, 124, 0.2);
+  }
+
+  .badge {
+    opacity: 0.95;
+  }
+
+  .rack-location {
+    background: rgba(245, 158, 11, 0.15);
+  }
+
+  .btn-cancel-location {
+    background: rgba(148, 163, 184, 0.2);
+    color: #cbd5e1;
+  }
+}
+
+/* ===========================
+   SCROLLBAR STYLING
+   =========================== */
+.location-history-wrap::-webkit-scrollbar,
+.loc-inputs::-webkit-scrollbar {
+  width: 5px;
+}
+
+.location-history-wrap::-webkit-scrollbar-track,
+.loc-inputs::-webkit-scrollbar-track {
+  background: rgba(94, 82, 64, 0.05);
+  border-radius: 3px;
+}
+
+.location-history-wrap::-webkit-scrollbar-thumb,
+.loc-inputs::-webkit-scrollbar-thumb {
+  background: rgba(94, 82, 64, 0.3);
+  border-radius: 3px;
+}
+
+.location-history-wrap::-webkit-scrollbar-thumb:hover,
+.loc-inputs::-webkit-scrollbar-thumb:hover {
+  background: rgba(94, 82, 64, 0.5);
+}
+
+/* ===========================
+   SYNC STATUS INDICATOR
+   =========================== */
+.sync-cell {
+  text-align: center;
+  padding: 5px;
+}
+
+.sync-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.sync-dot.pending {
+  background-color: #EF4444; /* Đỏ - chờ sync */
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.sync-dot.synced {
+  background-color: #43A047; /* Xanh - đã sync */
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.9);
+  }
+}
+
+/* Pending row highlight */
+.row-pending {
+  background-color: #FFF9C4 !important;
+  border-left: 3px solid #FFC107;
+}
+
+.row-pending td {
+  font-style: italic;
+  opacity: 0.85;
+}
+
+/* ===========================
+   ACTION BUTTON - Cập nhật vị trí
+   =========================== */
+.btn-location {
+  background: #FF9800 !important; /* Orange */
+  color: white !important;
+}
+
+.btn-location:hover {
+  background: #F57C00 !important;
+}
+
+/* ===========================
+   RESPONSIVE
+   =========================== */
+@media (max-width: 768px) {
+  .location-body {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* Đổi thứ tự: Status → Inputs → History */
+  .loc-status { order: 1; }
+  .loc-inputs { order: 2; }
+  .loc-history { order: 3; }
+
+  .loc-history,
+  .loc-status,
+  .loc-inputs {
+    flex: 1 1 auto;
+    max-height: 200px;
+  }
+
+  .loc-toast {
+    right: 15px;
+    left: 15px;
+    bottom: 15px;
+  }
+}
+
+#loc-his {
+  table-layout: fixed;
+  width: 100%;
+}
+
+#loc-his thead th:nth-child(1),
+#loc-his tbody td:nth-child(1) { width: 15%; }  /* DateTime */
+
+#loc-his thead th:nth-child(2),
+#loc-his tbody td:nth-child(2) { width: 30%; }  /* From → To */
+
+#loc-his thead th:nth-child(3),
+#loc-his tbody td:nth-child(3) { 
+  width: 20%;  /* Employee - CỐ ĐỊNH */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#loc-his thead th:nth-child(4),
+#loc-his tbody td:nth-child(4) { width: 20%; }  /* Notes */
+
+#loc-his thead th:nth-child(5),
+#loc-his tbody td:nth-child(5) { width: 8%; }  /* Sync */
+
+#loc-his thead th:nth-child(6),
+#loc-his tbody td:nth-child(6) { width: 7%; }  /* Delete */

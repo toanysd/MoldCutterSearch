@@ -1,4 +1,4 @@
-﻿MoldID,MoldName,MoldCode,CustomerID,TrayID,MoldDesignID,storage_company,RackLayerID,LocationNotes,ItemTypeID,MoldLengthModified,MoldWidthModified,MoldHeightModified,MoldWeightModified,MoldNotes,MoldUsageStatus,MoldOnCheckList,JobID,TeflonFinish,TeflonCoating,TeflonSentDate,TeflonExpectedDate,TeflonReceivedDate,MoldReturning,MoldReturnedDate,MoldDisposing,MoldDisposedDate,MoldEntry
+MoldID,MoldName,MoldCode,CustomerID,TrayID,MoldDesignID,storage_company,RackLayerID,LocationNotes,ItemTypeID,MoldLengthModified,MoldWidthModified,MoldHeightModified,MoldWeightModified,MoldNotes,MoldUsageStatus,MoldOnCheckList,JobID,TeflonFinish,TeflonCoating,TeflonSentDate,TeflonExpectedDate,TeflonReceivedDate,MoldReturning,MoldReturnedDate,MoldDisposing,MoldDisposedDate,MoldEntry
 10,TIH-014,TIH014,,2528,3018,2,12,,2,,,,,,,TRUE,,FALSE,,,,,,,,,
 12,TKO-009T,TKO009T,,2579,3078,2,11,,2,,,,,,,TRUE,,FALSE,,,,,,,,,
 13,TYJ-001,TYJ001,,2664,3172,2,11,,2,,,,,,,TRUE,,FALSE,,,,,,,,,

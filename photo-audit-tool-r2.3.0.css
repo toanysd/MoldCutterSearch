@@ -1,0 +1,1068 @@
+/**
+ * ============================================================================
+ * PHOTO AUDIT TOOL - R2.3.0 CSS
+ * 写真監査ツール / Công cụ kiểm tra ảnh khuôn
+ * ============================================================================
+ * 
+ * NEW IN R2.3.0:
+ * - Multi-photo list layout
+ * - Edit screen (crop/rotate)
+ * - Improved preview screen
+ * - Loading states
+ * - Better responsive design
+ * 
+ * Created: 2025-12-22
+ * Version: 2.3.0
+ * ============================================================================
+ */
+
+/* ============================================================================
+ * ROOT CONTAINER & BACKDROP
+ * ============================================================================ */
+.photo-audit-root {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.photo-audit-root.pa-hidden {
+  display: none !important;
+}
+
+.pa-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: -1;
+}
+
+/* ============================================================================
+ * DIALOG (SETTINGS SCREEN)
+ * ============================================================================ */
+.pa-dialog {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: pa-dialog-enter 0.25s ease-out;
+}
+
+@keyframes pa-dialog-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ============================================================================
+ * HEADER
+ * ============================================================================ */
+.pa-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e7eb;
+  background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+  color: #fff;
+}
+
+.pa-title {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pa-title .ja {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.pa-title .vi {
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.pa-close {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: #fff;
+  font-size: 28px;
+  line-height: 1;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.pa-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+
+/* ============================================================================
+ * BODY & FORM
+ * ============================================================================ */
+.pa-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.pa-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pa-form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pa-form-row-triple {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.pa-form-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pa-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pa-label .ja {
+  font-weight: 600;
+}
+
+.pa-label .vi {
+  font-size: 11px;
+  color: #6b7280;
+  font-weight: 400;
+}
+
+.required {
+  color: #ef4444;
+  font-size: 14px;
+}
+
+/* ============================================================================
+ * INPUTS
+ * ============================================================================ */
+.pa-input,
+.pa-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: all 0.2s;
+  background: #fff;
+}
+
+.pa-input:focus,
+.pa-textarea:focus {
+  outline: none;
+  border-color: #1976d2;
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+}
+
+.pa-input.auto-filled {
+  background: #f0f9ff;
+  border-color: #93c5fd;
+}
+
+.pa-input.manual-edit {
+  background: #fef3c7;
+  border-color: #fbbf24;
+}
+
+.pa-textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.pa-checkbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.pa-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* ============================================================================
+ * INPUT WITH BADGE (AUTO/MANUAL)
+ * ============================================================================ */
+.pa-input-with-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pa-autocomplete-wrapper {
+  flex: 1;
+  position: relative;
+}
+
+.pa-input-badge {
+  font-size: 10px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.pa-badge-auto {
+  background: #dbeafe;
+  color: #1e40af;
+  border: 1px solid #93c5fd;
+}
+
+.pa-badge-manual {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fbbf24;
+}
+
+.pa-input-badge.pa-hidden {
+  display: none;
+}
+
+/* ============================================================================
+ * AUTOCOMPLETE DROPDOWN
+ * ============================================================================ */
+.pa-autocomplete-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 4px;
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  max-height: 240px;
+  overflow-y: auto;
+  z-index: 100;
+}
+
+.pa-autocomplete-dropdown.pa-hidden {
+  display: none;
+}
+
+.pa-autocomplete-item {
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: background 0.15s;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.pa-autocomplete-item:last-child {
+  border-bottom: none;
+}
+
+.pa-autocomplete-item:hover {
+  background: #f9fafb;
+}
+
+.pa-autocomplete-item-main {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 2px;
+}
+
+.pa-autocomplete-item-sub {
+  font-size: 12px;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pa-dim-tag {
+  font-size: 11px;
+  padding: 2px 6px;
+  background: #dbeafe;
+  color: #1e40af;
+  border-radius: 3px;
+  font-weight: 600;
+}
+
+.pa-autocomplete-empty {
+  padding: 16px;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 13px;
+}
+
+/* ============================================================================
+ * RECIPIENT LIST (CC EMAILS)
+ * ============================================================================ */
+.pa-recipient-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.pa-recipient-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #374151;
+}
+
+.pa-recipient-remove {
+  background: none;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  padding: 0;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  transition: transform 0.15s;
+}
+
+.pa-recipient-remove:hover {
+  transform: scale(1.2);
+}
+
+.pa-recipient-input-group {
+  display: flex;
+  gap: 8px;
+}
+
+.pa-recipient-input {
+  flex: 1;
+}
+
+.pa-hint {
+  font-size: 11px;
+  color: #6b7280;
+  margin-top: 4px;
+  display: block;
+}
+
+.pa-empty-state {
+  text-align: center;
+  padding: 16px;
+  color: #9ca3af;
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.pa-empty-state i {
+  font-size: 24px;
+  opacity: 0.5;
+}
+
+/* ============================================================================
+ * PHOTOS LIST (MULTI-PHOTO) - NEW R2.3.0
+ * ============================================================================ */
+.pa-photos-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 240px;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.pa-photo-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.pa-photo-row:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.pa-photo-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.pa-photo-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #111827;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-bottom: 4px;
+}
+
+.pa-photo-meta {
+  font-size: 11px;
+  color: #6b7280;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pa-photo-meta span {
+  white-space: nowrap;
+}
+
+.pa-photo-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+/* ============================================================================
+ * BUTTONS
+ * ============================================================================ */
+.pa-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.pa-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pa-btn-primary {
+  background: #1976d2;
+  color: #fff;
+}
+
+.pa-btn-primary:hover:not(:disabled) {
+  background: #1565c0;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+}
+
+.pa-btn-secondary {
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.pa-btn-secondary:hover:not(:disabled) {
+  background: #e5e7eb;
+}
+
+.pa-btn-success {
+  background: #10b981;
+  color: #fff;
+}
+
+.pa-btn-success:hover:not(:disabled) {
+  background: #059669;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.pa-btn-danger {
+  background: #ef4444;
+  color: #fff;
+}
+
+.pa-btn-danger:hover:not(:disabled) {
+  background: #dc2626;
+}
+
+.pa-btn-xs {
+  padding: 6px 10px;
+  font-size: 12px;
+  gap: 4px;
+}
+
+.pa-btn-icon {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 50%;
+}
+
+/* ============================================================================
+ * FOOTER
+ * ============================================================================ */
+.pa-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 20px;
+  border-top: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.pa-file-input {
+  display: none;
+}
+
+/* ============================================================================
+ * LOADING SPINNER
+ * ============================================================================ */
+.pa-loading-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: pa-spin 0.6s linear infinite;
+}
+
+@keyframes pa-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================================================
+ * CAMERA SCREEN
+ * ============================================================================ */
+.pa-camera-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+}
+
+.pa-camera-overlay.pa-hidden {
+  display: none !important;
+}
+
+.pa-camera-screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.pa-camera-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  position: relative;
+  z-index: 10;
+}
+
+.pa-camera-title {
+  text-align: center;
+  flex: 1;
+}
+
+.pa-camera-title .ja {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.pa-camera-title .vi {
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+.pa-btn-camera-close {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: #fff;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 18px;
+  transition: all 0.2s;
+}
+
+.pa-btn-camera-close:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.pa-camera-viewport {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: #000;
+}
+
+.pa-camera-video,
+.pa-camera-canvas {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pa-camera-canvas.pa-hidden {
+  display: none;
+}
+
+.pa-camera-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.pa-camera-grid.pa-hidden {
+  display: none !important;
+}
+
+.grid-line {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.grid-v1 {
+  left: 33.33%;
+  top: 0;
+  width: 1px;
+  height: 100%;
+}
+
+.grid-v2 {
+  left: 66.66%;
+  top: 0;
+  width: 1px;
+  height: 100%;
+}
+
+.grid-h1 {
+  top: 33.33%;
+  left: 0;
+  height: 1px;
+  width: 100%;
+}
+
+.grid-h2 {
+  top: 66.66%;
+  left: 0;
+  height: 1px;
+  width: 100%;
+}
+
+.pa-camera-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.pa-btn-flip,
+.pa-btn-grid-toggle {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: #fff;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 20px;
+  transition: all 0.2s;
+}
+
+.pa-btn-flip:hover,
+.pa-btn-grid-toggle:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.1);
+}
+
+.pa-btn-capture {
+  background: #fff;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  color: #1976d2;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 28px;
+  transition: all 0.2s;
+}
+
+.pa-btn-capture:active {
+  transform: scale(0.95);
+  background: #f3f4f6;
+}
+
+/* ============================================================================
+ * PREVIEW SCREEN - NEW R2.3.0
+ * ============================================================================ */
+.pa-preview-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.95);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.pa-preview-overlay.pa-hidden {
+  display: none !important;
+}
+
+.pa-preview-modal {
+  background: #fff;
+  border-radius: 12px;
+  max-width: 800px;
+  width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.pa-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.pa-preview-title {
+  flex: 1;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.pa-preview-title .ja {
+  display: block;
+}
+
+.pa-preview-title .vi {
+  font-size: 11px;
+  color: #6b7280;
+  font-weight: 400;
+}
+
+.pa-preview-body {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  padding: 20px;
+}
+
+.pa-preview-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.pa-preview-info {
+  margin-top: 12px;
+  text-align: center;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pa-preview-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 16px 20px;
+  border-top: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+/* ============================================================================
+ * EDIT SCREEN - NEW R2.3.0
+ * ============================================================================ */
+.pa-edit-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.95);
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+}
+
+.pa-edit-overlay.pa-hidden {
+  display: none !important;
+}
+
+.pa-edit-modal {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+}
+
+.pa-edit-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: #1976d2;
+  color: #fff;
+}
+
+.pa-edit-title {
+  flex: 1;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.pa-edit-title .ja {
+  display: block;
+}
+
+.pa-edit-title .vi {
+  font-size: 11px;
+  opacity: 0.9;
+}
+
+.pa-edit-body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  overflow: hidden;
+  padding: 20px;
+}
+
+.pa-edit-canvas {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.pa-edit-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+}
+
+.pa-edit-tools {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.pa-edit-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+/* ============================================================================
+ * TOAST NOTIFICATIONS
+ * ============================================================================ */
+.pa-toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10001;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.pa-toast {
+  background: #fff;
+  color: #111827;
+  padding: 12px 18px;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  font-size: 13px;
+  font-weight: 500;
+  max-width: 320px;
+  pointer-events: auto;
+  animation: pa-toast-enter 0.3s ease-out;
+  border-left: 4px solid #9ca3af;
+}
+
+.pa-toast-info {
+  border-left-color: #3b82f6;
+}
+
+.pa-toast-success {
+  border-left-color: #10b981;
+  color: #065f46;
+}
+
+.pa-toast-warning {
+  border-left-color: #f59e0b;
+  color: #92400e;
+}
+
+.pa-toast-error {
+  border-left-color: #ef4444;
+  color: #991b1b;
+}
+
+.pa-toast-hide {
+  animation: pa-toast-exit 0.3s ease-in forwards;
+}
+
+@keyframes pa-toast-enter {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pa-toast-exit {
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+/* ============================================================================
+ * RESPONSIVE - MOBILE
+ * ============================================================================ */
+@media (max-width: 768px) {
+  .pa-dialog {
+    max-width: 100%;
+    max-height: 100vh;
+    border-radius: 0;
+    height: 100%;
+  }
+
+  .pa-form-row-triple {
+    grid-template-columns: 1fr;
+  }
+
+  .pa-footer {
+    flex-wrap: wrap;
+  }
+
+  .pa-btn {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .pa-photo-actions {
+    flex-direction: column;
+  }
+
+  .pa-toast-container {
+    right: 10px;
+    left: 10px;
+  }
+
+  .pa-toast {
+    max-width: 100%;
+  }
+}

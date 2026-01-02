@@ -3444,3 +3444,20 @@ body.simulated-fullscreen .main-container {
     height: 100vh;
     height: calc(var(--vh, 1vh) * 100);
 }
+
+/* ✅ OVERRIDE CHO CHECKIN POPUP - ƯU TIÊN CAO */
+.checkio-panel {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100dvh !important;
+  max-width: none !important;
+  max-height: none !important;
+  z-index: 11000 !important;
+}
+
+/* Đảm bảo không bị giới hạn bởi upper-section */
+.upper-section .checkio-panel {
+  position: fixed !important;
+  inset: 0 !important;
+}

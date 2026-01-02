@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+
+
+    <!-- PWA Fullscreen Support -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#6a5acd">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+
+
+    <title>📦 V7.7.7-r7.1.9 | Mold Cutter Search (iPhone-optimized)</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="styles-r7.1.0.css">
+
+    <!-- <link rel="stylesheet" href="iphone-ui-r1.css"> -->
+    <link rel="stylesheet" href="mobile-compact-styles-r7.1.1.css"> 
+    <!-- Mobile Detail Modal Styles R6.9.3 - Full-screen popup for iPhone -->
+    <link rel="stylesheet" href="mobile-detail-modal-styles-r7.1.2.css">
+    <link rel="stylesheet" href="inventory-manager-styles-r7.1.2.css">
+    <link rel="stylesheet" href="inventory-audit-center-r1.0.0.css">
+
+
+    
+    <link rel="stylesheet" href="keyboard-panel-r6.9.css">
+    <link rel="stylesheet" href="styles-lower-section-r6.9.css">
+    <!-- Trong phần <head>, thêm CSS cho detail-tab -->
+    <link rel="stylesheet" href="detail-tab-styles-r6.9.css">
+     <!-- Action Modals CSS -->
+    <link rel="stylesheet" href="action-modals-r6.9.css">
+
+    <link rel="stylesheet" href="location-sync-icon-r6.9.css"> 
+    <link rel="stylesheet" href="teflon-process-manager-r7.0.9.css">
+    <link rel="stylesheet" href="filter-module-mobile-r7.1.1.css">
+    <!-- Tray Stack Counter (積み重ねカウント) -->
+    <link rel="stylesheet" href="tray-stack-counter-r1.0.0.css">
+    <!-- Photo Audit Tool (写真監査) -->
+    <!-- Photo Audit Tool Styles - r1.1.0 -->
+    <link rel="stylesheet" href="photo-audit-tool-r2.3.3.css">
+    <link rel="stylesheet" href="z-index-layers.css">
+
+
+
+
+
+     
+    <!-- External Libraries (CDN) -->
+    <!-- QR Code Scanner (Html5-QRCode) -->
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+    <!-- QR Code Generator -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Supabase Client (for Photo Audit Tool) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    
+</head>
+<body>
+    <!-- ==================== EXIT FULLSCREEN BUTTON ==================== 
+    <button id="exit-fullscreen-btn" class="exit-fullscreen-btn" title="Thoát toàn màn hình | 全画面を終了">
+        <i class="fas fa-times-circle"></i>
+    </button>-->
+
+    <!-- ==================== MOBILE HEADER ==================== -->
+
+    <header class="app-header">
+        <div class="header-title">
+            <div class="title-main">
+                <i class="fas fa-search"></i>
+                <span>金型・抜型検索システム</span>
+                <span class="version-badge">V7.7.7-r6.5</span>
+            </div>
+            <!-- THAY ĐỔI: Tiếng Việt italic -->
+            <div class="title-sub">Hệ thống tìm kiếm khuôn và dao cắt</div>
+        </div>
+
+        <div class="header-status">
+            <div class="status-indicator">
+                <div class="status-dot"></div>
+                <span>準備完了</span>
+            </div>
+            <div class="status-counts">
+                <span>金型: <strong id="mold-count">-</strong></span>
+                <span class="divider">|</span>
+                <span>抜型: <strong id="cutter-count">-</strong></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- ========================================
+         MOBILE STICKY HEADER (iPhone only)
+         ======================================== -->
+    <div class="mobile-header">
+        <!-- Search Row: Lấy từ Column 1 search-section -->
+        <div class="mobile-search-row">
+            <div class="search-box">
+                <input type="text" class="search-input" id="mobile-search-input" placeholder="コード・名前 / 場所で検索..." autofocus>
+                <button class="search-clear-btn" id="mobile-clear-btn">✕</button>
+            </div>
+            <button class="qr-btn btn-qr-scan" id="mobile-qr-btn">
+                <i class="fas fa-qrcode"></i>
+            </button>
+        </div>
+
+
+    </div> <!-- End mobile-header -->
+
+    <!-- ==================== MOBILE FILTER PANEL (copy từ Column 1) ==================== -->
+    <div class="mobile-filter-panel collapsed" id="mobile-filter-panel">
+        <!-- Collapsible Header -->
+        <button class="mobile-filter-toggle" id="mobile-filter-toggle">
+            <i class="fas fa-sliders-h"></i>
+            <span>フィルター | Bộ lọc</span>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+        </button>
+        
+        <div class="mobile-filter-content" id="mobile-filter-content" style="display: none;">
+            <!-- ========== THÊM NÚT ĐÓNG ========== -->
+            <div class="filter-popup-header">
+                <h3>フィルター | Bộ lọc</h3>
+                <button class="filter-close-btn" id="filter-close-btn" title="閉じる | Đóng">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <!-- Category Tabs (từ Column 1) -->
+            <div class="category-tabs" id="category-tabs-mobile">
+                <button class="category-tab active" data-category="all">すべて</button>
+                <button class="category-tab" data-category="mold">金型</button>
+                <button class="category-tab" data-category="cutter">抜型</button>
+            </div>
+
+             
+
+            <!-- Filter Section (từ Column 1) -->
+            <div class="filter-section">
+                <label class="filter-label">
+                    フィルタフィールド
+                    <span class="search-label-sub">Chọn trường lọc</span>
+                </label>
+                <select class="filter-select" id="filter-field">
+                    <!-- Options will be populated by filter-module-r6.5.js -->
+                </select>
+                
+                <label class="filter-label">
+                    フィルタ値
+                    <span class="search-label-sub">Chọn giá trị</span>
+                </label>
+                <select class="filter-select" id="filter-value">
+                    <!-- Options will be populated dynamically -->
+                </select>
+            </div>
+
+
+            <!-- Action Buttons (từ Column 1) -->
+            <div class="action-buttons">
+                <button class="btn btn-reset" id="mobile-filter-reset-btn">
+                    <i class="fas fa-redo"></i> フィルタリセット
+                </button>
+                <button class="btn btn-reset-all" id="reset-all-btn">
+                    <i class="fas fa-fast-backward"></i> 全クリア
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- ========================================
+         MAIN CONTAINER - iPad Grid Layout
+         ======================================== -->
+    <div class="main-container">
+        <!-- UPPER SECTION (50vh) -->
+        <div class="upper-section">
+
+            <!-- ========================================
+                 COLUMN 1: Search & Filter Panel (OPTIMIZED)
+                 ======================================== -->
+            <div class="panel search-filter-panel">
+                <div class="panel-header">
+                    <i class="fas fa-search"></i> 検索・フィルタ
+                </div>
+
+                <div class="panel-body">
+                    <!-- Category Tabs - COLOR CODED -->
+                    <div class="category-tabs" id="category-tabs">
+                        <button class="category-tab active" data-category="all">すべて</button>
+                        <button class="category-tab" data-category="mold">金型</button>
+                        <button class="category-tab" data-category="cutter">抜型</button>
+                    </div>
+
+                    <!-- Search Section - YELLOW HIGHLIGHT -->
+                    <div class="search-section">
+                        <label class="search-label">
+                            検索
+                            <span class="search-label-sub">Tìm kiếm</span>
+                        </label>
+                        <div class="search-box">
+                            <input type="text" 
+                                id="search-input" 
+                                class="search-input" 
+                                placeholder="コード・名前・場所で検索..."
+                                autocomplete="off"
+                                autofocus
+                                >
+                                
+
+                            <button class="search-clear-btn" id="search-clear-btn"><i class="fas fa-times"></i></button>
+                            <button class="qr-btn" id="qr-scan-btn"><i class="fas fa-qrcode"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Filter Section - 2 DYNAMIC COMBOBOXES -->
+                    <div class="filter-section">
+                        <label class="filter-label">
+                            フィルタフィールド
+                            <span class="search-label-sub">Chọn trường lọc</span>
+                        </label>
+                        <select class="filter-select" id="mobile-filter-field">
+                            <!-- Options will be populated by filter-module-r6.5.js -->
+                        </select>
+                        
+                        <label class="filter-label">
+                            フィルタ値
+                            <span class="search-label-sub">Chọn giá trị</span>
+                        </label>
+                        <select class="filter-select" id="mobile-filter-value">
+                            <!-- Options will be populated dynamically -->
+                        </select>
+                    </div>
+
+
+                    <!-- Action Buttons - ĐƯA LÊN TRƯỚC ADVANCED -->
+                    <div class="action-buttons">
+                        <button class="btn btn-reset" id="filter-reset-btn">
+                            <i class="fas fa-redo"></i> フィルタリセット
+                        </button>
+                        <button class="btn btn-reset-all" id="reset-all-btn">
+                            <i class="fas fa-fast-backward"></i> 全クリア
+                        </button>
+                    </div>
+
+                    
+                </div>
+            </div>
+
+            <!-- ========================================
+                 COLUMN 2: Quick Results Panel (SINGLE COLUMN)
+                 ======================================== -->
+            <div class="panel quick-results-panel">
+                <div class="panel-header">
+                    <i class="fas fa-bolt"></i> 結果
+                    <span class="result-count-badge" id="quick-count">0件</span>
+                    
+                    <!-- R7.0.7: Toolbar Inline (Selection + Print) -->
+                    <div class="table-toolbar-inline" id="table-toolbar-inline" style="display: none;">
+                        <!-- NEW: Mobile selection mode toggle (ON/OFF) -->
+                        <div class="inv-selection-toggle">
+                            <label class="inv-toggle-switch inv-toggle-switch-xs">
+                            <input type="checkbox" id="selection-mode-toggle">
+                            <span class="inv-toggle-slider"></span>
+                            </label>
+                            <span class="inv-selection-label">
+                            <span class="jp-text">選択</span>
+                            <span class="vi-text">Chọn</span>
+                            </span>
+                        </div>
+
+                        <span class="selection-info-inline">
+                            <span id="selected-count-inline">0</span> 件
+                        </span>
+
+                        <!-- R7.0.7: Clear selection button -->
+                        <button class="btn-clear-inline" id="mobile-clear-selection-inline" disabled>
+                            全解除
+                        </button>
+
+                        
+
+                        <button class="btn-print-inline" id="mobile-print-btn-inline" disabled>
+                            <i class="fas fa-print"></i> 印刷
+                        </button>
+
+                        <!-- R7.0.7: View Mode Toggle (Card/Table) -->
+                        <div class="view-mode-toggle" id="mobile-view-toggle">
+                            <button class="toggle-btn active" data-view="card" title="カード表示">
+                                カード
+                            </button>
+                            <button class="toggle-btn" data-view="table" title="表形式">
+                                一覧
+                            </button>
+                        </div>
+
+                        <!-- R7.0.7: Toggle column filter row -->
+                        <button class="btn-filter-row" id="toggle-column-filters">
+                            フィルタ
+                        </button>
+
+                    </div>
+
+                    
+                    
+
+                </div>
+
+
+                <div class="panel-body">
+                    <!-- Results: Single column với đầy đủ thông tin -->
+                    <div class="quick-results-grid mobile-2col" id="quick-results-grid">
+                        <!-- Results will be dynamically inserted here -->
+                        <div class="empty-hint">検索結果なし</div>
+                    </div>
+                    
+                    <!-- R7.0.7: Table View Container (Hidden by default) -->
+                    <div class="mobile-table-container" id="mobile-table-container">
+                        <!-- Table -->
+                        <div class="table-wrapper">
+                            <table class="mobile-only-table" id="mobile-results-table">
+                                <thead>
+                                    <tr>
+                                        <th class="col-select">
+                                            <input type="checkbox" id="select-all-mobile">
+                                        </th>
+                                        <th class="col-code sortable" data-sort="code">
+                                            コード<span class="sort-indicator"></span>
+                                        </th>
+                                        <th class="col-name sortable" data-sort="name">
+                                            名称<span class="sort-indicator"></span>
+                                        </th>
+                                        <th class="col-size sortable" data-sort="size">
+                                            寸法<span class="sort-indicator"></span>
+                                        </th>
+                                        <th class="col-location sortable" data-sort="location">
+                                            棚番<span class="sort-indicator"></span>
+                                        </th>
+                                        <th class="col-company sortable" data-sort="company">
+                                            保管<span class="sort-indicator"></span>
+                                        </th>
+                                        <th class="col-date sortable" data-sort="date">
+                                            製造日<span class="sort-indicator"></span>
+                                        </th>
+                                    </tr>
+                                            <!-- R7.0.7: Column filter row -->
+                                    <tr class="column-filters">
+                                        <th></th>
+                                        <th>
+                                            <input type="text" id="filter-code" class="col-filter" placeholder="コード">
+                                        </th>
+                                        <th>
+                                            <input type="text" id="filter-name" class="col-filter" placeholder="名称">
+                                        </th>
+                                        <th>
+                                            <input type="text" id="filter-size" class="col-filter" placeholder="寸法">
+                                        </th>
+                                        <th>
+                                            <input type="text" id="filter-location" class="col-filter" placeholder="棚番">
+                                        </th>
+                                        <th>
+                                            <input type="text" id="filter-company" class="col-filter" placeholder="保管">
+                                        </th>
+                                        <th>
+                                            <input type="text" id="filter-date" class="col-filter" placeholder="製造日">
+                                        </th>
+                                    </tr>
+
+                                </thead>
+
+                                <tbody id="mobile-table-body">
+                                    <!-- Rows will be inserted here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Pagination -->
+                        <div class="table-pagination" id="mobile-pagination">
+                            <button class="page-btn" id="prev-page-btn" disabled>
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <span class="page-info">
+                                <span id="current-page">1</span> / <span id="total-pages">1</span>
+                            </span>
+                            <button class="page-btn" id="next-page-btn" disabled>
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ========================================
+                 COLUMN 3: Detail Info Panel (SPLIT LAYOUT)
+                 ======================================== -->
+            <div class="panel detail-panel">
+                <div class="panel-header detail-header-r6-5">
+                    <!-- LEFT: Icon + Title + MoldID + MoldCode -->
+                    <div class="detail-header-left">
+                        <i class="fas fa-info-circle" class="header-icon"></i>
+                        <span class="detail-title">詳細情報</span>
+                        <span class="detail-separator">-</span>
+                        
+                        <!-- MoldID Badge -->
+                        <span class="detail-item-code detail-moldid-badge" id="detail-item-code"></span>
+                        
+                    </div>
+
+                    <!-- RIGHT: Action Buttons + Badges (Căn phải) -->
+                    <div class="detail-header-right">
+                        
+                        <!-- Full View Link with Badge 
+                        <a href class="detail-view-full-link" id="detail-view-link" title="Xem trang đầy đủ">
+                        <i class="fas fa-arrow-up"></i>
+                        </a>
+                        -->
+                        
+                        <!-- Close Button with Badge - Nut dong panel chi tiet o mobile -->
+                        <button class="detail-close-btn" title="閉じる Close">
+                         <i class="fas fa-times"></i>
+                        </button>
+                        
+                    </div>
+                    </div>
+
+
+                <!-- Location Info -->
+                <div class="detail-upper" id="detail-upper">
+                    <!-- Row 1: Company + Status -->
+                    <!-- ========================================
+                        COMPANY & STATUS BADGES (NEW STRUCTURE)
+                        ======================================== -->
+                    <!-- ✅ MÃ MỚI - TÁCH BIỆT HOÀN TOÀN 2 BADGE -->
+                    <!-- ✅ 2x2 GRID LAYOUT - Compact & Clear -->
+                    <div class="badges-grid">
+                        <!-- Left Column: Company Storage -->
+                        <div class="badge-col company-col">
+                            <div class="company-storage-badge" id="detail-company-storage">YSD</div>
+                            <div class="badge-label">
+                                <span class="jp-text">会社</span>
+                                <span class="vn-text">Công ty</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Right Column: Check-in/out Status -->
+                        <div class="badge-col checkin-col">
+                            <div class="checkin-status-badge" id="detail-checkin-status">-</div>
+                            <div class="badge-label">
+                                <span class="jp-text">入出庫</span>
+                                <span class="vn-text">Nhập xuất</span>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <!-- Row 2: POS-Style Location (FLEXIBLE WIDTH) -->
+                    <div class="location-display">
+                        <!-- RackID Badge -->
+                        <div class="location-badge-wrapper">
+                            <div class="location-circle" id="detail-rack-id"> </div>
+                            <div class="location-label">棚番号</div>
+                        </div>
+                        
+                        <div class="location-divider">-</div>
+                        
+                        <!-- LayerNum Badge -->
+                        <div class="location-badge-wrapper">
+                            <div class="location-rectangle" id="detail-layer-num"> </div>
+                            <div class="location-label">棚の段</div>
+                        </div>
+                    </div>
+
+
+                 <!-- Storage Group: Rack + Notes (2 columns) -->
+                    <div class="detail-storage-group">
+                    <div class="storage-item">
+                        <span class="field-title">棚位置：</span>
+                        <span id="detail-rack-location"> </span>
+                        <span class="divider">  </span>
+                        <span id="detail-rack-notes"></span>
+                    </div>
+                    <div class="storage-item">
+                        <span class="field-title">保管備考：</span>
+                        <span id="detail-layer-notes">  </span>
+                    </div>
+                    </div>
+
+                </div>
+
+                <!-- LOWER: Basic Info (9 ROWS) -->
+                <div class="detail-lower" id="detail-lower">
+                    <!-- Row 1: Code + Name -->
+                    <div class="detail-info-section">
+                        <div class="detail-info-row">
+                            <span class="detail-label">
+                                コード・名称
+                                <span class="detail-label-sub">Mã và tên</span>
+                            </span>
+                            <span class="detail-value highlight" id="detail-name"> </span>
+                        </div>
+                    </div>
+
+                    <!-- Row 2: Dimensions + Weight -->
+                    <div class="detail-info-section">
+                        <div class="detail-info-row">
+                            <span class="detail-label">
+                                寸法
+                                <span class="detail-label-sub">Kích thước</span>
+                            </span>
+                            <span class="detail-value" id="detail-dimensions"> </span>
+                        </div>
+                    </div>
+
+                    <!-- Row 5: Tray Info -->
+                    <div class="detail-info-section">
+                        <div class="detail-info-row">
+                            <span class="detail-label">
+                                トレイ情報
+                                <span class="detail-label-sub">Thông tin khay</span>
+                            </span>
+                            <span class="detail-value" id="detail-tray">-</span>
+                        </div>
+                    </div>
+
+                    <!-- Row 6: Plastic Type -->
+                    <div class="detail-info-section">
+                        <div class="detail-info-row">
+                            <span class="detail-label">
+                                樹脂タイプ
+                                <span class="detail-label-sub">Loại nhựa</span>
+                            </span>
+                            <span class="detail-value" id="detail-plastic">-</span>
+                        </div>
+                    </div>
+
+                    <!-- Row 7: Cut Dimensions -->
+                    <div class="detail-info-section">
+                        <div class="detail-info-row">
+                            <span class="detail-label">
+                                カット寸法
+                                <span class="detail-label-sub">Kích thước cắt</span>
+                            </span>
+                            <span class="detail-value" id="detail-cutline">-</span>
+                        </div>
+                    </div>
+
+                    <!-- Row 3: Manufacturing Date -->
+                    <div class="detail-info-section">
+                        <div class="detail-info-row">
+                            <span class="detail-label">
+                                製造日
+                                <span class="detail-label-sub">Ngày sản xuất</span>
+                            </span>
+                            <span class="detail-value" id="detail-date">-</span>
+                        </div>
+                    </div>
+
+                    <!-- Row 4: Notes -->
+                    <div class="detail-info-section">
+                        <div class="detail-info-row">
+                            <span class="detail-label">
+                                備考
+                                <span class="detail-label-sub">Ghi chú</span>
+                            </span>
+                            <span class="detail-value" id="detail-notes">-</span>
+                        </div>
+                    </div>
+
+                    
+
+                    <!-- Row 8: Teflon Status + Date -->
+                    <div class="detail-info-section">
+                        <div class="detail-info-row">
+                            <span class="detail-label">
+                                テフロン状態
+                                <span class="detail-label-sub">Trạng thái teflon</span>
+                            </span>
+                            <span class="detail-value" id="detail-teflon">-</span>
+                        </div>
+                    </div>
+
+                    <!-- Row 9: Mold Returning/Disposing Status -->
+                    <div class="detail-info-section">
+                        <div class="detail-info-row">
+                            <span class="detail-label">
+                                処理状態
+                                <span class="detail-label-sub">Trạng thái xử lý</span>
+                            </span>
+                            <span class="detail-value" id="detail-processing">-</span>
+                        </div>
+                    </div>
+
+                    <!-- Row 4: New - History -->
+                    <button id="history-btn" class="action-btn history-btn">
+                        <span class="btn-icon">📊</span>
+                        <span class="btn-label">
+                            <span class="btn-label-ja">履歴</span>
+                            <span class="btn-label-vi">Lịch sử</span>
+                        </span>
+                    </button>
+
+                </div>
+            </div>
+            
+            <!-- ========================================
+                 COLUMN 4: Actions Panel (SPLIT 60/40)
+                 ======================================== -->
+            <div class="panel actions-panel">
+                <div class="panel-header">
+                    <i class="fas fa-cogs"></i> 状態・操作
+                </div>
+
+                <!-- Đồng bộ: dùng panel-body cho toàn bộ nút -->
+                <div class="panel-body actions-body">
+                    <!-- ✅ R6.9.10: Row 1 - Location, Inventory Settings, Check In/Out, Teflon (4 buttons) -->
+                    <div class="actions-row-4col">
+                        <!-- Button 1: Location Update -->
+                        <button class="action-btn btn-location" id="btn-location" title="位置更新 | Cập nhật vị trí">
+                            <i class="action-icon fas fa-map-marker-alt"></i>
+                            <span class="btn-label-ja">位置</span><br>
+                            <small class="btn-label-vi">Vị trí</small>
+                        </button>
+                        
+                        <!-- Button 2: Inventory Settings (NEW) -->
+                        <button class="action-btn btn-inventory-settings" id="btn-inventory-settings" title="棚卸設定 | Thiết lập kiểm kê">
+                            <i class="action-icon fas fa-clipboard-check"></i>
+                            <span class="btn-label-ja">棚卸設定</span><br>
+                            <small class="btn-label-vi">Kiểm kê</small>
+                        </button>
+                        
+                        <!-- Button 3: Check In/Out -->
+                        <button class="action-btn btn-check-in-out" id="btn-check-in-out" title="入出庫 | Nhập/Xuất kho">
+                            <i class="action-icon fas fa-arrow-right-arrow-left"></i>
+                            <span class="btn-label-ja">入出庫</span><br>
+                            <small class="btn-label-vi">Nhập xuất</small>
+                        </button>
+
+                        <!-- Button 4: Teflon -->
+                        <button class="action-btn btn-teflon" id="btn-teflon" title="テフロン処理 | Xử lý Teflon">
+                            <i class="action-icon fas fa-fill-drip"></i>
+                            <span class="btn-label-ja">テフロン</span><br>
+                            <small class="btn-label-vi">Teflon</small>
+                        </button>
+                    </div>
+
+
+                    <!-- Row 2 -->
+                    <div class="actions-row-3col">
+                    <button class="action-btn btn-comment" id="comment-btn">
+                        <i class="action-icon fas fa-comment"></i><span>コメント</span>
+                    </button>
+                    <button class="action-btn btn-print" id="print-btn">
+                        <i class="action-icon fas fa-print"></i><span>印刷 PDF</span>
+                    </button>
+                    <button class="action-btn btn-qr" id="export-qr-btn">
+                        <i class="action-icon fas fa-qrcode"></i><span>QRコード</span>
+                    </button>
+                    </div>
+
+                    <!-- Row 3 -->
+                    <div class="checkin-checkout-row">
+                    <button class="action-btn-large btn-checkin" id="checkin-btn">
+                        <span class="btn-text-main">入庫</span><span class="btn-text-sub">Nhập kho</span>
+                    </button>
+                    <button class="action-btn-large btn-checkout" id="checkout-btn">
+                        <span class="btn-text-main">出庫</span><span class="btn-text-sub">Xuất kho</span>
+                    </button>
+                    </div>
+                
+                <!-- Row 4: Toggle Button 
+                <button class="toggle-view-btn" id="toggle-view-btn">
+                    <i class="fas fa-keyboard"></i>
+                    <span>キーボード表示</span>
+                </button>-->
+            </div>
+
+             <!-- Related Equipment -->
+            <div class="actions-lower">
+               <!--<div class="related-section">
+                     <div class="related-header">
+                        <span>
+                            <i class="fas fa-link"></i> 関連設備
+                        </span>
+                        <span class="dedicated-cutter-badge" id="dedicated-cutter-badge">
+                            別抜き：なし
+                        </span>
+                    </div>
+                    <div class="related-list" id="related-list">
+                        <div class="empty-hint">関連設備なし</div>
+                    </div>
+                </div>-->
+            </div>
+
+            
+
+
+                
+            </div>
+
+        </div> <!-- End Upper Section -->
+
+
+        <!-- Lower section: Làm sạch hoàn toàn theo kiến trúc mới -->
+        <section class="lower-section">
+            <div class="panel lower-panel">
+                <div class="lower-tabs">
+                <button class="lower-tab" data-tab="results"><i class="fas fa-table"></i><span>一覧 / Bảng</span></button>
+                <button class="lower-tab" data-tab="detail"><i class="fas fa-list"></i><span>詳細 / Chi tiết</span></button>
+                <button class="lower-tab active" data-tab="keyboard"><i class="fas fa-keyboard"></i><span>キーボード / Bàn phím</span><span class="tab-count" id="kb-toggle-badge">ON</span></button>
+                <div style="margin-left:auto;display:flex;gap:6px;padding-right:8px;">
+                    <button class="btn" id="qr-scan-open"><i class="fas fa-qrcode"></i> QR</button>
+                </div>
+                </div>
+
+                <div class="lower-content">
+
+                <!-- Tab: キーボード -->
+                <div class="tab-pane active" id="keyboard-pane">
+                    <div class="keyboard-layout">
+                    <!-- Trái: 1/2 lịch sử, 1/2 gợi ý -->
+                    <div class="keyboard-left">
+                        <div class="keyboard-section history-zone">
+                        <!--<h4>履歴 / Lịch sử</h4>-->
+                        <div id="history-container">
+                            <div id="history-chips"></div>
+                        </div>
+                        </div>
+                        <div class="keyboard-section suggest-zone">
+                        <!--<h4>提案 / Gợi ý</h4>-->
+                        <div id="keyboard-suggest"></div>
+                        </div>
+                    </div>
+
+                    <!-- Giữa: Bàn phím ảo -->
+                    <div class="keyboard-center">
+                        <div id="virtual-keyboard"></div>
+                    </div>
+
+                    <!-- Phải: Nhập nhanh (học từ lịch sử) -->
+                    <div class="keyboard-right">
+                        <!--<h4>クイック入力 / Nhập nhanh</h4>-->
+                        <div id="abbr-wrap" class="quick-phrases"></div>
+                        <button class="qr-scan-large" id="qr-scan-open"><i class="fas fa-qrcode"></i><span>QRスキャン / Quét QR</span></button>
+                    </div>
+                    </div>
+                </div>
+
+                <!-- Tab: 一覧 -->
+                <div class="tab-pane" id="results-pane">
+                    <div class="table-wrap">
+                    <table class="desktop-results-table" id="desktop-results-table">
+                        <thead>
+                        <!--<tr>
+                            <th>選択</th>
+                            <th>コード / Mã</th>
+                            <th>名称 / Tên</th>
+                            <th>寸法 / Kích thước</th>
+                            <th>保管場所 / Nơi lưu</th>
+                            <th>状態 / Trạng thái</th>
+                        </tr>-->
+                        </thead> 
+                        <tbody id="results-tbody"></tbody>
+                    </table>
+                    </div>
+                </div>
+
+                <!-- Tab: 詳細 -->
+                <!-- Tab content HTML -->
+                <div class="tab-pane" id="detail-pane">
+                <div id="detail-content" class="detail-content-area">
+                    <div class="detail-empty">
+                    <i class="fas fa-info-circle"></i>
+                    <div>詳細を表示するには項目を選択してください</div>
+                    <div style="font-size: 11px; color: #9ca3af; font-style: italic;">Chọn mục để xem chi tiết</div>
+                    </div>
+                </div>
+                </div>
+                </div>
+            </div>
+
+            <!-- QR Modal -->
+            <div class="qr-modal hidden" id="qr-modal">
+                <div class="qr-dialog">
+                <div class="qr-header">
+                    <span>QRスキャナ / Máy quét QR</span>
+                    <button class="btn btn-small" id="qr-close-btn"><i class="fas fa-times"></i></button>
+                </div>
+                <div id="qr-reader" class="qr-reader"></div>
+                </div>
+            </div>
+        </section>
+        
+        </section>
+
+            </section>
+
+    
+
+    <!-- ========================================
+        MOBILE ACTION BAR (R6.8) - PANEL 3 (Fixed)
+        ======================================== -->
+        <div id="mobile-action-bar" class="mobile-action-bar mobile-only">
+            <div class="action-row action-row-1">
+                <button class="action-btn action-location" id="mobile-btn-location" data-action="location">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>位置 | Vị trí</span>
+                </button>
+                <button class="action-btn action-checkin" id="mobile-checkin-btn" data-action="checkin">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>入庫 | Nhập</span>
+                </button>
+                <button class="action-btn action-checkout" id="mobile-checkout-btn" data-action="checkout">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>出庫 | Xuất</span>
+                </button>
+            </div>
+            
+            <!-- Row 2 (nếu có shipment, comment, teflon) -->
+            <div class="action-row action-row-2">
+                <button class="action-btn action-shipment" id="mobile-shipment-btn" data-action="shipment">
+                <i class="fas fa-shipping-fast"></i>
+                <span>出荷 | Xuất hàng</span>
+                </button>
+                <button class="action-btn action-comment" id="mobile-comment-btn" data-action="comment">
+                <i class="fas fa-comment"></i>
+                <span>コメント | Comment</span>
+                </button>
+                <button class="action-btn action-teflon" id="mobile-teflon-btn" data-action="teflon">
+                <i class="fas fa-flask"></i>
+                <span>テフロン | Teflon</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- ==================== BOTTOM NAVIGATION BAR (NEW R7.0) ==================== -->
+        <nav id="bottom-nav-bar" class="bottom-nav-bar">
+        <!-- Tab 1: Teflon -->
+        <button class="bottom-nav-item" data-tab="teflon" id="nav-teflon-btn" title="テフロン加工 | Mạ Teflon">
+            <i class="fas fa-flask bottom-nav-icon teflon-icon"></i>
+            <span class="bottom-nav-label">テフロン<br><small>Teflon</small></span>
+        </button>
+
+
+        <!-- Tab 2: History -->
+        <button class="bottom-nav-item" data-tab="history" data-history-view-trigger data-preset="all" title="履歴 | Lịch sử">
+            <i class="fas fa-history bottom-nav-icon"></i>
+            <span class="bottom-nav-label">履歴<br><small>History</small></span>
+        </button>
+
+
+        <!-- Tab 3: QR Scan (Center, Larger) -->
+        <button class="bottom-nav-item nav-qr-scan btn-qr-scan" data-tab="qr-scan" title="QRスキャン | Quét QR">
+            <i class="fas fa-qrcode bottom-nav-icon-large"></i>
+            <span class="bottom-nav-label">スキャン<br><small>Scan</small></span>
+        </button>
+
+        <!-- Tab 4: Location / Inventory -->
+        <button class="bottom-nav-item" data-tab="location" id="nav-inventory-btn" title="棚卸設定 | Thiết lập kiểm kê">
+            <i class="fas fa-clipboard-check bottom-nav-icon" id="nav-inventory-icon"></i>
+            <span class="bottom-nav-label" id="nav-inventory-label">
+                <span class="btn-label-ja">棚卸設定</span><br>
+                <small class="btn-label-vi">Thiết lập</small>
+            </span>
+        </button>
+
+        <!-- Tab X Tray Stack Counter / 積み重ね -->
+        <button class="bottom-nav-item" data-tab="tray-stack" id="nav-tray-stack-btn"
+                title="積み重ねカウント / Đếm khay xếp chồng">
+            <i class="fas fa-layer-group bottom-nav-icon"></i>
+            <span class="bottom-nav-label"><br><small>積層<br>Stack</small></span>
+        </button>
+
+        <!-- Tab X Photo Audit / 写真監査 -->
+        <button class="bottom-nav-item" data-tab="photo-audit" id="nav-photo-audit-btn"
+                onclick="window.PhotoAuditTool && window.PhotoAuditTool.openSettings()"
+                title="写真監査 / Chụp ảnh khuôn gửi mail">
+            <i class="fas fa-camera bottom-nav-icon"></i>
+            <span class="bottom-nav-label"><br><small>写真<br>Photo</small></span>
+        </button>
+
+
+
+        <!-- Tab 5: Filter -->
+        <button class="bottom-nav-item" data-tab="settings" title="フィルター | Bộ lọc" id="filter-nav-btn">
+            <i class="fas fa-filter bottom-nav-icon"></i>
+            <span class="bottom-nav-label">フィルター<br><small>Filter & Sort</small></span>
+            <span class="filter-active-badge" style="display: none;">●</span>
+        </button>
+        </nav>
+
+        <!-- ==================== FLOATING ACTION BAR (CONTEXTUAL) ==================== -->
+        <div id="floating-action-bar" class="floating-action-bar">
+        <!-- Location Button -->
+        <button class="floating-action-btn action-location" title="位置 | Vị trí">
+            <i class="fas fa-map-marker-alt"></i>
+            <span>位置<br><small>Vị trí</small></span>
+        </button>
+
+        <!-- Check-in Button -->
+        <button class="floating-action-btn action-checkin" title="入庫 | Nhập">
+            <i class="fas fa-sign-in-alt"></i>
+            <span>入庫<br><small>Nhập</small></span>
+        </button>
+
+        <!-- Check-out Button -->
+        <button class="floating-action-btn action-checkout" title="出庫 | Xuất">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>出庫<br><small>Xuất</small></span>
+        </button>
+
+        <!-- More Actions Button -->
+        <button class="floating-action-btn action-more" title="更新 | Cập nhật">
+            <i class="fas fa-ellipsis-h"></i>
+            <span>更新<br><small>More</small></span>
+        </button>
+
+        <!-- Close Button -->
+        <button class="floating-action-btn action-close" title="閉じる | Đóng">
+            <i class="fas fa-times"></i>
+        </button>
+        </div>
+
+
+
+        
+   
+   
+
+        
+    <!-- ========================================
+         JAVASCRIPT MODULES (Order matters!)
+         ======================================== -->
+    <!-- Core Modules -->
+    
+    <script src="data-manager-r7.0.9.js"></script>
+    <script src="app-controller-r7.0.3.js"></script>
+     <script src="ui-renderer-r7.1.2-1.js"></script>
+    
+
+    <!-- Search Modules -->
+    <script src="mobile-search-prompt-r7.1.1.js"></script>
+    <script src="search-module-r6.9.js"></script>
+    <script src="search-ux-bridge-r6.9.js"></script>
+    <!--<script src="quick-results-highlight.js"></script>-->
+
+    <!-- <script src="ui-renderer-hook.js"></script>-->
+    <script src="search-history-bridge-r6.9.js"></script>
+    <!-- <script src="search-history-panel.js"></script>-->
+    <script src="filter-module-r7.1.1.js"></script>
+
+
+    <!-- Input Modules -->
+    <!-- Lower Section Scripts -->
+    <script src="lower-tabs-r6.9.js"></script>
+
+    <script src="search-history-r6.9.js"></script>
+    <!-- <script src="keyboard-shortcuts.js"></script>-->
+    <script src="search-suggestions-r6.9.js"></script>
+    <script src="virtual-keyboard-r6.9.js"></script>
+    <script src="quick-input-r6.9.js"></script>
+    <script src="results-table-r6.9.js"></script>
+    <script src="quick-results-highlight-r6.9.7.js"></script>
+   
+
+    <!-- ✅ THÊM FILE MỚI -->
+    <script src="quick-results-sync-r6.9.7.js"></script>
+
+    <script src="related-equipment-r6.9.js"></script>
+
+    <script src="detail-tab-r6.9.js"></script>
+
+    <!-- Action Modules -->
+    <link rel="stylesheet" href="checkin-checkout-desktop-r7.1.4.css">
+    <link rel="stylesheet" href="checkin-checkout-mobile-r7.1.4.css">
+    <script src="checkin-checkout-r7.1.4.js"></script>
+
+    <script src="action-buttons-r6.9.9.js"></script>
+    <!-- Location Manager Module -->
+    <script src="location-manager-r7.1.7.js"></script>
+    <!-- Location Manager Module CSS -->
+    <link rel="stylesheet" href="location-manager-desktop-r7.1.8.css">
+    <link rel="stylesheet" href="location-manager-mobile-r7.1.7.css">
+
+    <script src="shipping-manager-r7.1.2.js"></script>
+    <link rel="stylesheet" href="shipping-mobile-r7.0.8.css">
+
+    <script src="teflon-manager-r7.2.6-1.js"></script>
+    <link rel="stylesheet" href="teflon-manager-r7.2.5.css">
+
+    <script src="teflon-process-manager-r7.1.2.js"></script>
+    <link rel="stylesheet" href="teflon-process-manager-r7.1.5.css">
+
+
+    <script src="selection-manager-r7.0.7.js"></script>
+    <!-- R7.0.7: Mobile Table View Module -->
+    <script src="mobile-table-view-r7.1.0-NEW.js"></script>
+    
+    
+    <!-- Mobile UX Controller -->
+    <script src="mobile-controller-r7.1.7.js"></script>
+
+
+
+    <!-- R7.0.3: Clear ALL search boxes on page load -->
+    <script>
+    // Clear search box and focus when page loads (Ctrl+Shift+R)
+    window.addEventListener('DOMContentLoaded', function() {
+        // Clear desktop search box
+        const searchInput = document.getElementById('search-input');
+        if (searchInput) {
+            searchInput.value = '';
+            searchInput.focus();
+            console.log('✅ R7.0.3: Desktop search box cleared');
+        }
+        
+        // Clear mobile search box
+        const mobileSearchInput = document.getElementById('mobile-search-input');
+        if (mobileSearchInput) {
+            mobileSearchInput.value = '';
+            console.log('✅ R7.0.3: Mobile search box cleared');
+        }
+    });
+    </script>
+
+    <!-- Photo Audit Tool - r1.1.0 -->
+    <script src="photo-audit-tool-r2.3.3.js"></script>
+    <!-- Mobile Detail Modal Controller R7.0.3 - Manage full-screen detail popup -->
+    <script src="mobile-detail-modal-r7.1.7.js"></script>
+    <script src="export-qr-r7.0.8.js"></script>
+    <script src="history-view-r7.2.0.js"></script>
+    <link rel="stylesheet" href="history-view-r7.1.9.css">
+    <script src="qr-scan-search-r7.0.8.js"></script>
+
+    <!-- Inventory Manager R6.9.5 - Quản lý chế độ kiểm kê -->
+         <!-- Inventory Manager R6.9.5 -->
+    <script src="inventory-manager-r7.1.2.js"></script>
+    <script src="inventory-audit-center-r1.0.0.js"></script>
+
+    <script src="bulk-inventory-fab-r7.1.2-fixed2.js"></script>
+    <link rel="stylesheet" href="bulk-inventory-fab-r7.1.2-fixed.css">
+    <!-- Tray Stack Counter (積み重ねカウント) -->
+    <script src="tray-stack-counter-r1.0.0.js"></script>
+    
+
+
+
+        
+    <!-- Initialization Script -->
+    <script>
+        // Wait for all modules to load
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 V7.7.7-r6.9-KIOSK-OPT Starting...');
+
+            // All modules auto-initialize via their own init()
+            // AppController orchestrates everything
+
+            console.log('✅ V7.7.7-r6.9-KIOSK-OPT Ready!');
+        });
+    </script>
+   
+</body>
+</html>

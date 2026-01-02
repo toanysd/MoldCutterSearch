@@ -1,0 +1,875 @@
+/**
+ * teflon-process-manager-r7.2.0.css
+ * Responsive CSS cho Module Teflon Processing Manager
+ * 
+ * CHANGELOG r7.2.0 - 2025-12-26
+ * ------------------------------------------------
+ * ✅ MOBILE-FIRST: Thiết kế ưu tiên mobile, mở rộng lên desktop
+ * ✅ RESPONSIVE: Breakpoints tối ưu (375px, 768px, 1024px, 1440px)
+ * ✅ TOUCH-FRIENDLY: Button sizes, tap targets >= 44px
+ * ✅ FLUID TYPOGRAPHY: clamp() cho font sizes responsive
+ * ✅ COMPACT LAYOUT: Tối ưu không gian màn hình
+ * ✅ SMOOTH ANIMATIONS: 60fps transitions
+ */
+
+/* ========================================
+   RESET & BASE STYLES
+======================================== */
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ========================================
+   PANEL CONTAINER
+======================================== */
+.tefproc-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #f8fafc;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 
+               'Noto Sans JP', sans-serif;
+  color: #1e293b;
+  line-height: 1.5;
+  animation: fadeIn 0.25s ease;
+}
+
+/* Desktop: Centered modal */
+@media (min-width: 768px) {
+  .tefproc-panel {
+    top: 5vh;
+    left: 50%;
+    right: auto;
+    bottom: 5vh;
+    transform: translateX(-50%);
+    width: 95%;
+    max-width: 1400px;
+    height: 90vh;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  }
+}
+
+@media (min-width: 1440px) {
+  .tefproc-panel {
+    width: 90%;
+    max-width: 1600px;
+  }
+}
+
+/* ========================================
+   HEADER - Compact & Sticky
+======================================== */
+.tefproc-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  padding: clamp(10px, 2vw, 14px) clamp(14px, 3vw, 20px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+  .tefproc-header {
+    border-radius: 16px 16px 0 0;
+  }
+}
+
+.tefproc-title {
+  flex: 1;
+  min-width: 0;
+}
+
+.tefproc-title .ja {
+  font-size: clamp(15px, 3.5vw, 18px);
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.tefproc-title .vi {
+  font-size: clamp(11px, 2.5vw, 13px);
+  opacity: 0.92;
+  font-weight: 400;
+  margin: 2px 0 0;
+  line-height: 1.3;
+}
+
+.btn-close-compact {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: #fff;
+  width: clamp(36px, 8vw, 44px);
+  height: clamp(36px, 8vw, 44px);
+  min-width: 36px;
+  min-height: 36px;
+  border-radius: 50%;
+  font-size: clamp(18px, 4vw, 22px);
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.btn-close-compact:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+.btn-close-compact:active {
+  transform: scale(0.95);
+}
+
+/* ========================================
+   MOLD INFO BAR - Compact
+======================================== */
+.tefproc-mold-info {
+  background: #fff;
+  border-bottom: 1px solid #e2e8f0;
+  padding: clamp(8px, 2vw, 12px) clamp(12px, 3vw, 20px);
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(8px, 2vw, 12px);
+  align-items: center;
+  font-size: clamp(12px, 2.5vw, 14px);
+  color: #475569;
+  flex-shrink: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tefproc-mold-info .mold-id {
+  font-weight: 600;
+  color: #0f172a;
+  white-space: nowrap;
+}
+
+.tefproc-mold-info .mold-id strong {
+  color: #667eea;
+}
+
+.tefproc-mold-info .mold-name,
+.tefproc-mold-info .mold-code {
+  color: #64748b;
+  white-space: nowrap;
+}
+
+/* ========================================
+   BODY - 2 COLUMN LAYOUT
+======================================== */
+.tefproc-body {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: clamp(12px, 2.5vw, 20px);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(14px, 3vw, 20px);
+}
+
+/* Desktop: 2 columns */
+@media (min-width: 768px) {
+  .tefproc-body {
+    flex-direction: row;
+    gap: 20px;
+  }
+}
+
+/* Left Column: Info + History */
+.tefproc-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(14px, 3vw, 18px);
+  min-width: 0;
+}
+
+@media (min-width: 768px) {
+  .tefproc-left {
+    flex: 0 0 45%;
+    max-width: 600px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .tefproc-left {
+    flex: 0 0 42%;
+  }
+}
+
+/* Right Column: Form */
+.tefproc-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+@media (min-width: 768px) {
+  .tefproc-right {
+    flex: 0 0 55%;
+  }
+}
+
+@media (min-width: 1024px) {
+  .tefproc-right {
+    flex: 0 0 58%;
+  }
+}
+
+/* ========================================
+   SECTIONS - Card Style
+======================================== */
+.tefproc-panel section {
+  background: #fff;
+  border-radius: clamp(8px, 2vw, 12px);
+  padding: clamp(12px, 3vw, 18px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.2s ease;
+}
+
+@media (hover: hover) {
+  .tefproc-panel section:hover {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  }
+}
+
+.tefproc-panel section h4 {
+  margin: 0 0 clamp(10px, 2.5vw, 14px);
+  font-size: clamp(14px, 3vw, 16px);
+  font-weight: 700;
+  color: #0f172a;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: clamp(6px, 1.5vw, 8px);
+  line-height: 1.3;
+}
+
+/* ========================================
+   CURRENT STATUS DISPLAY
+======================================== */
+.tefproc-current-status {
+  text-align: center;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: clamp(7px, 1.5vw, 10px) clamp(14px, 3vw, 18px);
+  border-radius: 999px;
+  font-size: clamp(11px, 2.5vw, 13px);
+  font-weight: 700;
+  margin-bottom: clamp(8px, 2vw, 12px);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Status Colors */
+.badge-unprocessed { background: #f1f5f9; color: #64748b; }
+.badge-pending { background: #fef3c7; color: #92400e; }
+.badge-approved { background: #dbeafe; color: #1e40af; }
+.badge-processing { background: #fce7f3; color: #9f1239; }
+.badge-completed { background: #d1fae5; color: #065f46; }
+
+.tefproc-current-status p {
+  font-size: clamp(12px, 2.5vw, 14px);
+  color: #475569;
+  margin: 6px 0;
+  line-height: 1.6;
+}
+
+.tefproc-current-status .date-info {
+  margin-top: clamp(10px, 2.5vw, 14px);
+  padding: clamp(8px, 2vw, 12px);
+  background: #f8fafc;
+  border-radius: 8px;
+  font-size: clamp(12px, 2.5vw, 13px);
+  color: #334155;
+  line-height: 1.7;
+  text-align: left;
+}
+
+.tefproc-current-status .date-info strong {
+  color: #0f172a;
+  font-weight: 600;
+}
+
+/* ========================================
+   QUICK ACTIONS
+======================================== */
+.tefproc-quick-actions {
+  text-align: center;
+}
+
+.tefproc-quick-actions h4 {
+  font-size: clamp(13px, 2.5vw, 14px);
+  margin-bottom: clamp(8px, 2vw, 12px);
+  border: none;
+  padding: 0;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.btn-quick {
+  display: inline-block;
+  width: 100%;
+  padding: clamp(10px, 2.5vw, 12px) clamp(16px, 3vw, 20px);
+  border: none;
+  border-radius: 8px;
+  font-size: clamp(13px, 2.8vw, 14px);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  line-height: 1.4;
+  text-align: center;
+  min-height: 44px;
+}
+
+@media (hover: hover) {
+  .btn-quick:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.btn-quick:active {
+  transform: translateY(0);
+}
+
+/* Quick Button Colors */
+.btn-quick-pending {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  color: #fff;
+}
+
+.btn-quick-approved {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: #fff;
+}
+
+.btn-quick-processing {
+  background: linear-gradient(135deg, #ec4899, #db2777);
+  color: #fff;
+}
+
+.btn-quick-completed {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #fff;
+}
+
+/* ========================================
+   MOLD DETAIL
+======================================== */
+.tefproc-mold-detail .detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: clamp(7px, 1.5vw, 9px) 0;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: clamp(12px, 2.5vw, 13px);
+  gap: 12px;
+}
+
+.tefproc-mold-detail .detail-row:last-child {
+  border-bottom: none;
+}
+
+.tefproc-mold-detail .label {
+  font-weight: 600;
+  color: #475569;
+  flex-shrink: 0;
+  min-width: 100px;
+}
+
+.tefproc-mold-detail .value {
+  color: #0f172a;
+  font-weight: 500;
+  text-align: right;
+  word-break: break-word;
+}
+
+/* ========================================
+   HISTORY SECTION
+======================================== */
+.tefproc-history .history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: clamp(10px, 2.5vw, 14px);
+}
+
+.tefproc-history h4 {
+  margin: 0;
+  border: none;
+  padding: 0;
+  flex: 1;
+}
+
+.btn-lock {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: clamp(6px, 1.5vw, 8px) clamp(10px, 2.5vw, 14px);
+  font-size: clamp(10px, 2vw, 12px);
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  line-height: 1.2;
+  white-space: nowrap;
+  min-height: 32px;
+}
+
+@media (hover: hover) {
+  .btn-lock:hover {
+    background: #e2e8f0;
+    border-color: #94a3b8;
+  }
+}
+
+.btn-lock.locked {
+  background: #fef3c7;
+  border-color: #fbbf24;
+  color: #92400e;
+}
+
+.btn-lock.unlocked {
+  background: #d1fae5;
+  border-color: #10b981;
+  color: #065f46;
+}
+
+/* History Wrapper - Scroll Control */
+.history-wrap {
+  position: relative;
+}
+
+.history-wrap.table-locked {
+  overflow: visible;
+}
+
+.history-wrap.scroll-unlocked {
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  max-height: clamp(250px, 40vh, 400px);
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.no-history {
+  text-align: center;
+  color: #94a3b8;
+  font-size: clamp(12px, 2.5vw, 14px);
+  padding: clamp(16px, 4vw, 24px);
+}
+
+/* ========================================
+   HISTORY TABLE - Responsive
+======================================== */
+.tefproc-history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: clamp(11px, 2.3vw, 13px);
+  background: #fff;
+}
+
+.tefproc-history-table thead {
+  background: #f8fafc;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.tefproc-history-table thead th {
+  padding: clamp(8px, 2vw, 12px) clamp(6px, 1.5vw, 10px);
+  text-align: left;
+  font-weight: 700;
+  color: #475569;
+  border-bottom: 2px solid #e2e8f0;
+  white-space: nowrap;
+  font-size: clamp(10px, 2.2vw, 12px);
+  line-height: 1.3;
+}
+
+.tefproc-history-table tbody tr {
+  border-bottom: 1px solid #f1f5f9;
+  transition: background 0.15s ease;
+}
+
+@media (hover: hover) {
+  .tefproc-history-table tbody tr:hover {
+    background: #f8fafc;
+  }
+}
+
+.tefproc-history-table tbody td {
+  padding: clamp(8px, 2vw, 12px) clamp(6px, 1.5vw, 10px);
+  color: #334155;
+  vertical-align: top;
+  font-size: clamp(11px, 2.3vw, 13px);
+}
+
+.tefproc-history-table tbody td.note-cell {
+  white-space: normal;
+  max-width: clamp(150px, 30vw, 250px);
+  word-wrap: break-word;
+}
+
+.tefproc-history-table .col-actions {
+  text-align: center;
+  width: clamp(40px, 8vw, 60px);
+}
+
+.btn-delete-log {
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  color: #991b1b;
+  border-radius: 4px;
+  padding: clamp(4px, 1vw, 6px) clamp(6px, 1.5vw, 10px);
+  font-size: clamp(12px, 2.5vw, 14px);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 32px;
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (hover: hover) {
+  .btn-delete-log:hover {
+    background: #fecaca;
+    border-color: #f87171;
+    transform: scale(1.05);
+  }
+}
+
+.btn-delete-log:active {
+  transform: scale(0.95);
+}
+
+/* ========================================
+   FORM SECTION
+======================================== */
+.tefproc-form {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(12px, 2.5vw, 16px);
+}
+
+.workflow-hint {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  border-left: 4px solid #f59e0b;
+  padding: clamp(8px, 2vw, 12px) clamp(10px, 2.5vw, 14px);
+  border-radius: 8px;
+  font-size: clamp(11px, 2.3vw, 13px);
+  color: #92400e;
+  font-weight: 600;
+  margin-bottom: 4px;
+  line-height: 1.5;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(5px, 1.2vw, 7px);
+}
+
+.form-label {
+  font-size: clamp(12px, 2.5vw, 14px);
+  font-weight: 600;
+  color: #475569;
+  line-height: 1.4;
+}
+
+.form-control {
+  width: 100%;
+  padding: clamp(10px, 2.5vw, 12px);
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: clamp(13px, 3vw, 14px);
+  color: #0f172a;
+  background: #fff;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  line-height: 1.5;
+  min-height: 44px;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+textarea.form-control {
+  resize: vertical;
+  min-height: clamp(60px, 15vw, 80px);
+}
+
+select.form-control {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath fill='%23475569' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+}
+
+/* Status Pill - Dynamic */
+.tefproc-status-pill {
+  margin-top: 8px;
+  padding: clamp(7px, 1.5vw, 10px) clamp(12px, 2.5vw, 16px);
+  border-radius: 999px;
+  font-size: clamp(11px, 2.3vw, 13px);
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.2s ease;
+}
+
+.tefproc-status-pill[data-status="unprocessed"] { background: #f1f5f9; color: #64748b; }
+.tefproc-status-pill[data-status="pending"] { background: #fef3c7; color: #92400e; }
+.tefproc-status-pill[data-status="approved"] { background: #dbeafe; color: #1e40af; }
+.tefproc-status-pill[data-status="processing"] { background: #fce7f3; color: #9f1239; }
+.tefproc-status-pill[data-status="completed"] { background: #d1fae5; color: #065f46; }
+
+/* ========================================
+   BUTTON ROW
+======================================== */
+.btn-row {
+  display: flex;
+  gap: clamp(10px, 2.5vw, 14px);
+  margin-top: clamp(8px, 2vw, 12px);
+}
+
+.btn-cancel,
+.btn-confirm {
+  flex: 1;
+  padding: clamp(11px, 2.5vw, 14px) clamp(18px, 4vw, 24px);
+  border: none;
+  border-radius: 8px;
+  font-size: clamp(13px, 3vw, 15px);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  line-height: 1.4;
+  min-height: 48px;
+}
+
+.btn-cancel {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+}
+
+@media (hover: hover) {
+  .btn-cancel:hover {
+    background: #e2e8f0;
+    border-color: #94a3b8;
+  }
+}
+
+.btn-confirm {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(102, 126, 234, 0.3);
+}
+
+@media (hover: hover) {
+  .btn-confirm:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(102, 126, 234, 0.4);
+  }
+}
+
+.btn-confirm:active,
+.btn-cancel:active {
+  transform: scale(0.98);
+}
+
+/* ========================================
+   FOOTER
+======================================== */
+.tefproc-footer {
+  border-top: 1px solid #e2e8f0;
+  background: #f8fafc;
+  padding: clamp(10px, 2.5vw, 14px) clamp(14px, 3vw, 20px);
+  display: flex;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+  .tefproc-footer {
+    border-radius: 0 0 16px 16px;
+  }
+}
+
+#tefproc-bottom-close {
+  min-width: clamp(120px, 30vw, 160px);
+}
+
+/* ========================================
+   TOAST NOTIFICATIONS
+======================================== */
+.tefproc-toast {
+  position: fixed;
+  left: 50%;
+  bottom: clamp(60px, 15vw, 80px);
+  transform: translateX(-50%);
+  z-index: 10050;
+  padding: clamp(10px, 2.5vw, 12px) clamp(16px, 4vw, 20px);
+  border-radius: 999px;
+  font-size: clamp(12px, 2.8vw, 14px);
+  font-weight: 600;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+  max-width: 90%;
+  text-align: center;
+}
+
+.tefproc-toast-info { background: #4b5563; }
+.tefproc-toast-success { background: #16a34a; }
+.tefproc-toast-error { background: #dc2626; }
+
+/* ========================================
+   SCROLLBAR STYLING (Webkit)
+======================================== */
+.history-wrap.scroll-unlocked::-webkit-scrollbar,
+.tefproc-body::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.history-wrap.scroll-unlocked::-webkit-scrollbar-track,
+.tefproc-body::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.history-wrap.scroll-unlocked::-webkit-scrollbar-thumb,
+.tefproc-body::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.history-wrap.scroll-unlocked::-webkit-scrollbar-thumb:hover,
+.tefproc-body::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ========================================
+   ANIMATIONS
+======================================== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ========================================
+   MOBILE SPECIFIC OPTIMIZATIONS
+======================================== */
+@media (max-width: 767px) {
+  /* Ensure touch targets */
+  button,
+  .btn-quick,
+  .btn-lock,
+  .btn-delete-log,
+  .btn-cancel,
+  .btn-confirm {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Improve form readability */
+  .form-control {
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+  
+  /* Compact history table */
+  .tefproc-history-table {
+    font-size: 11px;
+  }
+  
+  .tefproc-history-table thead th,
+  .tefproc-history-table tbody td {
+    padding: 8px 4px;
+  }
+}
+
+/* ========================================
+   PRINT STYLES
+======================================== */
+@media print {
+  .tefproc-panel {
+    position: relative;
+    box-shadow: none;
+    background: #fff;
+  }
+  
+  .btn-close-compact,
+  .tefproc-footer,
+  .btn-quick,
+  .btn-delete-log {
+    display: none !important;
+  }
+}
+
+/* ========================================
+   DARK MODE SUPPORT (Optional)
+======================================== */
+@media (prefers-color-scheme: dark) {
+  .tefproc-panel {
+    background: #1e293b;
+    color: #e2e8f0;
+  }
+  
+  .tefproc-panel section {
+    background: #334155;
+  }
+  
+  .tefproc-mold-info {
+    background: #334155;
+    border-bottom-color: #475569;
+  }
+  
+  .form-control {
+    background: #1e293b;
+    border-color: #475569;
+    color: #e2e8f0;
+  }
+  
+  .tefproc-history-table thead {
+    background: #1e293b;
+  }
+}
+
+/* ========================================
+   END OF FILE
+======================================== */

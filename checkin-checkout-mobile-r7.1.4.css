@@ -1,0 +1,633 @@
+/**
+ * =====================================================
+ * CHECK-IN / CHECK-OUT - MOBILE STYLES ONLY
+ * =====================================================
+ * Version: r7.1.4
+ * Created: 2025-12-31 JST
+ *
+ * Goals:
+ * - Fullscreen on mobile (like location-manager-mobile-r7.1.7.css) [file:4]
+ * - Touch-friendly sizes
+ * - Prevent being covered by other modals:
+ *   Raise CIO z-index above loc/tef default (9999) [file:5][file:2]
+ * =====================================================
+ */
+
+@media (max-width: 768px) {
+  /* Ensure CIO always on top when opened on mobile */
+  :root{
+    --cio-z-backdrop: 20000;
+    --cio-z-dialog: 20001;
+
+    /* Bottom bars */
+    --cio-actionbar-h: 56px;
+    --cio-modebar-h: 44px;
+    --cio-gutter: 8px;
+    --cio-card-radius: 10px;
+  }
+
+  #cio-backdrop{
+    z-index: var(--cio-z-backdrop) !important;
+  }
+
+  #cio-panel{
+    z-index: var(--cio-z-dialog) !important;
+
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    border-radius: 0 !important;
+
+    top: 0 !important;
+    left: 0 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+
+  /* Header compact */
+  .checkio-header{
+    border-radius: 0 !important;
+    padding: 6px var(--cio-space-sm) !important;
+  }
+  .checkio-title{
+    font-size: 14px !important;
+    font-weight: 900;
+  }
+  .btn-refresh,
+  .btn-close-compact{
+    padding: 4px 7px !important;
+    font-size: 11px !important;
+    min-width: 34px;
+    min-height: 34px;
+  }
+
+  /* Body vertical stack; reserve bottom space for fixed bars */
+  .checkio-body{
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+
+    /* Reserve for: modebar + actionbar + safe area */
+    padding-bottom: calc(var(--cio-modebar-h) + var(--cio-actionbar-h) + env(safe-area-inset-bottom)) !important;
+    background: var(--cio-light);
+  }
+
+  .checkio-body > section{
+    width: 100% !important;
+    border-right: none !important;
+    border-bottom: none !important;
+
+    /* Make sections look like cards instead of 3 equal panels */
+    margin: var(--cio-gutter) var(--cio-gutter) 0 var(--cio-gutter);
+    border-radius: var(--cio-card-radius);
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid var(--cio-border);
+  }
+
+  /* ---------- 1) STATUS (Info card, no header) ---------- */
+.cio-status{ order: 1; }
+.cio-status h4{ display: none !important; }
+
+/* Label column width (left aligned like a table) */
+.cio-status{
+  --cio-status-label-w: 104px;
+}
+
+.status-badges{
+  padding: 8px !important;
+  display: grid;
+  gap: 6px !important;
+  background: #f6fbff;
+}
+
+/* Each row: label | value (left aligned) */
+.cio-status .badge-row{
+  display: grid !important;
+  grid-template-columns: var(--cio-status-label-w) 1fr !important;
+  column-gap: 10px !important;
+  align-items: center !important;
+
+  /* ensure same left edge for all rows */
+  padding: 0 !important;
+}
+
+.cio-status .badge-label{
+  font-size: 10px !important;
+  font-weight: 900 !important;   /* bold label ONLY */
+  color: var(--cio-text-muted) !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+  line-height: 1.1 !important;
+
+  text-align: left !important;
+  white-space: nowrap !important;
+}
+
+.cio-status .badge{
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  min-height: 0 !important;
+
+  font-size: 14px !important;
+  font-weight: 600 !important;   /* value NOT bold */
+  line-height: 1.15 !important;
+  color: var(--cio-text) !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+
+  text-align: left !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* "位置 / Vị trí" row -> label | rack | layer (always 1 line) */
+.cio-status .badge-row:has(.badge-group){
+  grid-template-columns: var(--cio-status-label-w) minmax(0,1fr) minmax(0,1fr) !important;
+}
+
+/* Put badge-group children into the grid columns */
+.cio-status .badge-row:has(.badge-group) .badge-group{
+  display: contents !important;
+}
+.cio-status .badge-row:has(.badge-group) .badge-sep{
+  display: none !important;
+}
+
+/* Rack & Layer pills: light background but text still normal weight */
+.cio-status .badge-row:has(.badge-group) .badge-rack,
+.cio-status .badge-row:has(.badge-group) .badge-layer{
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  padding: 2px 6px !important;
+  border-radius: 8px !important;
+  background: rgba(33,128,141,0.08) !important;
+  border: 1px solid rgba(33,128,141,0.18) !important;
+
+  font-weight: 700 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* Storage location row (kept as reference) */
+.rack-location{
+  margin-top: 2px;
+  padding: 6px 8px;
+  background: rgba(33,128,141,0.06);
+  border: 1px solid rgba(33,128,141,0.18);
+  border-radius: 8px;
+}
+.rack-location .loc-label{ font-size: 10px !important; }
+.rack-location .loc-value{ font-size: 12px !important; font-weight: 600 !important; }
+
+
+  /* ---------- 2) INPUTS (Main focus) ---------- */
+  .cio-inputs{ order: 2; }
+
+  /* Keep Inputs header but make it “main” */
+  .cio-inputs h4{
+    font-size: 12px !important;
+    padding: 6px 8px !important;
+  }
+
+  /* Inputs content compact */
+  .cio-inputs .form-group{
+    padding: 0 8px !important;
+    margin-top: 6px !important;
+    gap: 4px !important;
+  }
+
+  .form-label{
+    font-size: 11px !important;
+    font-weight: 900 !important;
+    margin: 0 !important;
+  }
+
+  /* Make controls consistent height */
+  .search-input,
+  .form-control,
+  select,
+  input[type="text"],
+  input[type="number"]{
+    min-height: 34px !important;
+    font-size: 12px !important;
+  }
+
+  #cio-note{
+    min-height: 42px !important;
+    resize: none !important;
+    font-size: 12px !important;
+  }
+
+  .employee-row{
+    display: grid !important;
+    grid-template-columns: 1fr 78px !important; /* FaceID fixed width */
+    gap: 6px !important;
+    align-items: center !important;
+  }
+  .btn-face{
+    min-height: 34px;
+    font-size: 11px !important;
+    padding: 7px 8px !important;
+  }
+
+  /* Optional: hide tiny helper line so inputs look “centered” */
+  .face-status{ display: none !important; }
+  .emp-default{
+    padding: 0 8px !important;
+    margin-top: 2px !important;
+    font-size: 11px !important;
+  }
+
+  /* ---------- 3) HISTORY (scroll area) ---------- */
+  .cio-history{
+    order: 3 !important;
+    flex: 1 !important;
+    min-height: 0 !important;
+    margin-bottom: var(--cio-gutter);
+  }
+  .cio-history h4{
+    font-size: 11px !important;
+    padding: 6px 8px !important;
+  }
+
+  .history-controls{
+    padding: 6px 8px !important;
+    gap: 6px !important;
+  }
+  .history-controls input{
+    min-height: 34px;
+    font-size: 11px !important;
+    padding: 4px 6px !important;
+  }
+  .lock-toggle{
+    min-height: 34px;
+    font-size: 10px !important;
+    padding: 4px 8px !important;
+  }
+
+  .history-wrap{
+    overflow: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .history-table{ font-size: 10px !important; }
+  .history-table thead th{ padding: 4px !important; font-size: 10px !important; }
+  .history-table tbody td{ padding: 4px !important; font-size: 10px !important; }
+  .status-badge{ font-size: 9px !important; padding: 2px 5px !important; min-width: 40px !important; }
+
+  /* ---------- FIXED MODE BAR (grouped with actions) ---------- */
+  .cio-mode-buttons{
+    position: fixed !important;
+    left: 0;
+    right: 0;
+    bottom: calc(var(--cio-actionbar-h) + env(safe-area-inset-bottom)) !important;
+    z-index: calc(var(--cio-z-dialog) + 2);
+
+    margin: 0 !important;
+    padding: 6px var(--cio-gutter) !important;
+    background: rgba(255,255,255,0.98);
+    border-top: 1px solid var(--cio-border);
+    box-shadow: 0 -4px 10px rgba(0,0,0,0.06);
+
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+    height: var(--cio-modebar-h);
+    align-items: center;
+  }
+
+  .mode-btn{
+    min-height: 36px;
+    font-size: 12px !important;
+    font-weight: 900 !important;
+    border-radius: 10px !important;
+  }
+
+  /* Mode buttons color hint (入庫=green, 出庫=red) */
+#btn-in.mode-btn{
+  background: rgba(40,167,69,0.12) !important;
+  border: 1px solid rgba(40,167,69,0.35) !important;
+  color: #1e7e34 !important;
+}
+#btn-out.mode-btn{
+  background: rgba(220,53,69,0.10) !important;
+  border: 1px solid rgba(220,53,69,0.30) !important;
+  color: #bd2130 !important;
+}
+
+/* Active state a bit stronger */
+#btn-in.mode-btn.active{
+  background: rgba(40,167,69,0.22) !important;
+  border-color: rgba(40,167,69,0.55) !important;
+}
+#btn-out.mode-btn.active{
+  background: rgba(220,53,69,0.18) !important;
+  border-color: rgba(220,53,69,0.50) !important;
+}
+
+  /* ---------- FIXED ACTION BAR (desktop-like) ---------- */
+#cio-panel .btn-row{
+  position: fixed !important;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  z-index: calc(var(--cio-z-dialog) + 3);
+  margin: 0 !important;
+
+  padding: 8px var(--cio-gutter) calc(8px + env(safe-area-inset-bottom)) !important;
+
+  display: grid !important;
+  grid-template-columns: 1fr 1fr 1fr !important;
+  gap: 10px !important;
+
+  height: var(--cio-actionbar-h);
+  align-items: stretch;
+
+  border-top: 1px solid var(--cio-border);
+  background: linear-gradient(to top, var(--cio-light) 0%, rgba(255,255,255,0.98) 100%);
+  box-shadow: 0 -6px 16px rgba(0,0,0,0.08);
+}
+
+#cio-panel .btn-row .btn-cancel,
+#cio-panel .btn-row .btn-relocate,
+#cio-panel .btn-row .btn-confirm{
+  min-height: 40px !important;
+  border-radius: 10px !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 2px !important;
+
+  padding: 6px 6px !important;
+  line-height: 1.05 !important;
+
+  /* allow 2-line content, but avoid ugly wrap */
+  white-space: normal !important;
+  overflow: hidden !important;
+}
+
+/* If button content is already 2 lines (JP/VN spans) */
+#cio-panel .btn-row .btn-jp{
+  font-size: 12px !important;
+  font-weight: 900 !important;
+  white-space: nowrap !important;
+}
+#cio-panel .btn-row .btn-vn{
+  font-size: 10px !important;
+  font-weight: 800 !important;
+  white-space: nowrap !important;
+  opacity: 0.95;
+}
+
+
+  /* Toast on mobile - still above all */
+  .cio-toast{
+    z-index: calc(var(--cio-z-dialog) + 10) !important;
+    bottom: calc(var(--cio-actionbar-h) + 10px) !important;
+    font-size: 12px !important;
+  }
+
+/* =====================================================
+   MOBILE - Desktop-like ACTION BAR (3 buttons in 1 row)
+   Target: .cio-right-actionbar created by JS (r7.1.4)
+   ===================================================== */
+#cio-panel .cio-right-actionbar{
+  position: fixed !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+
+  z-index: calc(var(--cio-z-dialog) + 3) !important;
+
+  width: auto !important;
+  height: var(--cio-actionbar-h) !important;
+
+  margin: 0 !important;
+  padding: 8px var(--cio-gutter) calc(8px + env(safe-area-inset-bottom)) !important;
+
+  display: grid !important;
+  grid-template-columns: 1fr 1fr 1fr !important;
+  gap: 10px !important;
+  align-items: stretch !important;
+
+  border-top: 1px solid var(--cio-border) !important;
+  background: linear-gradient(to top, var(--cio-light) 0%, rgba(255,255,255,0.98) 100%) !important;
+  box-shadow: 0 -6px 16px rgba(0,0,0,0.08) !important;
+}
+
+/* Buttons: centered, 2-line JP/VN like desktop */
+#cio-panel .cio-right-actionbar .cio-action-btn{
+  width: 100% !important;
+  min-height: calc(var(--cio-actionbar-h) - 16px) !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 2px !important;
+
+  padding: 6px 6px !important;
+  line-height: 1.05 !important;
+
+  white-space: normal !important;
+  overflow: hidden !important;
+}
+
+/* Text lines */
+#cio-panel .cio-right-actionbar .btn-jp{
+  font-size: 12px !important;
+  font-weight: 900 !important;
+  white-space: nowrap !important;
+}
+
+#cio-panel .cio-right-actionbar .btn-vn{
+  font-size: 10px !important;
+  font-weight: 800 !important;
+  white-space: nowrap !important;
+  opacity: 0.95 !important;
+}
+
+}
+
+/* iPhone */
+@media (max-width: 480px) {
+  .checkio-title {
+    font-size: 13px !important;
+  }
+
+  .checkio-body h4 {
+    font-size: 10px !important;
+    padding: 4px 5px !important;
+  }
+
+  .badge-row {
+    grid-template-columns: 78px 1fr !important;
+  }
+
+  .badge-label {
+    font-size: 9px !important;
+  }
+
+  .badge {
+    font-size: 11px !important;
+  }
+
+  .mode-btn,
+  .btn-face,
+  .btn-cancel,
+  .btn-relocate,
+  .btn-confirm,
+  .btn-refresh,
+  .btn-close-compact,
+  .lock-toggle,
+  .btn-delete-history {
+    min-height: 32px !important;
+  }
+
+  /* Safe area (iOS) */
+  .checkio-header {
+    padding-top: calc(6px + env(safe-area-inset-top)) !important;
+    padding-left: calc(var(--cio-space-sm) + env(safe-area-inset-left)) !important;
+    padding-right: calc(var(--cio-space-sm) + env(safe-area-inset-right)) !important;
+  }
+
+  .btn-row {
+    padding-bottom: calc(6px + env(safe-area-inset-bottom)) !important;
+    padding-left: calc(6px + env(safe-area-inset-left)) !important;
+    padding-right: calc(6px + env(safe-area-inset-right)) !important;
+  }
+}
+
+
+
+/* Extra small */
+@media (max-width: 375px) {
+  .badge-row {
+    grid-template-columns: 70px 1fr !important;
+  }
+
+  .history-table thead th,
+  .history-table tbody td {
+    padding: 3px !important;
+    font-size: 9px !important;
+  }
+
+  .status-badge {
+    font-size: 8px !important;
+    min-width: 34px !important;
+  }
+
+  .btn-row {
+    gap: 4px !important;
+  }
+
+  .btn-cancel,
+  .btn-relocate,
+  .btn-confirm {
+    font-size: 10px !important;
+    padding: 8px 4px !important;
+  }
+}
+
+/* Mobile dark mode */
+@media (max-width: 768px) and (prefers-color-scheme: dark) {
+  #cio-panel {
+    background: #1e1e1e !important;
+  }
+
+  .checkio-body > section {
+    background: #1e1e1e !important;
+    border-color: #495057 !important;
+  }
+
+  .history-controls {
+    background: #2a2a2a !important;
+    border-color: #495057 !important;
+  }
+
+  .history-controls input {
+    background: #3d3200 !important;
+    color: #e9ecef !important;
+    border-color: #495057 !important;
+  }
+
+  #cio-note {
+    background: #2a2a2a !important;
+    color: #e9ecef !important;
+    border-color: #495057 !important;
+  }
+
+  .mode-btn,
+  .btn-face {
+    background: #2a2a2a !important;
+    color: #e9ecef !important;
+    border-color: #495057 !important;
+  }
+
+  .btn-row {
+    background: #2a2a2a !important;
+    border-color: #495057 !important;
+  }
+
+  .history-table tbody tr:nth-child(odd) {
+    background: #2a2a2a !important;
+  }
+
+  .history-table tbody tr:active {
+    background: rgba(33, 128, 141, 0.15) !important;
+  }
+}
+
+.cio-inputs{
+  order: 2;
+  width: 100% !important;
+  max-height: none !important;
+  overflow: visible !important;
+  flex-shrink: 0 !important;
+}
+
+/* Make inputs tighter */
+.cio-inputs .form-group{
+  padding: 0 6px !important;
+  margin-top: 6px !important;
+  gap: 4px !important;
+}
+
+.form-label{ font-size: 11px !important; margin: 0 !important; }
+
+/* Ensure consistent control height */
+.search-input,
+.form-control,
+select,
+input[type="text"],
+textarea{
+  font-size: 12px !important;
+}
+
+.search-input,
+.form-control,
+select,
+input[type="text"]{
+  min-height: 32px !important;
+}
+
+#cio-note{
+  min-height: 40px !important;
+  resize: none !important; /* avoid growing and pushing layout */
+}
+
+/* Optional: hide helper text to save vertical space */
+.face-status{ display: none !important; }
+.emp-default{ margin-top: 2px !important; font-size: 11px !important; }

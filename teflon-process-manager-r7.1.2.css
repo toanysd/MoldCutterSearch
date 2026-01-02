@@ -1,0 +1,808 @@
+/**
+ * teflon-process-manager-r7.1.2.css
+ * Style cho Module nghiệp vụ mạ Teflon r7.1.2
+ * 
+ * CHANGELOG r7.1.2 - 2025-12-26
+ * ------------------------------------------------
+ * - Layout mới: Header nhỏ gọn + 2 cột (Trái: Info+History, Phải: Form)
+ * - Bảng lịch sử lock/unlock
+ * - Status pills động
+ * - Quick Actions nhỏ gọn
+ * - Responsive mobile/desktop
+ */
+
+/* ========== PANEL CONTAINER ========== */
+.tefproc-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  background: #f8fafc;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans JP', sans-serif;
+  color: #1e293b;
+  line-height: 1.5;
+}
+
+/* Desktop: limit width */
+@media (min-width: 768px) {
+  .tefproc-panel {
+    top: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 96%;
+    max-width: 1400px;
+    height: calc(100vh - 120px);
+    max-height: 900px;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* Dragging animation */
+.tefproc-panel.dragging {
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+/* ========== HEADER ========== */
+.tefproc-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+@media (min-width: 768px) {
+  .tefproc-header {
+    border-radius: 16px 16px 0 0;
+    padding: 14px 20px;
+  }
+}
+
+.tefproc-title {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tefproc-title .ja {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.tefproc-title .vi {
+  font-size: 12px;
+  opacity: 0.9;
+  font-weight: 400;
+}
+
+@media (min-width: 768px) {
+  .tefproc-title .ja {
+    font-size: 18px;
+  }
+  .tefproc-title .vi {
+    font-size: 13px;
+  }
+}
+
+.btn-close-compact {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: #fff;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, transform 0.15s ease;
+  flex-shrink: 0;
+}
+
+.btn-close-compact:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.08);
+}
+
+.btn-close-compact:active {
+  transform: scale(0.95);
+}
+
+/* ========== MOLD INFO BAR ========== */
+.tefproc-mold-info {
+  background: #fff;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 10px 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  font-size: 13px;
+  color: #475569;
+  flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+  .tefproc-mold-info {
+    padding: 12px 20px;
+    font-size: 14px;
+  }
+}
+
+.tefproc-mold-info .mold-id {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.tefproc-mold-info .mold-id strong {
+  color: #667eea;
+}
+
+.tefproc-mold-info .mold-name,
+.tefproc-mold-info .mold-code {
+  color: #64748b;
+}
+
+/* ========== BODY (2 COLUMNS) ========== */
+.tefproc-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+@media (min-width: 768px) {
+  .tefproc-body {
+    flex-direction: row;
+    gap: 20px;
+    padding: 20px;
+  }
+}
+
+/* LEFT COLUMN: Info + History */
+.tefproc-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+@media (min-width: 768px) {
+  .tefproc-left {
+    max-width: 45%;
+  }
+}
+
+/* RIGHT COLUMN: Form */
+.tefproc-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 768px) {
+  .tefproc-right {
+    max-width: 55%;
+  }
+}
+
+/* ========== SECTIONS ========== */
+.tefproc-panel section {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+@media (min-width: 768px) {
+  .tefproc-panel section {
+    padding: 18px 20px;
+  }
+}
+
+.tefproc-panel section h4 {
+  margin: 0 0 12px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 8px;
+}
+
+@media (min-width: 768px) {
+  .tefproc-panel section h4 {
+    font-size: 16px;
+  }
+}
+
+/* ========== CURRENT STATUS DISPLAY ========== */
+.tefproc-current-status {
+  text-align: center;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge-unprocessed {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.badge-pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.badge-approved {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.badge-processing {
+  background: #fce7f3;
+  color: #9f1239;
+}
+
+.badge-completed {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.tefproc-current-status p {
+  font-size: 13px;
+  color: #475569;
+  margin: 8px 0 0;
+  line-height: 1.6;
+}
+
+.tefproc-current-status .date-info {
+  margin-top: 12px;
+  padding: 10px;
+  background: #f8fafc;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #334155;
+  line-height: 1.7;
+}
+
+.tefproc-current-status .date-info strong {
+  color: #0f172a;
+  font-weight: 600;
+}
+
+/* ========== QUICK ACTIONS ========== */
+.tefproc-quick-actions {
+  text-align: center;
+}
+
+.tefproc-quick-actions h4 {
+  font-size: 14px;
+  margin-bottom: 10px;
+  border-bottom: none;
+  padding-bottom: 0;
+  color: #64748b;
+}
+
+.btn-quick {
+  display: inline-block;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  line-height: 1.4;
+  text-align: center;
+}
+
+.btn-quick:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-quick:active {
+  transform: translateY(0);
+}
+
+.btn-quick-pending {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  color: #fff;
+}
+
+.btn-quick-approved {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: #fff;
+}
+
+.btn-quick-processing {
+  background: linear-gradient(135deg, #ec4899, #db2777);
+  color: #fff;
+}
+
+.btn-quick-completed {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #fff;
+}
+
+/* ========== MOLD DETAIL ========== */
+.tefproc-mold-detail .detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 13px;
+}
+
+.tefproc-mold-detail .detail-row:last-child {
+  border-bottom: none;
+}
+
+.tefproc-mold-detail .label {
+  font-weight: 600;
+  color: #475569;
+  flex-shrink: 0;
+  margin-right: 12px;
+}
+
+.tefproc-mold-detail .value {
+  color: #0f172a;
+  font-weight: 500;
+  text-align: right;
+}
+
+/* ========== HISTORY SECTION ========== */
+.tefproc-history .history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.tefproc-history h4 {
+  margin: 0;
+  border: none;
+  padding: 0;
+}
+
+.btn-lock {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  line-height: 1.2;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.btn-lock:hover {
+  background: #e2e8f0;
+  border-color: #94a3b8;
+}
+
+.btn-lock.locked {
+  background: #fef3c7;
+  border-color: #fbbf24;
+  color: #92400e;
+}
+
+.btn-lock.unlocked {
+  background: #d1fae5;
+  border-color: #10b981;
+  color: #065f46;
+}
+
+.history-wrap {
+  position: relative;
+}
+
+/* Table locked: no scroll */
+.history-wrap.table-locked {
+  overflow: visible;
+}
+
+/* Table unlocked: scroll */
+.history-wrap.scroll-unlocked {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 300px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+@media (min-width: 768px) {
+  .history-wrap.scroll-unlocked {
+    max-height: 400px;
+  }
+}
+
+.no-history {
+  text-align: center;
+  color: #94a3b8;
+  font-size: 13px;
+  padding: 20px;
+}
+
+/* ========== HISTORY TABLE ========== */
+.tefproc-history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  background: #fff;
+}
+
+.tefproc-history-table thead {
+  background: #f8fafc;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.tefproc-history-table thead th {
+  padding: 10px 8px;
+  text-align: left;
+  font-weight: 700;
+  color: #475569;
+  border-bottom: 2px solid #e2e8f0;
+  white-space: nowrap;
+  font-size: 11px;
+  line-height: 1.3;
+}
+
+.tefproc-history-table tbody tr {
+  border-bottom: 1px solid #f1f5f9;
+  transition: background 0.15s ease;
+}
+
+.tefproc-history-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.tefproc-history-table tbody td {
+  padding: 10px 8px;
+  color: #334155;
+  vertical-align: top;
+  white-space: nowrap;
+}
+
+.tefproc-history-table tbody td.note-cell {
+  white-space: normal;
+  max-width: 200px;
+  word-wrap: break-word;
+}
+
+.tefproc-history-table .col-actions {
+  text-align: center;
+  width: 50px;
+}
+
+.btn-delete-log {
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  color: #991b1b;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-delete-log:hover {
+  background: #fecaca;
+  border-color: #f87171;
+  transform: scale(1.1);
+}
+
+.btn-delete-log:active {
+  transform: scale(0.95);
+}
+
+/* ========== FORM SECTION ========== */
+.tefproc-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.workflow-hint {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  border-left: 4px solid #f59e0b;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  color: #92400e;
+  font-weight: 600;
+  margin-bottom: 6px;
+  line-height: 1.5;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  line-height: 1.4;
+}
+
+.form-control {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #0f172a;
+  background: #fff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+textarea.form-control {
+  resize: vertical;
+  min-height: 60px;
+}
+
+select.form-control {
+  cursor: pointer;
+}
+
+/* Status Pill (dynamic) */
+.tefproc-status-pill {
+  margin-top: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.2s ease;
+}
+
+.tefproc-status-pill[data-status="unprocessed"] {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.tefproc-status-pill[data-status="pending"] {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.tefproc-status-pill[data-status="approved"] {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.tefproc-status-pill[data-status="processing"] {
+  background: #fce7f3;
+  color: #9f1239;
+}
+
+.tefproc-status-pill[data-status="completed"] {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+/* ========== BUTTON ROW ========== */
+.btn-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.btn-cancel,
+.btn-confirm {
+  flex: 1;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.btn-cancel {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+}
+
+.btn-cancel:hover {
+  background: #e2e8f0;
+  border-color: #94a3b8;
+}
+
+.btn-confirm {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(102, 126, 234, 0.3);
+}
+
+.btn-confirm:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(102, 126, 234, 0.4);
+}
+
+.btn-confirm:active,
+.btn-cancel:active {
+  transform: translateY(0);
+}
+
+/* ========== FOOTER ========== */
+.tefproc-footer {
+  border-top: 1px solid #e2e8f0;
+  background: #f8fafc;
+  padding: 12px 16px;
+  display: flex;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+  .tefproc-footer {
+    border-radius: 0 0 16px 16px;
+    padding: 14px 20px;
+  }
+}
+
+#tefproc-bottom-close {
+  min-width: 140px;
+}
+
+/* ========== TOAST (INLINE STYLE BACKUP) ========== */
+.tefproc-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 80px;
+  transform: translateX(-50%);
+  z-index: 10050;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+  max-width: 90%;
+  text-align: center;
+}
+
+.tefproc-toast-info {
+  background: #4b5563;
+}
+
+.tefproc-toast-success {
+  background: #16a34a;
+}
+
+.tefproc-toast-error {
+  background: #dc2626;
+}
+
+/* ========== MOBILE OPTIMIZATIONS ========== */
+@media (max-width: 767px) {
+  .tefproc-body {
+    padding: 12px;
+  }
+
+  .tefproc-panel section {
+    padding: 12px 14px;
+  }
+
+  .tefproc-history-table {
+    font-size: 11px;
+  }
+
+  .tefproc-history-table thead th,
+  .tefproc-history-table tbody td {
+    padding: 8px 6px;
+  }
+
+  .form-control {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .btn-cancel,
+  .btn-confirm {
+    font-size: 13px;
+    padding: 11px 16px;
+  }
+
+  .workflow-hint {
+    font-size: 11px;
+  }
+}
+
+/* ========== SCROLLBAR STYLING (WEBKIT) ========== */
+.history-wrap.scroll-unlocked::-webkit-scrollbar,
+.tefproc-body::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.history-wrap.scroll-unlocked::-webkit-scrollbar-track,
+.tefproc-body::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.history-wrap.scroll-unlocked::-webkit-scrollbar-thumb,
+.tefproc-body::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.history-wrap.scroll-unlocked::-webkit-scrollbar-thumb:hover,
+.tefproc-body::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ========== ANIMATION ========== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tefproc-panel {
+  animation: fadeIn 0.3s ease;
+}
+
+/* ========== END OF FILE ========== */

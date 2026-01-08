@@ -1,16 +1,17 @@
 ﻿DestinationID,DestinationName,DestinationType,IsActive
-04,台湾機成形,,FALSE
-05,2F　成形機,,FALSE
-06,06号成形機,,FALSE
-07,07号成形機,,FALSE
-08,08号成形機,,FALSE
-09,09号成形　坂田精文堂,,FALSE
+1,出荷,,FALSE
 10,金型室-写真撮影,,FALSE
 11,金型室-テフロン承認まち,,FALSE
 13,金型室-改造まち,,FALSE
 15,金型室-廃棄まち,,FALSE
 17,金型室-その他,,FALSE
-19,出荷-テフロン加工中,,FALSE
+19,テフロン加工,,FALSE
 21,プレス機,,FALSE
 24,事務所前-抜型準備,,FALSE
 25,その他,,FALSE
+4,台湾機成形,,FALSE
+5,2F　成形機,,FALSE
+6,06号成形機,,FALSE
+7,07号成形機,,FALSE
+8,08号成形機,,FALSE
+9,09号成形　坂田精文堂,,FALSE

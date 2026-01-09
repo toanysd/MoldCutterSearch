@@ -1,4 +1,5 @@
 StatusLogID,MoldID,CutterID,ItemType,Status,Timestamp,EmployeeID,DestinationID,Notes,AuditDate,AuditType,SessionID,SessionName,SessionMode
+SL1767946796666,2897,,mold,AUDIT,2026-01-09T08:19:56.571Z,1,AREA-MOLDROOM,棚卸 / Kiểm kê,2026-01-09,AUDIT,,B-20260109-1-1,B
 SL1767946793233,2897,,mold,AUDIT,2026-01-09T08:19:31.415Z,1,AREA-MOLDROOM,棚卸 / Kiểm kê,2026-01-09,AUDIT,,B-20260109-1-1,B
 7,3192,,,,,1,13,台車,,,,,
 8,5604,,,,,4,9,Viet,,,,,

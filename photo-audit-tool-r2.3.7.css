@@ -958,6 +958,17 @@
   align-items: center;
 }
 
+/* File name input in capture preview r2.3.4.js*/
+.pa-preview-body .pa-form-row {
+  width: 100%;
+  margin: 12px 0;
+}
+
+.pa-preview-body .pa-input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
 .pa-preview-image {
   max-width: 100%;
   max-height: 500px;

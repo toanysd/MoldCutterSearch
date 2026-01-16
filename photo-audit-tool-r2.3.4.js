@@ -285,7 +285,7 @@ const PhotoAuditTool = {
     currentPhotoIndex: -1,
 
     // Capture preview state
-    capturePreviewSaved: false, // track if current photo is saved
+    //capturePreviewSaved: false, // track if current photo is saved
 
     // UI
     currentScreen: null, // 'settings' | 'camera' | 'photoList' | 'photoDetail' | 'editor' | 'capturePreview'
@@ -1583,6 +1583,8 @@ const PhotoAuditTool = {
         const photo = this.addPhoto(blob, 'camera', '');
         if (!photo) return;
 
+        // IMPORTANT: Stop camera stream before opening preview (turns off camera LED)
+        this.stopCameraStream();
         // NEW: Open capture preview with edit options
         this.openCapturePreview(photo.uid);
       },
@@ -1643,13 +1645,9 @@ const PhotoAuditTool = {
     footer.innerHTML = `
       <button class="pa-btn pa-btn-danger" id="pa-btn-capture-preview-delete"><i class="fas fa-trash"></i><span>Xóa</span></button>
       <button class="pa-btn pa-btn-secondary" id="pa-btn-capture-preview-edit"><i class="fas fa-crop-alt"></i><span>Chỉnh sửa</span></button>
-      <button class="pa-btn pa-btn-success" id="pa-btn-capture-preview-keep"><i class="fas fa-check"></i><span>Lưu ảnh</span></button>
-      <button class="pa-btn pa-btn-primary" id="pa-btn-capture-preview-continue"><i class="fas fa-camera"></i><span>Chụp tiếp</span></button>
-      <button class="pa-btn pa-btn-secondary" id="pa-btn-capture-preview-exit"><i class="fas fa-times"></i><span>Thoát</span></button>
+      <button class="pa-btn pa-btn-success" id="pa-btn-capture-preview-continue"><i class="fas fa-camera"></i><span>Lưu và tiếp tục</span></button>
+      <button class="pa-btn pa-btn-primary" id="pa-btn-capture-preview-exit"><i class="fas fa-check"></i><span>Lưu và Thoát</span></button>
     `;
-
-
-
 
     modal.appendChild(header);
     modal.appendChild(body);
@@ -1671,7 +1669,8 @@ const PhotoAuditTool = {
         if (uid) {
           this.deletePhoto(uid);
         }
-        this.closeCapturePreview(true); // back to camera
+        // Quay lại camera
+        this.closeCapturePreview(true);
       }
     });
 
@@ -1683,49 +1682,24 @@ const PhotoAuditTool = {
       }
     });
 
-    // NEW LOGIC: Keep button - only mark as saved, stay in preview
-    PhotoAuditUtils.$('#pa-btn-capture-preview-keep').addEventListener('click', (e) => {
-      e.preventDefault();
-      this.state.capturePreviewSaved = true;
-      this.showToast('Đã lưu ảnh vào danh sách', 'success');
-      // Update button states after save
-      PhotoAuditUtils.$('#pa-btn-capture-preview-keep').disabled = true;
-      PhotoAuditUtils.$('#pa-btn-capture-preview-keep').innerHTML = '<i class="fas fa-check-circle"></i><span>Đã lưu</span>';
-    });
-
-    // NEW: Continue button - close preview and return to camera
+    // NEW: "Lưu và tiếp tục" - save photo, close preview, restart camera
     PhotoAuditUtils.$('#pa-btn-capture-preview-continue').addEventListener('click', (e) => {
       e.preventDefault();
-      if (!this.state.capturePreviewSaved) {
-        if (!confirm('Ảnh chưa được lưu. Bạn có muốn tiếp tục?')) {
-          return;
-        }
-        // Delete photo if not saved
-        const uid = overlay.dataset.uid;
-        if (uid) {
-          this.deletePhoto(uid);
-        }
-      }
-      this.closeCapturePreview(true); // back to camera
+      // Photo is already in this.state.photos array, just close preview
+      this.showToast('Đã lưu ảnh vào danh sách', 'success');
+      this.closeCapturePreview(true); // returnToCamera = true -> will restart camera
     });
 
-    // NEW: Exit button - go back to settings with confirmation
+    // NEW: "Lưu và Thoát" - save photo, close preview, close camera, back to settings
     PhotoAuditUtils.$('#pa-btn-capture-preview-exit').addEventListener('click', (e) => {
       e.preventDefault();
-      if (!this.state.capturePreviewSaved) {
-        if (!confirm('Ảnh chưa được lưu. Bạn có muốn thoát?')) {
-          return;
-        }
-        // Delete photo if not saved
-        const uid = overlay.dataset.uid;
-        if (uid) {
-          this.deletePhoto(uid);
-        }
-      }
+      // Photo is already in this.state.photos array, just close preview
+      this.showToast('Đã lưu ảnh vào danh sách', 'success');
       this.closeCapturePreview(false); // returnToCamera = false
-      this.closeCamera(); // stop camera
+      this.closeCamera(); // stop camera completely
       this.showSettings(); // back to main settings
     });
+
   },
 
   openCapturePreview(uid) {
@@ -1759,19 +1733,26 @@ const PhotoAuditTool = {
     this.state.currentScreen = 'capturePreview';
   },
 
-  closeCapturePreview(returnToCamera = true) {
-    if (this.els.capturePreviewImage && this.els.capturePreviewImage.src) {
+  async closeCapturePreview(returnToCamera = true) {
+    if (this.els.capturePreviewImage?.src) {
       try {
         URL.revokeObjectURL(this.els.capturePreviewImage.src);
       } catch {}
       this.els.capturePreviewImage.src = '';
     }
-
     this.els.capturePreviewOverlay.classList.add('pa-hidden');
     this.els.capturePreviewOverlay.dataset.uid = '';
-
+    
     if (returnToCamera) {
       this.state.currentScreen = 'camera';
+      // IMPORTANT: Restart camera when returning to camera screen
+      try {
+        await this.startCameraStream();
+      } catch (err) {
+        console.error('[PhotoAuditTool] Failed to restart camera', err);
+        this.showToast('Không thể khởi động camera', 'error');
+        this.closeCamera();
+      }
     }
   },
 

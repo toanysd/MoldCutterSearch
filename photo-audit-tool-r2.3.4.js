@@ -2546,10 +2546,12 @@ const PhotoAuditTool = {
 
   /**
    * Send only the current captured photo from preview screen
+   * COPY LOGIC FROM sendAllPhotos - SIMPLIFIED FOR 1 PHOTO
    */
   async sendCurrentCapturedPhoto() {
     if (this.state.sending) return;
     
+    // Get photo from preview overlay
     const uid = this.els.capturePreviewOverlay?.dataset?.uid;
     const photo = this.findPhotoByUid(uid);
     if (!photo) {
@@ -2557,8 +2559,8 @@ const PhotoAuditTool = {
       return;
     }
     
-    // Validate employee
-    const employeeName = this.state.mainForm.selectedEmployee?.name || this.els.employeeInput?.value?.trim() || '';
+    // === COPY FROM sendAllPhotos - VALIDATION ===
+    const employeeName = this.state.mainForm.selectedEmployee?.name || this.els.employeeInput.value.trim();
     if (!employeeName) {
       this.showToast('Vui lòng chọn người chụp', 'error');
       this.closeCapturePreview(true);
@@ -2567,7 +2569,7 @@ const PhotoAuditTool = {
       return;
     }
     
-    // Get filename from input và update mainForm nếu cần
+    // Update filename from input if provided
     const customFileName = this.els.capturePreviewFilename?.value?.trim() || '';
     if (customFileName && !this.els.moldInput?.value?.trim()) {
       this.els.moldInput.value = customFileName;
@@ -2575,7 +2577,7 @@ const PhotoAuditTool = {
       this.updateMoldBadge();
     }
     
-    // Sync CC từ rows
+    // === COPY FROM sendAllPhotos - SYNC CC ===
     this.syncCCRecipientsFromRows();
     this.saveCCToStorageNow(false);
     
@@ -2590,7 +2592,7 @@ const PhotoAuditTool = {
     btn.innerHTML = '<span class="pa-loading-spinner"></span><span>Đang gửi...</span>';
     
     try {
-      // Upload photo
+      // === STEP 1: UPLOAD PHOTO - COPY FROM sendAllPhotos ===
       console.log('[PhotoAuditTool] Uploading single photo...');
       const processedBlob = await this.resizeImage(photo.blob, 'hd');
       const fileName = this.generateFileName(photo, 0);
@@ -2599,29 +2601,31 @@ const PhotoAuditTool = {
       await SupabasePhotoClient.uploadFile(PHOTOAUDITCONFIG.STORAGEBUCKET, fileName, processedBlob);
       const photoUrl = SupabasePhotoClient.getPublicUrl(PHOTOAUDITCONFIG.STORAGEBUCKET, fileName);
       
-      // Prepare main form data (GIỐNG sendAllPhotos)
-      let mainMoldCode, mainMoldName, mainMoldId;
+      // === STEP 2: PREPARE DATA - COPY FROM sendAllPhotos ===
+      let mainMoldCode;
+      let mainMoldName;
+      let mainMoldId;
       if (this.state.mainForm.selectedMold && !this.state.mainForm.isManualMold) {
         mainMoldCode = this.state.mainForm.selectedMold.code;
         mainMoldName = this.state.mainForm.selectedMold.name;
         mainMoldId = this.state.mainForm.selectedMold.id;
-      } else if (this.els.moldInput?.value?.trim()) {
+      } else if (this.els.moldInput.value.trim()) {
         mainMoldName = this.els.moldInput.value.trim();
         mainMoldCode = this.generateMoldCodeFromName(mainMoldName);
       }
       
       const employeeId = this.state.mainForm.selectedEmployee?.id;
       
-      // Build payload for single photo (CHUẨN HÓA GIỐNG sendAllPhotos)
+      // === STEP 3: BUILD PAYLOAD - EXACT COPY FROM sendAllPhotos ===
       const payload = {
-        // Main mold info
+        // Main mold info (used as default)
         moldCode: mainMoldCode || 'SINGLE',
         moldName: mainMoldName || 'Single Photo',
         moldId: mainMoldId || null,
-        dimensionL: this.state.mainForm.dimensions?.length || '',
-        dimensionW: this.state.mainForm.dimensions?.width || '',
-        dimensionD: this.state.mainForm.dimensions?.depth || '',
-        // Single photo array
+        dimensionL: this.state.mainForm.dimensions.length || '',
+        dimensionW: this.state.mainForm.dimensions.width || '',
+        dimensionD: this.state.mainForm.dimensions.depth || '',
+        // Single photo array (same structure as sendAllPhotos)
         photos: [{
           fileName: fileName,
           originalFileName: photo.originalName || fileName,
@@ -2634,22 +2638,22 @@ const PhotoAuditTool = {
         date: PhotoAuditUtils.formatDateTime(),
         // Notes & recipients
         notes: this.state.mainForm.notes || '',
-        recipients: [PHOTOAUDITCONFIG.PRIMARYRECIPIENT], // Bọc trong array
+        recipients: [PHOTOAUDITCONFIG.PRIMARYRECIPIENT],
         ccRecipients: this.state.ccRecipients || []
       };
       
-      console.log('[PhotoAuditTool] Sending single photo email...', payload);
+      console.log('[PhotoAuditTool] Sending email...', payload);
       const result = await SupabasePhotoClient.callEdgeFunction('send-photo-audit', payload);
       console.log('[PhotoAuditTool] Email sent successfully', result);
       
       this.showToast('Đã gửi ảnh thành công!', 'success', 2500);
       
-      // Xóa ảnh đã gửi khỏi danh sách
+      // Delete photo from list
       this.deletePhoto(uid);
       
-      // Close preview và quay lại camera để chụp tiếp
+      // Close preview and return to camera
       setTimeout(() => {
-        this.closeCapturePreview(true); // returnToCamera = true
+        this.closeCapturePreview(true);
       }, 800);
       
     } catch (err) {
@@ -2662,7 +2666,6 @@ const PhotoAuditTool = {
       btn.innerHTML = '<i class="fas fa-paper-plane"></i><span>Send</span>';
     }
   },
-
 
   /* ============================================================================
    * SEND ALL PHOTOS (Batch Email)

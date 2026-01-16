@@ -1629,11 +1629,12 @@ const PhotoAuditTool = {
       <input type="text" class="pa-input" id="pa-capture-preview-filename" placeholder="Nhập tên file..." />
     `;
 
+    const info = ce('div', {class: 'pa-preview-info', id: 'pa-capture-preview-info'});
+
     body.appendChild(img);
     body.appendChild(fileNameRow);
-
-    const info = ce('div', {class: 'pa-preview-info', id: 'pa-capture-preview-info'});
     body.appendChild(info);
+
 
     const footer = ce('div', {class: 'pa-preview-footer'});
     footer.innerHTML = `
@@ -1650,6 +1651,7 @@ const PhotoAuditTool = {
         <i class="fas fa-paper-plane"></i><span>Send</span>
       </button>
     `;
+
 
 
     modal.appendChild(header);
@@ -1703,9 +1705,11 @@ const PhotoAuditTool = {
     const url = URL.createObjectURL(photo.blob);
     this.els.capturePreviewImage.src = url;
     
-    // Hiển thị tên file từ mainForm hoặc để trống
+    // Tự động điền tên file từ mainForm
     const moldInput = this.els.moldInput?.value?.trim() || '';
-    this.els.capturePreviewFilename.value = moldInput;
+    if (this.els.capturePreviewFilename) {
+      this.els.capturePreviewFilename.value = moldInput;
+    }
     
     // Hiển thị thông tin file
     const sizeText = PhotoAuditUtils.formatFileSize(photo.blob.size);
@@ -2563,15 +2567,12 @@ const PhotoAuditTool = {
       return;
     }
     
-    // Get filename from input
-    const customFileName = this.els.capturePreviewFilename.value.trim();
-    if (customFileName) {
-      // Update mainForm mold input nếu người dùng đã nhập
-      if (!this.els.moldInput.value.trim()) {
-        this.els.moldInput.value = customFileName;
-        this.state.mainForm.isManualMold = true;
-        this.updateMoldBadge();
-      }
+    // Get filename from input và update mainForm nếu cần
+    const customFileName = this.els.capturePreviewFilename?.value?.trim() || '';
+    if (customFileName && !this.els.moldInput.value.trim()) {
+      this.els.moldInput.value = customFileName;
+      this.state.mainForm.isManualMold = true;
+      this.updateMoldBadge();
     }
     
     // Sync CC từ rows
@@ -2579,6 +2580,8 @@ const PhotoAuditTool = {
     this.saveCCToStorageNow(false);
     
     const btn = PhotoAuditUtils.$('#pa-btn-capture-preview-send');
+    if (!btn) return;
+    
     btn.disabled = true;
     this.state.sending = true;
     btn.innerHTML = '<span class="pa-loading-spinner"></span><span>Đang gửi...</span>';
@@ -2620,12 +2623,7 @@ const PhotoAuditTool = {
           fileName: fileName,
           originalFileName: photo.originalName || fileName,
           url: photoUrl,
-          ...(photo.photoInfo?.moldCode && { moldCode: photo.photoInfo.moldCode }),
-          ...(photo.photoInfo?.moldName && { moldName: photo.photoInfo.moldName }),
-          ...(photo.photoInfo?.dimensionL && { dimensionL: photo.photoInfo.dimensionL }),
-          ...(photo.photoInfo?.dimensionW && { dimensionW: photo.photoInfo.dimensionW }),
-          ...(photo.photoInfo?.dimensionD && { dimensionD: photo.photoInfo.dimensionD }),
-          setAsThumbnail: true // First photo is thumbnail
+          setAsThumbnail: true
         }],
         // Employee & date
         employee: employeeName,
@@ -2643,10 +2641,12 @@ const PhotoAuditTool = {
       
       this.showToast('Đã gửi ảnh thành công!', 'success', 2500);
       
+      // Xóa ảnh đã gửi khỏi danh sách
+      this.deletePhoto(uid);
+      
       // Close preview và quay lại camera để chụp tiếp
       setTimeout(() => {
         this.closeCapturePreview(true); // returnToCamera = true
-        // Không reset state, người dùng có thể chụp thêm
       }, 800);
       
     } catch (err) {
@@ -2659,6 +2659,7 @@ const PhotoAuditTool = {
       this.state.sending = false;
     }
   },
+
   /* ============================================================================
    * SEND ALL PHOTOS (Batch Email)
    * ============================================================================ */

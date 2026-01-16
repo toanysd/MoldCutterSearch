@@ -267,8 +267,6 @@
             
             // Bind events
             this.bindEvents();
-
-            this.bindSettingsOpenButtons();
             
             // Set default operator (グエン　ダン　トアン)
             this.setDefaultOperator();
@@ -401,33 +399,7 @@
         console.log('[InventoryManager] ✅ Events bound');
         },
 
-        bindSettingsOpenButtons() {
-            const ids = ['btn-inventory-settings', 'nav-inventory-btn'];
 
-            ids.forEach((id) => {
-                const el = document.getElementById(id);
-                if (!el) {
-                console.warn('[InventoryManager] Settings button not found:', id);
-                return;
-                }
-
-                // tránh bind trùng nhiều lần
-                if (el.dataset.invSettingsBound === '1') return;
-                el.dataset.invSettingsBound = '1';
-
-                // capture-phase để chạy trước các module khác
-                el.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                e.stopImmediatePropagation();
-
-                console.log('[InventoryManager] ✅ Open settings from button:', id);
-                this.openSettings();
-                }, true);
-            });
-
-            console.log('[InventoryManager] ✅ bindSettingsOpenButtons done');
-        },
 
         /**
          * Mở popup settings

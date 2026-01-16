@@ -1,0 +1,1122 @@
+/**
+ * inventory-manager-styles-r7.3.4.css
+ * Inventory Manager Styles r7.3.4
+ *
+ * Mục tiêu cập nhật r7.3.4:
+ * 1) Badge:
+ *    - IN: xanh lá
+ *    - AUDIT TODAY: nền xanh dương nhẹ (nổi bật)
+ *    - AUDIT (khác ngày): không nền + chữ xanh dương
+ * 2) Kết quả tìm kiếm: badge căn phải, không dính sát kích thước.
+ * 3) Tool kiểm kê: bổ sung style cho layout Thu gọn / Mở rộng (dùng lại id/class r7.3.3).
+ *
+ * Tương thích:
+ * - inventory-manager-r7.3.3.js / r7.3.4.x
+ * - inventory-ui-r7.3.3.js
+ * - inventory-tool-float-r7.3.3.js / r7.3.4.x
+ * - ui-renderer-r7.4.x
+ *
+ * Created: 2026-01-09
+ * Version: r7.3.4
+ */
+
+/* ============================================================================
+ROOT VARIABLES
+============================================================================ */
+:root {
+  --inv-primary: #2196F3;
+  --inv-primary-dark: #1976D2;
+  --inv-secondary: #607D8B;
+  --inv-success: #4CAF50;
+  --inv-success-dark: #388E3C;
+  --inv-warning: #FF9800;
+  --inv-danger: #F44336;
+  --inv-info: #00BCD4;
+  --inv-light: #F5F5F5;
+  --inv-dark: #212121;
+  --inv-border: #E0E0E0;
+  --inv-shadow: rgba(0, 0, 0, 0.1);
+  --inv-shadow-hover: rgba(0, 0, 0, 0.2);
+
+  /* Audit Badge Colors (r7.3.4 updated) */
+  --inv-audit-today: #E3F2FD;   /* LIGHT BLUE background for today */
+  --inv-audit-normal: transparent; /* No background for past audit */
+  --inv-audit-in: #E8F5E9;      /* GREEN background for IN */
+  --inv-audit-out: #F44336;     /* RED for OUT */
+
+  /* Font sizes */
+  --inv-font-xs: 10px;
+  --inv-font-sm: 12px;
+  --inv-font-base: 14px;
+  --inv-font-md: 16px;
+  --inv-font-lg: 18px;
+  --inv-font-xl: 20px;
+
+  /* Spacing */
+  --inv-space-xs: 4px;
+  --inv-space-sm: 8px;
+  --inv-space-md: 16px;
+  --inv-space-lg: 24px;
+  --inv-space-xl: 32px;
+
+  /* Border radius */
+  --inv-radius-sm: 4px;
+  --inv-radius-md: 8px;
+  --inv-radius-lg: 12px;
+
+  /* Z-index layers */
+  --inv-z-overlay: 9000;
+  --inv-z-modal: 9100;
+  --inv-z-toolbar: 9200;
+  --inv-z-toast: 9300;
+}
+
+/* ============================================================================
+OVERLAY & MODAL BASE
+============================================================================ */
+.inv-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(3px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--inv-z-overlay);
+  padding: var(--inv-space-md);
+  animation: invFadeIn 0.2s ease;
+}
+.inv-overlay.show { display: flex; }
+
+@keyframes invFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.inv-modal {
+  background: #fff;
+  border-radius: var(--inv-radius-lg);
+  box-shadow: 0 8px 32px var(--inv-shadow-hover);
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: invSlideUp 0.3s ease;
+}
+.inv-modal-small { max-width: 480px; }
+.inv-modal-large { max-width: 900px; }
+
+@keyframes invSlideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* ============================================================================
+MODAL HEADER
+============================================================================ */
+.inv-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--inv-space-lg);
+  border-bottom: 1px solid var(--inv-border);
+  background: linear-gradient(135deg, var(--inv-primary), var(--inv-primary-dark));
+  color: #fff;
+}
+.inv-modal-header h3 {
+  margin: 0;
+  font-size: var(--inv-font-lg);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: var(--inv-space-sm);
+}
+.inv-modal-header h3 i { font-size: var(--inv-font-md); }
+
+.inv-close-btn {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: var(--inv-font-lg);
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+.inv-close-btn:hover { background: rgba(255, 255, 255, 0.2); }
+
+/* ============================================================================
+MODAL BODY
+============================================================================ */
+.inv-modal-body {
+  padding: var(--inv-space-lg);
+  overflow-y: auto;
+  flex: 1;
+}
+.inv-modal-body::-webkit-scrollbar { width: 8px; }
+.inv-modal-body::-webkit-scrollbar-track {
+  background: var(--inv-light);
+  border-radius: var(--inv-radius-sm);
+}
+.inv-modal-body::-webkit-scrollbar-thumb {
+  background: var(--inv-secondary);
+  border-radius: var(--inv-radius-sm);
+}
+.inv-modal-body::-webkit-scrollbar-thumb:hover { background: var(--inv-dark); }
+
+/* ============================================================================
+FORM ELEMENTS
+============================================================================ */
+.inv-form-group { margin-bottom: var(--inv-space-md); }
+
+.inv-form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: var(--inv-space-xs);
+  font-size: var(--inv-font-sm);
+  color: var(--inv-dark);
+  display: flex;
+  align-items: center;
+  gap: var(--inv-space-xs);
+}
+.inv-form-group label i {
+  font-size: var(--inv-font-sm);
+  color: var(--inv-primary);
+}
+.inv-form-group label .required { color: var(--inv-danger); }
+
+.inv-select,
+.inv-input {
+  width: 100%;
+  padding: var(--inv-space-sm) var(--inv-space-md);
+  border: 1px solid var(--inv-border);
+  border-radius: var(--inv-radius-sm);
+  font-size: var(--inv-font-base);
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+.inv-select:focus,
+.inv-input:focus {
+  outline: none;
+  border-color: var(--inv-primary);
+  box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+}
+.inv-select:disabled,
+.inv-input:disabled {
+  background: var(--inv-light);
+  color: var(--inv-secondary);
+  cursor: not-allowed;
+}
+
+.inv-textarea {
+  width: 100%;
+  padding: var(--inv-space-sm) var(--inv-space-md);
+  border: 1px solid var(--inv-border);
+  border-radius: var(--inv-radius-sm);
+  font-size: var(--inv-font-base);
+  font-family: inherit;
+  resize: vertical;
+  min-height: 80px;
+}
+.inv-textarea:focus {
+  outline: none;
+  border-color: var(--inv-primary);
+  box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+}
+
+.inv-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: var(--inv-space-sm);
+  cursor: pointer;
+  font-size: var(--inv-font-sm);
+  user-select: none;
+}
+.inv-checkbox-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.inv-help-text {
+  display: block;
+  font-size: var(--inv-font-xs);
+  color: var(--inv-secondary);
+  margin-top: var(--inv-space-xs);
+  font-style: italic;
+}
+
+/* ============================================================================
+MODAL FOOTER
+============================================================================ */
+.inv-modal-footer {
+  display: flex;
+  gap: var(--inv-space-sm);
+  padding: var(--inv-space-md) var(--inv-space-lg);
+  border-top: 1px solid var(--inv-border);
+  background: var(--inv-light);
+  justify-content: flex-end;
+}
+.inv-modal-footer-triple { justify-content: space-between; }
+.inv-modal-footer-triple button { flex: 1; }
+
+/* ============================================================================
+BUTTONS
+============================================================================ */
+.inv-btn {
+  padding: var(--inv-space-sm) var(--inv-space-lg);
+  border: none;
+  border-radius: var(--inv-radius-sm);
+  font-size: var(--inv-font-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--inv-space-xs);
+  white-space: nowrap;
+}
+.inv-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.inv-btn i { font-size: var(--inv-font-sm); }
+
+.inv-btn-primary { background: var(--inv-primary); color: #fff; }
+.inv-btn-primary:hover:not(:disabled) {
+  background: var(--inv-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px var(--inv-shadow-hover);
+}
+
+.inv-btn-secondary { background: var(--inv-secondary); color: #fff; }
+.inv-btn-secondary:hover:not(:disabled) { background: #546E7A; transform: translateY(-1px); }
+
+.inv-btn-success { background: var(--inv-success); color: #fff; }
+.inv-btn-success:hover:not(:disabled) { background: var(--inv-success-dark); transform: translateY(-1px); }
+
+.inv-btn-warning { background: var(--inv-warning); color: #fff; }
+.inv-btn-warning:hover:not(:disabled) { background: #F57C00; transform: translateY(-1px); }
+
+.inv-btn-danger { background: var(--inv-danger); color: #fff; }
+.inv-btn-danger:hover:not(:disabled) { background: #D32F2F; transform: translateY(-1px); }
+
+.inv-btn-info { background: var(--inv-info); color: #fff; }
+.inv-btn-info:hover:not(:disabled) { background: #0097A7; transform: translateY(-1px); }
+
+/* ============================================================================
+SECTION
+============================================================================ */
+.inv-section { margin-bottom: var(--inv-space-lg); }
+
+.inv-section-title {
+  font-size: var(--inv-font-md);
+  font-weight: 600;
+  margin-bottom: var(--inv-space-md);
+  padding-bottom: var(--inv-space-sm);
+  border-bottom: 2px solid var(--inv-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--inv-space-sm);
+  color: var(--inv-dark);
+}
+.inv-section-title i { font-size: var(--inv-font-md); color: var(--inv-primary); }
+
+/* ============================================================================
+SESSION HISTORY TABLE
+============================================================================ */
+.inv-session-history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--inv-font-sm);
+  margin-top: var(--inv-space-md);
+}
+.inv-session-history-table thead { background: var(--inv-light); }
+.inv-session-history-table th {
+  padding: var(--inv-space-sm);
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid var(--inv-border);
+  white-space: nowrap;
+}
+.inv-session-history-table td {
+  padding: var(--inv-space-sm);
+  border-bottom: 1px solid var(--inv-border);
+}
+.inv-session-history-table tr:hover { background: rgba(33, 150, 243, 0.05); }
+.inv-session-history-table .lock-col { width: 50px; text-align: center; }
+.inv-session-history-table .action-col { width: 80px; text-align: center; }
+
+.inv-lock-toggle {
+  background: transparent;
+  border: none;
+  font-size: var(--inv-font-md);
+  cursor: pointer;
+  padding: var(--inv-space-xs);
+  border-radius: var(--inv-radius-sm);
+  transition: all 0.2s ease;
+}
+.inv-lock-toggle:hover { background: rgba(33, 150, 243, 0.1); }
+.inv-lock-toggle.locked { color: var(--inv-danger); }
+.inv-lock-toggle.unlocked { color: var(--inv-success); }
+
+.inv-view-link {
+  color: var(--inv-primary);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+.inv-view-link:hover {
+  color: var(--inv-primary-dark);
+  text-decoration: underline;
+}
+
+/* ============================================================================
+MODE BADGE
+============================================================================ */
+.inv-mode-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: var(--inv-radius-sm);
+  font-size: var(--inv-font-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.inv-mode-badge.mode-a { background: #E3F2FD; color: #1976D2; }
+.inv-mode-badge.mode-b { background: #F3E5F5; color: #7B1FA2; }
+.inv-mode-badge.instant { background: #FFF3E0; color: #E65100; }
+
+/* ============================================================================
+KẾT QUẢ TÌM KIẾM - CĂN PHẢI BADGE
+============================================================================
+Ghi chú: ui-renderer render card-line-2 theo dạng:
+  <div class="card-line-2">
+    <span class="card-dim">...</span>
+    <span class="checkin-status-badge ...">...</span>
+  </div>
+Mục tiêu: badge nằm sát bên phải, không dính vào kích thước.
+*/
+.result-card .card-line-2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.result-card .card-line-2 .card-dim {
+  flex: 1;
+  min-width: 0;
+}
+.result-card .card-line-2 .checkin-status-badge {
+  margin-left: auto;
+}
+
+/* ============================================================================
+TOOLBAR FLOAT (GIỮ NGUYÊN r7.3.3 + BỔ SUNG STYLE r7.3.4)
+============================================================================ */
+.inv-tool-float {
+  position: fixed;
+  width: 280px;
+  background: #fff;
+  border-radius: var(--inv-radius-lg);
+  box-shadow: 0 8px 24px var(--inv-shadow-hover);
+  z-index: var(--inv-z-toolbar);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: box-shadow 0.2s ease, width 0.2s ease;
+}
+.inv-tool-float.hidden { display: none; }
+.inv-tool-float:hover { box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3); }
+
+.inv-tool-header {
+  background: linear-gradient(135deg, var(--inv-primary), var(--inv-primary-dark));
+  color: #fff;
+  padding: var(--inv-space-sm) var(--inv-space-md);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: grab;
+  user-select: none;
+}
+.inv-tool-header:active { cursor: grabbing; }
+
+.inv-tool-title {
+  font-weight: 600;
+  font-size: var(--inv-font-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--inv-space-xs);
+}
+
+.inv-tool-close-btn {
+  background: transparent;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: var(--inv-space-xs);
+  border-radius: 50%;
+  transition: background 0.2s ease;
+}
+.inv-tool-close-btn:hover { background: rgba(255, 255, 255, 0.2); }
+
+.inv-tool-body {
+  padding: var(--inv-space-md);
+  max-height: 400px;
+  overflow-y: auto;
+}
+.inv-tool-body::-webkit-scrollbar { width: 6px; }
+.inv-tool-body::-webkit-scrollbar-track { background: var(--inv-light); }
+.inv-tool-body::-webkit-scrollbar-thumb {
+  background: var(--inv-secondary);
+  border-radius: var(--inv-radius-sm);
+}
+
+.inv-tool-section {
+  margin-bottom: var(--inv-space-md);
+  padding-bottom: var(--inv-space-sm);
+  border-bottom: 1px solid var(--inv-border);
+}
+.inv-tool-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.inv-tool-label {
+  display: flex;
+  align-items: center;
+  gap: var(--inv-space-xs);
+  font-size: var(--inv-font-xs);
+  font-weight: 600;
+  color: var(--inv-secondary);
+  margin-bottom: var(--inv-space-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.inv-tool-label i { font-size: var(--inv-font-xs); }
+
+.inv-tool-value {
+  font-size: var(--inv-font-lg);
+  font-weight: 700;
+  color: var(--inv-dark);
+}
+
+.inv-tool-input {
+  width: 100%;
+  padding: var(--inv-space-xs) var(--inv-space-sm);
+  border: 1px solid var(--inv-border);
+  border-radius: var(--inv-radius-sm);
+  font-size: var(--inv-font-sm);
+  margin-top: var(--inv-space-xs);
+}
+.inv-tool-input:focus { outline: none; border-color: var(--inv-primary); }
+.inv-tool-input:disabled { background: var(--inv-light); color: var(--inv-secondary); }
+
+.inv-tool-checkbox {
+  width: 16px;
+  height: 16px;
+  margin-right: var(--inv-space-xs);
+  cursor: pointer;
+}
+
+.inv-tool-toggle-label {
+  display: flex;
+  align-items: center;
+  font-size: var(--inv-font-sm);
+  cursor: pointer;
+  user-select: none;
+  gap: var(--inv-space-xs);
+}
+
+.inv-tool-toggle-section {
+  padding: var(--inv-space-sm);
+  background: var(--inv-light);
+  border-radius: var(--inv-radius-sm);
+  border-bottom: none;
+}
+
+.inv-tool-footer {
+  padding: var(--inv-space-sm);
+  background: var(--inv-light);
+  display: flex;
+  flex-direction: column;
+  gap: var(--inv-space-xs);
+  border-top: 1px solid var(--inv-border);
+}
+
+.inv-tool-btn {
+  padding: var(--inv-space-sm);
+  border: none;
+  border-radius: var(--inv-radius-sm);
+  font-size: var(--inv-font-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--inv-space-xs);
+}
+.inv-tool-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.inv-tool-btn-primary { background: var(--inv-primary); color: #fff; }
+.inv-tool-btn-primary:hover:not(:disabled) {
+  background: var(--inv-primary-dark);
+  transform: translateY(-1px);
+}
+
+.inv-tool-btn-warning { background: var(--inv-warning); color: #fff; }
+.inv-tool-btn-warning:hover:not(:disabled) {
+  background: #F57C00;
+  transform: translateY(-1px);
+}
+
+.inv-tool-status-today { color: var(--inv-success); font-weight: 700; }
+.inv-tool-status-success { color: var(--inv-success); }
+
+/* ============================================================================
+TOOL LAYOUT r7.3.4 (THU GỌN / MỞ RỘNG) - STYLE CHUẨN BỊ CHO JS
+============================================================================
+Ý tưởng:
+- Khi ở chế độ THU GỌN: hiển thị 1 hàng nhỏ gọn (count, RackLayerID, Audit, Menu).
+- Khi ở chế độ MỞ RỘNG: hiển thị đầy đủ (phiên, nhân viên, số, rack, last audit, toggle, nút).
+Các class/id bên dưới sẽ được JS (bước tiếp theo) gắn vào để chạy đúng layout.
+*/
+
+/* Container mode classes (JS sẽ add/remove) */
+.inv-tool-float.inv-tool-compact {
+  width: min(420px, calc(100vw - 32px));
+  border-radius: 14px;
+}
+
+.inv-tool-float.inv-tool-expanded {
+  width: min(520px, calc(100vw - 32px));
+}
+
+/* Header tối giản (compact) */
+.inv-tool-float.inv-tool-compact .inv-tool-header {
+  background: #fff;
+  color: var(--inv-dark);
+  border-bottom: 1px solid var(--inv-border);
+  padding: 6px 10px;
+}
+.inv-tool-float.inv-tool-compact .inv-tool-title {
+  font-size: 12px;
+  gap: 6px;
+}
+.inv-tool-float.inv-tool-compact .inv-tool-title .label-ja,
+.inv-tool-float.inv-tool-compact .inv-tool-title .label-vi {
+  display: none;
+}
+.inv-tool-float.inv-tool-compact .inv-tool-close-btn {
+  color: var(--inv-secondary);
+}
+.inv-tool-float.inv-tool-compact .inv-tool-close-btn:hover {
+  background: rgba(0,0,0,0.06);
+}
+
+/* Compact bar (JS sẽ tạo div#inv-tool-compact-bar) */
+#inv-tool-compact-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px 10px;
+  background: #fff;
+}
+
+/* Count pill: "📋 3" */
+#inv-tool-compact-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(33, 150, 243, 0.25);
+  background: rgba(33, 150, 243, 0.08);
+  color: #0D47A1;
+  font-weight: 800;
+  font-size: 14px;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: default;
+}
+
+/* Rack "1-3" button/input */
+#inv-tool-compact-rack {
+  flex: 0 0 auto;
+  min-width: 78px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--inv-border);
+  background: #fafafa;
+  color: var(--inv-dark);
+  font-weight: 700;
+  font-size: 13px;
+  line-height: 1;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+}
+#inv-tool-compact-rack.is-empty {
+  color: #9E9E9E;
+  font-weight: 600;
+}
+
+/* Main action: "✓ Kiểm kê" */
+#inv-tool-compact-audit {
+  flex: 1;
+  min-width: 120px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(33, 150, 243, 0.35);
+  background: var(--inv-primary);
+  color: #fff;
+  font-weight: 800;
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+#inv-tool-compact-audit:disabled,
+#inv-tool-compact-audit.disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Menu button: "⋮" */
+#inv-tool-compact-menu {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--inv-border);
+  background: #fff;
+  color: var(--inv-dark);
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1;
+  cursor: pointer;
+}
+#inv-tool-compact-menu:hover { background: rgba(0,0,0,0.05); }
+
+/* Expanded panel wrapper (JS sẽ tạo div#inv-tool-expanded-panel) */
+#inv-tool-expanded-panel {
+  padding: 10px 12px 12px;
+  background: #fff;
+  border-top: 1px solid var(--inv-border);
+}
+
+/* Expanded header row: Phiên | Nhân viên | Số */
+.inv-tool-expanded-top {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.inv-tool-expanded-session {
+  min-width: 0;
+  font-weight: 800;
+  font-size: 13px;
+  color: var(--inv-dark);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.inv-tool-expanded-operator,
+.inv-tool-expanded-count {
+  font-weight: 800;
+  font-size: 13px;
+  color: var(--inv-dark);
+  white-space: nowrap;
+}
+
+/* Expanded row line */
+.inv-tool-expanded-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+/* Left side group: icon + content */
+.inv-tool-expanded-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.inv-tool-expanded-left .label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--inv-secondary);
+  white-space: nowrap;
+}
+.inv-tool-expanded-left .value {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--inv-dark);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Toggle row */
+.inv-tool-expanded-toggles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 8px;
+  margin-bottom: 10px;
+}
+
+/* Action row */
+.inv-tool-expanded-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto auto;
+  gap: 8px;
+  align-items: center;
+}
+.inv-tool-expanded-actions .btn {
+  padding: 10px 10px;
+  border-radius: 10px;
+  font-weight: 800;
+  font-size: 13px;
+  border: 1px solid var(--inv-border);
+  cursor: pointer;
+}
+.inv-tool-expanded-actions .btn.primary {
+  background: var(--inv-primary);
+  color: #fff;
+  border-color: rgba(33, 150, 243, 0.35);
+}
+.inv-tool-expanded-actions .btn.warning {
+  background: var(--inv-warning);
+  color: #fff;
+  border-color: rgba(255, 152, 0, 0.35);
+}
+.inv-tool-expanded-actions .btn.icon {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background: #fff;
+  color: var(--inv-dark);
+}
+.inv-tool-expanded-actions .btn.icon:hover { background: rgba(0,0,0,0.05); }
+
+/* ============================================================================
+AUDIT BADGES (r7.3.4 UPDATED COLORS)
+============================================================================ */
+.checkin-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: var(--inv-radius-sm);
+  font-size: var(--inv-font-xs);
+  font-weight: 700;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+.checkin-status-badge .badge-text { font-size: var(--inv-font-xs); }
+.checkin-status-badge .sync-icon { font-size: 10px; font-weight: 900; }
+
+/* IN Badge - GREEN */
+.checkin-in {
+  background: #E8F5E9;
+  color: #2E7D32;
+  border: 1px solid #81C784;
+}
+
+/* OUT Badge - RED (giữ nguyên) */
+.checkin-out {
+  background: #FFEBEE;
+  color: #C62828;
+  border: 1px solid #EF9A9A;
+}
+
+/* AUDIT Badge - Past date: NO background + BLUE text */
+.checkin-audit {
+  background: transparent;
+  color: #1976D2;
+  border: 1px solid rgba(25, 118, 210, 0.28);
+}
+
+/* ✅ AUDIT TODAY Badge - LIGHT BLUE background (nổi bật) */
+.checkin-audit-today {
+  background: #E3F2FD !important;
+  color: #0D47A1 !important;
+  border: 1px solid #90CAF9 !important;
+  animation: invPulseBlue 1.8s ease-in-out infinite;
+}
+
+@keyframes invPulseBlue {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(33, 150, 243, 0.35); }
+  50% { box-shadow: 0 0 0 4px rgba(33, 150, 243, 0); }
+}
+
+/* No history badge */
+.no-history {
+  background: #F5F5F5;
+  color: #9E9E9E;
+  border: 1px solid #E0E0E0;
+}
+
+/* ============================================================================
+BULK SELECTION
+============================================================================ */
+.inv-bulk-checkbox {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--inv-border);
+  border-radius: 50%;
+  background: #fff;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+.inv-bulk-active .inv-bulk-checkbox { display: flex; }
+
+.inv-bulk-checkbox.checked {
+  background: var(--inv-primary);
+  border-color: var(--inv-primary);
+}
+.inv-bulk-checkbox.checked::after {
+  content: '✓';
+  color: #fff;
+  font-size: 14px;
+  font-weight: 900;
+}
+.inv-bulk-checkbox:hover {
+  border-color: var(--inv-primary);
+  transform: scale(1.1);
+}
+.inv-bulk-selected {
+  box-shadow: 0 0 0 2px var(--inv-primary) !important;
+  background: rgba(33, 150, 243, 0.05) !important;
+}
+
+/* ============================================================================
+TOAST NOTIFICATIONS
+============================================================================ */
+.inv-tool-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #fff;
+  padding: var(--inv-space-md) var(--inv-space-lg);
+  border-radius: var(--inv-radius-md);
+  box-shadow: 0 8px 24px var(--inv-shadow-hover);
+  display: flex;
+  align-items: center;
+  gap: var(--inv-space-sm);
+  z-index: var(--inv-z-toast);
+  font-size: var(--inv-font-sm);
+  font-weight: 700;
+  min-width: 280px;
+  max-width: 420px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+.inv-tool-toast.show {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: all;
+}
+.inv-tool-toast-icon { font-size: var(--inv-font-lg); font-weight: 900; }
+.inv-tool-toast-message { flex: 1; }
+
+.inv-tool-toast-success { background: var(--inv-success); color: #fff; }
+.inv-tool-toast-error { background: var(--inv-danger); color: #fff; }
+.inv-tool-toast-warning { background: var(--inv-warning); color: #fff; }
+.inv-tool-toast-info { background: var(--inv-info); color: #fff; }
+
+/* ============================================================================
+BILINGUAL LABELS
+============================================================================ */
+.label-ja { font-weight: 600; }
+.label-vi {
+  font-weight: 400;
+  color: var(--inv-secondary);
+  margin-left: 4px;
+}
+
+/* ============================================================================
+RESPONSIVE DESIGN
+============================================================================ */
+/* Tablet (<1024px) */
+@media (max-width: 1024px) {
+  .inv-modal-large { max-width: 720px; }
+  .inv-tool-float { width: 260px; }
+  .inv-tool-float.inv-tool-expanded { width: min(520px, calc(100vw - 32px)); }
+}
+
+/* Mobile (<768px) */
+@media (max-width: 768px) {
+  .inv-modal {
+    max-width: 100%;
+    margin: var(--inv-space-sm);
+    max-height: calc(100vh - 32px);
+  }
+  .inv-modal-header { padding: var(--inv-space-md); }
+  .inv-modal-header h3 { font-size: var(--inv-font-md); }
+  .inv-modal-body { padding: var(--inv-space-md); }
+
+  .inv-modal-footer { flex-direction: column; }
+  .inv-modal-footer button { width: 100%; }
+
+  .inv-modal-footer-triple { flex-direction: column; }
+
+  .inv-tool-float {
+    width: 240px;
+    max-height: 80vh;
+  }
+  .inv-tool-body { max-height: 50vh; }
+
+  /* Hide Vietnamese labels on very small screens to save space */
+  .label-vi { display: none; }
+}
+
+/* Very small mobile (<480px) */
+@media (max-width: 480px) {
+  .inv-tool-float {
+    width: calc(100vw - 32px);
+    left: 16px !important;
+    right: 16px !important;
+  }
+  .inv-modal {
+    margin: var(--inv-space-xs);
+    border-radius: var(--inv-radius-md);
+  }
+  .inv-btn {
+    font-size: var(--inv-font-xs);
+    padding: var(--inv-space-xs) var(--inv-space-md);
+  }
+
+  #inv-tool-compact-audit { min-width: 0; }
+}
+
+/* ============================================================================
+PRINT STYLES
+============================================================================ */
+@media print {
+  .inv-overlay,
+  .inv-tool-float,
+  .inv-tool-toast {
+    display: none !important;
+  }
+}
+
+/* ============================================================================
+DARK MODE SUPPORT (Optional)
+============================================================================ */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --inv-light: #424242;
+    --inv-dark: #FAFAFA;
+    --inv-border: #616161;
+    --inv-shadow: rgba(0, 0, 0, 0.3);
+    --inv-shadow-hover: rgba(0, 0, 0, 0.5);
+  }
+
+  .inv-modal { background: #303030; color: #FAFAFA; }
+
+  .inv-select,
+  .inv-input,
+  .inv-textarea {
+    background: #424242;
+    color: #FAFAFA;
+    border-color: #616161;
+  }
+
+  .inv-tool-float { background: #303030; color: #FAFAFA; }
+  .inv-tool-input { background: #424242; color: #FAFAFA; }
+
+  .inv-session-history-table tr:hover { background: rgba(255, 255, 255, 0.05); }
+
+  /* Badge in dark mode */
+  .checkin-audit { border-color: rgba(144, 202, 249, 0.35); color: #90CAF9; }
+  .checkin-audit-today { background: rgba(33, 150, 243, 0.22) !important; color: #BBDEFB !important; }
+  .checkin-in { background: rgba(76, 175, 80, 0.18); color: #A5D6A7; border-color: rgba(129, 199, 132, 0.35); }
+}
+
+/* ============================================================================
+UTILITY CLASSES
+============================================================================ */
+.hidden { display: none !important; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.font-bold { font-weight: 700; }
+.color-primary { color: var(--inv-primary); }
+.color-success { color: var(--inv-success); }
+.color-warning { color: var(--inv-warning); }
+.color-danger { color: var(--inv-danger); }
+
+/* ============================================================================
+ACCESSIBILITY
+============================================================================ */
+.inv-btn:focus,
+.inv-select:focus,
+.inv-input:focus,
+.inv-textarea:focus {
+  outline: 2px solid var(--inv-primary);
+  outline-offset: 2px;
+}
+
+.inv-checkbox-label:focus-within {
+  outline: 2px solid var(--inv-primary);
+  outline-offset: 2px;
+  border-radius: var(--inv-radius-sm);
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================================================
+END OF STYLES
+============================================================================ */
+/* ===== Smaller badges & tighter spacing ===== */
+.checkin-status-badge{
+  font-size: 9px !important;
+  padding: 1px 6px !important;
+  border-radius: 10px !important;
+  line-height: 1.1 !important;
+}
+
+.inventory-badge{
+  font-size: 9px !important;
+  padding: 1px 5px !important;
+  border-radius: 3px !important;
+  line-height: 1.1 !important;
+}
+
+/* Nếu card bị thoáng quá, giảm chút khoảng cách dòng 2 */
+.result-card .card-line-2{
+  gap: 6px !important;
+}

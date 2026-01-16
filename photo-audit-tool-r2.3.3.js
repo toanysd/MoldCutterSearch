@@ -154,27 +154,24 @@ const SupabasePhotoClient = {
   },
 
   async uploadFile(bucket, fileName, blob) {
-    console.log('📤 [Supabase] Uploading file:', {
-      bucket,
-      fileName,
-      size: (blob.size / 1024).toFixed(2) + ' KB',
-      type: blob.type
+  console.log('📤 [Supabase] Uploading file:', { bucket, fileName, size: (blob.size / 1024).toFixed(2) + ' KB', type: blob.type });
+  const formData = new FormData();
+  formData.append('file', blob, fileName);
+  
+  // FIX: Hardcode URL đầy đủ để tránh thiếu protocol
+  const baseUrl = 'https://bgpnhvhouplvekaaheqy.supabase.co';
+  const url = `${baseUrl}/storage/v1/object/${bucket}/${fileName}`;
+  
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${this.config.anonKey}`,
+        'x-upsert': 'true'
+      },
+      body: formData
     });
 
-    const formData = new FormData();
-    formData.append('file', blob, fileName);
-
-    const url = `${this.config.url}/storage/v1/object/${bucket}/${fileName}`;
-
-    try {
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${this.config.anonKey}`,
-          'x-upsert': 'true'
-        },
-        body: formData
-      });
 
       if (!res.ok) {
         let errorMsg;

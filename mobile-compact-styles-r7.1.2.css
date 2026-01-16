@@ -1,0 +1,2573 @@
+/**
+ * ========================================================================
+ * MOBILE COMPACT STYLES R1.1 - CẬP NHẬT R6.6
+ * ========================================================================
+ * Thêm vào cuối file styles-r6.6.css
+ * ========================================================================
+ */
+
+/* ========================================
+   1. TWO-COLUMN RESULTS GRID (2×3 LAYOUT)
+   ======================================== */
+
+
+
+@media (max-width: 767px) {
+  /* Force 2-column grid on mobile */
+  .quick-results-grid.mobile-2col {
+  /* Layout grid giữ nguyên */
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+
+  /* Khoảng cách gọn vừa phải */
+  gap: 8px !important;
+  padding: 8px !important;
+
+  /* ❌ Không ép grid phải fill toàn bộ chiều cao */
+  flex: 0 0 auto !important;      /* CHỈ cao theo nội dung */
+  height: auto !important;
+  max-height: none !important;
+
+  /* Scroll để cho panel-body xử lý, không phải chính grid */
+  overflow: visible !important;
+
+  /* Các thuộc tính khác (overflow-x, contain, will-change...) giữ nguyên */
+  overflow-x: hidden !important;
+  overflow-y: visible !important;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+
+  /* RESULT CARDS - size-only (DO NOT override colors/effects) */
+  .quick-results-grid.mobile-2col .result-card {
+    min-height: auto;                    /* r7.1.1: 80 -> 70 */
+    max-height: none;                    /* r7.1.1 add */
+    padding: 6px 8px;                   /* r7.1.1: 10 12 -> 8 10 */
+    margin-bottom: 0;                    /* grid gap handles spacing */
+
+    font-size: 11px;
+    line-height: 1.3;
+
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;         /* ✅ Nội dung sát nhau */
+    gap: 3px;
+
+    /* ❌ Intentionally NOT setting:
+       border-radius / box-shadow / background / border / color
+       => giữ nguyên hiệu ứng màu của r7.1.0 */
+  }
+
+  /* CARD LINES - spacing-only */
+  .quick-results-grid.mobile-2col .card-line-1,
+  .quick-results-grid.mobile-2col .card-line-2,
+  .quick-results-grid.mobile-2col .card-line-3 {
+    font-size: 11px;
+    line-height: 1.2;
+    margin-bottom: 2px;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .quick-results-grid.mobile-2col .card-line-3 {
+    margin-bottom: 0;
+  }
+/* FIX: card-line-3 phải là flex để đẩy ngày sang phải (mobile 2 cột) */
+.quick-results-grid.mobile-2col .result-card .card-line-3{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  white-space:nowrap !important; /* giữ 1 dòng */
+  gap:8px !important;
+}
+
+/* Location chiếm phần còn lại và cắt ... nếu dài */
+.quick-results-grid.mobile-2col .result-card .card-location{
+  flex:1 1 auto !important;
+  min-width:0 !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+  white-space:nowrap !important;
+}
+
+/* Date nằm bên phải, có độ rộng tối thiểu để "căn phải" thấy rõ */
+.quick-results-grid.mobile-2col .result-card .card-date{
+  flex:0 0 auto !important;
+  min-width:72px !important;      /* bạn có thể tăng lên 78/84 nếu muốn */
+  text-align:right !important;
+  white-space:nowrap !important;
+}
+
+  /* COMPONENTS - font-size only (no color override) */
+  .quick-results-grid.mobile-2col .card-id {
+    font-size: 9px;
+    font-weight: 500;
+    /* ❌ no color */
+  }
+
+  .quick-results-grid.mobile-2col .card-code {
+    font-size: 12px;
+    font-weight: 600;
+    /* ❌ no color */
+  }
+
+  .quick-results-grid.mobile-2col .card-dim {
+    font-size: 11px;
+    font-weight: 500;
+    /* ❌ no color */
+  }
+
+  .quick-results-grid.mobile-2col .card-location,
+  .quick-results-grid.mobile-2col .card-date {
+    font-size: 10px;
+    /* ❌ no color */
+  }
+
+  /* BADGES - size-only */
+  .quick-results-grid.mobile-2col .checkin-status-badge {
+    font-size: 9px;
+    padding: 2px 6px;
+    /* ❌ no background/color/border-color */
+  }
+
+  .quick-results-grid.mobile-2col .checkin-status-badge .badge-text {
+    font-size: 9px;
+    font-weight: 600;
+  }
+
+  .quick-results-grid.mobile-2col .sync-icon {
+    font-size: 10px;
+  }
+
+  /* CHECKBOX ICON - size-only */
+  .quick-results-grid.mobile-2col .inv-bulk-checkbox {
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    /* ❌ no colors */
+  }
+
+  /* SCROLLBAR - keep as-is (this is not card color effect) */
+  .quick-results-grid.mobile-2col::-webkit-scrollbar {
+    width: 3px;
+  }
+
+  /* VERY SMALL SCREENS (< 375px) - size-only */
+  @media (max-width: 374px) {
+    .quick-results-grid.mobile-2col {
+      gap: 6px !important;
+      padding: 6px !important;
+    }
+
+    .quick-results-grid.mobile-2col .result-card {
+      padding: 6px 8px;
+      min-height: 65px;
+      max-height: 75px;
+    }
+
+    .quick-results-grid.mobile-2col .card-code {
+      font-size: 11px;
+    }
+
+    .quick-results-grid.mobile-2col .card-dim {
+      font-size: 10px;
+    }
+  }
+
+  /* LARGE PHONES (415px+) - size-only */
+  @media (min-width: 415px) and (max-width: 767px) {
+    .quick-results-grid.mobile-2col .result-card {
+      padding: 9px 11px;
+      min-height: 75px;
+      max-height: 90px;
+    }
+
+    .quick-results-grid.mobile-2col .card-code {
+      font-size: 13px;
+    }
+
+    .quick-results-grid.mobile-2col .card-dim {
+      font-size: 12px;
+    }
+  }
+    
+}
+/* ============================================
+   PARENT CONTAINER: Đảm bảo flexbox đúng
+   ============================================ */
+@media (max-width: 767px) {
+  /* Container cha của .quick-results-grid */
+  #quick-results-container,
+  .results-section,
+  .main-content {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;                /* ✅ CRITICAL: Fill viewport */
+    min-height: 0 !important;               /* ✅ Cho phép shrink */
+    overflow: hidden !important;            /* ✅ Ngăn scroll ở parent */
+  }
+
+  /* Header/Filter section - fixed height */
+  .filter-bar,
+  .search-header {
+    flex: 0 0 auto !important;              /* ✅ Không grow/shrink */
+  }
+
+
+}
+
+/* ============================================
+   ✅ R7.1.2: PULL-TO-REFRESH INDICATOR
+   ============================================ */
+@media (max-width: 767px) {
+  .quick-results-grid.mobile-2col.pulling {
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  /* Pull indicator (hiển thị khi kéo xuống) */
+  .pull-refresh-indicator {
+    position: absolute;
+    top: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 40px;
+    background: rgba(33, 150, 243, 0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    z-index: 100;
+  }
+
+  .quick-results-grid.mobile-2col.pulling .pull-refresh-indicator {
+    opacity: 1;
+  }
+    
+}
+
+/* ========================================
+   2. MOBILE QUICK DETAIL PANEL
+   ======================================== */
+@media (max-width: 767px) {
+  .mobile-quick-detail {
+    border-radius: 12px 12px 0 0; /* Bo góc trên của panel */
+    position: fixed !important;
+    bottom: 130px !important; /* Above action bar */
+    left: 0 !important;
+    right: 0 !important;
+    height: 200px !important;
+    background: #fff !important;
+    border-top: 3px solid #4CAF50 !important;
+    box-shadow: 0 -2px 15px rgba(0,0,0,0.2) !important;
+    z-index: 100 !important;
+    padding: 12px 16px !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+    display: none !important; /* Hidden by default */
+  }
+
+    /* ========================================
+     R6.8 MOBILE HEADER - Pastel Blue (iPhone only)
+     ======================================== */
+
+  .detail-header-r6-5 {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    background: #D6E9F5 !important; /* Pastel blue */
+    padding: 6px 10px !important; /* 60% of 10px = 6px */
+    border-bottom: 2px solid #B3D9E8 !important;
+    gap: 6px !important; /* 60% of 8px = ~6px */
+    flex-shrink: 0 !important;
+    min-height: 30px !important; /* NEW: Set minimum height */
+    }
+
+  .detail-header-left {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    flex: 1 !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .detail-header-left .header-icon,
+  .detail-header-left i.fa-info-circle {
+    color: #0D47A1 !important;
+    font-size: 16px !important;
+    flex-shrink: 0 !important;
+  }
+
+  .detail-title {
+    font-weight: 700 !important;
+    font-size: 13px !important;
+    color: #0D47A1 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .detail-separator {
+    color: #90CAF9 !important;
+    margin: 0 4px !important;
+    font-weight: 300 !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Badges */
+  .detail-moldid-badge,
+  .detail-moldcode-badge {
+    display: inline-flex !important;
+    align-items: center !important;
+    padding: 2px 8px !important;
+    border-radius: 4px !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+    border: 1.5px solid !important;
+  }
+
+  .detail-moldid-badge {
+    background: #42A5F5 !important;
+    color: white !important;
+    border-color: #1976D2 !important;
+  }
+
+  .detail-moldcode-badge {
+    background: #B8D8E8 !important;
+    color: #0D47A1 !important;
+    border-color: #42A5F5 !important;
+  }
+
+  /* Right section */
+  .detail-header-right {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    flex-shrink: 0 !important;
+    margin-left: auto !important;
+  }
+
+  /* ========================================
+   DETAIL HEADER BUTTONS - UNIFIED STYLE
+  ======================================== */
+  .detail-collapse-btn,
+  .detail-view-full-link,
+  .detail-close-btn {
+      width: 28px !important;
+      height: 28px !important;
+      border-radius: 6px !important;
+      border: 1.5px solid #90CAF9 !important;
+      background: white !important;
+      color: #0D47A1 !important;
+      font-size: 14px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      cursor: pointer !important;
+      z-index: 10 !important; /* ✅ Ensure button is clickable */
+      position: relative !important;
+      flex-shrink: 0 !important;
+  }
+
+  .detail-collapse-btn:hover,
+  .detail-view-full-link:hover,
+  .detail-close-btn:hover {
+      background: #E8F2F9 !important;
+      border-color: #42A5F5 !important;
+      transform: scale(1.05);
+  }
+
+  .detail-collapse-btn:active,
+  .detail-view-full-link:active,
+  .detail-close-btn:active {
+      transform: scale(0.95);
+      background: #BBDEFB !important;
+  }
+
+  
+  .mobile-quick-detail.active {
+    display: block !important;
+  }
+
+  .mobile-quick-detail .detail-header {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .mobile-quick-detail .detail-title {
+    font-size: calc(15px * 0.9) !important; /* 13.5px - 90% */
+    font-weight: 700;
+    color: #333;
+    flex: 1 1 100%;
+    margin-bottom: 6px;
+    }
+
+  .mobile-quick-detail .badge-company,
+  .mobile-quick-detail .badge-status,
+  .mobile-quick-detail .badge-location {
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .mobile-quick-detail .badge-company {
+    background: #2196F3;
+    color: white;
+  }
+
+  .mobile-quick-detail .badge-status {
+    background: #4CAF50;
+    color: white;
+  }
+
+  .mobile-quick-detail .badge-status.out {
+    background: #FF5722;
+  }
+
+  .mobile-quick-detail .badge-location {
+    background: #FF9800;
+    color: white;
+  }
+
+  .mobile-quick-detail .detail-body {
+    margin-bottom: 12px;
+  }
+
+  .mobile-quick-detail .detail-item {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 6px;
+    font-size: calc(13px * 0.9) !important; /* 11.7px - 90% */
+    }
+
+  .mobile-quick-detail .detail-item .label {
+    color: #888;
+    min-width: 95px;
+    font-weight: 500;
+  }
+
+  .mobile-quick-detail .detail-item .value {
+    font-weight: 600;
+    color: #333;
+    flex: 1;
+  }
+
+  .mobile-quick-detail .detail-item .value.empty {
+    color: #aaa;
+    font-style: italic;
+  }
+
+  .mobile-quick-detail .btn-expand-full {
+    width: 100%;
+    padding: 12px;
+    background: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+  }
+
+  .mobile-quick-detail .btn-expand-full:active {
+    transform: scale(0.97);
+    background: #1976D2;
+  }
+
+  .mobile-quick-detail .btn-expand-full i {
+    font-size: 14px;
+  }
+}
+
+/* ========================================
+   4. MOBILE FULL DETAIL MODAL
+   ======================================== */
+@media (max-width: 767px) {
+  .mobile-detail-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+    overflow: hidden;
+  }
+
+  .mobile-detail-modal.active {
+    display: flex !important;
+    align-items: flex-end;
+  }
+
+  .mobile-detail-modal .modal-content {
+    border-radius: 16px 16px 0 0; /* Bo góc trên của modal */
+    width: 100%;
+    max-height: 90vh;
+    background: white;
+    border-radius: 16px 16px 0 0;
+    overflow-y: auto;
+    transition: transform 0.3s ease-out;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .mobile-detail-modal .drag-handle {
+    width: 50px;
+    height: 5px;
+    background: #ccc;
+    border-radius: 3px;
+    margin: 12px auto 10px;
+  }
+
+  .mobile-detail-modal .modal-header {
+    padding: 0 16px 12px;
+    border-bottom: 1px solid #eee;
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 10;
+  }
+
+  .mobile-detail-modal .modal-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .mobile-detail-modal .modal-title h2 {
+    font-size: calc(18px * 0.9) !important; /* 16.2px - 90% */
+    margin: 0;
+    font-weight: 700;
+    }
+
+  .mobile-detail-modal .item-type-badge {
+    padding: 4px 10px;
+    background: #4CAF50;
+    color: white;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .mobile-detail-modal .btn-close-modal {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: #f5f5f5;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: #666;
+  }
+
+  .mobile-detail-modal .btn-close-modal:active {
+    background: #e0e0e0;
+  }
+
+  .mobile-detail-modal .modal-body {
+    padding: 16px;
+  }
+
+  .mobile-detail-modal .detail-section,
+  .mobile-detail-modal .related-section {
+    margin-bottom: 24px;
+  }
+
+  /* Floating close button (bottom-left) cho MobileDetailModal */
+  .mobile-detail-modal .mobile-modal-fab-close {
+      position: fixed;
+      left: 14px;
+      bottom: 140px;              /* 70 trên thanh bottom nav một chút */
+      z-index: 9999;
+      width: 42px;
+      height: 42px;
+      border-radius: 21px;
+      border: none;
+      background: rgba(0, 0, 0, 0.75);
+      color: #FFF;
+      font-size: 10px;
+      font-weight: 600;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+      cursor: pointer;
+      padding: 4px 2px;
+  }
+
+  /* Chỉ hiện khi modal đang mở (class .show tuỳ theo bạn đang dùng) */
+  .mobile-detail-modal.hidden .mobile-modal-fab-close {
+      display: none !important;
+  }
+
+  /* Nhãn JP + VI trong nút */
+  .mobile-modal-fab-close .fab-label-ja {
+      font-size: 9px;
+      line-height: 1.1;
+  }
+
+  .mobile-modal-fab-close .fab-label-vi {
+      font-size: 8px;
+      line-height: 1.1;
+      opacity: 0.85;
+  }
+
+}
+
+/* ========================================
+   5. HIDE MOBILE ELEMENTS ON DESKTOP/IPAD
+   ======================================== */
+@media (min-width: 768px) {
+  .mobile-quick-detail,
+  .mobile-action-bar,
+  .mobile-detail-modal,
+  .mobile-only {
+    display: none !important;
+  }
+
+
+}
+
+/**
+ * Áp dụng Phương án A: Tất cả sections đều có header với border-radius
+ * để tạo giao diện đồng nhất, hiện đại
+ */
+@media (min-width: 768px) {
+  /* Base panel styling - rounded cards */
+  .panel {
+    border-radius: 12px !important;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+    border: 1px solid #E0E0E0;
+  }
+
+  /* Panel headers - consistent rounded top */
+  .panel-header {
+    border-radius: 0 !important; /* Remove individual radius */
+  }
+
+  
+
+  /* Detail info rows */
+  .detail-info-section {
+    border-radius: 8px !important;
+  }
+
+  /* Action buttons */
+  .action-btn-large,
+  .actions-row-3col button {
+    border-radius: 10px !important;
+  }
+
+  /* Related equipment cards */
+  .related-item {
+    border-radius: 6px !important;
+  }
+
+  /* Input fields consistency */
+  .search-input,
+  .filter-select,
+  input[type="text"],
+  select {
+    border-radius: 8px !important;
+  }
+
+  /* Optional: highlight khi vừa pull-to-refresh xong */
+.pull-refresh-highlight {
+  outline: 2px solid #42a5f5;
+  outline-offset: 2px;
+  transition: outline 0.6s ease-out;
+}
+
+
+  /* Tab containers */
+  .lower-section {
+    border-radius: 12px !important;
+  }
+
+  /* Tables */
+  .results-table {
+    border-radius: 8px !important;
+    overflow: hidden;
+  }
+}
+
+/* ========================================================================
+   MOBILE DYNAMIC 3-PANEL LAYOUT (R6.7)
+   ========================================================================
+   3 independent panels: Results, Detail, Actions
+   ======================================================================== */
+@media (max-width: 767px) {
+  
+  /* ========================================
+     MOBILE CONTENT CONTAINER
+     ======================================== */
+  
+  .mobile-content-area {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 160px); /* Subtract search/filter area */
+    overflow: hidden; /* Prevent total scroll */
+    position: relative;
+  }
+
+  /* ========================================
+     PANEL 1: QUICK RESULTS
+     ======================================== */
+  
+  .mobile-results-panel {
+    position: fixed !important;
+    top: 58px !important; /* Below searchbox (50px + 8px) */
+    left: 0;
+    right: 0;
+    bottom: calc(68px + env(safe-area-inset-bottom, 0px)) !important; /* Above menu bar */
+    display: flex !important;
+    flex-direction: column !important;
+    background: white;
+    overflow: hidden !important; /* NO scroll on panel */
+    transition: top 0.3s ease;
+    z-index: 2;
+  }
+  /* When filter is open - push results panel down */
+  .mobile-results-panel.filter-open {
+  top: calc(58px + 440px) !important; /* Below searchbox + filter panel (420px + 20px spacing) */
+  }
+
+
+  /* Results panel header */
+  .mobile-results-panel .panel-header {
+    background: linear-gradient(135deg, #2E7D32 0%, #388E3C 100%);
+    color: white;
+    padding: 4px 10px !important;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 700;
+    font-size: calc(14px * 0.6) !important;
+    border-bottom: 1px solid #1B5E20 !important;
+    flex-shrink: 0 !important;
+    min-height: 24px !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 999 !important; /* Above everything */
+  }
+
+
+  .mobile-results-panel .panel-header .panel-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .mobile-results-panel .panel-header .result-count {
+    background: rgba(255,255,255,0.25);
+    padding: 4px 8px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  /* Results panel body - scrollable */
+  .mobile-results-panel .panel-body {
+    flex: 1 !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch;
+    padding: 0 !important; /* No padding, grid has padding */
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  /* State: Detail panel open → Results shrink */
+  .mobile-results-panel.shrink {
+    flex: 0 0 180px; /* Fixed small height */
+    margin-bottom: 0;
+  }
+
+  /* State: Detail panel full → Results hidden */
+  .mobile-results-panel.hidden {
+    display: none;
+  }
+
+  /* ========================================
+     PANEL 2: DETAIL INFO
+     ======================================== */
+  
+  .mobile-detail-panel {
+    flex: 1; /* Takes available space */
+    display: none; /* Hidden by default */
+    flex-direction: column;
+    background: white;
+    border-radius: 12px 12px 0 0;
+    margin: 8px 8px 0 8px;
+    overflow: hidden;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.08);
+    transition: all 0.3s ease-out;
+    position: relative;
+    z-index: 3; /* Above results */
+  }
+
+  /* Detail panel header */
+  .mobile-detail-panel .panel-header {
+    background: linear-gradient(135deg, #1976D2 0%, #2196F3 100%);
+    color: white;
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 700;
+    font-size: 14px;
+    border-bottom: 2px solid #0D47A1;
+    flex-shrink: 0;
+  }
+
+  .mobile-detail-panel .panel-header .item-code {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+
+  .mobile-detail-panel .panel-header .item-type-badge {
+    background: rgba(255,255,255,0.25);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    text-transform: uppercase;
+    margin-left: 8px;
+  }
+
+  .mobile-detail-panel .panel-header .close-btn {
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.4);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .mobile-detail-panel .panel-header .close-btn:hover {
+    background: rgba(255,255,255,0.3);
+  }
+
+  .mobile-detail-panel .panel-header .expand-btn {
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.4);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-left: 6px;
+  }
+
+  /* Detail panel body - scrollable */
+  .mobile-detail-panel .panel-body {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    padding: 12px;
+  }
+
+  /* State: Detail panel visible */
+  .mobile-detail-panel.show {
+    display: flex;
+  }
+
+  /* State: Detail panel expanded (full screen) */
+  .mobile-detail-panel.expanded {
+    position: fixed;
+    top: 160px; /* Below search/filter */
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: 0;
+    border-radius: 0;
+    z-index: 100;
+  }
+
+  
+
+  /* ========================================
+     SWIPE TO HIDE (Touch gestures)
+     ======================================== */
+  
+  .mobile-detail-panel.swipe-down {
+    animation: slideDown 0.3s ease-out forwards;
+  }
+
+  @keyframes slideDown {
+    from {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    to {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+  }
+
+  /* ========================================
+     VIEW FULL DETAIL LINK
+     ======================================== */
+  
+  .view-full-detail-link {
+    display: block;
+    text-align: center;
+    padding: 12px;
+    background: #F5F5F5;
+    color: #1976D2;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.15s;
+    border-top: 1px solid #E0E0E0;
+    position: sticky;
+    bottom: 0;
+  }
+
+  .view-full-detail-link:hover {
+    background: #E3F2FD;
+  }
+
+  .view-full-detail-link i {
+    margin-left: 4px;
+    transition: transform 0.15s;
+  }
+
+  .view-full-detail-link:hover i {
+    transform: translateY(-2px);
+  }
+}
+
+@media (max-width: 767px) {
+    /* ========================================
+     COLUMN 2 → MOBILE RESULTS PANEL
+     ======================================== */
+  .upper-section .quick-results-panel {
+    /* Reset iPad styles */
+    grid-column: unset !important;
+    
+    /* Mobile panel styles */
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: white;
+    border-radius: 12px 12px 0 0;
+    margin: 8px 8px 0 8px;
+    overflow: hidden;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.08);
+    transition: flex 0.3s ease-out;
+    position: relative;
+    z-index: 2;
+  }
+  
+
+  
+  .quick-results-panel .result-count-badge {
+    background: rgba(255,255,255,0.25) !important;
+    padding: 2px 8px !important;
+    border-radius: 10px !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    color: rgb(4, 87, 8) !important;
+  }
+  
+  /* Body - scrollable */
+  .quick-results-panel .panel-body {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    padding: 10px !important;
+  }
+  
+  /* Results grid - 2 columns */
+  .quick-results-panel .quick-results-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+  
+  /* State: Detail panel open → Results shrink */
+  .quick-results-panel.shrink {
+    flex: 0 0 180px; /* Fixed small height */
+    margin-bottom: 0;
+  }
+  
+  /* State: Detail panel full → Results hidden */
+  .quick-results-panel.hidden {
+    display: none;
+  }
+}
+
+
+
+@media (max-width: 767px) {
+  
+  /* ========================================
+     HIDE DESKTOP/IPAD ELEMENTS
+     ======================================== */
+  .upper-section {
+    display: flex !important;
+    flex-direction: column !important;
+    height: calc(100vh - 120px) !important;
+    gap: 0 !important;
+  }
+  
+  /* Hide Column 1 (Search/Filter) */
+  .upper-section .search-filter-panel {
+    display: none !important;
+  }
+  
+  /* Hide Column 4 (Actions) */
+  .upper-section .actions-panel {
+    display: none !important;
+  }
+  
+  /* Hide lower section */
+  .lower-section {
+    display: none !important;
+  }
+  
+  /* ========================================
+     COLUMN 2 → RESULTS PANEL (REUSE HTML)
+     ======================================== */
+  
+
+  
+  .quick-results-panel .panel-body {
+    flex: 1;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch;
+    padding: 10px !important;
+  }
+  
+  .quick-results-panel.shrink {
+    flex: 0 0 180px !important;
+  }
+  
+  .quick-results-panel.hidden {
+    display: none !important;
+  }
+  
+  /* ========================================
+     COLUMN 3 → DETAIL PANEL (REUSE HTML)
+     ======================================== */
+  
+  .detail-panel {
+    flex: 1;
+    display: none;
+    flex-direction: column;
+    background: white;
+    border-radius: 12px 12px 0 0;
+    margin: 8px 8px 0 8px;
+    overflow: hidden;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.08);
+    transition: all 0.3s ease-out;
+    position: relative;
+    z-index: 3;
+    pointer-events: all !important; /* THÊM: Ensure all clicks work */
+  }
+
+  
+  .detail-panel .panel-header {
+    background: linear-gradient(135deg, #1976D2 0%, #2196F3 100%) !important;
+    color: white !important;
+    padding: 4px 10px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    border-bottom: 1px solid #0D47A1 !important;
+    flex-shrink: 0;
+    min-height: 24px !important;
+    font-size: calc(14px * 0.6) !important;
+    gap: 8px !important; /* THÊM: Space between title and button */
+    position: relative !important; /* THÊM: For z-index context */
+  }
+  
+  .detail-panel .detail-upper {
+    padding: 12px !important;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .detail-panel .detail-lower {
+    padding: 12px !important;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .detail-panel.show {
+    display: flex !important;
+    pointer-events: all !important; /* THÊM: Ensure clickable */
+  }
+
+  /* ========================================
+   DETAIL PANEL CLOSE BUTTON FIX
+   ======================================== */
+
+  /* CRITICAL: Remove absolute positioning that breaks layout */
+  .detail-panel .panel-header .detail-close-btn {
+    position: relative !important; /* NOT absolute */
+    width: 28px !important;
+    height: 28px !important;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    cursor: pointer !important;
+    z-index: 10 !important; /* Higher than header */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 16px !important;
+    color: white !important;
+    transition: all 0.2s ease !important;
+    pointer-events: all !important; /* CRITICAL */
+    margin-left: auto !important; /* Push to right side */
+    flex-shrink: 0 !important; /* Don't shrink */
+  }
+
+  .detail-panel .panel-header .detail-close-btn:hover {
+    background: rgba(255, 255, 255, 0.3) !important;
+    border-color: rgba(255, 255, 255, 0.8) !important;
+    transform: scale(1.1) !important;
+  }
+
+  .detail-panel .panel-header .detail-close-btn:active {
+    transform: scale(0.95) !important;
+    background: rgba(255, 255, 255, 0.4) !important;
+  }
+
+  /* Icon inside button */
+  .detail-panel .panel-header .detail-close-btn i {
+    pointer-events: none !important; /* Icon doesn't block clicks */
+    font-size: 14px !important;
+  }
+
+  
+  
+  /* ========================================
+   EXPANDED STATE - Detail panel full height
+   ======================================== */
+
+  .detail-panel.expanded {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    flex: 1 !important;
+    height: auto !important;
+    max-height: none !important;
+    z-index: 100 !important; /* TĂNG từ 50 → 100 */
+    overflow-y: auto !important;
+    pointer-events: all !important; /* THÊM: Ensure clickable */
+  }
+
+  /* Hide results panel when detail is expanded */
+  .quick-results-panel.hidden-by-expand {
+    display: none !important;
+  }
+
+  /* Detail panel body full height when expanded */
+  .detail-panel.expanded .panel-body {
+    flex: 1 !important;
+    overflow-y: auto !important;
+    max-height: none !important;
+  }
+
+  .detail-panel.expanded .detail-upper,
+  .detail-panel.expanded .detail-lower {
+    max-height: none !important;
+    overflow-y: visible !important;
+  }
+
+  /* Change expand button icon when expanded */
+  .detail-panel.expanded .detail-view-full-link i.fa-arrow-up::before {
+    content: "\f063" !important; /* fa-arrow-down */
+  }
+
+}
+
+/* Smooth transition for expand/collapse */
+@media (max-width: 767px) {
+  .detail-panel {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+  
+  .quick-results-panel {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+  
+  .detail-panel.expanded {
+    animation: expandUp 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+}
+
+/* ========================================================================
+  R6.6.4 UPDATES: Panel resize + Header styling
+  ======================================================================== */
+
+@media (max-width: 767px) {
+  /* ========================================
+    FIX 3: Bỏ bo góc, full-width
+    ======================================== */
+  .quick-results-panel,
+  .detail-panel {
+    margin: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+  
+  /* ========================================
+    FIX 4: View full detail link styling
+    ======================================== */
+  
+  .view-full-detail-link {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    padding: 12px 16px !important;
+    margin-top: 12px !important;
+    background: #F5F5F5 !important;
+    color: #1976D2 !important;
+    font-weight: 600 !important;
+    font-size: 13px !important;
+    text-decoration: none !important;
+    border-top: 1px solid #E5E7EB !important;
+    border-radius: 6px !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease-out !important;
+  }
+  
+  .view-full-detail-link:hover {
+    background: #E3F2FD !important;
+    color: #1565C0 !important;
+  }
+  
+  .view-full-detail-link i {
+    font-size: 12px !important;
+    transition: transform 0.2s ease-out !important;
+  }
+  
+  .view-full-detail-link:hover i {
+    transform: translateX(2px) !important;
+  }
+  
+  /* ========================================
+    FIX 5: Action button enabled state
+    ======================================== */
+  
+  #mobile-action-bar .action-btn.enabled {
+    opacity: 1 !important;
+    background: white !important;
+    cursor: pointer !important;
+  }
+  
+  #mobile-action-bar .action-btn.enabled:active {
+    transform: scale(0.95) !important;
+    background: #F5F5F5 !important;
+  }
+}
+/* End R6.6.4 Updates */
+
+
+/* ========================================
+  R6.7.0 PASTEL COLOR SYSTEM
+  Scientific Design Principles
+  Saturation: 30-40%, Lightness: 70-80%
+  ======================================== */
+@media (max-width: 767px) {
+
+  /* ========================================
+     SECTION 1: PRIMARY COLORS - Headers
+     ======================================== */
+
+  /* Results Panel Header - Pastel Green */
+  .quick-results-panel .panel-header {
+    background: #D8E8D4 !important; /* Soft green */
+    color: #2D5016 !important; /* Deep forest */
+    border-bottom: 1px solid #C0DAC0 !important; /* 60% of 2px = 1px */
+    padding: 4px 10px !important; /* 60% of 10px/12px = 4px/10px */
+    font-weight: 600 !important;
+    font-size: calc(11px) !important; /* 7.8px - 60% */
+    flex-shrink: 0 !important;
+    min-height: 24px !important; /* NEW: Set minimum height */
+    }
+
+  .quick-results-panel .panel-header i {
+    color: #2D5016 !important;
+    font-size: 13px !important;
+  }
+
+  /* Detail Panel Header - Pastel Blue */
+  .detail-panel .panel-header {
+    background: #D6E9F5 !important; /* Soft blue */
+    color: #0D47A1 !important; /* Deep blue */
+    border-bottom: 1px solid #B3D9E8 !important; /* 60% of 2px = 1px */
+    padding: 4px 10px !important; /* 60% of 10px/12px = 4px/10px */
+    font-weight: 600 !important;
+    font-size: calc(11px) !important; /* 7.8px - 60% */
+    flex-shrink: 0 !important;
+    min-height: 24px !important; /* NEW: Set minimum height */
+    }
+
+  .detail-panel .panel-header i {
+    color: #0D47A1 !important;
+    font-size: 11px !important;
+  }
+
+}
+
+
+/* ========================================
+   R6.8 ACTION BUTTONS - CLEAR & DISTINCT
+   (FIXED VERSION FOR 2 ROWS LAYOUT)
+   ======================================== */
+
+@media (max-width: 767px) {
+
+  /* ========================================
+     BASE ACTION BAR CONTAINER
+     ======================================== */
+
+  #mobile-action-bar {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: auto !important;
+    background: #FAFAFA !important;
+    border-top: 2px solid #E0E0E0 !important;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.15) !important;
+    z-index: 101 !important;
+    padding: 8px !important;
+    display: none !important; /* Hide old action bar */
+    flex-direction: column !important;  /* Stack rows vertically */
+    gap: 8px !important;
+  }
+
+  /* ========================================
+     ACTION ROW (Container for 3 buttons)
+     ======================================== */
+
+  #mobile-action-bar .action-row {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+
+  /* ========================================
+     BASE BUTTON STYLING
+     ======================================== */
+
+  #mobile-action-bar .action-btn {
+    flex: 1 !important;
+    border: 2.5px solid #CCC !important;
+    border-radius: 10px !important;
+    background: white !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    padding: 8px 6px !important;
+    min-height: 60px !important;
+    transition: all 0.25s ease-out !important;
+    text-transform: none !important;
+    letter-spacing: 0.3px !important;
+    color: inherit !important;
+  }
+
+  #mobile-action-bar .action-btn i {
+    font-size: 22px !important;
+    line-height: 1 !important;
+  }
+
+  /* ========================================
+     BUTTON HOVER STATE
+     ======================================== */
+
+  #mobile-action-bar .action-btn:not(.disabled):hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  }
+
+  /* ========================================
+     BUTTON ACTIVE/PRESSED STATE
+     ======================================== */
+
+  #mobile-action-bar .action-btn:not(.disabled):active {
+    transform: scale(0.96) !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
+  }
+
+  /* DISABLED STATE - Keep full color, only reduce brightness */
+  mobile-action-bar .action-btn.disabled {
+      opacity: 0.7 !important; /* Tăng từ 0.35 lên 0.7 - giữ màu sắc rõ hơn */
+      cursor: not-allowed !important;
+      filter: grayscale(30%); /* Thêm hiệu ứng xám nhẹ thay vì làm mờ */
+      background: #F5F5F5 !important;
+  }
+
+
+  /* ========================================
+     1. LOCATION BUTTON - Pink
+     ======================================== */
+
+  #mobile-action-bar .action-location {
+    color: #E91E63 !important;
+    border-color: #C2185B !important;
+  }
+
+  #mobile-action-bar .action-location:not(.disabled):hover {
+    background: #FCE4EC !important;
+    color: #C2185B !important;
+    border-color: #AD1457 !important;
+  }
+
+  #mobile-action-bar .action-location i {
+    color: #E91E63 !important;
+  }
+
+  /* ========================================
+     2. CHECK-IN BUTTON - Green
+     ======================================== */
+
+  #mobile-action-bar .action-checkin {
+    color: #2E7D32 !important;
+    border-color: #1B5E20 !important;
+  }
+
+  #mobile-action-bar .action-checkin:not(.disabled):hover {
+    background: #C8E6C9 !important;
+    color: #1B5E20 !important;
+    border-color: #0D3818 !important;
+  }
+
+  #mobile-action-bar .action-checkin i {
+    color: #2E7D32 !important;
+  }
+
+  /* ========================================
+     3. CHECK-OUT BUTTON - Orange
+     ======================================== */
+
+  #mobile-action-bar .action-checkout {
+    color: #FF6F00 !important;
+    border-color: #E65100 !important;
+  }
+
+  #mobile-action-bar .action-checkout:not(.disabled):hover {
+    background: #FFE0B2 !important;
+    color: #E65100 !important;
+    border-color: #BF360C !important;
+  }
+
+  #mobile-action-bar .action-checkout i {
+    color: #FF6F00 !important;
+  }
+
+  /* ========================================
+     4. SHIPMENT BUTTON - Red
+     ======================================== */
+
+  #mobile-action-bar .action-shipment {
+    color: #D32F2F !important;
+    border-color: #B71C1C !important;
+  }
+
+  #mobile-action-bar .action-shipment:not(.disabled):hover {
+    background: #FFEBEE !important;
+    color: #B71C1C !important;
+    border-color: #7F0000 !important;
+  }
+
+  #mobile-action-bar .action-shipment i {
+    color: #D32F2F !important;
+  }
+
+  /* ========================================
+     5. TEFLON BUTTON - Purple
+     ======================================== */
+
+  #mobile-action-bar .action-teflon {
+    color: #7B1FA2 !important;
+    border-color: #4A148C !important;
+  }
+
+  #mobile-action-bar .action-teflon:not(.disabled):hover {
+    background: #F3E5F5 !important;
+    color: #4A148C !important;
+    border-color: #38006B !important;
+  }
+
+  #mobile-action-bar .action-teflon i {
+    color: #7B1FA2 !important;
+  }
+
+  /* ========================================
+     6. COMMENT BUTTON - Gray
+     ======================================== */
+
+  #mobile-action-bar .action-comment {
+    color: #555555 !important;
+    border-color: #333333 !important;
+  }
+
+  #mobile-action-bar .action-comment:not(.disabled):hover {
+    background: #F5F5F5 !important;
+    color: #333333 !important;
+    border-color: #212121 !important;
+  }
+
+  #mobile-action-bar .action-comment i {
+    color: #555555 !important;
+  }
+
+  /* ========================================
+     ACTIVE/FILLED STATE (Optional)
+     ======================================== */
+
+  #mobile-action-bar .action-btn.active:not(.disabled) {
+    background-color: currentColor !important;
+    color: white !important;
+    font-weight: 700 !important;
+  }
+
+  #mobile-action-bar .action-location.active:not(.disabled) {
+    background: #E91E63 !important;
+    border-color: #AD1457 !important;
+  }
+
+  #mobile-action-bar .action-checkin.active:not(.disabled) {
+    background: #2E7D32 !important;
+    border-color: #0D3818 !important;
+  }
+
+  #mobile-action-bar .action-checkout.active:not(.disabled) {
+    background: #FF6F00 !important;
+    border-color: #BF360C !important;
+  }
+
+  #mobile-action-bar .action-shipment.active:not(.disabled) {
+    background: #D32F2F !important;
+    border-color: #7F0000 !important;
+  }
+
+  #mobile-action-bar .action-teflon.active:not(.disabled) {
+    background: #7B1FA2 !important;
+    border-color: #38006B !important;
+  }
+
+  #mobile-action-bar .action-comment.active:not(.disabled) {
+    background: #555555 !important;
+    border-color: #212121 !important;
+  }
+
+  #mobile-action-bar .action-comment.active:not(.disabled) {
+background: #555555 !important;
+border-color: #212121 !important;
+}
+}
+/* ========================================================================
+   BOTTOM NAVIGATION BAR - MODERN MOBILE UI (R7.0)
+   ======================================================================== */
+
+@media (max-width: 767px) {
+  .bottom-nav-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 68px;
+    background: #FFFFFF;
+    border-top: 1px solid #E0E0E0;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    align-items: center;
+    z-index: 1000;
+    padding-bottom: calc(var(--safe-area-bottom) + 8px);
+    padding-bottom: env(safe-area-inset-bottom, 8px);
+  }
+
+
+
+  /* Bottom Nav Item */
+  .bottom-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    height: 100%;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #757575;
+    font-size: calc(10px * 0.9); /* 9px - 90% */
+    font-weight: 500;
+    padding: 8px 4px;
+    position: relative;
+  }
+
+  /* Bottom Nav Icon */
+  .bottom-nav-icon {
+    font-size: calc(22px * 0.9); /* 19.8px - 90% */
+    transition: all 0.2s ease;
+  }
+
+  /* Center QR Scan button - Larger */
+  .bottom-nav-item.nav-qr-scan {
+    transform: scale(1.15);
+    color: var(--clr-primary);
+  }
+
+  .bottom-nav-icon-large {
+    font-size: calc(26px * 0.9); /* 23.4px - 90% */
+  }
+
+  /* Active state */
+  .bottom-nav-item.active {
+    color: var(--clr-primary);
+    font-weight: 600;
+  }
+
+  .bottom-nav-item.active .bottom-nav-icon {
+    transform: scale(1.1);
+  }
+
+  /* Active indicator */
+  .bottom-nav-item.active::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 3px;
+    background: var(--clr-primary);
+    border-radius: 0 0 3px 3px;
+  }
+
+  /* Hover effect */
+  .bottom-nav-item:not(.active):hover {
+    color: #424242;
+    background: rgba(0, 0, 0, 0.04);
+  }
+
+  /* Label text */
+  .bottom-nav-label {
+    line-height: 1.2;
+    text-align: center;
+  }
+
+  .bottom-nav-label small {
+    font-size: calc(8px * 0.9); /* 7.2px - 90% */
+    color: inherit;
+    opacity: 0.8;
+  }
+
+  /* Active tab specific colors */
+  .bottom-nav-item[data-tab="search"].active {
+    color: #2196F3; /* Blue */
+  }
+
+  .bottom-nav-item[data-tab="history"].active {
+    color: #4CAF50; /* Green */
+  }
+
+  .bottom-nav-item[data-tab="qr-scan"].active {
+    color: #6a5acd; /* Purple - Primary */
+  }
+
+  .bottom-nav-item[data-tab="location"].active {
+    color: #E91E63; /* Pink */
+  }
+
+  .bottom-nav-item[data-tab="settings"].active {
+    color: #FF9800; /* Orange */
+  }
+}
+
+/* =========================================================
+   R7.1.2+: Bottom nav supports 6 items when Search is injected
+   (JP+VI: 検索 / Tìm kiếm)
+   ========================================================= */
+@media (max-width: 767px) {
+
+  /* When JS injects Search button, add class: .bottom-nav-bar.has-search */
+  .bottom-nav-bar.has-search {
+    grid-template-columns: repeat(6, 1fr) !important;
+  }
+
+  /* Tighten spacing a bit to avoid label wrap on small iPhones */
+  .bottom-nav-bar.has-search .bottom-nav-item {
+    padding: 6px 2px !important;
+    gap: 1px !important;
+  }
+
+  .bottom-nav-bar.has-search .bottom-nav-icon {
+    font-size: calc(20px * 0.9) !important;
+  }
+
+  .bottom-nav-bar.has-search .bottom-nav-icon-large {
+    font-size: calc(24px * 0.9) !important;
+  }
+
+  .bottom-nav-bar.has-search .bottom-nav-label small {
+    font-size: calc(7px * 0.9) !important;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 767px) {
+  .bottom-nav-bar.has-search .bottom-nav-item.nav-qr-scan {
+    transform: scale(1.10) !important;
+  }
+}
+
+
+/* ========================================================================
+   FLOATING ACTION BAR - CONTEXTUAL (R7.0)
+   ======================================================================== */
+
+@media (max-width: 767px) {
+  .floating-action-bar {
+    position: fixed;
+    bottom: calc(68px + 8px + var(--safe-area-bottom));
+    left: 0;
+    right: 0;
+    height: 56px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.15);
+    
+    /* CRITICAL FIX: Hidden by default */
+    display: none !important;
+
+    grid-template-columns: repeat(5, 1fr);
+    align-items: center;
+    z-index: 90;
+    padding: 0 8px;
+    
+    /* Hidden by default */
+    transform: translateY(calc(100% + 20px));
+    transition: transform 0.3s ease;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* Active state - Show the bar */
+  .floating-action-bar.active {
+    display: grid !important; /* Override hidden state */
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: all;
+  }
+
+
+  /* Floating Action Button */
+  .floating-action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: calc(9px * 0.9); /* 8.1px - 90% */
+    font-weight: 500;
+    padding: 6px 4px;
+    border-radius: 6px;
+  }
+
+  .floating-action-btn i {
+    font-size: calc(18px * 0.9); /* 16.2px - 90% */
+  }
+
+  .floating-action-btn small {
+    font-size: calc(7px * 0.9); /* 6.3px - 90% */
+    opacity: 0.9;
+  }
+
+  /* Close button - Last child */
+  .floating-action-btn.action-close {
+    border-left: 1px solid rgba(255, 255, 255, 0.3);
+    font-size: calc(20px * 0.9); /* 18px - 90% */
+  }
+
+  .floating-action-btn.action-close i {
+    font-size: calc(22px * 0.9); /* 19.8px - 90% */
+  }
+
+  /* Hover effect */
+  .floating-action-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  /* Active effect */
+  .floating-action-btn:active {
+    transform: scale(0.95);
+    background: rgba(255, 255, 255, 0.25);
+  }
+
+  /* Disabled state */
+  .floating-action-btn.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+}
+
+/* ========================================================================
+   ADJUST CONTENT FOR BOTTOM NAV
+   ======================================================================== */
+
+@media (max-width: 767px) {
+  /* Adjust body padding */
+  body {
+  padding-bottom: calc(68px + env(safe-area-inset-bottom, 0px) + 20px) !important;
+}
+
+  /* Adjust detail panel bottom position */
+  .mobile-quick-detail {
+    bottom: calc(68px + 20px) !important; /* Above bottom nav */
+  }
+
+  /* Adjust when floating action bar is active */
+  body.floating-actions-active .mobile-quick-detail {
+    bottom: calc(68px + 56px + 30px) !important; /* Above both bars */
+  }
+}
+
+
+@media (max-width: 767px) {
+  /* Results panel default position */
+  .mobile-results-panel {
+    position: fixed !important;
+    top: 58px !important; /* Below searchbox */
+    left: 0;
+    right: 0;
+    bottom: calc(68px + env(safe-area-inset-bottom, 0px)) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    background: white;
+    overflow: hidden !important;
+    transition: top 0.3s ease; /* Smooth transition */
+    z-index: 2;
+  }
+  
+  /* When filter is open - push results down */
+  .mobile-results-panel.filter-open {
+    top: calc(58px + 440px) !important; /* Below searchbox + filter height */
+  }
+}
+
+/* ========================================
+   HIDE MOBILE ELEMENTS ON IPAD
+   ======================================== */
+@media (min-width: 768px) {
+  /* Hide bottom navigation bar on iPad */
+  .bottom-nav-bar {
+    display: none !important;
+  }
+  
+  /* Hide floating action bar on iPad */
+  .floating-action-bar {
+    display: none !important;
+  }
+  
+  /* Hide mobile quick detail panel on iPad */
+  .mobile-quick-detail {
+    display: none !important;
+  }
+  
+  /* Hide mobile filter panel on iPad */
+  .mobile-filter-panel {
+    display: none !important;
+  }
+  
+  /* Reset body padding on iPad */
+  body {
+    padding-bottom: 0 !important;
+  }
+}
+
+/* =================================================================
+   R7.0.6 - BADGE IN RESULT CARDS ONLY (Mobile)
+   Giảm 50% kích thước ONLY cho badge trong thẻ kết quả
+   =================================================================*/
+
+/* CHỈ badge trong result-card */
+.result-card .checkin-status-badge,
+.quick-results-grid .checkin-status-badge,
+.card-line-2 .checkin-status-badge {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 2px !important; /* Giảm từ 3px → 2px */
+    padding: 3px 5px !important; /* Giảm từ 3px 8px → 2px 5px */
+    border-radius: 3px !important; /* Giảm từ 4px → 3px */
+    font-size: 10px !important; /* Giảm từ 11px → 9px */
+    font-weight: 700 !important; /* Giảm từ 700 → 600 */
+    line-height: 1.2 !important; /* Giảm từ 1.2 → 1.1 */
+}
+
+/* Badge text trong result-card */
+.result-card .checkin-status-badge .badge-text,
+.quick-results-grid .checkin-status-badge .badge-text,
+.card-line-2 .checkin-status-badge .badge-text {
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0 !important;
+}
+
+/* Sync icon trong result-card */
+.result-card .sync-icon,
+.quick-results-grid .sync-icon,
+.card-line-2 .sync-icon {
+    font-size: 8px !important; /* Giảm từ 10px → 8px */
+    opacity: 1 !important;
+}
+
+
+
+/* =================================================================
+   R7.0.6 - BADGE IN DETAIL PANEL (Column 3) - GIỮ NGUYÊN SIZE
+   KHÔNG thay đổi kích thước badge trong detail panel
+   =================================================================*/
+
+/* Badge trong detail panel - GIỮ NGUYÊN KÍ THƯỚC GỐC */
+.detail-panel .checkin-status-badge,
+#detail-checkin-status,
+.detail-upper .checkin-status-badge,
+.detail-lower .checkin-status-badge {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 3px !important; /* GIỮ NGUYÊN 3px */
+    padding: 4px 10px !important; /* GIỮ NGUYÊN kích thước gốc */
+    border-radius: 5px !important; /* GIỮ NGUYÊN 5px */
+    font-size: 12px !important; /* GIỮ NGUYÊN 12px */
+    font-weight: 700 !important; /* GIỮ NGUYÊN 700 */
+    line-height: 1.2 !important; /* GIỮ NGUYÊN 1.2 */
+}
+
+/* Badge text trong detail panel */
+.detail-panel .checkin-status-badge .badge-text,
+#detail-checkin-status .badge-text {
+    font-size: 12px !important; /* GIỮ NGUYÊN */
+    font-weight: 700 !important; /* GIỮ NGUYÊN */
+}
+
+/* Sync icon trong detail panel */
+.detail-panel .sync-icon,
+#detail-checkin-status .sync-icon {
+    font-size: 10px !important; /* GIỮ NGUYÊN */
+    opacity: 0.7 !important; /* GIỮ NGUYÊN */
+}
+/* ============================================
+   R7.0.7: Mobile Table View - IPHONE ONLY (< 768px)
+   Tối ưu layout, không ảnh hưởng iPad/Tablet
+   ============================================ */
+
+/* === BASE: Hide on Desktop/Tablet by default === */
+@media (min-width: 768px) {
+    .view-mode-toggle,
+    .table-toolbar-inline,
+    .mobile-table-container,
+    .mobile-only-table {
+        display: none !important;
+    }
+}
+
+/* ============================================
+   iPHONE ONLY STYLES (< 768px)
+   ============================================ */
+
+@media (max-width: 767px) {
+    
+    /* === TOGGLE BUTTON === */
+    .view-mode-toggle {
+        display: flex !important;
+        align-items: stretch;
+        gap: 0;
+        margin-left: auto;
+        flex-shrink: 0;
+        border: 1px solid #CCC;
+        border-radius: 4px;
+        overflow: hidden;
+        background: white;
+    }
+    
+    .view-mode-toggle .toggle-btn {
+        padding: 4px 10px;
+        background: white;
+        border: none;
+        border-right: 1px solid #CCC;
+        cursor: pointer;
+        transition: all 0.15s;
+        font-size: 9px;
+        font-weight: 600;
+        line-height: 1.1;
+        min-width: 32px;
+        height: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #666;
+        white-space: nowrap;
+    }
+    
+    .view-mode-toggle .toggle-btn:last-child {
+        border-right: none;
+    }
+    
+    .view-mode-toggle .toggle-btn.active {
+        background: #1976D2 !important;
+        color: white !important;
+        font-weight: 700;
+    }
+    
+    /* === TOOLBAR INLINE === */
+    .table-toolbar-inline {
+        display: flex !important;
+        align-items: center;
+        gap: 6px;
+        margin-left: 8px;
+        flex-shrink: 0;
+    }
+    
+    .selection-info-inline {
+        font-size: 9px;
+        font-weight: 600;
+        color: #D84315;
+        white-space: nowrap;
+        background: #FFE0B2;
+        padding: 3px 6px;
+        border-radius: 3px;
+        border: 1px solid #FFB74D;
+    }
+    
+    .btn-print-inline {
+        padding: 4px 8px;
+        background: #1976D2;
+        color: white !important;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        font-size: 11px;
+        font-weight: 600;
+        white-space: nowrap;
+        flex-shrink: 0;
+        height: 24px;
+    }
+    
+    .btn-print-inline:disabled {
+        background: #BDBDBD !important;
+        cursor: not-allowed;
+        opacity: 0.7;
+    }
+
+    /* R7.0.7: Mobile selection mode toggle (ON/OFF) */
+    .inv-selection-toggle {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-right: 2px;
+    }
+
+    .inv-selection-toggle .inv-toggle-switch.inv-toggle-switch-xs {
+      transform: scale(0.65);
+      transform-origin: left center;
+    }
+
+    .inv-selection-label {
+      display: flex;
+      flex-direction: column;
+      font-size: 9px;
+      line-height: 1.1;
+      color: #2D5016; /* cùng tông với header results */
+    }
+
+    .inv-selection-label .jp-text {
+      font-weight: 700;
+    }
+
+    .inv-selection-label .vi-text {
+      opacity: 0.8;
+    }
+
+    /* Thu nhỏ thêm trong header mobile để không chiếm chỗ */
+    .quick-results-panel .panel-header .inv-selection-toggle {
+      gap: 2px;
+    }
+
+
+    /* Thu nhỏ nút trong header panel kết quả (mobile) */
+    .quick-results-panel .view-mode-toggle .toggle-btn {
+        height: 20px;
+        padding: 2px 6px;
+        font-size: 9px;
+    }
+
+    .quick-results-panel .table-toolbar-inline {
+        gap: 4px;
+    }
+
+    .quick-results-panel .selection-info-inline {
+        font-size: 9px;
+        padding: 2px 4px;
+    }
+
+    .quick-results-panel .table-toolbar-inline .btn-print-inline,
+    .quick-results-panel .table-toolbar-inline .btn-filter-row {
+        height: 22px;
+        padding: 2px 6px;
+        font-size: 9px;
+        white-space: nowrap; /* Không xuống dòng text trên nút */
+    }
+
+    
+    /* === MOBILE TABLE CONTAINER === */
+    .mobile-table-container {
+        display: none ;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: white;
+        z-index: 100;
+        flex-direction: column;
+         max-height: calc(100vh - 120px);
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 35px; /* R7.0.8: Space for pagination */
+    }
+    
+    .mobile-table-container.active {
+        display: flex !important;
+    }
+    
+    /* === TABLE WRAPPER === */
+    .mobile-table-container .table-wrapper {
+        flex: 1;
+        overflow-x: auto;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* === MOBILE TABLE === */
+    .mobile-only-table {
+        display: table !important;
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 10px !important;
+        background: white;
+        table-layout: fixed; /* Cố định layout */
+    }
+    
+    /* === THEAD - Sticky Header === */
+    .mobile-only-table thead {
+        position: sticky;
+        top: 0 !important;
+        background: #E3F2FD !important;
+        z-index: 100;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    }
+    
+    .mobile-only-table th {
+        padding: 6px 3px !important;
+        text-align: center !important;
+        border-bottom: 2px solid #1976D2 !important;
+        font-weight: 600 !important;
+        white-space: nowrap !important;
+        background: #E3F2FD !important;
+        color: #1565C0 !important;
+        font-size: 10px !important;
+        line-height: 1.2;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    /* === TBODY - Data Rows === */
+    .mobile-only-table td {
+        padding: 5px 3px !important;
+        border-bottom: 1px solid #EEE !important;
+        color: #333;
+        background: white;
+        font-size: 10px !important;
+        line-height: 1.3;
+        /*overflow: hidden;
+        text-overflow: ellipsis;*/
+        white-space: normal; /* ← Đổi từ nowrap */
+    }
+    
+    /* Hover row - rõ hơn, không che màu dòng đã chọn */
+    .mobile-only-table tbody tr:hover {
+        background: #FFF3E0 !important;         /* cam nhạt, dễ thấy hơn */
+        box-shadow: 0 0 0 1px #FFB74D inset;    /* viền mỏng bên trong */
+    }
+
+    .mobile-only-table tbody tr.selected:hover {
+        background: #E3F2FD !important;         /* ưu tiên màu selected */
+        box-shadow: 0 0 0 1px #64B5F6 inset;
+    }
+
+    
+    .mobile-only-table tbody tr.selected {
+        background: #E3F2FD !important;
+    }
+    
+    /* === COLUMN WIDTHS - Tối ưu cho iPhone === */
+    .mobile-only-table .col-select { 
+        width: 30px !important;
+        min-width: 30px;
+        max-width: 30px;
+        text-align: center !important;
+        padding: 3px 2px !important;
+    }
+    
+    .mobile-only-table .col-code { 
+        width: 50px !important;
+        min-width: 50px;
+        max-width: 50px;
+        text-align: center !important;
+        font-weight: 600 !important;
+    }
+    
+    .mobile-only-table .col-name { 
+        width: 90px !important;
+        min-width: 90px;
+        max-width: 90px;
+        text-align: left !important;
+    }
+    
+    .mobile-only-table .col-size { 
+        width: 65px !important;
+        min-width: 65px;
+        max-width: 65px;
+        text-align: center !important;
+        font-size: 9px !important;
+    }
+    
+    .mobile-only-table .col-location { 
+        width: 40px !important;
+        min-width: 40px;
+        max-width: 40px;
+        text-align: center !important;
+        font-weight: 600 !important;
+    }
+    
+    .mobile-only-table .col-company { 
+        width: 45px !important;
+        min-width: 45px;
+        max-width: 45px;
+        text-align: center !important;
+        font-weight: 600 !important;
+    }
+    
+    .mobile-only-table .col-date { 
+        width: 70px !important;
+        min-width: 70px;
+        max-width: 70px;
+        text-align: center !important;
+        font-size: 9px !important;
+    }
+    
+    /* === CHECKBOX === */
+    .mobile-only-table input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+        margin: 0;
+    }
+    
+    /* === SORTABLE HEADERS === */
+    .mobile-only-table th.sortable {
+        cursor: pointer;
+        user-select: none;
+        position: relative;
+        padding-right: 14px !important;
+    }
+    
+    .mobile-only-table th.sortable:hover {
+        background: #BBDEFB !important;
+    }
+    
+    .mobile-only-table th.sortable:active {
+        background: #90CAF9 !important;
+    }
+    
+    .mobile-only-table .sort-indicator {
+        position: absolute;
+        right: 2px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 8px;
+        color: transparent;
+        font-weight: normal;
+    }
+    
+    .mobile-only-table th.sortable.sort-asc .sort-indicator::before {
+        content: '▲';
+        color: #1976D2;
+    }
+    
+    .mobile-only-table th.sortable.sort-desc .sort-indicator::before {
+        content: '▼';
+        color: #1976D2;
+    }
+    
+    /* === PAGINATION === */
+    .mobile-table-container .table-pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
+        padding: 4px;
+        background: #F5F5F5;
+        border-top: 1px solid #DDD;
+        flex-shrink: 0;
+        min-height: 26px;
+    }
+    
+    .mobile-table-container .page-btn {
+        padding: 4px 8px;
+        background: white;
+        border: 1px solid #DDD;
+        border-radius: 3px;
+        cursor: pointer;
+        min-width: 32px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+    }
+    
+    .mobile-table-container .page-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background: #F5F5F5;
+    }
+    
+    .mobile-table-container .page-info {
+        font-size: 11px;
+        color: #666;
+        font-weight: 500;
+        min-width: 60px;
+        text-align: center;
+    }
+    
+    /* === PANEL ADJUSTMENTS === */
+    /* PANEL ADJUSTMENTS - Mobile results header compact */
+    .quick-results-panel .panel-header {
+        display: flex;
+        flex-wrap: nowrap;              /* Không cho wrap khối con */
+        align-items: center;
+        justify-content: space-between;
+        gap: 4px;                       /* Giảm khoảng cách giữa các cụm */
+        padding: 4px 6px !important;    /* Giảm padding để header thấp hơn */
+        min-height: 30px;               /* Thấp hơn để tránh “3 hàng” */
+        line-height: 1.2;               /* Hạn chế giãn dòng */
+        font-size: 10px;                /* Gộp nhỏ text trong header */
+        position: sticky;
+        top: 0;
+        z-index: 200;
+        background: #ffffff;
+        border-bottom: 1px solid #DDD;
+    }
+
+    /* Tiêu đề header: chiếm phần còn lại, cắt bớt nếu quá dài */
+    .quick-results-panel .panel-header .panel-title {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        flex: 1 1 auto;     /* Cho phép nở/thu, ưu tiên chiếm chiều ngang */
+        min-width: 0;       /* Bắt buộc để text-overflow hoạt động trong flex */
+    }
+
+    .quick-results-panel .panel-header .panel-title span {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+
+    
+    .quick-results-grid.hidden-by-table {
+        display: none !important;
+    }
+    
+    .quick-results-panel .panel-body {
+      position: relative;
+      padding: 0 !important;
+      /* KHÔNG override overflow ở đây */
+  }
+    
+    /* === HIDE DESKTOP TABLE ARROWS === */
+    .results-table th:after,
+    .results-table th:before,
+    .results-table th .arrow,
+    .results-table th .sort-arrow {
+        display: none !important;
+        content: none !important;
+    }
+
+    .mobile-pagination {
+    position: fixed;
+    bottom: 28px; /* R7.0.9: Closer to nav bar */
+    left: 0;
+    right: 0;
+    background: #fff;
+    padding: 6px 12px; /* R7.0.9: Reduced from 12px 16px */
+    box-shadow: 0 -1px 6px rgba(0,0,0,0.08); /* R7.0.9: Lighter shadow */
+    z-index: 900;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px; /* R7.0.9: Reduced from 12px */
+}
+
+.mobile-pagination button {
+    padding: 6px 12px; /* R7.0.9: Reduced from 8px 16px */
+    font-size: 13px; /* R7.0.9: Reduced from 14px */
+    border: 1px solid #ddd;
+    background: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    min-width: 60px; /* R7.0.9: Compact buttons */
+}
+
+.mobile-pagination .page-info {
+    font-size: 13px; /* R7.0.9: Reduced from 14px */
+    color: #666;
+    min-width: 80px; /* R7.0.9: Reduced from 100px */
+    text-align: center;
+}
+
+}
+
+/* ================================
+ * R7.0.7 Mobile table filter row
+ * ================================ */
+
+/* Mặc định ẩn hàng filter để bảng gọn hơn trên iPhone */
+#mobile-results-table .column-filters {
+    display: none;
+}
+
+/* Khi có class filters-visible trên table thì hiển thị hàng filter */
+#mobile-results-table.filters-visible .column-filters {
+    display: table-row;
+}
+
+/* Input filter gọn, dễ bấm */
+#mobile-results-table .column-filters .col-filter {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 2px 4px;
+    font-size: 11px;
+}
+
+/* Nút bật/tắt filter trên toolbar */
+.table-toolbar-inline .btn-filter-row {
+    margin-left: 6px;
+    padding: 4px 8px;
+    font-size: 11px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background: #f7f7f7;
+    color: #333;
+}
+
+/* Trạng thái đang bật filter: đổi màu để dễ nhận biết */
+.table-toolbar-inline .btn-filter-row.active {
+    background: #4caf50;
+    border-color: #4caf50;
+    color: #fff;
+}
+
+/* Photo Audit Button */
+.btn-photo {
+  background: linear-gradient(135deg, #818cf8 0%, #6366f1 100%);
+  color: #fff;
+}
+
+.btn-photo:hover {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+}
+
+.btn-photo:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+}
+
+/* Adjust grid for 9 buttons (3x3) */
+.action-buttons-grid.normal-mode {
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 640px) {
+  .action-buttons-grid.normal-mode {
+    gap: 10px;
+  }
+}

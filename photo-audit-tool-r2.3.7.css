@@ -1,0 +1,1491 @@
+/**
+ * ============================================================================
+ * PHOTO AUDIT TOOL - STYLESHEET R2.3.7
+ * 写真監査ツール / Công cụ kiểm tra ảnh khuôn
+ * ============================================================================
+ * CHANGELOG r2.3.7 - 2026-01-09
+ * - ✅ Reverted to r2.3.2-2-OK layout strategy (simple & working)
+ * - ✅ Removed complex safe-area-inset logic (iOS handles 90vh correctly)
+ * - ✅ Kept all new features (compact header, grid footer, etc.)
+ * - ✅ Tested: Works perfectly on iPhone without notch/home bar overlap
+ * ============================================================================
+ */
+
+/* ============================================================================
+ * ROOT CONTAINER & BACKDROP
+ * ============================================================================ */
+.photo-audit-root {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.photo-audit-root.pa-hidden {
+  display: none !important;
+}
+
+.pa-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 1;
+}
+
+/* ============================================================================
+ * MAIN DIALOG
+ * ============================================================================ */
+.pa-dialog {
+  position: relative;
+  z-index: 2;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh; /* iOS Safari automatically accounts for safe areas with vh */
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: paDialogEnter 0.3s ease-out;
+}
+
+@keyframes paDialogEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ============================================================================
+ * HEADER (COMPACT)
+ * ============================================================================ */
+.pa-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.pa-header-compact {
+  padding: 12px 16px;
+  min-height: 48px;
+}
+
+.pa-title {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pa-title .ja {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.pa-title .vi {
+  font-size: 11px;
+  opacity: 0.85;
+  line-height: 1.2;
+}
+
+.pa-close {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: #fff;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pa-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* ============================================================================
+ * BODY
+ * ============================================================================ */
+.pa-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  background: #f8f9fa;
+  min-height: 0;
+}
+
+.pa-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.pa-body::-webkit-scrollbar-track {
+  background: #e9ecef;
+}
+
+.pa-body::-webkit-scrollbar-thumb {
+  background: #adb5bd;
+  border-radius: 4px;
+}
+
+.pa-body::-webkit-scrollbar-thumb:hover {
+  background: #868e96;
+}
+
+/* ============================================================================
+ * FORM
+ * ============================================================================ */
+.pa-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pa-form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pa-form-row-triple {
+  flex-direction: row;
+  gap: 12px;
+}
+
+.pa-form-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.pa-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #495057;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.pa-label .ja {
+  color: #212529;
+}
+
+.pa-label .vi {
+  color: #6c757d;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.pa-label .hint {
+  font-size: 11px;
+  color: #868e96;
+  font-weight: 400;
+  opacity: 0.7;
+}
+
+.pa-label .required {
+  color: #e74c3c;
+  margin-left: 2px;
+}
+
+/* ============================================================================
+ * INPUT FIELDS
+ * ============================================================================ */
+.pa-input,
+.pa-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid #ced4da;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.pa-input:focus,
+.pa-textarea:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.pa-input::placeholder,
+.pa-textarea::placeholder {
+  color: #adb5bd;
+}
+
+.pa-input:disabled {
+  background: #f3f4f6;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.pa-textarea {
+  min-height: 60px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.pa-textarea-auto {
+  resize: none;
+  overflow: hidden;
+  min-height: 36px;
+  max-height: 200px;
+}
+
+.pa-input.auto-filled {
+  background: #ecfdf5;
+  border-color: #10b981;
+}
+
+.pa-input.manual-edit {
+  background: #fff7ed;
+  border-color: #f59e0b;
+}
+
+.pa-dim-input {
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================================================
+ * INPUT WITH BADGE
+ * ============================================================================ */
+.pa-input-with-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pa-input-badge {
+  flex-shrink: 0;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.pa-badge-auto {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #86efac;
+}
+
+.pa-badge-manual {
+  background: #fed7aa;
+  color: #9a3412;
+  border: 1px solid #fdba74;
+}
+
+/* ============================================================================
+ * AUTOCOMPLETE
+ * ============================================================================ */
+.pa-autocomplete-wrapper {
+  position: relative;
+  flex: 1;
+}
+
+.pa-autocomplete-input {
+  width: 100%;
+}
+
+.pa-autocomplete-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 280px;
+  overflow-y: auto;
+  background: #fff;
+  border: 1.5px solid #ced4da;
+  border-radius: 6px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  animation: paDropdownEnter 0.2s ease-out;
+}
+
+@keyframes paDropdownEnter {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.pa-autocomplete-dropdown.pa-hidden {
+  display: none;
+}
+
+.pa-autocomplete-item {
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.pa-autocomplete-item:last-child {
+  border-bottom: none;
+}
+
+.pa-autocomplete-item:hover {
+  background: #f1f3f5;
+}
+
+.pa-autocomplete-item-main {
+  font-size: 14px;
+  font-weight: 600;
+  color: #212529;
+  margin-bottom: 2px;
+}
+
+.pa-autocomplete-item-sub {
+  font-size: 12px;
+  color: #6c757d;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pa-dim-tag {
+  background: #e0e7ff;
+  color: #3730a3;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.pa-autocomplete-empty {
+  padding: 16px;
+  text-align: center;
+  color: #868e96;
+  font-size: 13px;
+}
+
+/* ============================================================================
+ * CC RECIPIENTS (DYNAMIC ROWS)
+ * ============================================================================ */
+.pa-cc-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.pa-cc-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.pa-cc-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.pa-cc-remove {
+  flex-shrink: 0;
+  min-width: 36px;
+}
+
+.pa-cc-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.pa-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.pa-checkbox {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: #667eea;
+}
+
+.pa-hint {
+  font-size: 11px;
+  color: #6c757d;
+  margin-top: 4px;
+  display: block;
+}
+
+/* ============================================================================
+ * PHOTOS LIST
+ * ============================================================================ */
+.pa-photo-count {
+  background: #667eea;
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-left: 8px;
+}
+
+.pa-photos-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 2px;
+}
+
+.pa-empty-state {
+  padding: 32px;
+  text-align: center;
+  color: #adb5bd;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.pa-empty-state i {
+  font-size: 32px;
+  opacity: 0.3;
+}
+
+.pa-photo-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #fff;
+  border: 1.5px solid #dee2e6;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.pa-photo-row:hover {
+  border-color: #667eea;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
+}
+
+.pa-photo-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.pa-photo-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #212529;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 4px;
+}
+
+.pa-photo-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 11px;
+  color: #6c757d;
+}
+
+.pa-photo-source {
+  padding: 2px 6px;
+  background: #e0e7ff;
+  color: #4338ca;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.pa-photo-custom-badge {
+  padding: 2px 6px;
+  background: #fef3c7;
+  color: #92400e;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.pa-photo-thumbnail-badge {
+  padding: 2px 6px;
+  background: #fce7f3;
+  color: #9f1239;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.pa-photo-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+/* ============================================================================
+ * BUTTONS
+ * ============================================================================ */
+.pa-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.pa-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.pa-btn-xs {
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+.pa-btn-icon {
+  padding: 8px;
+  width: 36px;
+  height: 36px;
+}
+
+.pa-btn-primary {
+  background: #667eea;
+  color: #fff;
+}
+
+.pa-btn-primary:hover:not(:disabled) {
+  background: #5568d3;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.pa-btn-secondary {
+  background: #6c757d;
+  color: #fff;
+}
+
+.pa-btn-secondary:hover:not(:disabled) {
+  background: #5a6268;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+}
+
+.pa-btn-success {
+  background: #28a745;
+  color: #fff;
+}
+
+.pa-btn-success:hover:not(:disabled) {
+  background: #218838;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.pa-btn-danger {
+  background: #dc3545;
+  color: #fff;
+}
+
+.pa-btn-danger:hover:not(:disabled) {
+  background: #c82333;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+/* ============================================================================
+ * FOOTER (GRID LAYOUT)
+ * ============================================================================ */
+.pa-footer {
+  background: #fff;
+  border-top: 1.5px solid #dee2e6;
+  padding: 12px 16px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.pa-footer .pa-btn {
+  width: 100%;
+}
+
+.pa-footer-compact {
+  padding: 10px 12px;
+}
+
+/* ============================================================================
+ * FILE INPUT (HIDDEN)
+ * ============================================================================ */
+.pa-file-input {
+  display: none;
+}
+
+/* ============================================================================
+ * CAMERA SCREEN
+ * ============================================================================ */
+.pa-camera-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  z-index: 10001;
+  display: flex;
+  flex-direction: column;
+}
+
+.pa-camera-overlay.pa-hidden {
+  display: none;
+}
+
+.pa-camera-screen {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.pa-camera-header {
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  min-height: 48px;
+}
+
+.pa-btn-camera-close {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.2s ease;
+}
+
+.pa-btn-camera-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.pa-camera-title {
+  flex: 1;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.pa-camera-title .ja {
+  font-size: 14px;
+}
+
+.pa-camera-title .vi {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.pa-camera-viewport {
+  flex: 1;
+  position: relative;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.pa-camera-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pa-camera-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.pa-camera-grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+}
+
+.pa-camera-grid.pa-hidden {
+  display: none;
+}
+
+.grid-line {
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.grid-v1 {
+  grid-column: 2;
+  grid-row: 1 / -1;
+  border-left: 1px solid rgba(255, 255, 255, 0.3);
+  border-right: none;
+  border-top: none;
+  border-bottom: none;
+}
+
+.grid-v2 {
+  grid-column: 3;
+  grid-row: 1 / -1;
+  border-left: 1px solid rgba(255, 255, 255, 0.3);
+  border-right: none;
+  border-top: none;
+  border-bottom: none;
+}
+
+.grid-h1 {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  border-bottom: none;
+  border-left: none;
+  border-right: none;
+}
+
+.grid-h2 {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  border-bottom: none;
+  border-left: none;
+  border-right: none;
+}
+
+.pa-camera-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  padding: 24px 16px;
+  background: rgba(0, 0, 0, 0.8);
+  flex-shrink: 0;
+}
+
+.pa-btn-flip,
+.pa-btn-grid-toggle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pa-btn-flip:hover,
+.pa-btn-grid-toggle:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+
+.pa-btn-capture {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: white;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: #000;
+}
+
+.pa-btn-capture:hover {
+  transform: scale(1.1);
+}
+
+.pa-btn-capture:active {
+  transform: scale(0.95);
+}
+
+/* ============================================================================
+ * CAPTURE PREVIEW SCREEN
+ * ============================================================================ */
+.pa-capture-preview-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10001;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: paFadeIn 0.2s ease;
+}
+
+.pa-capture-preview-overlay.pa-hidden {
+  display: none;
+}
+
+@keyframes paFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.pa-capture-preview-modal {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: paDialogEnter 0.3s ease-out;
+}
+
+.pa-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid #dee2e6;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  flex-shrink: 0;
+  min-height: 48px;
+}
+
+.pa-preview-title {
+  flex: 1;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pa-preview-title .ja {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.pa-preview-title .vi {
+  font-size: 11px;
+  opacity: 0.85;
+}
+
+.pa-preview-body {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  align-items: center;
+}
+
+.pa-preview-image {
+  max-width: 100%;
+  max-height: 500px;
+  object-fit: contain;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.pa-preview-info {
+  width: 100%;
+  padding: 12px;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #212529;
+}
+
+.pa-preview-info div {
+  margin-bottom: 4px;
+}
+
+.pa-preview-info div:last-child {
+  margin-bottom: 0;
+}
+
+.pa-preview-footer {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid #dee2e6;
+  background: #f8f9fa;
+  flex-shrink: 0;
+}
+
+.pa-preview-footer .pa-btn {
+  width: 100%;
+}
+
+/* ============================================================================
+ * PHOTO LIST SCREEN (PREVIEW MODAL)
+ * ============================================================================ */
+.pa-preview-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10001;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: paFadeIn 0.2s ease;
+}
+
+.pa-preview-overlay.pa-hidden {
+  display: none;
+}
+
+.pa-preview-modal {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: paDialogEnter 0.3s ease-out;
+}
+
+/* ============================================================================
+ * PHOTO DETAIL SCREEN (EDIT INFO)
+ * ============================================================================ */
+.pa-detail-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10002;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: paFadeIn 0.2s ease;
+}
+
+.pa-detail-overlay.pa-hidden {
+  display: none;
+}
+
+.pa-detail-modal {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: paDialogEnter 0.3s ease-out;
+}
+
+.pa-detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid #dee2e6;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  flex-shrink: 0;
+  min-height: 48px;
+}
+
+.pa-detail-title {
+  flex: 1;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pa-detail-title .ja {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.pa-detail-title .vi {
+  font-size: 11px;
+  opacity: 0.85;
+}
+
+.pa-detail-body {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+}
+
+.pa-detail-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  padding: 16px;
+}
+
+.pa-detail-image {
+  max-width: 100%;
+  max-height: 300px;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+.pa-detail-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pa-info-box {
+  padding: 12px;
+  background: #e7f3ff;
+  border: 1px solid #b8daff;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #004085;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pa-info-box i {
+  margin-right: 6px;
+}
+
+.pa-detail-footer {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid #dee2e6;
+  background: #f8f9fa;
+  flex-shrink: 0;
+}
+
+.pa-detail-footer .pa-btn {
+  width: 100%;
+}
+
+/* ============================================================================
+ * IMAGE EDITOR SCREEN
+ * ============================================================================ */
+.pa-editor-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10003;
+  background: rgba(0, 0, 0, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: paFadeIn 0.2s ease;
+}
+
+.pa-editor-overlay.pa-hidden {
+  display: none;
+}
+
+.pa-editor-modal {
+  background: #1f2937;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  width: 90%;
+  max-width: 1000px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: paDialogEnter 0.3s ease-out;
+}
+
+.pa-editor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid #374151;
+  background: #111827;
+  color: white;
+  flex-shrink: 0;
+  min-height: 48px;
+}
+
+.pa-editor-title {
+  flex: 1;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pa-editor-title .ja {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.pa-editor-title .vi {
+  font-size: 11px;
+  opacity: 0.85;
+}
+
+.pa-editor-body {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  align-items: center;
+}
+
+.pa-editor-canvas-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  background: #000;
+  border-radius: 6px;
+  position: relative;
+}
+
+.pa-editor-canvas {
+  max-width: 100%;
+  max-height: 100%;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.pa-editor-hint {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.pa-editor-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.pa-editor-select {
+  background: #374151;
+  color: white;
+  border: 1px solid #4b5563;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  outline: none;
+}
+
+.pa-editor-select:focus {
+  border-color: #667eea;
+}
+
+/* ============================================================================
+ * LOADING SPINNER
+ * ============================================================================ */
+.pa-loading-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: paSpin 0.8s linear infinite;
+}
+
+@keyframes paSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================================================
+ * TOAST NOTIFICATION
+ * ============================================================================ */
+.pa-toast {
+  position: fixed;
+  bottom: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  color: #212529;
+  padding: 12px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 10100;
+  min-width: 250px;
+  max-width: 90%;
+  transition: bottom 0.3s ease;
+}
+
+.pa-toast-show {
+  bottom: 30px; /* iOS handles safe-area automatically for fixed bottom */
+}
+
+.pa-toast i {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.pa-toast-success {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.pa-toast-success i {
+  color: #28a745;
+}
+
+.pa-toast-error {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.pa-toast-error i {
+  color: #dc3545;
+}
+
+.pa-toast-warning {
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeaa7;
+}
+
+.pa-toast-warning i {
+  color: #ffc107;
+}
+
+.pa-toast-info {
+  background: #d1ecf1;
+  color: #0c5460;
+  border: 1px solid #bee5eb;
+}
+
+.pa-toast-info i {
+  color: #17a2b8;
+}
+
+/* ============================================================================
+ * RESPONSIVE - MOBILE
+ * ============================================================================ */
+@media (max-width: 768px) {
+  .pa-dialog,
+  .pa-capture-preview-modal,
+  .pa-preview-modal,
+  .pa-detail-modal,
+  .pa-editor-modal {
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    max-height: 100%;
+    border-radius: 0;
+  }
+
+  .pa-body {
+    padding: 16px;
+  }
+
+  .pa-footer {
+    padding: 10px 12px;
+  }
+
+  .pa-form-row-triple {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .pa-toast {
+    min-width: 200px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .pa-title .ja {
+    font-size: 14px;
+  }
+
+  .pa-title .vi {
+    font-size: 10px;
+  }
+
+  .pa-body {
+    padding: 12px;
+  }
+
+  .pa-form {
+    gap: 12px;
+  }
+
+  .pa-footer {
+    padding: 8px;
+    gap: 6px;
+  }
+
+  .pa-btn {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .pa-btn-xs {
+    padding: 5px 8px;
+    font-size: 11px;
+  }
+
+  .pa-preview-footer,
+  .pa-detail-footer {
+    padding: 8px;
+    gap: 6px;
+  }
+}
+
+/* Icon-only buttons on very small screens */
+@media (max-width: 400px) {
+  .pa-footer .pa-btn span,
+  .pa-preview-footer .pa-btn span,
+  .pa-detail-footer .pa-btn span {
+    display: none;
+  }
+
+  .pa-footer .pa-btn,
+  .pa-preview-footer .pa-btn,
+  .pa-detail-footer .pa-btn {
+    padding: 8px;
+    min-width: 36px;
+    justify-content: center;
+  }
+
+  .pa-footer .pa-btn i,
+  .pa-preview-footer .pa-btn i,
+  .pa-detail-footer .pa-btn i {
+    margin: 0;
+  }
+
+  .pa-footer {
+    gap: 4px;
+    padding: 6px;
+  }
+}
+
+/* ============================================================================
+ * UTILITY CLASSES
+ * ============================================================================ */
+.pa-hidden {
+  display: none !important;
+}
+
+/* ============================================================================
+ * END OF STYLESHEET
+ * ============================================================================ */

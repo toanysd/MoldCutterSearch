@@ -2550,7 +2550,7 @@ const PhotoAuditTool = {
   async sendCurrentCapturedPhoto() {
     if (this.state.sending) return;
     
-    const uid = this.els.capturePreviewOverlay.dataset.uid;
+    const uid = this.els.capturePreviewOverlay?.dataset?.uid;
     const photo = this.findPhotoByUid(uid);
     if (!photo) {
       this.showToast('Không tìm thấy ảnh', 'error');
@@ -2558,18 +2558,18 @@ const PhotoAuditTool = {
     }
     
     // Validate employee
-    const employeeName = this.state.mainForm.selectedEmployee?.name || this.els.employeeInput.value.trim();
+    const employeeName = this.state.mainForm.selectedEmployee?.name || this.els.employeeInput?.value?.trim() || '';
     if (!employeeName) {
       this.showToast('Vui lòng chọn người chụp', 'error');
       this.closeCapturePreview(true);
       this.showSettings();
-      this.els.employeeInput.focus();
+      if (this.els.employeeInput) this.els.employeeInput.focus();
       return;
     }
     
     // Get filename from input và update mainForm nếu cần
     const customFileName = this.els.capturePreviewFilename?.value?.trim() || '';
-    if (customFileName && !this.els.moldInput.value.trim()) {
+    if (customFileName && !this.els.moldInput?.value?.trim()) {
       this.els.moldInput.value = customFileName;
       this.state.mainForm.isManualMold = true;
       this.updateMoldBadge();
@@ -2580,7 +2580,10 @@ const PhotoAuditTool = {
     this.saveCCToStorageNow(false);
     
     const btn = PhotoAuditUtils.$('#pa-btn-capture-preview-send');
-    if (!btn) return;
+    if (!btn) {
+      console.error('[PhotoAuditTool] Send button not found');
+      return;
+    }
     
     btn.disabled = true;
     this.state.sending = true;
@@ -2596,28 +2599,28 @@ const PhotoAuditTool = {
       await SupabasePhotoClient.uploadFile(PHOTOAUDITCONFIG.STORAGEBUCKET, fileName, processedBlob);
       const photoUrl = SupabasePhotoClient.getPublicUrl(PHOTOAUDITCONFIG.STORAGEBUCKET, fileName);
       
-      // Prepare main form data
+      // Prepare main form data (GIỐNG sendAllPhotos)
       let mainMoldCode, mainMoldName, mainMoldId;
       if (this.state.mainForm.selectedMold && !this.state.mainForm.isManualMold) {
         mainMoldCode = this.state.mainForm.selectedMold.code;
         mainMoldName = this.state.mainForm.selectedMold.name;
         mainMoldId = this.state.mainForm.selectedMold.id;
-      } else if (this.els.moldInput.value.trim()) {
+      } else if (this.els.moldInput?.value?.trim()) {
         mainMoldName = this.els.moldInput.value.trim();
         mainMoldCode = this.generateMoldCodeFromName(mainMoldName);
       }
       
       const employeeId = this.state.mainForm.selectedEmployee?.id;
       
-      // Build payload for single photo
+      // Build payload for single photo (CHUẨN HÓA GIỐNG sendAllPhotos)
       const payload = {
         // Main mold info
         moldCode: mainMoldCode || 'SINGLE',
         moldName: mainMoldName || 'Single Photo',
         moldId: mainMoldId || null,
-        dimensionL: this.state.mainForm.dimensions.length || '',
-        dimensionW: this.state.mainForm.dimensions.width || '',
-        dimensionD: this.state.mainForm.dimensions.depth || '',
+        dimensionL: this.state.mainForm.dimensions?.length || '',
+        dimensionW: this.state.mainForm.dimensions?.width || '',
+        dimensionD: this.state.mainForm.dimensions?.depth || '',
         // Single photo array
         photos: [{
           fileName: fileName,
@@ -2631,8 +2634,8 @@ const PhotoAuditTool = {
         date: PhotoAuditUtils.formatDateTime(),
         // Notes & recipients
         notes: this.state.mainForm.notes || '',
-        recipients: [PHOTOAUDITCONFIG.PRIMARYRECIPIENT],
-        ccRecipients: this.state.ccRecipients
+        recipients: [PHOTOAUDITCONFIG.PRIMARYRECIPIENT], // Bọc trong array
+        ccRecipients: this.state.ccRecipients || []
       };
       
       console.log('[PhotoAuditTool] Sending single photo email...', payload);
@@ -2653,12 +2656,13 @@ const PhotoAuditTool = {
       console.error('[PhotoAuditTool] Send error', err);
       const errorMsg = err.message || 'Unknown error';
       this.showToast(`Gửi thất bại: ${errorMsg}`, 'error', 8000);
-      btn.disabled = false;
-      btn.innerHTML = '<i class="fas fa-paper-plane"></i><span>Send</span>';
     } finally {
       this.state.sending = false;
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-paper-plane"></i><span>Send</span>';
     }
   },
+
 
   /* ============================================================================
    * SEND ALL PHOTOS (Batch Email)

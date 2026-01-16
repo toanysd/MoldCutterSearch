@@ -284,6 +284,9 @@ const PhotoAuditTool = {
     photos: [], // { uid, blob, originalBlob?, source, fileName, originalName, capturedAt, photoInfo:{...}, setAsThumbnail, edits? }
     currentPhotoIndex: -1,
 
+    // Capture preview state
+    capturePreviewSaved: false, // track if current photo is saved
+
     // UI
     currentScreen: null, // 'settings' | 'camera' | 'photoList' | 'photoDetail' | 'editor' | 'capturePreview'
     sending: false,
@@ -1636,21 +1639,15 @@ const PhotoAuditTool = {
     body.appendChild(info);
 
 
-    const footer = ce('div', {class: 'pa-preview-footer'});
+    const footer = ce('div', { class: 'pa-preview-footer' });
     footer.innerHTML = `
-      <button class="pa-btn pa-btn-danger" id="pa-btn-capture-preview-delete">
-        <i class="fas fa-trash"></i><span>Delete</span>
-      </button>
-      <button class="pa-btn pa-btn-secondary" id="pa-btn-capture-preview-edit">
-        <i class="fas fa-crop-alt"></i><span>Edit</span>
-      </button>
-      <button class="pa-btn pa-btn-success" id="pa-btn-capture-preview-keep">
-        <i class="fas fa-check"></i><span>Keep</span>
-      </button>
-      <button class="pa-btn pa-btn-primary" id="pa-btn-capture-preview-send">
-        <i class="fas fa-paper-plane"></i><span>Send</span>
-      </button>
+      <button class="pa-btn pa-btn-danger" id="pa-btn-capture-preview-delete"><i class="fas fa-trash"></i><span>Xóa</span></button>
+      <button class="pa-btn pa-btn-secondary" id="pa-btn-capture-preview-edit"><i class="fas fa-crop-alt"></i><span>Chỉnh sửa</span></button>
+      <button class="pa-btn pa-btn-success" id="pa-btn-capture-preview-keep"><i class="fas fa-check"></i><span>Lưu ảnh</span></button>
+      <button class="pa-btn pa-btn-primary" id="pa-btn-capture-preview-continue"><i class="fas fa-camera"></i><span>Chụp tiếp</span></button>
+      <button class="pa-btn pa-btn-secondary" id="pa-btn-capture-preview-exit"><i class="fas fa-times"></i><span>Thoát</span></button>
     `;
+
 
 
 
@@ -1667,34 +1664,67 @@ const PhotoAuditTool = {
     this.els.capturePreviewFilename = PhotoAuditUtils.$('#pa-capture-preview-filename');
 
     // events
-    PhotoAuditUtils.$('#pa-btn-capture-preview-back').addEventListener('click', (e) => {
-      e.preventDefault();
-      this.closeCapturePreview(true);
-    });
-
     PhotoAuditUtils.$('#pa-btn-capture-preview-delete').addEventListener('click', (e) => {
       e.preventDefault();
-      const uid = overlay.dataset.uid;
-      if (uid) this.deletePhoto(uid);
-      this.closeCapturePreview(true);
+      if (confirm('Bạn có chắc muốn xóa ảnh này?')) {
+        const uid = overlay.dataset.uid;
+        if (uid) {
+          this.deletePhoto(uid);
+        }
+        this.closeCapturePreview(true); // back to camera
+      }
     });
 
     PhotoAuditUtils.$('#pa-btn-capture-preview-edit').addEventListener('click', (e) => {
       e.preventDefault();
       const uid = overlay.dataset.uid;
-      if (uid) this.openImageEditorByUid(uid, { from: 'capturePreview' });
+      if (uid) {
+        this.openImageEditorByUid(uid, { from: 'capturePreview' });
+      }
     });
 
+    // NEW LOGIC: Keep button - only mark as saved, stay in preview
     PhotoAuditUtils.$('#pa-btn-capture-preview-keep').addEventListener('click', (e) => {
       e.preventDefault();
-      this.closeCapturePreview(true);
-      // stay in camera for next photos
-      this.showToast('保存しました / Đã lưu ảnh', 'success');
+      this.state.capturePreviewSaved = true;
+      this.showToast('Đã lưu ảnh vào danh sách', 'success');
+      // Update button states after save
+      PhotoAuditUtils.$('#pa-btn-capture-preview-keep').disabled = true;
+      PhotoAuditUtils.$('#pa-btn-capture-preview-keep').innerHTML = '<i class="fas fa-check-circle"></i><span>Đã lưu</span>';
     });
 
-    PhotoAuditUtils.$('#pa-btn-capture-preview-send').addEventListener('click', (e) => {
+    // NEW: Continue button - close preview and return to camera
+    PhotoAuditUtils.$('#pa-btn-capture-preview-continue').addEventListener('click', (e) => {
       e.preventDefault();
-      this.sendCurrentCapturedPhoto();
+      if (!this.state.capturePreviewSaved) {
+        if (!confirm('Ảnh chưa được lưu. Bạn có muốn tiếp tục?')) {
+          return;
+        }
+        // Delete photo if not saved
+        const uid = overlay.dataset.uid;
+        if (uid) {
+          this.deletePhoto(uid);
+        }
+      }
+      this.closeCapturePreview(true); // back to camera
+    });
+
+    // NEW: Exit button - go back to settings with confirmation
+    PhotoAuditUtils.$('#pa-btn-capture-preview-exit').addEventListener('click', (e) => {
+      e.preventDefault();
+      if (!this.state.capturePreviewSaved) {
+        if (!confirm('Ảnh chưa được lưu. Bạn có muốn thoát?')) {
+          return;
+        }
+        // Delete photo if not saved
+        const uid = overlay.dataset.uid;
+        if (uid) {
+          this.deletePhoto(uid);
+        }
+      }
+      this.closeCapturePreview(false); // returnToCamera = false
+      this.closeCamera(); // stop camera
+      this.showSettings(); // back to main settings
     });
   },
 
@@ -1702,6 +1732,9 @@ const PhotoAuditTool = {
     const photo = this.findPhotoByUid(uid);
     if (!photo) return;
     
+    // Reset saved flag when opening preview
+    this.state.capturePreviewSaved = false;
+
     const url = URL.createObjectURL(photo.blob);
     this.els.capturePreviewImage.src = url;
     
@@ -2647,7 +2680,9 @@ const PhotoAuditTool = {
       console.log('[PhotoAuditTool] Email sent successfully', result);
       
       this.showToast('Đã gửi ảnh thành công!', 'success', 2500);
-      
+      // Mark as saved
+      this.state.capturePreviewSaved = true;
+
       // Delete photo from list
       this.deletePhoto(uid);
       

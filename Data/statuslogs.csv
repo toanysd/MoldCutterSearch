@@ -1,4 +1,5 @@
 StatusLogID,MoldID,CutterID,ItemType,Status,Timestamp,EmployeeID,DestinationID,Notes,AuditDate,AuditType,SessionID,SessionName,SessionMode
+SL1771919561520,5722,,,OUT,2026-02-24T07:51:53.679Z,1,10,Kiểm kê,,,,,
 SL1771895823314,5722,,,IN,2026-02-24T01:16:40.527Z,1,,,,,,,
 7,3192,,,,,1,13,台車,,,,,
 8,5604,,,,,4,9,Viet,,,,,

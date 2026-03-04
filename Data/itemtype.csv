@@ -1,0 +1,12 @@
+﻿ItemTypeID,ItemType,ItemTypeName
+1,ALUMI,アルミ材
+2,MOLD,金型
+3,PLUG,プラグ
+4,CUTTER,抜型
+5,WATER COOLING BASE,水冷盤
+6,PRESSIER BASE,圧空ベース
+7,STAKING,スタッキング
+8,FRAME,フレーム
+9,MACHINE,機械など
+10,OTHER,成形・プレス・出荷など
+11,TEST MOLD,試作金型

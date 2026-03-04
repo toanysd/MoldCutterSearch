@@ -1,0 +1,14 @@
+﻿ProcessingStatusID,ProcessingStatus,IDTinhTrangGC,TinhTrangGiaCong
+1,0.未確認,0,0-未確認
+2,1.プログラム,1,プログラム
+3,2.機械加工,2,機械加工
+4,3.穴あけ,3,穴あけ
+5,4.ミガキ,4,ミガキ
+6,5.プラグ作成,5,プラグ作成
+7,6.ネル貼り,6,ネル貼り
+8,F.完了,F,F - 完了
+9,N.進行中,N,N - 進行中
+10,R.REQUEST,R,R - REQUEST
+11,ZF.材料有,ZF,ZF - 材料有
+12,ZN.材料待ち,ZN,ZN - 材料待ち
+13,ZR.材料 Request,ZR,ZR - 材料 Request

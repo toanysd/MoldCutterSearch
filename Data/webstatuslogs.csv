@@ -1,1 +1,2 @@
 StatusLogID,LegacyStatusLogID,MoldID,CutterID,ItemType,Status,Timestamp,EmployeeID,DestinationID,Notes,AuditDate,AuditType,SessionID,SessionName,SessionMode,WebUUID,UpdatedAt,UpdatedBy
+WEB_SL_1772699285290_g3bxqnc7j,,5740,,mold,IN,2026-03-05T08:28:04.939Z,1,AREA-MOLDROOM,,,,,,,,2026-03-05T17:28:05.950Z,1

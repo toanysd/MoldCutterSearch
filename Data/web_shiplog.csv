@@ -1,0 +1,1 @@
+legacy_shiplog_id,customer_id,item_type_id,ship_item_name,ship_date,to_company_id,from_company_id,ship_item_type,ship_status,from_company,to_company,mold_id,cutter_id,frame_id,other_equip_id,water_base_id,ship_notes,date_entry,handler,employee_id,web_uuid,updated_at,updated_by

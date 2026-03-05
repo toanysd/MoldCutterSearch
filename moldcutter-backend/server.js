@@ -1,4 +1,4 @@
-// server-v8.2.6.js
+// server-v8.2.7.js
 // MoldCutterSearch Backend - GitHub CSV storage
 // Based on server-v8.2.5.js
 // Improvements (v8.2.6):
@@ -57,6 +57,8 @@ console.log('[Server] Timezone helpers loaded (JST = UTC+9)');
 // ========================================
 // FILE HEADERS (Legacy endpoints only)
 // ========================================
+
+
 const FILE_HEADERS = {
   'locationlog.csv': ['LocationLogID', 'OldRackLayer', 'NewRackLayer', 'MoldID', 'DateEntry', 'CutterID', 'notes', 'EmployeeID'],
 
@@ -82,7 +84,26 @@ const FILE_HEADERS = {
 
   'statuslogs.csv': ['StatusLogID', 'MoldID', 'CutterID', 'ItemType', 'Status', 'Timestamp', 'EmployeeID', 'DestinationID', 'Notes', 'AuditDate', 'AuditType', 'SessionID', 'SessionName', 'SessionMode'],
 
-  'teflonlog.csv': ['TeflonLogID', 'MoldID', 'TeflonStatus', 'RequestedBy', 'RequestedDate', 'SentBy', 'SentDate', 'ExpectedDate', 'ReceivedDate', 'SupplierID', 'CoatingType', 'Reason', 'TeflonCost', 'Quality', 'TeflonNotes', 'CreatedDate', 'UpdatedBy', 'UpdatedDate']
+  'teflonlog.csv': ['TeflonLogID', 'MoldID', 'TeflonStatus', 'RequestedBy', 'RequestedDate', 'SentBy', 'SentDate', 'ExpectedDate', 'ReceivedDate', 'SupplierID', 'CoatingType', 'Reason', 'TeflonCost', 'Quality', 'TeflonNotes', 'CreatedDate', 'UpdatedBy', 'UpdatedDate'],
+ 
+  'destinations.csv': ['DestinationID', 'DestinationName', 'DestinationCode', 'CompanyID', 'Address', 'Notes'],
+
+  'CAV.csv': ['CAVCode', 'Serial', 'CAV', 'CAVlength', 'CAVwidth', 'CAVnote'],
+
+  'processingdeadline.csv': ['ProcessingDeadlineID', 'MoldDesignID', 'DeadlineDate', 'Notes'],
+
+  'processingstatus.csv': ['ProcessingStatusID', 'StatusName', 'StatusCode', 'Notes'],
+
+  'itemtype.csv': ['ItemTypeID', 'ItemTypeName', 'ItemTypeCode', 'Notes'],
+
+  'plasticforforming.csv': ['PlasticID', 'PlasticName', 'PlasticCode', 'Notes'],
+
+  'machiningcustomer.csv': ['MachiningCustomerID', 'CustomerName', 'CustomerCode', 'Notes'],
+
+  'tray.csv': ['TrayID', 'TrayName', 'TrayCode', 'TrayCapacity', 'Notes'],
+
+  'worklog.csv': ['WorkLogID', 'MoldID', 'CutterID', 'EmployeeID', 'WorkDate', 'WorkType', 'Notes'],
+
 };
 
 // ========================================
@@ -406,13 +427,17 @@ async function updateGitHubFile(filePath, content, sha, message) {
 // Helper: ID field by filename (legacy)
 // ========================================
 function getIdFieldByFilename(filename) {
-  if (filename === 'teflonlog.csv') return 'TeflonLogID';
-  if (filename === 'statuslogs.csv') return 'StatusLogID';
-  if (filename === 'locationlog.csv') return 'LocationLogID';
-  if (filename === 'shiplog.csv') return 'ShipID';
-  if (filename === 'usercomments.csv') return 'UserCommentID';
+  let fn = String(filename || '').trim();
+  if (fn.startsWith('web_')) fn = fn.slice(4);
+
+  if (fn === 'teflonlog.csv') return 'TeflonLogID';
+  if (fn === 'statuslogs.csv') return 'StatusLogID';
+  if (fn === 'locationlog.csv') return 'LocationLogID';
+  if (fn === 'shiplog.csv') return 'ShipID';
+  if (fn === 'usercomments.csv') return 'UserCommentID';
   return null;
 }
+
 
 function genId(prefix) {
   return `${prefix}${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -519,6 +544,12 @@ async function updateCsvFileDynamicWithRetry(filename, commitMessage, mutateFn, 
   }
 
   throw lastErr || new Error('Retry failed');
+}
+
+async function updateWebCsvFileWithRetry(webFilename, commitMessage, mutateFn, opts = {}) {
+  const fn = String(webFilename || '').trim();
+  if (!fn.startsWith('web_')) throw httpError(400, `Expected web_*.csv, got: ${fn}`);
+  return updateCsvFileDynamicWithRetry(fn, commitMessage, mutateFn, opts);
 }
 
 // ========================================
@@ -775,11 +806,15 @@ app.post('/api/add-log', async (req, res) => {
   console.log('[SERVER] add-log called');
   try {
     const { filename, entry } = req.body || {};
+    const targetFilename = String(filename || '').trim().startsWith('web_')
+      ? String(filename || '').trim()
+      : `web_${String(filename || '').trim()}`;
+
     if (!filename || !entry) {
       return res.status(400).json({ success: false, message: 'Missing filename or entry' });
     }
 
-    const expectedHeaders = FILE_HEADERS[filename];
+    const expectedHeaders = FILE_HEADERS[targetFilename];
     if (!expectedHeaders) {
       return res.status(400).json({ success: false, message: `File ${filename} not supported` });
     }
@@ -793,8 +828,8 @@ app.post('/api/add-log', async (req, res) => {
     });
 
     await updateCsvFileWithRetry(
-      filename,
-      `Add ${filename} entry`,
+      targetFilename,
+      `Add ${targetFilename} entry`,
       async (records) => {
         if (idField && incomingId) {
           const exists = records.some(r => String((r && r[idField]) || '').trim() === incomingId);
@@ -819,18 +854,22 @@ app.post('/api/update-item', async (req, res) => {
   console.log('[SERVER] update-item called');
   try {
     const { filename, itemIdField, itemIdValue, updates } = req.body || {};
+    const targetFilename = String(filename || '').trim().startsWith('web_')
+      ? String(filename || '').trim()
+      : `web_${String(filename || '').trim()}`;
+
     if (!filename || !itemIdField || !itemIdValue || !updates) {
       return res.status(400).json({ success: false, message: 'Missing required parameters' });
     }
 
-    const expectedHeaders = FILE_HEADERS[filename];
+    const expectedHeaders = FILE_HEADERS[targetFilename];
     if (!expectedHeaders) {
       return res.status(400).json({ success: false, message: `File ${filename} not supported` });
     }
 
     await updateCsvFileWithRetry(
-      filename,
-      `Update ${filename} item ${itemIdValue}`,
+      targetFilename,
+      `Update ${targetFilename} item ${itemIdValue}`,
       async (records) => {
         let itemFound = false;
         const idVal = String(itemIdValue).trim();
@@ -853,6 +892,7 @@ app.post('/api/update-item', async (req, res) => {
       { maxRetry: 4 }
     );
 
+
     res.json({ success: true, message: `Item updated in ${filename}` });
   } catch (error) {
     const st = getHttpStatus(error);
@@ -870,7 +910,7 @@ app.post('/api/add-comment', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Missing comment' });
     }
 
-    const filename = 'usercomments.csv';
+    const filename = 'web_usercomments.csv';
     const expectedHeaders = FILE_HEADERS[filename];
 
     const newId = (comment.UserCommentID && String(comment.UserCommentID).trim())
@@ -883,7 +923,7 @@ app.post('/api/add-comment', async (req, res) => {
       else normalizedComment[key] = (comment && comment[key] !== undefined && comment[key] !== null) ? comment[key] : '';
     });
 
-    await updateCsvFileWithRetry(
+    await updateWebCsvFileWithRetry(
       filename,
       `Add comment ${newId}`,
       async (records) => {
@@ -891,8 +931,9 @@ app.post('/api/add-comment', async (req, res) => {
         if (!exists) records.unshift(normalizedComment);
         return { records };
       },
-      { maxRetry: 4 }
+      { maxRetry: 4, requireExisting: true }
     );
+
 
     res.json({ success: true, message: 'Comment added', commentId: newId });
   } catch (error) {
@@ -921,7 +962,7 @@ app.post('/api/checklog', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Status required' });
     }
 
-    const filename = 'statuslogs.csv';
+    const filename = 'web_statuslogs.csv';
 
     const newId = (StatusLogID && String(StatusLogID).trim())
       ? String(StatusLogID).trim()
@@ -944,7 +985,7 @@ app.post('/api/checklog', async (req, res) => {
       SessionMode: SessionMode || ''
     };
 
-    await updateCsvFileWithRetry(
+    await updateWebCsvFileWithRetry(
       filename,
       `Add checklog for ${MoldID || CutterID}`,
       async (records) => {
@@ -952,8 +993,9 @@ app.post('/api/checklog', async (req, res) => {
         if (!exists) records.unshift(normalizedEntry);
         return { records };
       },
-      { maxRetry: 4 }
+      { maxRetry: 4, requireExisting: true }
     );
+
 
     res.json({ success: true, message: 'Check recorded', entryId: newId });
   } catch (error) {
@@ -991,20 +1033,21 @@ app.post('/api/locationlog', async (req, res) => {
       EmployeeID: Employee || EmployeeID || ''
     };
 
-    await updateCsvFileWithRetry(
-      'locationlog.csv',
+    await updateWebCsvFileWithRetry(
+      'web_locationlog.csv',
       `Add location log for ${MoldID}`,
       async (records) => {
         const exists = records.some(r => String((r && r.LocationLogID) || '').trim() === locId);
         if (!exists) records.unshift(locEntry);
         return { records };
       },
-      { maxRetry: 4 }
+      { maxRetry: 4, requireExisting: true }
     );
 
+
     try {
-      await updateCsvFileWithRetry(
-        'molds.csv',
+      await updateWebCsvFileWithRetry(
+        'web_molds.csv',
         `Update mold ${MoldID} RackLayerID`,
         async (records) => {
           let found = false;
@@ -1022,8 +1065,9 @@ app.post('/api/locationlog', async (req, res) => {
           }
           return { records };
         },
-        { maxRetry: 4 }
+        { maxRetry: 4, requireExisting: true }
       );
+
     } catch (moldsErr) {
       console.error('[SERVER] ⚠️ Error updating molds.csv:', moldsErr && moldsErr.message ? moldsErr.message : moldsErr);
     }
@@ -1052,8 +1096,8 @@ app.post('/api/audit-batch', async (req, res) => {
     let moldUpdateCount = 0;
 
     if (Array.isArray(statusLogs) && statusLogs.length > 0) {
-      await updateCsvFileWithRetry(
-        'statuslogs.csv',
+      await updateWebCsvFileWithRetry(
+        'web_statuslogs.csv',
         `Batch add ${statusLogs.length} audit logs`,
         async (records) => {
           for (const log of statusLogs) {
@@ -1081,14 +1125,14 @@ app.post('/api/audit-batch', async (req, res) => {
           }
           return { records };
         },
-        { maxRetry: 4 }
+        { maxRetry: 4, requireExisting: true }
       );
     }
 
     const moldUpdates = [];
     if (Array.isArray(locationLogs) && locationLogs.length > 0) {
-      await updateCsvFileWithRetry(
-        'locationlog.csv',
+      await updateWebCsvFileWithRetry(
+        'web_locationlog.csv',
         `Batch add ${locationLogs.length} location logs`,
         async (records) => {
           for (const log of locationLogs) {
@@ -1114,7 +1158,7 @@ app.post('/api/audit-batch', async (req, res) => {
           }
           return { records };
         },
-        { maxRetry: 4 }
+        { maxRetry: 4, requireExisting: true }
       );
     }
 
@@ -1127,8 +1171,8 @@ app.post('/api/audit-batch', async (req, res) => {
       });
 
       try {
-        await updateCsvFileWithRetry(
-          'molds.csv',
+        await updateWebCsvFileWithRetry(
+          'web_molds.csv',
           `Batch update molds RackLayerID (Audit)`,
           async (records) => {
             records = records.map(r => {
@@ -1141,7 +1185,7 @@ app.post('/api/audit-batch', async (req, res) => {
             });
             return { records };
           },
-          { maxRetry: 4 }
+          { maxRetry: 4, requireExisting: true }
         );
       } catch (mErr) {
         console.error('[SERVER] ⚠️ molds.csv update failed in audit-batch:', mErr && mErr.message ? mErr.message : mErr);
@@ -1167,8 +1211,8 @@ app.delete('/api/locationlog/:id', async (req, res) => {
     const idParam = String((req.params && req.params.id) || '').trim();
     const { MoldID, DateEntry } = req.body || {};
 
-    await updateCsvFileWithRetry(
-      'locationlog.csv',
+    await updateWebCsvFileWithRetry(
+      'web_locationlog.csv',
       `Delete location log ${idParam || MoldID || ''}`,
       async (records) => {
         const beforeLen = records.length;
@@ -1189,7 +1233,7 @@ app.delete('/api/locationlog/:id', async (req, res) => {
         if (records.length === beforeLen) throw httpError(404, 'Location log not found');
         return { records };
       },
-      { maxRetry: 4 }
+      { maxRetry: 4, requireExisting: true }
     );
 
     res.json({ success: true, message: 'Location log deleted' });
@@ -1205,33 +1249,33 @@ app.post('/api/delete-log', async (req, res) => {
   console.log('[SERVER] delete-log called');
   try {
     const { filename, logId } = req.body || {};
+    const targetFilename = String(filename || '').trim().startsWith('web_')
+    ? String(filename || '').trim()
+    : `web_${String(filename || '').trim()}`;
+
     if (!filename || !logId) {
       return res.status(400).json({ success: false, message: 'Missing filename or logId' });
     }
 
-    const expectedHeaders = FILE_HEADERS[filename];
-    if (!expectedHeaders) {
-      return res.status(400).json({ success: false, message: `File ${filename} not supported` });
-    }
-
-    const idField = getIdFieldByFilename(filename);
+    const idField = getIdFieldByFilename(targetFilename);
     if (!idField) {
       return res.status(400).json({ success: false, message: `Delete not supported for ${filename}` });
     }
 
     const delId = String(logId).trim();
 
-    await updateCsvFileWithRetry(
-      filename,
-      `Delete ${filename} entry ${delId}`,
+    await updateWebCsvFileWithRetry(
+      targetFilename,
+      `Delete ${targetFilename} entry ${delId}`,
       async (records) => {
         const beforeLen = records.length;
         records = records.filter(r => String((r && r[idField]) || '').trim() !== delId);
         if (records.length === beforeLen) throw httpError(404, 'Log entry not found');
         return { records };
       },
-      { maxRetry: 4 }
+      { maxRetry: 4, requireExisting: true }
     );
+
 
     res.json({ success: true, message: `Log entry deleted from ${filename}`, deletedId: delId });
   } catch (error) {

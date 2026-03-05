@@ -1,4 +1,5 @@
 StatusLogID,MoldID,CutterID,ItemType,Status,Timestamp,EmployeeID,DestinationID,Notes,AuditDate,AuditType,SessionID,SessionName,SessionMode
+SL1772686454958_maw4k5511,5670,,,IN,2026-03-05T04:53:52.295Z,1,AREA-MOLDROOM,,,,,,
 SL1772619344396_z3cjg370b,5738,,,IN,2026-03-04T10:15:43.872Z,1,AREA-MOLDROOM,,,,,,
 7,3192,,,,,1,13,台車,,,,,
 8,5604,,,,,4,9,Viet,,,,,

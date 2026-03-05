@@ -29,8 +29,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
-
+app.options(/.*/, cors(corsOptions));
 app.use(bodyParser.json({ limit: '4mb' }));
 
 const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });

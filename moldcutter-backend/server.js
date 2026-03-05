@@ -17,7 +17,20 @@ const stream = require('stream');
 const cors = require('cors');
 
 const app = express();
-app.use(cors());
+const corsOptions = {
+  origin: function (origin, cb) {
+    // Cho phép origin null (mở từ file://) và mọi origin khi dev nội bộ
+    if (!origin || origin === 'null') return cb(null, true);
+    return cb(null, true);
+  },
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type'],
+  maxAge: 86400
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
+
 app.use(bodyParser.json({ limit: '4mb' }));
 
 const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });

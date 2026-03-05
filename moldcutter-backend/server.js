@@ -946,6 +946,9 @@ app.post('/api/add-comment', async (req, res) => {
 
 app.post('/api/checklog', async (req, res) => {
   console.log('[SERVER] checklog called');
+  console.log('[SERVER] checklog body keys:', Object.keys(req.body || {}));
+  console.log('[SERVER] checklog body sample:', { MoldID, CutterID, Status, EmployeeID, DestinationID });
+
   try {
     const {
       StatusLogID,
@@ -988,14 +991,35 @@ app.post('/api/checklog', async (req, res) => {
     await updateWebCsvFileWithRetry(
       filename,
       `Add checklog for ${MoldID || CutterID}`,
-      async (records) => {
+      async (records, headers) => {
         const exists = records.some(r => String((r && r.StatusLogID) || '').trim() === newId);
-        if (!exists) records.unshift(normalizedEntry);
+
+        if (!exists) {
+          const row = {};
+          (headers || []).forEach(h => { row[h] = ''; });
+
+          row.StatusLogID = newId;
+          row.MoldID = MoldID || '';
+          row.CutterID = CutterID || '';
+          row.ItemType = ItemType || '';
+          row.Status = Status || '';
+          row.Timestamp = Timestamp || new Date().toISOString();
+          row.EmployeeID = EmployeeID || '';
+          row.DestinationID = DestinationID || '';
+          row.Notes = Notes || '';
+          row.AuditDate = AuditDate || '';
+          row.AuditType = AuditType || '';
+          row.SessionID = SessionID || '';
+          row.SessionName = SessionName || '';
+          row.SessionMode = SessionMode || '';
+
+          records.unshift(row);
+        }
+
         return { records };
       },
       { maxRetry: 4, requireExisting: true }
     );
-
 
     res.json({ success: true, message: 'Check recorded', entryId: newId });
   } catch (error) {

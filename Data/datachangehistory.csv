@@ -1,0 +1,1 @@
+DataChangeID, TableName, RecordID, RecordIDField, FieldName, OldValue, NewValue, ChangedAt, ChangedBy, BaseValueAtEdit, BaseCommitID, BaseCommitAt, ChangeSource, ChangeNote, IsConflict, ResolvedValue, ResolvedAt, ResolvedBy

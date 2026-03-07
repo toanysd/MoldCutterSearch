@@ -1,4 +1,4 @@
-﻿MoldID,MoldName,MoldCode,CustomerID,TrayID,MoldDesignID,storage_company,RackLayerID,ItemTypeID,MoldLengthModified,MoldWidthModified,MoldHeightModified,MoldWeightModified,MoldNotes,MoldUsageStatus,MoldOnCheckList,JobID,MoldReturning,MoldReturnedDate,MoldDisposing,MoldDisposedDate,MoldEntry
+MoldID,MoldName,MoldCode,CustomerID,TrayID,MoldDesignID,storage_company,RackLayerID,ItemTypeID,MoldLengthModified,MoldWidthModified,MoldHeightModified,MoldWeightModified,MoldNotes,MoldUsageStatus,MoldOnCheckList,JobID,MoldReturning,MoldReturnedDate,MoldDisposing,MoldDisposedDate,MoldEntry
 10,TIH-014,TIH014,,2528,3018,2,12,2,,,,,,,TRUE,,,,,,
 12,TKO-009T,TKO009T,,2579,3078,2,11,2,,,,,,,TRUE,,,,,,
 13,TYJ-001,TYJ001,,2664,3172,2,11,2,,,,,,,TRUE,,,,,,
@@ -4609,6 +4609,6 @@
 5737,JAE-373,JAE373,177,5211,4732,2,700,0,,,,,,,FALSE,0,,,,,2/25/2026
 5738,MTM-189,MTM189,9,5172,4733,2,700,0,,,,,,,FALSE,0,,,,,2/25/2026
 5739,JAE-374,JAE374,177,5212,4734,2,700,0,,,,,,,FALSE,0,,,,,2/26/2026
-5740,DIC-167,DIC167,141,5213,4735,2,700,0,,,,,,,FALSE,0,,,,,2/28/2026
+5740,DIC-167,DIC167,141,5213,4735,2,707,0,,,,,,,FALSE,,FALSE,,FALSE,,2/28/2026
 5741,KSP-211D R5,KSP211DR5,199,5195,4736,2,711,0,,,,,,,FALSE,0,,,,,2/28/2026
 5742,MTM-191D R5,MTM191DR5,9,5214,4737,2,711,0,,,,,,,FALSE,0,,,,,3/3/2026

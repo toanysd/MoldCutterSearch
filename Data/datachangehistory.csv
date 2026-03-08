@@ -1,1 +1,2 @@
 DataChangeID,TableName,RecordID,RecordIDField,FieldName,OldValue,NewValue,ChangedAt,ChangedBy,BaseValueAtEdit,BaseCommitID,BaseCommitAt,ChangeSource,ChangeNote,IsConflict,ResolvedValue,ResolvedAt,ResolvedBy
+DCH1772969766679Z60O,molds,5740,MoldID,RackLayerID,707,1001,2026-03-08T11:36:05.432Z,,707,,,extended_editor,batch=ACM1772969765432Y34H; op=update,FALSE,,,

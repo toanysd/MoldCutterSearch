@@ -224,7 +224,7 @@ plasticforforming: 'webplasticforforming.csv',
 machiningcustomer: 'webmachiningcustomer.csv',
 tray: 'webtray.csv',
 trays: 'webtray.csv',
-worklog: 'worklog.csv',
+worklog: 'webworklog.csv',
 datachangehistory: 'datachangehistory.csv',
 accesscommithistory: 'accesscommithistory.csv'
 
@@ -484,11 +484,19 @@ function ensureAllowedFilename(filename) {
 }
 
 function ensureAllowedWebFilename(filename) {
-const fn = ensureAllowedFilename(filename);
-if (!fn.startsWith('web')) {
-throw httpError(400, `Only web*.csv is writable: ${fn}`);
+  const fn = ensureAllowedFilename(filename);
+  if (!fn.startsWith('web')) {
+  throw httpError(400, `Only web*.csv is writable: ${fn}`);
+  }
+  return fn;
 }
-return fn;
+
+function ensureWritableFilename(filename) {
+  const fn = ensureAllowedFilename(filename);
+  if (fn.startsWith('web')) return fn;
+  if (fn === 'datachangehistory.csv') return fn;
+  if (fn === 'accesscommithistory.csv') return fn;
+  throw httpError(400, 'Only web*.csv or approved history csv is writable: ' + fn);
 }
 
 function isTempKey(v) {
@@ -590,7 +598,7 @@ app.post('/api/csv/upsert', async (req, res) => {
   try {
     const { filename, idField, idValue, updates, mode } = req.body || {};
 
-    const fn = ensureAllowedWebFilename(filename);
+    const fn = ensureWritableFilename(filename);
     const idF = String(idField || '').trim();
     const idV = String(idValue || '').trim();
     const opMode = String(mode || 'upsert').trim().toLowerCase();
@@ -600,17 +608,25 @@ app.post('/api/csv/upsert', async (req, res) => {
     if (isTempKey(idV)) throw httpError(400, `TEMP key is not allowed for real write: ${idV}`);
     if (!['update', 'insert', 'upsert'].includes(opMode)) throw httpError(400, 'mode must be update|insert|upsert');
 
-    const result = await updateWebCsvFileWithRetry(
+    const writer = fn.startsWith('web')
+      ? updateWebCsvFileWithRetry
+      : updateCsvFileDynamicWithRetry;
+
+    const result = await writer(
       fn,
-      `v8.2.6 CSV upsert ${fn} ${idF}=${idV} (${opMode}) ${getJSTDate()}`,
+      `v8.3.0 CSV upsert ${fn} ${idF}=${idV} ${opMode} ${getJSTDate()}`,
       async (records, headers) => {
         if (!headers.includes(idF)) {
-          throw httpError(400, `idField not found in CSV header: ${idF}`, { filename: fn, idField: idF, headers });
+          throw httpError(400, 'idField not found in CSV header: ' + idF, {
+            filename: fn,
+            idField: idF,
+            headers
+          });
         }
 
         const unknown = pickUnknownFields(updates, headers);
         if (unknown.length > 0) {
-          throw httpError(400, `Unknown field(s) for ${fn}`, {
+          throw httpError(400, 'Unknown fields for ' + fn, {
             filename: fn,
             unknownFields: unknown,
             allowedHeadersCount: headers.length
@@ -620,7 +636,7 @@ app.post('/api/csv/upsert', async (req, res) => {
         const idValTrim = String(idV).trim();
         let foundIndex = -1;
 
-        for (let i = 0; i < (records || []).length; i++) {
+        for (let i = 0; i < records.length; i++) {
           const r = records[i];
           if (String((r && r[idF]) || '').trim() === idValTrim) {
             foundIndex = i;
@@ -630,35 +646,59 @@ app.post('/api/csv/upsert', async (req, res) => {
 
         if (foundIndex >= 0) {
           if (opMode === 'insert') {
-            throw httpError(409, 'Insert mode: row already exists', { filename: fn, idField: idF, idValue: idV });
+            throw httpError(409, 'Insert mode row already exists', {
+              filename: fn,
+              idField: idF,
+              idValue: idV
+            });
           }
 
-          const row = records[foundIndex] || {};
-          Object.keys(updates || {}).forEach(k => {
+          const row = records[foundIndex];
+          Object.keys(updates).forEach(k => {
             row[k] = toSafeString(updates[k]);
           });
           row[idF] = idV;
           records[foundIndex] = row;
-
           return { records };
         }
 
         if (opMode === 'update') {
-          throw httpError(404, 'Update mode: row not found', { filename: fn, idField: idF, idValue: idV });
+          throw httpError(404, 'Update mode row not found', {
+            filename: fn,
+            idField: idF,
+            idValue: idV
+          });
         }
 
         const newRow = {};
         headers.forEach(h => { newRow[h] = ''; });
         newRow[idF] = idV;
-        Object.keys(updates || {}).forEach(k => {
+
+        Object.keys(updates).forEach(k => {
           newRow[k] = toSafeString(updates[k]);
         });
+
+        if (fn === 'webmolds.csv') {
+          if (headers.includes('LegacyMoldID') && !String(newRow.LegacyMoldID || '').trim()) {
+            newRow.LegacyMoldID = String(idV);
+          }
+          if (headers.includes('WebUUID') && !String(newRow.WebUUID || '').trim()) {
+            newRow.WebUUID = genId('WEBUUID');
+          }
+          if (headers.includes('UpdatedAt') && !String(newRow.UpdatedAt || '').trim()) {
+            newRow.UpdatedAt = getJSTTimestamp();
+          }
+          if (headers.includes('UpdatedBy') && !String(newRow.UpdatedBy || '').trim()) {
+            newRow.UpdatedBy = String((updates && (updates.EmployeeID || updates.UpdatedBy)) || '');
+          }
+        }
 
         records.unshift(newRow);
         return { records };
       },
       { maxRetry: 4, requireExisting: true }
     );
+
 
     res.json({ success: true, message: 'CSV upsert OK', filename: fn, attempt: result.attempt });
   } catch (error) {

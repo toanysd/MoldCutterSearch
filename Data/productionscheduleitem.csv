@@ -1,0 +1,1 @@
+﻿ProductionScheduleItemID,ProductionScheduleID,JobTrayID,JobID,MoldID,CutterID,MoldDesignID,TrayID,PlanQty,ShipDate,SequenceNo,StartPlan,EndPlan,MachineID,EmployeeID,ItemStatus,LotRequired,PackageSpec,Notes,CreatedBy,CreatedDate,UpdatedBy,UpdatedDate

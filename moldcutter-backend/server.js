@@ -1173,87 +1173,27 @@ app.post('/api/locationlog', async (req, res) => {
       await updateWebCsvFileWithRetry(
         'webmolds.csv',
         `Update mold ${MoldID} RackLayerID`,
-        async (records, headers) => {
+        async (records) => {
           let found = false;
           const mid = String(MoldID).trim();
-
           records = records.map(r => {
             if (String((r && r.MoldID) || '').trim() === mid) {
               found = true;
               r.RackLayerID = NewRackLayer;
-              r.UpdatedAt = getJSTTimestamp();
-              r.UpdatedBy = String(Employee || EmployeeID || '');
             }
             return r;
           });
 
-          // Dedup: xóa các dòng trùng MoldID, giữ lại dòng đầu tiên (đã update)
-          const seen = new Set();
-          records = records.filter(r => {
-            const k = String((r && r.MoldID) || '').trim();
-            if (!k) return true; // giữ dòng không có MoldID
-            if (seen.has(k)) return false; // bỏ dòng trùng
-            seen.add(k);
-            return true;
-          });
-
           if (!found) {
-            // MoldID chưa có trong webmolds.csv -> insert mới
-            console.log(`[SERVER] MoldID ${MoldID} not found in webmolds.csv, inserting...`);
-            const newRow = {};
-            (headers || []).forEach(h => { newRow[h] = ''; });
-            newRow.MoldID = mid;
-            newRow.LegacyMoldID = mid;
-            newRow.RackLayerID = NewRackLayer;
-            newRow.UpdatedAt = getJSTTimestamp();
-            newRow.UpdatedBy = String(Employee || EmployeeID || '');
-            newRow.WebUUID = genId('WEB_UUID_');
-            records.unshift(newRow);
+            console.log(`[SERVER] ⚠️ WARNING: MoldID ${MoldID} not found in molds.csv`);
           }
-
           return { records };
         },
         { maxRetry: 4, requireExisting: true }
       );
+
     } catch (moldsErr) {
       console.error('[SERVER] ⚠️ Error updating molds.csv:', moldsErr && moldsErr.message ? moldsErr.message : moldsErr);
-    }
-
-    // New: Also record to datachangehistory.csv for DataManager overlay logic
-    try {
-      const historyEntry = {
-        DataChangeID: genId('DCH_'),
-        TableName: 'molds',
-        RecordID: MoldID,
-        RecordIDField: 'MoldID',
-        FieldName: 'RackLayerID',
-        OldValue: OldRackLayer || '',
-        NewValue: NewRackLayer || '',
-        ChangedAt: getJSTTimestamp(),
-        ChangedBy: String(Employee || EmployeeID || ''),
-        BaseValueAtEdit: OldRackLayer || '',
-        BaseCommitID: '',
-        BaseCommitAt: '',
-        ChangeSource: 'web:locationlog',
-        ChangeNote: `Location change via /api/locationlog; log=${locId}`,
-        IsConflict: 'FALSE',
-        ResolvedValue: '',
-        ResolvedAt: '',
-        ResolvedBy: ''
-      };
-
-      await updateWebCsvFileWithRetry(
-        'datachangehistory.csv',
-        `Add history entry for mold ${MoldID} location change`,
-        async (records) => {
-          records.unshift(historyEntry);
-          return { records };
-        },
-        { maxRetry: 4, requireExisting: true }
-      );
-    } catch (historyErr) {
-      console.error('[SERVER] ⚠️ Failed to write datachangehistory.csv:', historyErr);
-      // We don't fail the whole request because the main update succeeded
     }
 
     res.json({ success: true, message: `Location change recorded for ${MoldID}`, logId: locId });

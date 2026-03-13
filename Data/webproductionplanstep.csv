@@ -1,0 +1,1 @@
+PlanStepID,LegacyPlanStepID,StepNo,ProductionPlanID,StepType,MoldID,CutterID,MachineID,EmployeeID,CompanyID,PlannedQty,PlannedStart,PlannedEnd,StepStatus,Notes,WebUUID,UpdatedAt,UpdatedBy

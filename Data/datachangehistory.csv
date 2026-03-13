@@ -1,4 +1,5 @@
 DataChangeID,TableName,RecordID,RecordIDField,FieldName,OldValue,NewValue,ChangedAt,ChangedBy,BaseValueAtEdit,BaseCommitID,BaseCommitAt,ChangeSource,ChangeNote,IsConflict,ResolvedValue,ResolvedAt,ResolvedBy
+DCH17733967345318JP6,molds,5684,MoldID,MoldDisposing,,FALSE,2026-03-13T10:11:50.064Z,,,,,extended_editor,batch=ACM1773396710064S1KU; op=update,FALSE,,,
 DCH1773396734531XE4E,molds,5684,MoldID,MoldReturning,,FALSE,2026-03-13T10:11:50.064Z,,,,,extended_editor,batch=ACM1773396710064S1KU; op=update,FALSE,,,
 DCH1773396734531ID05,molds,5684,MoldID,JobID,0,,2026-03-13T10:11:50.064Z,,0,,,extended_editor,batch=ACM1773396710064S1KU; op=update,FALSE,,,
 DCH1773396734531KJ4U,molds,5684,MoldID,RackLayerID,700,94,2026-03-13T10:11:50.064Z,,700,,,extended_editor,batch=ACM1773396710064S1KU; op=update,FALSE,,,

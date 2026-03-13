@@ -1,4 +1,5 @@
 StatusLogID,LegacyStatusLogID,MoldID,CutterID,ItemType,Status,Timestamp,EmployeeID,DestinationID,Notes,AuditDate,AuditType,SessionID,SessionName,SessionMode,WebUUID,UpdatedAt,UpdatedBy
+WEB_SL_1773374023046_dvwfgzues,,5740,,,IN,2026-03-13T03:53:43.675Z,1,232,位置変更： 233 -> 232,,,,,,,2026-03-13T12:53:43.194Z,1
 WEB_SL_1773371534823_cami6pc51,,5740,,,IN,2026-03-13T03:12:15.470Z,1,707,Đổi vị trí từ 23-3 (金型部門・ミガキ部署) sang 70-7 (その他 / 金型部門),,,,,,,2026-03-13T12:12:14.981Z,1
 WEB_SL_1773370430681_4vi5yib1t,,5740,,,IN,2026-03-13T02:53:51.276Z,1,AREA-MOLDROOM,,,,,,,,2026-03-13T11:53:50.886Z,1
 WEB_SL_1773370371669_5fne93tir,,5740,,,IN,2026-03-13T02:52:52.043Z,1,707,,,,,,,,2026-03-13T11:52:52.336Z,1

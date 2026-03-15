@@ -1,4 +1,5 @@
 DataChangeID,TableName,RecordID,RecordIDField,FieldName,OldValue,NewValue,ChangedAt,ChangedBy,BaseValueAtEdit,BaseCommitID,BaseCommitAt,ChangeSource,ChangeNote,IsConflict,ResolvedValue,ResolvedAt,ResolvedBy
+DCH17735408556789O9W,molddesign,4743,MoldDesignID,MoldDesignWeight,,6.5,2026-03-15T02:13:52.508Z,,,,,extended_editor,batch=ACM17735408325086I84; op=update,FALSE,,,
 DCH1773540855678T96Y,molddesign,4743,MoldDesignID,MoldDesignWidth,,330,2026-03-15T02:13:52.508Z,,,,,extended_editor,batch=ACM17735408325086I84; op=update,FALSE,,,
 DCH1773540855678M1FV,molddesign,4743,MoldDesignID,MoldDesignLength,,460,2026-03-15T02:13:52.508Z,,,,,extended_editor,batch=ACM17735408325086I84; op=update,FALSE,,,
 DCH17733967345318JP6,molds,5684,MoldID,MoldDisposing,,FALSE,2026-03-13T10:11:50.064Z,,,,,extended_editor,batch=ACM1773396710064S1KU; op=update,FALSE,,,

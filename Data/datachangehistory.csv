@@ -1,4 +1,5 @@
 DataChangeID,TableName,RecordID,RecordIDField,FieldName,OldValue,NewValue,ChangedAt,ChangedBy,BaseValueAtEdit,BaseCommitID,BaseCommitAt,ChangeSource,ChangeNote,IsConflict,ResolvedValue,ResolvedAt,ResolvedBy
+DCH1773789855484vfsoa,molds,5765,MoldID,MoldWeightModified,100,,2026-03-17T23:23:51.393Z,1,,,,quick_update_v4,Wizard Update v4,FALSE,,,
 DCH1773735979282mx90d,molds,5765,MoldID,MoldWeightModified,,100,2026-03-17T08:26:18.184Z,1,,,,quick_update_v4,Wizard Update v4,FALSE,,,
 DCH17737345687164h0xw,molddesign,4760,MoldDesignID,CustomerTrayName,,試作ポケット,2026-03-17T08:02:47.999Z,1,,,,quick_update_v3,Wizard Update,FALSE,,,
 DCH17737344206597sz14,molds,5763,MoldID,MoldWeightModified,,test,2026-03-17T07:59:57.166Z,1,,,,quick_update_v3,Wizard Update,FALSE,,,

@@ -1,4 +1,5 @@
 MoldID,LegacyMoldID,MoldName,MoldCode,CustomerID,TrayID,MoldDesignID,storage_company,RackLayerID,ItemTypeID,MoldLengthModified,MoldWidthModified,MoldHeightModified,MoldWeightModified,MoldNotes,MoldUsageStatus,MoldOnCheckList,JobID,MoldReturning,MoldReturnedDate,MoldDisposing,MoldDisposedDate,MoldEntry,WebUUID,UpdatedAt,UpdatedBy
+5730,5730,,,,,,,95,,,,,,,,,,,,,,,WEBUUID1774406769028_qpbgxtm91,2026-03-25T11:46:09.028Z,1
 1163,1163,,,,,,,233,,,,,,,,,,,,,,,WEBUUID1774232180741_gbgg7ijrh,2026-03-23T11:16:20.741Z,1
 2482,2482,,,,,,,,,,,,3.9,,,,,,,,,,WEBUUID1774231751534_y7u8p1q4s,2026-03-23T11:09:11.534Z,
 2483,2483,,,,,,,,,,,,4.2,,,,,,,,,,WEBUUID1774231738908_jhhkq79t4,2026-03-23T11:08:58.908Z,

@@ -1,0 +1,3123 @@
+/*
+DETAIL PANEL v8.4.3-6.css
+Mục tiêu:
+- Đồng bềEgiao diện hiện đại (font, màu, shadow, radius) cho Detail Panel + Preview + các tab
+- Tối ưu trải nghiệm Desktop + Mobile
+- Mobile: Action buttons gắn đáy như navbar, nhềEgọn, cềEgắng 1 hàng
+- ChềEhiển thềEaction buttons ềEtab Thông tin (Info)
+- Chuẩn bềEsẵn CSS cho AssistiveTouch style (sẽ cần JS module riêng đềEchạy)
+
+Nguồn gốc:
+- Dựa trên phiên bản mới nhất đang dùng trong Space (detail-panel-v8.4.3-5.css / 4.css)
+- Các patch được thêm ềECUỐI file đềEgiữ tương thích tối đa
+
+Updated: 2026-03-03
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&display=swap');
+
+/*
+DETAIL PANEL v8.4.3-5.css
+- Modernize UI + ensure readable fonts on mobile/desktop
+- Add CSS hooks for per-group label width via CSS variables (dp-kv-group-*)
+- Add styles for fixed mobile action buttons bar (.dp-mobile-actionbar)
+
+NOTE:
+- This file is based on detail-panel-v8.4.3-4.css and adds overrides at the end.
+- If your environment blocks Google Fonts, the UI will still work with system fonts.
+*/
+/* DETAIL PANEL v8.4.3-3.css */
+
+/* Clean + Hero redesign (Info tab hero + Preview hero) */
+
+/* ============================================================================
+   DETAIL PANEL v8.5.1 - UNIFIED CSS (ĐỒNG BềE1 KIỂU)
+
+   Mục tiêu:
+   - Đồng bềEtuyệt đối selector: CHềEdùng #detailPanel làm gốc cho panel.
+   - Không còn trộn lẫn: #detailPanel (tag), .detail-panel (global), #detailPanel.
+   - Tất cả style nằm trong phạm vi panel (#detailPanel) và popup preview (.dp-preview-modal).
+   - Không ảnh hưởng CSS toàn site.
+
+   Tương thích (theo mã nguồn đã có trong Space):
+   - Panel HTML: <div id="detailPanel" class="detail-panel"> ...
+   - Backdrop: <div id="backdrop" class="backdrop"> ...
+   - Preview popup: .dp-preview-modal, .dp-preview-modal-backdrop
+
+   Updated: 2026-02-13
+============================================================================ */
+
+/* =====================================================================
+   0) TOKENS / THEME (Scoped)
+   - Dùng token của trang nếu có; nếu không có thì dùng fallback.
+   - Áp dụng cho cả panel và preview modal.
+===================================================================== */
+
+:where(#detailPanel, .dp-preview-modal) {
+  /* Primary / Accent */
+  --color-ai-blue: var(--ui-accent, #0068C9);
+  --color-ai-blue-hover: var(--ui-accent-hover, #0052A3);
+
+  /* Neutrals */
+  --color-ai-gray: var(--text-muted, #6C757D);
+  --color-gray: var(--text-muted, #6C757D);
+
+  /* Functional */
+  --color-info: var(--ui-info, #0EA5E9);
+  --color-success: var(--ui-success, #10B981);
+  --color-warning: var(--ui-warning, #F59E0B);
+  --color-danger: var(--ui-danger, #EF4444);
+
+  /* Extra (quy vềEtoken có ý nghĩa) */
+  --color-purple: var(--ui-link, #2563EB);
+  --color-pink: var(--ui-info, #0284C7);
+  --color-cyan: var(--ui-info, #0284C7);
+  --color-orange: var(--ui-warning, #F59E0B);
+  --color-amber: var(--ui-warning, #F59E0B);
+
+  /* Surfaces */
+  --bg-main: var(--ui-surface, #FFFFFF);
+  --bg-sidebar: var(--ui-surface-2, #F8FAFC);
+  --bg-hover: var(--ui-accent-soft, rgba(15, 118, 110, 0.10));
+  --bg-card: var(--ui-surface, #FFFFFF);
+
+  /* Text */
+  --text-primary: var(--text-primary, #0B1220);
+  --text-secondary: var(--text-secondary, #1F2937);
+  --text-muted: var(--text-muted, #64748B);
+
+  /* Borders */
+  --border-color: var(--ui-border, #E5E9F2);
+  --border-focus: var(--ui-accent, #0F766E);
+
+  /* Spacing */
+  --spacing-xs: 3px;
+  --spacing-sm: 5px;
+  --spacing-md: 8px;
+  --spacing-lg: 12px;
+  --spacing-xl: 16px;
+
+  /* Type colors */
+  --dp-mold: var(--mold-color, #0891B2);
+  --dp-mold-2: #0E7490;
+  --dp-mold-soft: rgba(8, 145, 178, 0.12);
+
+  --dp-cutter: var(--cutter-color, #EA580C);
+  --dp-cutter-2: #9A3412;
+  --dp-cutter-soft: rgba(234, 88, 12, 0.12);
+}
+
+/* =====================================================================
+   1) BACKDROP (ID + class .show)
+===================================================================== */
+
+#backdrop,
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1500;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+#backdrop.show,
+.backdrop.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* =====================================================================
+   2) PANEL CONTAINER (ChềE#detailPanel)
+   - Panel trượt từ phải.
+   - Desktop: full width.
+   - Tablet: 640px.
+   - Mobile: 100%.
+===================================================================== */
+
+#detailPanel.detail-panel {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 100%;
+  max-width: 100%;
+  height: 100vh;
+  background: var(--bg-main);
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.15);
+  transition: right 0.26s ease;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 0;
+}
+
+#detailPanel.detail-panel.open {
+  right: 0;
+}
+
+/* =====================================================================
+   3) FONT (Panel + bảo vềEFontAwesome)
+===================================================================== */
+
+#detailPanel {
+  font-family: "Inter", "Be Vietnam Pro", "Hiragino Sans", "Yu Gothic UI", "Meiryo", system-ui, -apple-system,
+    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-weight: 500;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#detailPanel button,
+#detailPanel input,
+#detailPanel select,
+#detailPanel textarea,
+#detailPanel .info-label,
+#detailPanel .info-value,
+#detailPanel .dp-storage-line-label,
+#detailPanel .dp-storage-line-value,
+#detailPanel .timeline-type,
+#detailPanel .timeline-date,
+#detailPanel .dp-related-code,
+#detailPanel .dp-related-line2 {
+  font-family: inherit;
+}
+
+/* IMPORTANT: không làm hỏng icon FontAwesome */
+#detailPanel .fa,
+#detailPanel .fas,
+#detailPanel .far,
+#detailPanel .fal,
+#detailPanel .fab,
+#detailPanel i[class^="fa"],
+#detailPanel i[class*=" fa-"],
+#detailPanel span[class^="fa"],
+#detailPanel span[class*=" fa-"] {
+  font-family: var(--fa-font-solid, "Font Awesome 6 Free", "Font Awesome 5 Free") !important;
+}
+
+#detailPanel .far,
+#detailPanel .fa-regular {
+  font-family: var(--fa-font-regular, "Font Awesome 6 Free", "Font Awesome 5 Free") !important;
+  font-weight: 400 !important;
+}
+
+#detailPanel .fab,
+#detailPanel .fa-brands {
+  font-family: var(--fa-font-brands, "Font Awesome 6 Brands", "Font Awesome 5 Brands") !important;
+}
+
+#detailPanel .fas,
+#detailPanel .fa-solid {
+  font-weight: 900 !important;
+}
+
+/* Không ép uppercase tiếng Việt */
+#detailPanel .tab-label-vi,
+#detailPanel .info-label,
+#detailPanel .dp-storage-line-label,
+#detailPanel .dp-storage-label,
+#detailPanel .label {
+  text-transform: none !important;
+  letter-spacing: normal !important;
+}
+
+/* =====================================================================
+   4) HEADER
+===================================================================== */
+
+#detailPanel .detail-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  background: linear-gradient(135deg, var(--color-ai-blue) 0%, var(--color-ai-blue-hover) 100%);
+  color: #fff;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.20);
+  flex: 0 0 auto;
+  min-height: 42px;
+  position: relative;
+  z-index: 100;
+}
+
+#detailPanel .detail-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+}
+
+#detailPanel .item-type-badge {
+  display: none !important; /* hềEthống hiện tại đã gộp type vào title */
+}
+
+#detailPanel .item-code-text {
+  display: inline-block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: "Courier New", monospace;
+  font-size: 13px;
+  opacity: 0.95;
+}
+
+#detailPanel .detail-panel-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-right: 8px;
+}
+
+/* Fix: tôn trọng attribute hidden của nút back */
+detailPanel .detail-panel-back[hidden]{
+  display: none !important;
+}
+
+/* Fix: khi bềEdisable thì không cho bấm + nhìn rõ là không dùng được */
+detailPanel .detail-panel-back:disabled{
+  opacity: 0.45;
+  cursor: default;
+  pointer-events: none;
+}
+
+#detailPanel .detail-panel-back:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+#detailPanel .detail-panel-close {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: rgba(239, 68, 68, 0.18);
+  color: #fff !important;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.18s ease, background 0.18s ease;
+  font-size: 14px;
+  flex: 0 0 auto;
+  position: relative;
+  z-index: 101;
+}
+
+#detailPanel .detail-panel-close:hover {
+  background: #EF4444 !important;
+  transform: scale(1.05);
+}
+
+#detailPanel .detail-panel-close i {
+  pointer-events: none;
+  color: #fff !important;
+}
+
+/* =====================================================================
+   5) TABS
+   - HềEtrợ cả .detail-panel-tabs và .detail-tabs (nếu nơi khác dùng).
+===================================================================== */
+
+#detailPanel .detail-panel-tabs,
+#detailPanel .detail-tabs {
+  display: flex;
+  background: var(--bg-sidebar);
+  border-bottom: 2px solid var(--border-color);
+  overflow-x: auto;
+  white-space: nowrap;
+  flex: 0 0 auto;
+  padding: 0 8px;
+  gap: 3px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-ai-gray) var(--bg-sidebar);
+  position: relative;
+  z-index: 90;
+}
+
+#detailPanel .detail-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 10px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 10px;
+  font-weight: 650;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.18s ease, color 0.18s ease;
+  white-space: nowrap;
+  border-radius: 6px 6px 0 0;
+  min-width: fit-content;
+}
+
+#detailPanel .detail-tab i { font-size: 14px; }
+
+#detailPanel .detail-tab .tab-label-ja,
+#detailPanel .detail-tab .tab-label-vi {
+  font-size: 9px;
+  line-height: 1.1;
+}
+
+#detailPanel .detail-tab:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+#detailPanel .detail-tab.active {
+  background: var(--bg-main);
+  color: var(--text-primary);
+  font-weight: 800;
+}
+
+#detailPanel .detail-tab.active::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: currentColor;
+  border-radius: 3px 3px 0 0;
+}
+
+/* Màu icon theo tab (semantic) */
+#detailPanel .detail-tab[data-tab="info"] i { color: var(--color-ai-blue) !important; }
+
+#detailPanel .detail-tab[data-tab="related"] i { color: var(--color-ai-gray) !important; }
+
+#detailPanel .detail-tab[data-tab="history"] i { color: var(--color-warning) !important; }
+
+#detailPanel .detail-tab[data-tab="teflon"] i { color: var(--color-info) !important; }
+
+#detailPanel .detail-tab[data-tab="status"] i { color: var(--color-success) !important; }
+
+#detailPanel .detail-tab[data-tab="photos"] i { color: var(--color-info) !important; }
+
+#detailPanel .detail-tab[data-tab="comments"] i { color: var(--color-info) !important; }
+
+#detailPanel .detail-tab[data-tab="analytics"] i { color: var(--color-danger) !important; }
+
+#detailPanel .detail-tab[data-tab="extended"] i { color: var(--color-ai-blue) !important; }
+
+/* =====================================================================
+   6) BODY - 1 VÙNG CUỘN DUY NHẤT
+   - ChềEcuộn tại .detail-panel-body.
+   - Ngang: auto (chềEhiện khi cần).
+===================================================================== */
+
+#detailPanel .detail-panel-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto !important;
+  overflow-x: auto !important;
+  scrollbar-gutter: stable both-edges;
+  padding: 10px;
+  background: var(--bg-main);
+  position: relative;
+  z-index: 1;
+}
+
+#detailPanel .detail-panel-body.dp-drag-scroll-active {
+  cursor: grabbing;
+  user-select: none;
+}
+
+@media (max-width: 1024px) {
+  #detailPanel .detail-panel-body {
+    cursor: grab;
+  }
+}
+
+#detailPanel .detail-tab-content,
+#detailPanel .tab-content {
+  display: none;
+  overflow: visible !important;
+}
+
+#detailPanel .detail-tab-content.active,
+#detailPanel .tab-content.active {
+  display: block;
+  animation: dpFadeIn 0.18s ease;
+}
+
+/* =====================================================================
+   7) DESKTOP GRID 3 CỘT + RESIZE
+   - Desktop >= 1025px: bật grid + min-width đềEtạo cuộn ngang.
+   - Mobile/Tablet: chuyển sang block.
+===================================================================== */
+
+/* =====================================================================
+   7) OPEN-SOURCE DASHBOARD LAYOUT (12-COL GRID)
+===================================================================== */
+
+:where(#detailPanel, .dp-preview-modal) .dp-dash2-layout {
+  display: flex; flex-direction: column; gap: 12px; width: 100%;
+}
+
+/* HEADER IDENTITY */
+:where(#detailPanel, .dp-preview-modal) .dp-dash2-header {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 16px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+}
+:where(#detailPanel, .dp-preview-modal) .dp-d2-id {
+  font-size: 24px; font-weight: 800; color: #0f172a;
+}
+:where(#detailPanel, .dp-preview-modal) .dp-d2-subid {
+  font-size: 13px; font-weight: 600; color: #64748b;
+}
+:where(#detailPanel, .dp-preview-modal) .dp-d2-badge {
+  margin-left: auto; padding: 4px 10px; font-size: 11px; font-weight: 800; border-radius: 4px; background: #e0f2fe; color: #0369a1; text-transform: uppercase;
+}
+
+/* AUTO-FIT GRID / DASHBOARD */
+:where(#detailPanel, .dp-preview-modal) .dp-dash2-masonry {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+:where(#detailPanel, .dp-preview-modal) .dp-d2-col {
+  flex: 1 1 320px;
+  min-width: min(100%, 320px);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+@media (min-width: 1025px) {
+  :where(#detailPanel, .dp-preview-modal) .dp-d2-col:first-child { flex: 0 0 280px !important; min-width: 280px; }
+  :where(#detailPanel, .dp-preview-modal) .dp-d2-col:nth-child(2) { flex: 1.2 1 320px !important; }
+  /* Giảm width cột 3 (thao tác) */
+  /* Khóa hiển thị của cột 3 đủ rộng để nạp 3 nút vừa vặn, không chèn ép */
+  :where(#detailPanel, .dp-preview-modal) .dp-d2-col:nth-child(3) { flex: 0 0 350px !important; min-width: 350px; max-width: 350px; }
+}
+
+/* Storage cards background */
+.dp-card-storage-mold {
+  background: linear-gradient(180deg, #f0f9ff 0%, #ffffff 100%) !important;
+  border: 1px solid rgba(14, 165, 233, 0.2) !important;
+}
+.dp-card-storage-mold .dp-d2-card-head {
+  background: rgba(14, 165, 233, 0.08) !important;
+  color: #0369a1 !important;
+  border-bottom: 1px solid rgba(14, 165, 233, 0.1) !important;
+}
+.dp-card-storage-cutter {
+  background: linear-gradient(180deg, #fff7ed 0%, #ffffff 100%) !important;
+  border: 1px solid rgba(249, 115, 22, 0.2) !important;
+}
+.dp-card-storage-cutter .dp-d2-card-head {
+  background: rgba(249, 115, 22, 0.08) !important;
+  color: #c2410c !important;
+  border-bottom: 1px solid rgba(249, 115, 22, 0.1) !important;
+}
+
+/* CARDS */
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card {
+  background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; 
+  display: flex; flex-direction: column; overflow: hidden;
+  box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06);
+  transition: box-shadow 0.2s ease;
+  height: max-content;
+}
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card:hover {
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+}
+
+/* Wide cards span all columns automatically */
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card.dp-d2-card-wide {
+  grid-column: 1 / -1;
+}
+
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-head {
+  background: #f8fafc; padding: 12px 16px; font-size: 12px; font-weight: 700; color: #334155; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 8px;
+}
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-head i { color: #94a3b8; font-size: 14px; }
+
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body {
+  padding: 16px; flex: 1; display: flex; flex-direction: column; gap: 12px;
+}
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card.pt-0 .dp-d2-card-body {
+  padding: 0;
+}
+
+/* OVERRIDES FOR INJECTED LEGACY COMPONENTS */
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .modal-section {
+  border: none !important; background: transparent !important; padding: 0 !important; margin: 0 !important; box-shadow: none !important;
+}
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .section-header {
+  display: none !important; /* Managed by card heads now */
+}
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .dp-hero {
+  display: none !important; /* Replaced by dashboard header */
+}
+
+/* COMPACT ACTION GRID */
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .dp-actions-grid {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) !important; justify-content: center; gap: 4px !important; align-items: stretch;
+}
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .dp-action-btn {
+  aspect-ratio: auto !important; height: auto !important; min-height: 38px; justify-content: center; padding: 4px 2px !important; border-radius: 8px; border: 1px solid #e2e8f0; background: #fff; display: flex !important; flex-direction: row !important; align-items: center; gap: 4px !important; box-shadow: 0 1px 2px rgba(0,0,0,0.02); transition: all 0.15s ease; width: 100%; min-width: 0; overflow: hidden;
+}
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .dp-action-btn:hover {
+  background: #f8fafc; border-color: #cbd5e1; transform: translateY(-1px);
+}
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .dp-action-btn i {
+  font-size: 14px !important; width: 14px !important; text-align: center; color: #475569; margin-left: 0 !important; zoom: 0.6 !important;
+}
+
+/* HIGH DENSITY INFO LIST (Side-by-side) */
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .info-grid-2col, 
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .info-grid-3col {
+  display: flex !important; flex-direction: column !important; gap: 0 !important; margin: 0;
+}
+/* Fix Preview Modal & stack items */
+:where(#detailPanel, .dp-preview-modal) .dp-item-stacked.info-item,
+:where(#detailPanel, .dp-preview-modal) .dp-info-grid-modern .info-item {
+  display: flex !important; flex-direction: column !important; align-items: flex-start !important; border-bottom: 1px dashed #e2e8f0; border-radius: 0; border: none; padding: 6px 8px; margin: 0; gap: 4px !important;
+}
+:where(#detailPanel, .dp-preview-modal) .dp-item-stacked.info-item .info-label,
+:where(#detailPanel, .dp-preview-modal) .dp-info-grid-modern .info-item .info-label {
+  flex: 0 0 auto !important; width: 100%;
+}
+:where(#detailPanel, .dp-preview-modal) .dp-item-stacked.info-item .info-value,
+:where(#detailPanel, .dp-preview-modal) .dp-info-grid-modern .info-item .info-value {
+  flex: 1 1 auto !important; width: 100%; text-align: left !important;
+}
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .info-item {
+  display: flex !important; flex-direction: row !important; justify-content: space-between; align-items: baseline; gap: 12px; padding: 8px; border-bottom: 1px solid #f1f5f9; border-radius: 0; background: transparent;
+}
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .info-item:last-child { border-bottom: none; }
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .info-item:hover {
+  background: #f8fafc;
+}
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .info-label {
+  flex: 0 0 auto; font-size: 11px; color: #64748b; font-weight: 600; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; text-transform: none;
+}
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .info-label .dp-label-ja { font-size: 11px; color: #475569; }
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .info-label .dp-label-vi { font-size: 10px; font-weight: 500; color: #94a3b8; }
+
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .info-value {
+  flex: 1 1 auto; font-size: 13px; font-weight: 600; color: #0f172a; text-align: right; overflow-wrap: anywhere; word-break: break-word; line-height: 1.4; margin-top: 0;
+}
+
+/* Storage special fix */
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .dp-storage-col {
+  grid-template-columns: 80px 1fr; gap: 8px; padding: 6px; border-bottom: 1px dashed #e2e8f0; border-radius: 4px; align-items: center;
+}
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .dp-storage-col:hover { background: #f8fafc; }
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .dp-storage-col .dp-storage-label { font-size: 11px; color: #64748b; font-weight: 700; }
+
+/* Photo override */
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .dp-photo-view-area {
+  height: 100%; min-height: 200px; border: none; border-radius: 0; background: #cbd5e1;
+}
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .dp-photo-view-area img {
+  width: 100%; height: 100%; object-fit: cover;
+}
+
+/* =====================================================================
+   9) INFO GRID (PROPERTY LIST)
+===================================================================== */
+
+:where(#detailPanel, .dp-preview-modal) .info-grid-2col {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 32px;
+}
+
+/* Compact KV blocks (Snapshot / Quick queries) */
+#detailPanel .info-grid-2col.dp-kv-1col{
+  grid-template-columns: 1fr;
+}
+
+#detailPanel .info-grid-2col.dp-kv-compact .info-item{
+  grid-template-columns: 120px minmax(0, 1fr);
+}
+
+:where(#detailPanel, .dp-preview-modal) .info-grid-3col {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px 24px;
+}
+
+:where(#detailPanel, .dp-preview-modal) .info-item {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 12px;
+  border-bottom: 1px solid #f8fafc;
+  padding-bottom: 6px;
+}
+
+:where(#detailPanel, .dp-preview-modal) .info-item.full-width {
+  grid-column: 1 / -1;
+}
+
+:where(#detailPanel, .dp-preview-modal) .info-label {
+  flex: 0 0 130px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+  line-height: 1.2;
+}
+
+:where(#detailPanel, .dp-preview-modal) .info-label .dp-label-jp {
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+:where(#detailPanel, .dp-preview-modal) .info-label .dp-label-vi {
+  font-size: 10px;
+  font-weight: 700;
+  opacity: 0.72;
+  line-height: 1.15;
+}
+
+:where(#detailPanel, .dp-preview-modal) .info-value {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* ===== Responsive for DetailPanel + Preview modal (<=900px) ===== */
+@media (max-width: 900px) {
+  :where(#detailPanel, .dp-preview-modal) .info-grid-2col:not(.dp-keep-2col),
+  :where(#detailPanel, .dp-preview-modal) .info-grid-3col {
+    grid-template-columns: 1fr;
+  }
+
+  /* Thông tin chính: giữ 2 cột trên mọi kích thước màn hình */
+  :where(#detailPanel, .dp-preview-modal) .info-grid-2col.dp-keep-2col {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* Each row still keeps label/value as 2 columns */
+  :where(#detailPanel, .dp-preview-modal) .info-item {
+    grid-template-columns: 140px minmax(0, 1fr);
+  }
+  
+  /* [MỚI] Sửa lỗi ép chữ ở Mobile */
+  :where(#detailPanel, .dp-preview-modal) .info-grid-2col.dp-keep-2col .info-item {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 4px !important;
+    padding: 8px 10px;
+  }
+  :where(#detailPanel, .dp-preview-modal) .info-grid-2col.dp-keep-2col .info-label {
+    flex: 0 0 auto !important;
+    width: 100%;
+  }
+  :where(#detailPanel, .dp-preview-modal) .info-grid-2col.dp-keep-2col .info-value {
+    flex: 1 1 auto !important;
+    width: 100%;
+    text-align: left !important;
+  }
+
+  /* Left column: storage key/value (top block) */
+  #detailPanel .dp-storage-col {
+    grid-template-columns: fit-content(110px) minmax(0, 1fr);
+  }
+  #detailPanel .dp-storage-label { max-width: 110px; }
+
+  /* Left column: location info line (icon + label + value) */
+  #detailPanel .location-section .info-line {
+    grid-template-columns: 18px fit-content(110px) minmax(0, 1fr);
+  }
+  #detailPanel .location-section .info-line .label { max-width: 110px; }
+
+  /* Storage lines: always keep 2 columns so values align */
+  #detailPanel .dp-storage-line {
+    grid-template-columns: fit-content(160px) minmax(0, 1fr);
+  }
+  #detailPanel .dp-storage-line-label { max-width: 160px; }
+}
+
+/* =====================================================================
+   10) HERO (Panel + Preview)
+===================================================================== */
+
+:where(#detailPanel, .dp-preview-modal) .dp-hero {
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+:where(#detailPanel, .dp-preview-modal) .dp-hero-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+:where(#detailPanel, .dp-preview-modal) .dp-hero-line1 {
+  font-size: 18px;
+  font-weight: 900;
+  font-family: "Courier New", monospace;
+  margin-bottom: 4px;
+}
+
+:where(#detailPanel, .dp-preview-modal) .dp-hero-line2 {
+  font-size: 12px;
+  opacity: 0.95;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+:where(#detailPanel, .dp-preview-modal) .dp-hero-col-2 {
+  font-size: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+:where(#detailPanel, .dp-preview-modal) .dp-hero-k { opacity: 0.85; margin-right: 6px; }
+
+:where(#detailPanel, .dp-preview-modal) .dp-hero-date { opacity: 0.85; margin-left: 6px; }
+
+/* Ẩn hero khi code trống (dựa vào :has; nếu trình duyệt không hềEtrợ thì không ẩn) */
+:where(#detailPanel, .dp-preview-modal) .dp-hero:has(.dp-hero-code:empty),
+:where(#detailPanel, .dp-preview-modal) .dp-hero:has(.dp-hero-code:-moz-only-whitespace) {
+  display: none;
+}
+
+:where(#detailPanel, .dp-preview-modal) .dp-hero-name:empty,
+:where(#detailPanel, .dp-preview-modal) .dp-hero-meta:empty {
+  display: none;
+}
+
+/* =====================================================================
+   11) QUICK ACTIONS
+===================================================================== */
+
+#detailPanel .dp-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  justify-content: center;
+  gap: 4px;
+}
+
+#detailPanel .dp-action-btn {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 4px 2px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  color: #334155;
+  text-align: left;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+#detailPanel .dp-action-btn i {
+  font-size: 14px !important;
+  width: 14px !important;
+  pointer-events: none;
+  flex-shrink: 0;
+  margin-left: 0 !important;
+  zoom: 0.6 !important;
+}
+
+#detailPanel .dp-action-btn .dp-action-label-ja {
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.1;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+}
+
+#detailPanel .dp-action-btn .sub,
+#detailPanel .dp-action-btn .dp-action-label-vi {
+  font-size: 10px;
+  font-weight: 600;
+  opacity: 0.85;
+  line-height: 1.1;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+}
+
+#detailPanel .dp-action-btn > span:not(.dp-action-label-ja):not(.dp-action-label-vi):not(.sub) {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+#detailPanel .dp-action-btn > span > .sub {
+  font-size: 10px;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+/* Ép toàn bộ khung text thu lại 80% để vừa khít 100% không bị cắt ... do Chrome Min Font Size */
+#detailPanel .dp-action-btn > div,
+#detailPanel .dp-action-btn > span {
+  zoom: 0.85 !important;
+}
+
+#detailPanel .dp-action-btn:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+}
+
+#detailPanel .dp-action-btn:active {
+  background: #e2e8f0;
+  transform: none;
+}
+
+/* Color classes for generic buttons to override inline styles */
+#detailPanel .dp-action-btn--weight i { color: #f59e0b !important; }
+#detailPanel .dp-action-btn--design i { color: #3b82f6 !important; }
+#detailPanel .dp-action-btn--lifecycle i { color: #10b981 !important; }
+#detailPanel .dp-action-btn--inout i { color: #0ea5e9 !important; }
+#detailPanel .dp-action-btn--inventory i { color: #eab308 !important; }
+#detailPanel .dp-action-btn--teflon i { color: #14b8a6 !important; }
+#detailPanel .dp-action-btn--print i { color: #64748b !important; }
+#detailPanel .dp-action-btn--photo i { color: #ec4899 !important; }
+#detailPanel .dp-action-btn--qr i { color: #8b5cf6 !important; }
+#detailPanel .dp-action-btn--setting i { color: #60a5fa !important; }
+
+/* Icon colors (đồng bềE không set background sai selector) */
+#detailPanel .dp-action-btn[data-action="checkin"] i { color: var(--color-success) !important; }
+
+#detailPanel .dp-action-btn[data-action="checkout"] i { color: var(--color-danger) !important; }
+
+#detailPanel .dp-action-btn[data-action="move"] i { color: var(--color-amber) !important; }
+
+#detailPanel .dp-action-btn[data-action="inventory"] i { color: var(--color-cyan) !important; }
+
+#detailPanel .dp-action-btn[data-action="print"] i { color: var(--color-gray) !important; }
+
+#detailPanel .dp-action-btn[data-action="qr"] i { color: var(--color-purple) !important; }
+
+#detailPanel .dp-action-btn[data-action="photo"] i { color: var(--color-pink) !important; }
+
+#detailPanel .dp-action-btn[data-jump] i { color: var(--color-orange) !important; }
+
+#detailPanel .dp-action-btn[data-module-open] i { color: var(--color-ai-gray) !important; }
+
+#detailPanel .dp-action-btn[data-action="inout"] i { color: var(--color-amber) !important }
+
+/* =====================================================================
+   12) MESSAGES
+===================================================================== */
+
+#detailPanel .info-message {
+  padding: 8px 10px;
+  background: rgba(14, 165, 233, 0.08);
+  border-left: 3px solid var(--color-cyan);
+  border-radius: 10px;
+  font-size: 12px;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+#detailPanel .warning-message {
+  padding: 8px 10px;
+  background: rgba(245, 158, 11, 0.10);
+  border-left: 3px solid var(--color-warning);
+  border-radius: 10px;
+  font-size: 12px;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+#detailPanel .no-data {
+  text-align: center;
+  padding: 14px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-style: italic;
+}
+
+/* =====================================================================
+   13) STORAGE (Top: label | value) + LOCATION info-line
+   - Quan trọng: KHÔNG phụ thuộc .dp-col-left đềEtránh rối khi layout thay đổi.
+   - Vẫn giữ tương thích nếu HTML đang nằm trong cột trái.
+===================================================================== */
+/* Storage: label width sẽ co theo đềErộng cột trái (khi kéo resize cột 1) */
+#detailPanel .dp-col-left{
+  /* Min 78px (không xuống dòng), theo % của cột trái, Max 118px (nhềEhơn 160 đềEgọn) */
+  --dp-storage-label-w: clamp(78px, 34%, 118px);
+}
+
+/* Preview modal giữ cềEđịnh đềEkhông bềEảnh hưởng */
+.dp-preview-modal{
+  --dp-storage-label-w: 160px;
+}
+
+/* Phone nhềE giữ như hiện tại (mobile vẫn theo cách cũ) */
+@media (max-width: 520px){
+  #detailPanel .dp-col-left{
+    --dp-storage-label-w: 120px;
+  }
+}
+
+#detailPanel .dp-storage-top {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+#detailPanel .dp-storage-col{
+  display: grid;
+  grid-template-columns: minmax(78px, var(--dp-storage-label-w)) minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+}
+
+/* Storage label: không ellipsis, hiển thềEdạng 2 dòng (JP + VI) */
+#detailPanel .dp-storage-label{
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  line-height: 1.15;
+
+  min-width: 0;
+  max-width: var(--dp-storage-label-w);
+
+  /* Không cắt chữ */
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+/* Style giống các mục label khác (JP trên, VI dưới) */
+#detailPanel .dp-storage-label .dp-label-jp{
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1.15;
+}
+
+#detailPanel .dp-storage-label .dp-label-vi{
+  font-size: 10px;
+  font-weight: 700;
+  opacity: 0.72;
+  line-height: 1.15;
+}
+
+#detailPanel .dp-storage-col > :last-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+#detailPanel .dp-storage-raw {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(2, 6, 23, 0.14);
+}
+
+#detailPanel .location-section .info-line{
+  display: grid;
+  grid-template-columns: 18px minmax(78px, var(--dp-storage-label-w)) minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+}
+
+/* Info-line label (VềEtrí / Ghi chú...): không ellipsis, hiển thềEJP + VI */
+#detailPanel .location-section .info-line .label{
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--text-secondary);
+  line-height: 1.15;
+
+  min-width: 0;
+  max-width: var(--dp-storage-label-w);
+
+  /* Không cắt chữ */
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+#detailPanel .location-section .info-line .label .dp-label-jp{
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1.15;
+}
+
+#detailPanel .location-section .info-line .label .dp-label-vi{
+  font-size: 10px;
+  font-weight: 700;
+  opacity: 0.72;
+  line-height: 1.15;
+}
+
+#detailPanel .location-section .info-line .value {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--text-primary);
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+#detailPanel .location-section .info-line i.fa-map-pin { color: var(--color-amber) !important; }
+
+#detailPanel .location-section .info-line i.fa-sticky-note { color: var(--color-warning) !important; }
+
+#detailPanel .location-section .info-line i.fa-calendar-check { color: var(--color-cyan) !important; }
+
+/* =====================================================================
+   14) STORAGE LINES (Numbered) + BADGES (JS tạo)
+===================================================================== */
+
+#detailPanel .dp-storage-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+#detailPanel .dp-storage-group-title {
+  margin-top: 6px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(2, 6, 23, 0.10);
+  background: rgba(241, 245, 249, 0.85);
+  font-weight: 900;
+  font-size: 12px;
+  color: rgba(15, 23, 42, 0.88);
+}
+
+#detailPanel .dp-storage-line {
+  display: grid;
+  grid-template-columns: var(--dp-storage-label-w) minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(2, 6, 23, 0.10);
+  background: rgba(255, 255, 255, 0.92);
+}
+
+#detailPanel .dp-storage-line--company {
+  border-color: rgba(245, 158, 11, 0.22);
+  background: rgba(255, 251, 235, 0.70);
+}
+
+#detailPanel .dp-storage-line-label {
+  font-size: 12px;
+  font-weight: 900;
+  color: rgba(15, 23, 42, 0.82);
+  line-height: 1.25;
+  max-width: var(--dp-storage-label-w);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#detailPanel .dp-storage-line-value {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  font-size: 12.5px;
+  font-weight: 650;
+  color: rgba(15, 23, 42, 0.92);
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+#detailPanel .dp-storage-line-value i { font-size: 13px; }
+
+#detailPanel .dp-storage-line-value span { min-width: 0; }
+
+#detailPanel .dp-storage-line--note .dp-storage-line-label { font-size: 11.5px; opacity: 0.85; }
+
+#detailPanel .dp-storage-line--note .dp-storage-line-value { font-size: 12px; opacity: 0.92; }
+
+#detailPanel .dp-storage-inline-sep { display: inline-block; width: 6px; }
+
+#detailPanel .dp-storage-line-value .fa-map-pin { color: #2563eb; }
+
+#detailPanel .dp-storage-line-value .fa-sticky-note { color: #f59e0b; }
+
+#detailPanel .dp-storage-line-value .fa-calendar-check { color: #10b981; }
+
+/* Badges do JS sinh */
+#detailPanel .dp-badge-racklayer {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 46px;
+  height: 22px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(30, 64, 175, 0.25);
+  background: rgba(59, 130, 246, 0.10);
+  color: #1d4ed8;
+  font-weight: 900;
+  font-size: 12px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+#detailPanel .dp-company-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 22px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-weight: 900;
+  font-size: 12px;
+  line-height: 1;
+  white-space: nowrap;
+  border: 1px solid rgba(0,0,0,0.14);
+  background: rgba(255,255,255,0.92);
+  color: rgba(15,23,42,0.92);
+}
+
+#detailPanel .dp-company-badge--ysd {
+  border-color: rgba(16, 185, 129, 0.40);
+  background: rgba(16, 185, 129, 0.12);
+  color: #047857;
+}
+
+#detailPanel .dp-company-badge--external {
+  border-color: rgba(239, 68, 68, 0.45);
+  background: rgba(239, 68, 68, 0.10);
+  color: #b91c1c;
+}
+
+#detailPanel .dp-company-badge--marudai {
+  border-color: rgba(245, 158, 11, 0.55);
+  background: linear-gradient(180deg, rgba(245, 158, 11, 0.26), rgba(245, 158, 11, 0.12));
+  color: #92400e;
+}
+
+#detailPanel .dp-link-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 6px;
+  min-width: 30px;
+  height: 18px;
+  padding: 0 8px;
+  border-radius: 999px;
+  font-weight: 900;
+  font-size: 10px;
+  line-height: 1;
+  border: 1px solid rgba(0,0,0,0.15);
+  background: rgba(0,0,0,0.06);
+  color: rgba(15,23,42,0.78);
+  white-space: nowrap;
+}
+
+#detailPanel .dp-link-badge--direct {
+  border-color: rgba(16, 185, 129, 0.55);
+  background: rgba(16, 185, 129, 0.16);
+  color: #0f766e;
+}
+
+#detailPanel .dp-link-badge--shared {
+  border-color: rgba(100, 116, 139, 0.30);
+  background: rgba(100, 116, 139, 0.12);
+  color: #334155;
+}
+
+#detailPanel .status-badge-compact,
+#detailPanel .date-badge-compact {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(0,0,0,0.10);
+  background: rgba(0,0,0,0.04);
+  font-weight: 900;
+  font-size: 12px;
+  line-height: 1;
+  max-width: 100%;
+}
+
+#detailPanel .status-badge-compact.status-in {
+  border-color: rgba(16,185,129,0.35);
+  background: rgba(16,185,129,0.10);
+  color: #047857;
+}
+
+#detailPanel .status-badge-compact.status-out {
+  border-color: rgba(239,68,68,0.35);
+  background: rgba(239,68,68,0.10);
+  color: #b91c1c;
+}
+
+#detailPanel .status-badge-compact.status-audit {
+  border-color: rgba(59,130,246,0.35);
+  background: rgba(59,130,246,0.10);
+  color: #1d4ed8;
+}
+
+#detailPanel .status-badge-compact.status-returned {
+  border-color: rgba(245,158,11,0.38);
+  background: rgba(245,158,11,0.12);
+  color: #92400e;
+}
+
+#detailPanel .status-badge-compact.status-disposed {
+  border-color: rgba(100,116,139,0.35);
+  background: rgba(100,116,139,0.12);
+  color: #334155;
+}
+
+#detailPanel .status-badge-compact.status-no-history,
+#detailPanel .status-badge-compact.status-unknown {
+  border-color: rgba(0,0,0,0.12);
+  background: rgba(0,0,0,0.04);
+  color: rgba(15,23,42,0.75);
+}
+
+#detailPanel .confirm-date-group.expired .date-badge-compact {
+  border-color: rgba(239,68,68,0.45);
+  background: rgba(239,68,68,0.10);
+  color: #b91c1c;
+}
+
+#detailPanel .dp-storage-warning {
+  margin-top: 10px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(239, 68, 68, 0.30);
+  background: rgba(239, 68, 68, 0.08);
+  color: #991b1b;
+  font-weight: 800;
+}
+
+#detailPanel .dp-storage-warning i {
+  margin-top: 2px;
+  color: #ef4444;
+}
+
+/* =====================================================================
+   15) RELATED LIST
+===================================================================== */
+
+#detailPanel .dp-related-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+#detailPanel .dp-related-item {
+  width: 100%;
+  text-align: left;
+  border: 1px solid rgba(2, 6, 23, 0.10);
+  background: rgba(248, 250, 252, 0.92);
+  border-radius: 14px;
+  padding: 10px 12px;
+  cursor: pointer;
+
+  display: grid;
+  /* Cột trái tự vừa đủ (badge + thumb), cột giữa co giãn, cột phải vừa đủ */
+  grid-template-columns: max-content minmax(0, 1fr) max-content;
+
+  gap: 10px;
+  align-items: center;
+
+  transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+}
+
+#detailPanel .dp-related-item:hover {
+  transform: translateY(-0.5px);
+  box-shadow: 0 10px 22px rgba(0,0,0,0.08);
+  border-color: rgba(30, 64, 175, 0.18);
+}
+
+#detailPanel .dp-related-left{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:nowrap;
+  min-width:0;
+}
+
+/* Thumb: dùng !important đềEchắc chắn thắng cả style inline trong JS */
+#detailPanel img[data-dp-related-thumb-img="1"] {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 7px !important;
+
+  object-fit: cover !important;
+  display: block !important;
+
+  margin-left: 0 !important; /* bềEmargin-left inline đềEdùng gap */
+  border: 1px solid rgba(2, 6, 23, 0.12) !important;
+  background: #ffffff !important;
+}
+
+#detailPanel .dp-type-chip {
+  width: 26px;
+  height: 26px;
+  border-radius: 9px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 12px;
+  border: 1px solid rgba(0,0,0,0.12);
+  background: rgba(0,0,0,0.04);
+  color: rgba(15,23,42,0.78);
+}
+
+#detailPanel .dp-type-chip--mold {
+  border-color: rgba(34, 197, 94, 0.35);
+  background: rgba(34, 197, 94, 0.10);
+  color: #166534;
+}
+
+#detailPanel .dp-type-chip--cutter {
+  border-color: rgba(249, 115, 22, 0.40);
+  background: rgba(249, 115, 22, 0.10);
+  color: #9a3412;
+}
+
+#detailPanel .dp-related-main { min-width: 0; }
+
+#detailPanel .dp-related-code {
+  font-weight: 950;
+  font-size: 12.5px;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#detailPanel .dp-related-line2{
+  white-space: normal;          /* cho xuống dòng */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;        /* tối đa 2 dòng */
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+#detailPanel .dp-related-id { color: rgba(15, 23, 42, 0.78); font-weight: 800; }
+
+#detailPanel .dp-related-sep { opacity: 0.55; }
+
+#detailPanel .dp-related-name { font-weight: 900; }
+
+#detailPanel .dp-related-name--mold { color: #14532d; }
+
+#detailPanel .dp-related-name--cutter { color: #7c2d12; }
+
+#detailPanel .dp-related-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+#detailPanel .dp-related-price {
+  font-weight: 900;
+  font-size: 11px;
+  color: rgba(15,23,42,0.92);
+  opacity: 0.95;
+  white-space: nowrap;
+}
+
+#detailPanel .dp-related-rack { display: inline-flex; }
+
+/* =====================================================================
+   16) HISTORY TIMELINE
+===================================================================== */
+
+#detailPanel .history-timeline {
+  position: relative;
+  margin-top: 10px;
+  padding-left: 6px;
+}
+
+#detailPanel .history-timeline::before {
+  content: "";
+  position: absolute;
+  left: 20px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: rgba(2, 6, 23, 0.10);
+}
+
+#detailPanel .timeline-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  gap: 12px;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(2, 6, 23, 0.08);
+  background: rgba(255, 255, 255, 0.92);
+  margin-bottom: 10px;
+}
+
+#detailPanel .timeline-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(59, 130, 246, 0.10);
+  border: 1px solid rgba(59, 130, 246, 0.18);
+  color: #1d4ed8;
+  z-index: 1;
+}
+
+#detailPanel .timeline-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+#detailPanel .timeline-type {
+  font-weight: 950;
+  font-size: 12.5px;
+  color: rgba(15, 23, 42, 0.92);
+  min-width: 0;
+}
+
+#detailPanel .timeline-date {
+  font-weight: 800;
+  font-size: 11.5px;
+  opacity: 0.80;
+  white-space: nowrap;
+}
+
+#detailPanel .timeline-body { margin-top: 8px; }
+
+#detailPanel .dp-history-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+#detailPanel .dp-h-kv {
+  display: grid;
+  grid-template-columns: 160px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+}
+
+#detailPanel .dp-h-k {
+  font-size: 11.5px;
+  font-weight: 900;
+  color: rgba(15, 23, 42, 0.78);
+}
+
+#detailPanel .dp-h-v {
+  font-size: 12.5px;
+  font-weight: 650;
+  color: rgba(15, 23, 42, 0.92);
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+#detailPanel .dp-h-arrow {
+  display: inline-block;
+  margin: 0 6px;
+  color: rgba(30, 64, 175, 0.85);
+  font-weight: 900;
+}
+
+#detailPanel .dp-history-extra {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed rgba(2, 6, 23, 0.12);
+}
+
+/* =====================================================================
+   17) TABLES (History / Teflon)
+===================================================================== */
+
+#detailPanel .dp-history-table,
+#detailPanel .dp-teflon-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+#detailPanel .dp-history-table th,
+#detailPanel .dp-history-table td,
+#detailPanel .dp-teflon-table th,
+#detailPanel .dp-teflon-table td {
+  padding: 8px !important;
+  border-bottom: 1px solid rgba(2, 6, 23, 0.10);
+  font-size: inherit;
+  vertical-align: top;
+}
+
+#detailPanel .dp-history-table thead th,
+#detailPanel .dp-teflon-table thead th {
+  background: rgba(240, 242, 246, 0.80);
+  font-weight: 900;
+}
+
+#detailPanel .dp-history-table tbody tr:hover,
+#detailPanel .dp-teflon-table tbody tr:hover {
+  background: rgba(0, 104, 201, 0.06);
+}
+
+#detailPanel .dp-history-table td b,
+#detailPanel .dp-teflon-table td b {
+  font-weight: 900;
+}
+
+/* =====================================================================
+   18) PREVIEW MODE (khi mềEpreview popup)
+===================================================================== */
+
+#detailPanel.detail-panel.dp-preview-open .dp-col-mid,
+#detailPanel.detail-panel.dp-preview-open .dp-col-center,
+#detailPanel.detail-panel.dp-preview-open .dp-col-right {
+  filter: blur(1.2px) brightness(0.85) saturate(0.85);
+  transition: filter 0.15s ease;
+}
+
+#detailPanel.detail-panel.dp-preview-open .dp-col-mid *,
+#detailPanel.detail-panel.dp-preview-open .dp-col-center *,
+#detailPanel.detail-panel.dp-preview-open .dp-col-right * {
+  pointer-events: none;
+  user-select: none;
+}
+
+#detailPanel.detail-panel.dp-preview-open .dp-col-left,
+#detailPanel.detail-panel.dp-preview-open .dp-col-left * {
+  pointer-events: auto;
+}
+
+.dp-preview-modal-backdrop {
+  position: fixed;
+  z-index: 10080;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(2px) saturate(0.85);
+  border-radius: 16px;
+}
+
+.dp-preview-modal {
+  position: fixed;
+  z-index: 10090;
+  background: rgba(255, 255, 255, 0.99);
+  border: 1px solid rgba(0, 0, 0, 0.10);
+  border-radius: 16px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.18);
+  overflow: hidden;
+
+  font-family: "Inter", "Be Vietnam Pro", "Hiragino Sans", "Yu Gothic UI", "Meiryo", system-ui, -apple-system,
+    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-weight: 500;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.dp-preview-modal button,
+.dp-preview-modal input,
+.dp-preview-modal select,
+.dp-preview-modal textarea,
+.dp-preview-modal .info-label,
+.dp-preview-modal .info-value {
+  font-family: inherit;
+}
+
+/* Không làm hỏng icon FontAwesome trong preview */
+.dp-preview-modal .fa,
+.dp-preview-modal .fas,
+.dp-preview-modal .far,
+.dp-preview-modal .fal,
+.dp-preview-modal .fab,
+.dp-preview-modal i[class^="fa"],
+.dp-preview-modal i[class*=" fa-"],
+.dp-preview-modal span[class^="fa"],
+.dp-preview-modal span[class*=" fa-"] {
+  font-family: var(--fa-font-solid, "Font Awesome 6 Free", "Font Awesome 5 Free") !important;
+}
+
+.dp-preview-modal .far,
+.dp-preview-modal .fa-regular {
+  font-family: var(--fa-font-regular, "Font Awesome 6 Free", "Font Awesome 5 Free") !important;
+  font-weight: 400 !important;
+}
+
+.dp-preview-modal .fab,
+.dp-preview-modal .fa-brands {
+  font-family: var(--fa-font-brands, "Font Awesome 6 Brands", "Font Awesome 5 Brands") !important;
+}
+
+.dp-preview-modal .fas,
+.dp-preview-modal .fa-solid {
+  font-weight: 900 !important;
+}
+
+.dp-preview-modal .dp-preview-body {
+  -webkit-overflow-scrolling: touch;
+}
+
+.dp-preview-modal .btn-action {
+  border-radius: 10px;
+}
+
+.dp-preview-modal .dp-preview-header{
+  padding: 10px 12px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 10px;
+  color: #fff;
+  background: linear-gradient(135deg, var(--color-ai-blue) 0%, var(--color-ai-blue-hover) 100%);
+  border-bottom: 1px solid rgba(255,255,255,0.18);
+}
+
+.dp-preview-modal .dp-preview-title{
+  min-width: 0;
+  display:flex;
+  flex-direction:column;
+  gap: 2px;
+}
+
+.dp-preview-modal .dp-preview-line1{
+  font-weight: 900;
+  font-size: 13px;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dp-preview-modal .dp-preview-line2{
+  font-size: 11px;
+  opacity: 0.92;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dp-preview-modal .dp-preview-actions{
+  display:flex;
+  align-items:center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.dp-preview-modal .dp-preview-btn{
+  border-radius: 10px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-weight: 850;
+  border: 1px solid rgba(255,255,255,0.22);
+  background: rgba(255,255,255,0.10);
+  color: #fff;
+}
+
+.dp-preview-modal .dp-preview-btn:hover{
+  background: rgba(255,255,255,0.16);
+  transform: translateY(-1px);
+}
+
+.dp-preview-modal .dp-preview-btn.primary{
+  background: rgba(255,255,255,0.18);
+  border-color: rgba(255,255,255,0.30);
+}
+
+/* =====================================================================
+   19) UTILITIES (chềEtrong panel)
+===================================================================== */
+
+#detailPanel .text-primary { color: var(--text-primary); }
+
+#detailPanel .text-secondary { color: var(--text-secondary); }
+
+#detailPanel .text-muted { color: var(--text-muted); }
+
+#detailPanel .text-success { color: var(--color-success); }
+
+#detailPanel .text-danger { color: var(--color-danger); }
+
+#detailPanel .text-warning { color: var(--color-warning); }
+
+#detailPanel .text-info { color: var(--color-info); }
+
+#detailPanel .fw-bold { font-weight: 800; }
+
+#detailPanel .fw-normal { font-weight: 500; }
+
+#detailPanel .fs-small { font-size: 10px; }
+
+#detailPanel .fs-normal { font-size: 12px; }
+
+#detailPanel .fs-large { font-size: 14px; }
+
+#detailPanel .mb-0 { margin-bottom: 0 !important; }
+
+#detailPanel .mb-1 { margin-bottom: var(--spacing-xs) !important; }
+
+#detailPanel .mb-2 { margin-bottom: var(--spacing-sm) !important; }
+
+#detailPanel .mb-3 { margin-bottom: var(--spacing-md) !important; }
+
+#detailPanel .mb-4 { margin-bottom: var(--spacing-lg) !important; }
+
+#detailPanel .mt-0 { margin-top: 0 !important; }
+
+#detailPanel .mt-1 { margin-top: var(--spacing-xs) !important; }
+
+#detailPanel .mt-2 { margin-top: var(--spacing-sm) !important; }
+
+#detailPanel .mt-3 { margin-top: var(--spacing-md) !important; }
+
+#detailPanel .mt-4 { margin-top: var(--spacing-lg) !important; }
+
+/* Mobile: preview drawer cần ưu tiên value rộng hơn */
+@media (max-width: 640px){
+  .dp-preview-modal :where(.info-item){
+    grid-template-columns: 100px minmax(0, 1fr);
+    column-gap: 10px;
+    align-items: start;
+  }
+
+  /* Label JP/VI: JP 1 dòng, VI dòng dưới nhềEmềE*/
+  .dp-preview-modal .info-label .dp-label-jp{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .dp-preview-modal .info-label .dp-label-vi{
+    opacity: 0.70;
+    font-size: 10px;
+    font-weight: 700;
+  }
+}
+
+/* v8.4.3-2 Preview hero: 2 cột cềEđịnh (trái ảnh, phải thông tin) */
+.dp-preview-modal .dp-hero-grid.dp-preview-hero-grid{
+  display:grid;
+  grid-template-columns: 220px 1fr;
+  gap:12px;
+  align-items:stretch;
+}
+
+/* Khung ảnh luôn có kích thước cềEđịnh, không co khi thiếu thumb */
+.dp-preview-modal .dp-preview-hero-thumbwrap{
+  position:relative;
+  width:220px;
+  height:150px;
+  border-radius:12px;
+  border:1px solid rgba(2,6,23,0.10);
+  background:rgba(255,255,255,0.55);
+  overflow:hidden;
+}
+
+.dp-preview-modal .dp-preview-hero-thumbwrap img[data-dp-preview-hero-thumb="1"]{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:contain;
+  opacity:0;
+  transition:opacity .14s ease;
+  background:transparent;
+}
+
+.dp-preview-modal img[data-dp-preview-hero-thumb="1"][data-dp-hero-thumb-state="ready"]{
+  opacity:1;
+}
+
+.dp-preview-modal .dp-preview-hero-thumbph{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:10px;
+  text-align:center;
+  color:rgba(2,6,23,0.55);
+  font-weight:800;
+  font-size:12px;
+}
+
+.dp-preview-modal img[data-dp-preview-hero-thumb="1"][data-dp-hero-thumb-state="ready"] + .dp-preview-hero-thumbph{
+  display:none;
+}
+
+/* Cột phải: chia 2 nhóm trên/dưới rõ ràng */
+.dp-preview-modal .dp-preview-hero-right{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  min-width:0;
+}
+
+.dp-preview-modal .dp-preview-hero-top .dp-hero-line1{
+  font-size:28px;
+  font-weight:950;
+  letter-spacing:0.3px;
+}
+
+.dp-preview-modal .dp-preview-hero-bottom{
+  margin-top:2px;
+}
+
+.dp-preview-modal .dp-preview-hero-kvgrid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:8px 12px;
+}
+
+/* Màn hình hẹp: chuyển thành 1 cột (ảnh lên trên), nhưng vẫn ổn định */
+/* ============================================================================
+   PATCH v8.4.3-1
+   - Desktop + Mobile: Badge cho "VềEtrí" (.dp-location-badge)
+   - Font: hiện đại, dềEđọc (label nhạt hơn value, giảm cảm giác thô trên iPhone)
+   - Divider mềEgiữa label/value (trên từng dòng)
+   - Preview mobile: luôn ưu tiên bềEcục 2 nửa (ảnh + nội dung), không đẩy ảnh lên trên
+   ============================================================================ */
+
+/* A) Badge cho VềEtrí */
+#detailPanel .dp-location-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 22px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(2, 6, 23, 0.14);
+  background: rgba(255, 255, 255, 0.92);
+  color: rgba(15, 23, 42, 0.92);
+  font-weight: 900;
+  font-size: 12px;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+#detailPanel .dp-location-badge.dp-location-badge--desktop {
+  border-color: rgba(30, 64, 175, 0.18);
+  background: rgba(59, 130, 246, 0.06);
+  color: rgba(30, 64, 175, 0.92);
+}
+
+/* B) Font & đềEtương phản (phềEbiến: Inter/Be Vietnam Pro + system fallback) */
+:where(#detailPanel, .dp-preview-modal) {
+  text-rendering: optimizeLegibility;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* label nhạt hơn, value rõ hơn */
+:where(#detailPanel, .dp-preview-modal) .info-label {
+  color: rgba(15, 23, 42, 0.70);
+  font-weight: 650;
+}
+
+:where(#detailPanel, .dp-preview-modal) .info-label .dp-label-jp {
+  color: rgba(15, 23, 42, 0.86);
+  font-weight: 900;
+}
+
+:where(#detailPanel, .dp-preview-modal) .info-label .dp-label-vi {
+  opacity: 0.60;
+  font-weight: 750;
+}
+
+:where(#detailPanel, .dp-preview-modal) .info-value {
+  color: rgba(15, 23, 42, 0.95);
+  font-weight: 650;
+  padding-left: 10px;
+  border-left: 1px solid rgba(2, 6, 23, 0.06);
+}
+
+/* C) Preview mobile: giữ 2 nửa (ảnh + nội dung) */
+@media (max-width: 520px) {
+  .dp-preview-modal .dp-hero-grid.dp-preview-hero-grid {
+    grid-template-columns: minmax(140px, 44vw) minmax(0, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  .dp-preview-modal .dp-preview-hero-thumbwrap {
+    width: auto !important;
+    height: 160px !important;
+  }
+
+  .dp-preview-modal .dp-preview-hero-kvgrid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* D) Preview header gọn trên mobile */
+@media (max-width: 640px) {
+  .dp-preview-modal .dp-preview-header {
+    padding: 8px 10px;
+    gap: 8px;
+  }
+
+  .dp-preview-modal .dp-preview-line1 {
+    font-size: 12px;
+    font-weight: 950;
+  }
+
+  .dp-preview-modal .dp-preview-line2 {
+    font-size: 10px;
+  }
+
+  .dp-preview-modal .dp-preview-btn {
+    padding: 6px 9px;
+    border-radius: 10px;
+    font-weight: 900;
+    font-size: 11px;
+  }
+}
+
+/* E) Preview hero: label JP/VI trong KV (đẹp, rõ) */
+.dp-preview-modal .dp-preview-hero-kvgrid .dp-hero-k {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  opacity: 1;
+}
+
+.dp-preview-modal .dp-preview-hero-kvgrid .dp-hero-k .dp-label-jp {
+  font-size: 11px;
+  font-weight: 950;
+  line-height: 1.12;
+  color: rgba(15, 23, 42, 0.86);
+}
+
+.dp-preview-modal .dp-preview-hero-kvgrid .dp-hero-k .dp-label-vi {
+  font-size: 10px;
+  font-weight: 800;
+  opacity: 0.66;
+  line-height: 1.12;
+}
+
+@keyframes dpFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+
+  #detailPanel.detail-panel{
+      width: 100%;
+      right: -100%;
+    }
+
+  #detailPanel.detail-panel.open{
+      right: 0;
+    }
+
+}
+
+@media (max-width: 1024px) {
+
+  :where(#detailPanel, .dp-preview-modal) .dp-hero-grid {
+      grid-template-columns: 1fr;
+    }
+
+}
+
+@media (max-width: 768px) {
+
+  #detailPanel.detail-panel {
+      width: 100%;
+      right: -100%;
+    }
+
+  #detailPanel.detail-panel.open { right: 0; }
+
+  #detailPanel .dp-actions-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+}
+
+@media (max-width: 720px) {
+
+  #detailPanel .dp-h-kv {
+      grid-template-columns: 1fr;
+      gap: 4px;
+    }
+
+  #detailPanel .dp-h-k { opacity: 0.85; }
+
+}
+
+@media (max-width: 600px) {
+
+  #detailPanel .info-item{
+      grid-template-columns: 96px minmax(0, 1fr);
+    }
+
+}
+
+@media (max-width: 520px) {
+
+  #detailPanel .info-grid-2col.dp-kv-compact .info-item{
+      grid-template-columns: 105px minmax(0, 1fr);
+    }
+
+  :where(#detailPanel, .dp-preview-modal) .info-value {
+      padding-left: 8px;
+      border-left-color: rgba(2, 6, 23, 0.05);
+    }
+
+}
+
+
+/* ============================================================================
+   UI REDESIGN v8.5.3-1 - Modern, Unified, Clean
+   - Phá vỡ cảm giác "card rời rạc", gom lại thành khối liền mạch
+   - Theme màu Slate/Indigo/Teal chuẩn mực, mềm mại
+   - Typography sạch, phân cấp rõ ràng
+============================================================================ */
+
+/* 1. Global Tokens for Panel & Preview */
+:where(#detailPanel, .dp-preview-modal) {
+  --dp-surface-bg: #f8fafc;
+  --dp-card-bg: #ffffff;
+  --dp-border: rgba(15, 23, 42, 0.08);
+  --dp-border-focus: rgba(79, 70, 229, 0.4);
+  --dp-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --dp-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --dp-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --dp-radius-md: 12px;
+  --dp-radius-lg: 16px;
+  --dp-radius-xl: 24px;
+  --dp-text-main: #0f172a;
+  --dp-text-mute: #64748b;
+  --dp-accent: #4f46e5;
+  --dp-accent-bg: #eef2ff;
+  --dp-mold-theme: #0ea5e9;
+  --dp-cutter-theme: #f97316;
+}
+
+/* 2. Container Background & Smooth Scroll */
+:where(#detailPanel, .dp-preview-modal) .detail-panel-body,
+:where(#detailPanel, .dp-preview-modal) .dp-preview-body {
+  background-color: var(--dp-surface-bg) !important;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(79, 70, 229, 0.04) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(14, 165, 233, 0.04) 0px, transparent 50%) !important;
+  padding: 16px !important;
+}
+
+/* 3. Hero Section - The Focus Point */
+:where(#detailPanel, .dp-preview-modal) .dp-hero {
+  background: var(--dp-card-bg) !important;
+  border-radius: var(--dp-radius-lg) !important;
+  border: 1px solid var(--dp-border) !important;
+  box-shadow: var(--dp-shadow-md) !important;
+  padding: 20px !important;
+  margin-bottom: 16px !important;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle accent glow inside hero */
+:where(#detailPanel, .dp-preview-modal) .dp-hero::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 5px;
+}
+:where(#detailPanel, .dp-preview-modal) .dp-hero.dp-hero--mold {
+  background: linear-gradient(180deg, #f0f9ff 0%, #ffffff 100%) !important; /* Xanh nhạt tinh tế */
+}
+:where(#detailPanel, .dp-preview-modal) .dp-hero.dp-hero--mold::before {
+  background: linear-gradient(90deg, #0ea5e9, #38bdf8);
+}
+
+:where(#detailPanel, .dp-preview-modal) .dp-hero.dp-hero--cutter {
+  background: linear-gradient(180deg, #fff7ed 0%, #ffffff 100%) !important; /* Cam nhạt tinh tế */
+}
+:where(#detailPanel, .dp-preview-modal) .dp-hero.dp-hero--cutter::before {
+  background: linear-gradient(90deg, #f97316, #fb923c);
+}
+
+:where(#detailPanel, .dp-preview-modal) .dp-hero-line1 {
+  font-size: 24px !important; /* Tăng cỡ chữ */
+  font-weight: 800 !important;
+  color: var(--dp-text-main) !important;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px !important;
+}
+
+:where(#detailPanel, .dp-preview-modal) .dp-hero-line2 {
+  font-size: 15px !important; /* Tăng cỡ chữ phụ */
+  color: var(--dp-text-mute) !important;
+  margin-bottom: 16px !important;
+}
+
+/* 4. Unified Sections (Replaces Card Islands) */
+:where(#detailPanel, .dp-preview-modal) .modal-section {
+  background: var(--dp-card-bg) !important;
+  border: 1px solid var(--dp-border) !important;
+  border-radius: var(--dp-radius-lg) !important;
+  padding: 16px !important;
+  margin-bottom: 16px !important;
+  box-shadow: var(--dp-shadow-sm) !important;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+:where(#detailPanel, .dp-preview-modal) .modal-section:hover {
+  box-shadow: var(--dp-shadow-md) !important;
+  border-color: rgba(15, 23, 42, 0.12) !important;
+}
+
+/* Section Header - Clean and Professional */
+:where(#detailPanel, .dp-preview-modal) .section-header {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 12px 16px !important;
+  margin: -16px -16px 16px -16px !important; /* Pull it to edges */
+  border-bottom: 1px solid var(--dp-border) !important;
+  background: var(--dp-accent-bg) !important; /* Default soft background */
+  border-radius: var(--dp-radius-lg) var(--dp-radius-lg) 0 0 !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  color: var(--dp-accent) !important; /* Default main accent text */
+  box-shadow: none !important;
+}
+
+:where(#detailPanel, .dp-preview-modal) .section-header i {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 8px !important;
+  background: #ffffff !important; /* White contrast icon bg */
+  color: inherit !important; /* Kế thừa màu từ thẻ section-header */
+  font-size: 14px !important;
+  border: 1px solid currentColor !important;
+  opacity: 0.8 !important;
+}
+
+/* --- Multi-color Context cho Section Header --- */
+:where(#detailPanel, .dp-preview-modal) .section-header.color-teal {
+  background: #f0fdfa !important; color: #0f766e !important; border-bottom-color: #ccfbf1 !important;
+}
+:where(#detailPanel, .dp-preview-modal) .section-header.color-amber {
+  background: #fffbeb !important; color: #b45309 !important; border-bottom-color: #fef3c7 !important;
+}
+:where(#detailPanel, .dp-preview-modal) .section-header.color-rose {
+  background: #fff1f2 !important; color: #be123c !important; border-bottom-color: #ffe4e6 !important;
+}
+:where(#detailPanel, .dp-preview-modal) .section-header.color-slate {
+  background: #f8fafc !important; color: #334155 !important; border-bottom-color: #f1f5f9 !important;
+}
+:where(#detailPanel, .dp-preview-modal) .section-header.color-emerald {
+  background: #ecfdf5 !important; color: #047857 !important; border-bottom-color: #d1fae5 !important;
+}
+
+
+/* 5. Clean Key-Value Rows (No Badges) */
+:where(#detailPanel, .dp-preview-modal) .info-grid-2col,
+:where(#detailPanel, .dp-preview-modal) .info-grid-3col {
+  gap: 0 !important;
+  row-gap: 0 !important;
+}
+
+:where(#detailPanel, .dp-preview-modal) .info-item {
+  display: flex !important;
+  flex-direction: row !important; /* Đổi sang Inline / Cùng hàng Mặc định Desktop */
+  align-items: baseline !important;
+  padding: 10px 16px !important;
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.04) !important;
+  border-radius: 0 !important;
+  transition: background 0.15s ease;
+}
+
+:where(#detailPanel, .dp-preview-modal) .info-item:last-child {
+  border-bottom: none !important;
+}
+
+:where(#detailPanel, .dp-preview-modal) .info-item:hover {
+  background: rgba(15, 23, 42, 0.015) !important;
+}
+
+:where(#detailPanel, .dp-preview-modal) .info-label {
+  color: var(--dp-text-mute) !important;
+  margin-bottom: 0 !important; /* Xoá bottom margin khi cùng dòng */
+  /* Thiết lập Row Flex hiển thị Inline 2 ngôn ngữ */
+  display: flex !important;
+  flex-direction: row !important; /* Tiếng Nhật trên, Việt Dưới */
+  align-items: flex-start !important;
+  gap: 2px !important;
+  flex: 0 0 140px !important; /* Độ rộng nhãn tĩnh để chiếm phần trái */
+  border-right: 1px solid rgba(15,23,42,0.06) !important; /* Đường vạch ngăn cách mờ nhạt */
+  padding-right: 12px !important;
+}
+
+:where(#detailPanel, .dp-preview-modal) .info-label .dp-label-jp {
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  color: #475569 !important; /* Slate 600 */
+}
+
+:where(#detailPanel, .dp-preview-modal) .info-label .dp-label-vi {
+  font-size: 11px !important; /* Đủ nhỏ nhưng nét căng */
+  font-weight: 600 !important; /* Nét sáng, hết bị mờ ảo */
+  color: #64748b !important; /* Slate 500 */
+  opacity: 1 !important; /* Loại bỏ giới hạn làm mờ */
+}
+
+/* Thêm ngoặc cho tiếng Việt tự động */
+:where(#detailPanel, .dp-preview-modal) .info-label .dp-label-vi::before { content: "("; }
+:where(#detailPanel, .dp-preview-modal) .info-label .dp-label-vi::after { content: ")"; }
+
+
+:where(#detailPanel, .dp-preview-modal) .info-value {
+  width: auto !important; /* Tự co giãn theo Grid / Cùng dòng */
+  flex: 1 1 0% !important; /* Lấp đầy ngang */
+  padding-left: 12px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: #1e293b !important;
+  line-height: 1.5 !important;
+  word-wrap: break-word !important;
+}
+
+/* 5.1 Text Size Compact Variant (For Location Info) */
+:where(#detailPanel, .dp-preview-modal) .dp-kv-compact .info-item {
+  flex-direction: row !important; /* Nhóm Location luôn hiển thị ngang bất chấp PC hay Mobile */
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 6px 0 !important;
+  border-bottom: 1px dashed rgba(15,23,42,0.1) !important;
+}
+
+:where(#detailPanel, .dp-preview-modal) .dp-kv-compact .info-label {
+  margin-bottom: 0 !important;
+  flex: 0 0 110px !important;
+}
+
+:where(#detailPanel, .dp-preview-modal) .dp-kv-compact .info-value {
+  text-align: right !important;
+  width: auto !important;
+  font-size: 13px !important;
+}
+
+:where(#detailPanel, .dp-preview-modal) .dp-kv-compact .dp-label-jp {
+  font-size: 12px !important;
+}
+
+:where(#detailPanel, .dp-preview-modal) .dp-kv-compact .dp-label-vi {
+  font-size: 11px !important;
+}
+
+/* 6. Action Buttons - Sleek & Tactile (v8.5.3-6) */
+#detailPanel .dp-action-btn {
+  background: #f8fafc !important;
+  border: 1.5px solid #cbd5e1 !important;
+  border-radius: var(--dp-radius-md) !important;
+  padding: 10px 12px !important;
+  color: var(--dp-text-main) !important;
+  box-shadow: 0 1px 4px 0 rgba(0,0,0,0.07), 0 0 0 0 transparent !important;
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 10px !important;
+  min-height: 36px !important;
+}
+
+#detailPanel .dp-action-btn:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px 0 rgba(0,0,0,0.12) !important;
+}
+
+#detailPanel .dp-action-btn:active { transform: translateY(0) !important; }
+
+#detailPanel .dp-action-btn i {
+  font-size: 20px !important;
+  transition: transform 0.2s ease !important;
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 8px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+}
+
+#detailPanel .dp-action-btn:hover i { transform: scale(1.1) !important; }
+
+/* 入出庫 / Nhập xuất - Amber+Orange */
+#detailPanel .dp-action-btn[data-action="inout"],
+#detailPanel .dp-action-btn[data-action="move"] {
+  background: #fff8e1 !important;
+  border-color: #ffc107 !important;
+}
+#detailPanel .dp-action-btn[data-action="inout"] i,
+#detailPanel .dp-action-btn[data-action="move"] i {
+  background: #fff0b3 !important;
+  color: #e65100 !important;
+}
+#detailPanel .dp-action-btn[data-action="inout"]:hover,
+#detailPanel .dp-action-btn[data-action="move"]:hover {
+  background: #fff3cd !important;
+  border-color: #ff8f00 !important;
+}
+
+/* 棚卸 / Kiểm kê - Teal+Cyan */
+#detailPanel .dp-action-btn[data-action="inventory"] {
+  background: #e0f7fa !important;
+  border-color: #00bcd4 !important;
+}
+#detailPanel .dp-action-btn[data-action="inventory"] i {
+  background: #b2ebf2 !important;
+  color: #00695c !important;
+}
+#detailPanel .dp-action-btn[data-action="inventory"]:hover {
+  background: #b2ebf2 !important;
+  border-color: #00838f !important;
+}
+
+/* 印刷 / In - Slate+Gray */
+#detailPanel .dp-action-btn[data-action="print"] {
+  background: #f1f5f9 !important;
+  border-color: #94a3b8 !important;
+}
+#detailPanel .dp-action-btn[data-action="print"] i {
+  background: #e2e8f0 !important;
+  color: #334155 !important;
+}
+#detailPanel .dp-action-btn[data-action="print"]:hover {
+  background: #e2e8f0 !important;
+  border-color: #64748b !important;
+}
+
+/* QR - Blue+Indigo */
+#detailPanel .dp-action-btn[data-action="qr"] {
+  background: #eff6ff !important;
+  border-color: #3b82f6 !important;
+}
+#detailPanel .dp-action-btn[data-action="qr"] i {
+  background: #dbeafe !important;
+  color: #1d4ed8 !important;
+}
+#detailPanel .dp-action-btn[data-action="qr"]:hover {
+  background: #dbeafe !important;
+  border-color: #1d4ed8 !important;
+}
+
+/* 写真 / Ảnh - Sky+Cyan */
+#detailPanel .dp-action-btn[data-action="photo"] {
+  background: #e0f2fe !important;
+  border-color: #0284c7 !important;
+}
+#detailPanel .dp-action-btn[data-action="photo"] i {
+  background: #bae6fd !important;
+  color: #075985 !important;
+}
+#detailPanel .dp-action-btn[data-action="photo"]:hover {
+  background: #bae6fd !important;
+  border-color: #075985 !important;
+}
+
+/* Jump buttons (Truy vấn nhanh - Di sâu) - mild Emerald */
+#detailPanel .dp-action-btn[data-jump] {
+  background: #f0fdf4 !important;
+  border-color: #86efac !important;
+}
+#detailPanel .dp-action-btn[data-jump] i {
+  background: #dcfce7 !important;
+  color: #15803d !important;
+}
+#detailPanel .dp-action-btn[data-jump]:hover {
+  background: #dcfce7 !important;
+  border-color: #4ade80 !important;
+}
+
+/* FIX: các nút trong Quick Queries (history/teflon/storage...) dùng span con
+   cần hiển thị dạng cột giống như desktop action buttons */
+#detailPanel .dp-action-btn > span:not(.dp-action-label-ja):not(.dp-action-label-vi):not(.sub):not(.dp-label-group) {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: flex-start !important;
+  line-height: 1.2 !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+}
+#detailPanel .dp-action-btn > span + .sub {
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  color: #64748b !important;
+  margin-top: 2px !important;
+  display: block !important;
+}
+
+/* Grid 2 cột cho Quick Queries jump buttons */
+#detailPanel .dp-actions-grid:not([style]) {
+  grid-template-columns: repeat(3, 1fr) !important;
+}
+
+/* ============================================================================
+   8) STACKED GRID MODERN (v8.5.3-7)
+============================================================================ */
+:where(#detailPanel, .dp-preview-modal) .dp-info-grid-modern {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)) !important;
+  gap: 12px 14px !important;
+  padding: 4px 0 !important;
+}
+
+:where(#detailPanel, .dp-preview-modal) .dp-info-grid-modern.cols-3 {
+  grid-template-columns: repeat(3, 1fr) !important;
+}
+
+:where(#detailPanel, .dp-preview-modal) .dp-info-grid-modern.cols-4 {
+  grid-template-columns: repeat(4, 1fr) !important;
+}
+
+:where(#detailPanel, .dp-preview-modal) .dp-item-stacked {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: flex-start !important;
+  justify-content: flex-start !important;
+  padding: 12px 14px !important;
+  background: rgba(248, 250, 252, 0.6) !important;
+  border: 1px solid rgba(15, 23, 42, 0.06) !important;
+  border-radius: 12px !important;
+  transition: all 0.2s ease !important;
+}
+
+:where(#detailPanel, .dp-preview-modal) .dp-item-stacked:hover {
+  background: #ffffff !important;
+  border-color: rgba(15, 23, 42, 0.12) !important;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05) !important;
+  transform: translateY(-2px) !important;
+}
+
+:where(#detailPanel, .dp-preview-modal) .dp-item-stacked .info-label {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: baseline !important;
+  flex-wrap: wrap !important;
+  gap: 4px 6px !important;
+  border: none !important;
+  padding: 0 !important;
+  margin-bottom: 6px !important;
+  flex: none !important;
+  width: 100% !important;
+}
+
+:where(#detailPanel, .dp-preview-modal) .dp-item-stacked .info-label .dp-label-jp {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: #64748b !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
+:where(#detailPanel, .dp-preview-modal) .dp-item-stacked .info-label .dp-label-vi {
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  color: #94a3b8 !important;
+}
+
+:where(#detailPanel, .dp-preview-modal) .dp-item-stacked .info-value {
+  padding: 0 !important;
+  border: none !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  color: #0f172a !important;
+  line-height: 1.4 !important;
+  width: 100% !important;
+  word-break: break-word !important;
+}
+
+@media (max-width: 1024px) {
+  :where(#detailPanel, .dp-preview-modal) .dp-info-grid-modern.cols-4 {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  :where(#detailPanel, .dp-preview-modal) .dp-info-grid-modern.cols-3,
+  :where(#detailPanel, .dp-preview-modal) .dp-info-grid-modern.cols-4 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 480px) {
+  :where(#detailPanel, .dp-preview-modal) .dp-info-grid-modern.cols-3,
+  :where(#detailPanel, .dp-preview-modal) .dp-info-grid-modern.cols-4 {
+    grid-template-columns: 1fr !important;
+  }
+}
+/* 7. Mobile Optimization & Global Image Fix */
+:where(#detailPanel, .dp-preview-modal) .dp-photo-preview-wrap img,
+:where(#detailPanel, .dp-preview-modal) .dp-desktop-photo img,
+:where(#detailPanel, .dp-preview-modal) img[data-dp-thumb-img] {
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: 250px !important;
+    object-fit: contain !important;
+}
+
+@media (max-width: 640px) {
+  :where(#detailPanel, .dp-preview-modal) .detail-panel-body {
+    padding: 12px !important;
+  }
+  
+  /* Bẻ ngược Column Stack cho Mobile Device */
+  :where(#detailPanel, .dp-preview-modal) .info-item:not(.dp-kv-compact .info-item) {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    padding: 10px 0 !important;
+  }
+  
+  :where(#detailPanel, .dp-preview-modal) .info-label:not(.dp-kv-compact .info-label) {
+    flex: none !important;
+    width: 100% !important;
+    border-right: none !important;
+    border-bottom: 1px dashed rgba(15,23,42,0.06) !important;
+    padding-bottom: 4px !important;
+    margin-bottom: 6px !important;
+  }
+  
+  :where(#detailPanel, .dp-preview-modal) .info-value:not(.dp-kv-compact .info-value) {
+    padding-left: 0 !important;
+  }
+
+  /* Compact Mode for Mobile Storage - Keep items inline instead of stacking */
+  :where(#detailPanel, .dp-preview-modal) .dp-kv-compact .info-label {
+     flex: 0 0 100px !important;
+  }
+}
+
+/* =====================================================================
+   PATCH v8.5.3-9: MOBILE COMPACT LAYOUT
+===================================================================== */
+@media (max-width: 768px) {
+  /* Giảm khoảng cách giữa các khối thông tin */
+  :where(#detailPanel, .dp-preview-modal) .modal-section {
+    margin-bottom: 8px !important;
+    padding: 10px !important;
+  }
+  
+  /* Giảm font size của tiêu đề các nhóm */
+  :where(#detailPanel, .dp-preview-modal) .section-header {
+    font-size: 11.5px !important;
+    margin-bottom: 8px !important;
+    padding-bottom: 6px !important;
+  }
+  
+  :where(#detailPanel, .dp-preview-modal) .section-header i {
+    font-size: 12px !important;
+    width: 24px !important;
+    height: 24px !important;
+  }
+
+  /* Thu gọn nút Quick Action (3 cột: trái icon, phải chữ nhỏ) */
+  #detailPanel .dp-actions-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 6px !important;
+  }
+  #detailPanel .dp-action-btn {
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    padding: 4px 6px !important;
+    min-height: 36px !important;
+    gap: 6px !important;
+  }
+  #detailPanel .dp-action-btn i {
+    font-size: 14px !important;
+    width: 24px !important;
+    height: 24px !important;
+    margin-bottom: 0 !important;
+  }
+  #detailPanel .dp-action-btn > div,
+  #detailPanel .dp-action-btn > span:not(.dp-action-label-ja):not(.dp-action-label-vi):not(.sub):not(.dp-label-group) {
+    align-items: flex-start !important;
+    text-align: left !important;
+    width: auto !important;
+  }
+  #detailPanel .dp-action-btn .dp-action-label-ja,
+  #detailPanel .dp-action-btn > div > span:first-child,
+  #detailPanel .dp-action-btn > span:not(.sub):first-child {
+    font-size: 9.5px !important;
+  }
+  #detailPanel .dp-action-btn .dp-action-label-vi,
+  #detailPanel .dp-action-btn > div > span:last-child,
+  #detailPanel .dp-action-btn > span.sub {
+    font-size: 8px !important;
+    margin-top: 1px !important;
+    white-space: normal !important;
+    line-height: 1.1 !important;
+  }
+}
+
+/* ============================================================
+   v8.6.2 DASHBOARD FIX — Tri-Pane Info Tab Overrides
+   Vấn đề: dp-info-grid-modern cols-4 tạo 4 cột cứng nhắc trong card hẹp → vỡ chữ.
+   Giải pháp: Override thành danh sách key-value dọc flex-row (label trái / value phải).
+============================================================ */
+
+/* 1. dp-info-grid-modern → danh sách dọc, xếp theo key-value hàng ngang */
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .dp-info-grid-modern,
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .dp-kv-maininfo,
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .dp-kv-group-technical,
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .dp-kv-group-product {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0 !important;
+  margin: 0;
+  padding: 0;
+}
+
+/* 2. Mỗi hàng info-item: label trái, value phải, không vỡ dọc */
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .dp-item-stacked.info-item {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important;
+  align-items: baseline !important;
+  gap: 8px !important;
+  padding: 4px 12px !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+  border-radius: 0 !important;
+  background: transparent;
+  margin: 0 !important;
+  min-height: 0 !important;
+}
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .dp-item-stacked.info-item:last-child {
+  border-bottom: none !important;
+}
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .dp-item-stacked.info-item:hover {
+  background: #f8fafc;
+}
+
+/* 3. Label trái: cố định tối đa 45%, hiển thị song ngữ dọc */
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .dp-item-stacked .info-label {
+  flex: 0 0 auto !important;
+  max-width: 45% !important;
+  min-width: 80px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  flex-wrap: wrap !important;
+  align-items: baseline !important;
+  gap: 4px !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: #64748b !important;
+  text-transform: none !important;
+  line-height: 1.3 !important;
+  white-space: normal !important;
+}
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .dp-item-stacked .info-label .dp-label-ja {
+  font-size: 11px !important;
+  color: #475569 !important;
+  font-weight: 700 !important;
+}
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .dp-item-stacked .info-label .dp-label-vi {
+  font-size: 9.5px !important;
+  font-weight: 500 !important;
+  color: #94a3b8 !important;
+}
+
+/* 4. Value phải: chiếm không gian còn lại, căn phải, không vỡ sai */
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .dp-item-stacked .info-value {
+  flex: 1 1 auto !important;
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  color: #0f172a !important;
+  text-align: right !important;
+  overflow-wrap: anywhere !important;
+  word-break: break-word !important;
+  line-height: 1.4 !important;
+  margin-top: 0 !important;
+  min-width: 0 !important;
+}
+
+/* 5. full-width item: vẫn là hàng ngang nhưng value wrap */
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .dp-item-stacked.info-item.full-width {
+  grid-column: unset !important;
+}
+
+/* 6. Photo area: thu nhỏ chiều cao khi không có ảnh */
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .dp-photo-view-area {
+  min-height: 140px !important;
+  max-height: 220px !important;
+}
+
+/* 7. Card head compact hơn */
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-head {
+  padding: 8px 12px !important;
+  font-size: 11.5px !important;
+}
+
+/* 8. Card body padding giảm để tăng mật độ */
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body {
+  padding: 0 !important;
+  gap: 0 !important;
+}
+/* Ngoại lệ: card có .dp-d2-card-body--pad cần padding */
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body.dp-d2-card-body--pad {
+  padding: 12px !important;
+  gap: 12px !important;
+}
+
+/* 9. Section header ẩn trong card */
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .modal-section {
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+}
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .section-header {
+  display: none !important;
+}
+
+/* 10. Action buttons: compact grid 3 cột */
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .dp-actions-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 6px !important;
+  padding: 8px !important;
+}
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .dp-action-btn {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 4px 6px !important;
+  border-radius: 8px !important;
+  border: 1px solid #e2e8f0 !important;
+  background: #fff !important;
+  gap: 4px !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04) !important;
+  transition: all 0.15s ease;
+  cursor: pointer;
+  aspect-ratio: unset !important;
+  min-height: 36px !important;
+}
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .dp-action-btn:hover {
+  background: #f1f5f9 !important;
+  border-color: #94a3b8 !important;
+  transform: translateY(-1px);
+}
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .dp-action-btn i {
+  font-size: 14px !important;
+  color: #475569 !important;
+}
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .dp-action-btn .dp-action-label-ja,
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .dp-action-btn > span:not(.sub) {
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  color: #334155 !important;
+  text-align: center !important;
+}
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .dp-action-btn .dp-action-label-vi,
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .dp-action-btn .sub {
+  font-size: 8.5px !important;
+  font-weight: 500 !important;
+  color: #94a3b8 !important;
+  text-align: center !important;
+}
+
+/* 11. location section trong card body */
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .location-section {
+  margin: 0 !important;
+}
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .location-content {
+  padding: 0 !important;
+}
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .dp-storage-top {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 0 !important;
+}
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .dp-storage-col {
+  display: flex !important;
+  flex-direction: row !important;
+  padding: 8px 12px !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+  gap: 4px !important;
+}
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .dp-storage-col:hover { background: #f8fafc; }
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .dp-storage-label {
+  font-size: 10px !important; font-weight: 700 !important; color: #94a3b8 !important;
+}
+
+/* =====================================================================
+   PATCH: GLOBAL SIDEBAR INTEGRATION ON DESKTOP (v8.6.7)
+   Tích hợp sidebar chung của hệ thống, không che lấp menu điều hướng trên Desktop.
+===================================================================== */
+@media (min-width: 1025px) {
+  /* Lấy width động dựa vào cấu trúc class hiện hữu qua pseudo-class :has */
+  :root {
+    --dp-sidebar-w: var(--sidebar-width, 240px);
+  }
+  :root:has(.sidebar.collapsed) {
+    --dp-sidebar-w: var(--sidebar-collapsed-width, 60px);
+  }
+
+  /* Cắt gọt Detail Panel để nhường đường */
+  #detailPanel.detail-panel {
+    width: calc(100% - var(--dp-sidebar-w));
+    transition: right 0.26s ease, width 0.3s ease;
+  }
+
+  /* Cắt gọt lớp phủ nền đen (Backdrop) */
+  #backdrop, .backdrop {
+    left: var(--dp-sidebar-w);
+    width: calc(100% - var(--dp-sidebar-w));
+    transition: opacity 0.2s ease, visibility 0.2s ease, left 0.3s ease, width 0.3s ease;
+  }
+}
+
+/* ============================================================================
+   BADGE STYLES FOR OVERVIEW (v8.6.11)
+============================================================================ */
+:where(#detailPanel, .dp-preview-modal) .dp-badge-cutter-no {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 6px;
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 6px;
+  margin-right: 6px;
+  vertical-align: baseline;
+  box-shadow: 0 1px 2px rgba(249,115,22,0.3);
+  line-height: normal;
+}
+:where(#detailPanel, .dp-preview-modal) .dp-badge-dim {
+  display: inline-flex !important;
+  align-items: center;
+  padding: 3px 8px;
+  font-size: 13px;
+  font-weight: 800;
+  border-radius: 6px;
+  letter-spacing: 0.3px;
+  border: 1px solid;
+  line-height: normal;
+  white-space: nowrap;
+}
+:where(#detailPanel, .dp-preview-modal) .dp-badge-dim.mold-dim {
+  background: #e0f2fe;
+  color: #0369a1;
+  border-color: #bae6fd;
+}
+:where(#detailPanel, .dp-preview-modal) .dp-badge-dim.prod-dim {
+  background: #ecfccb;
+  color: #4d7c0f;
+  border-color: #d9f99d;
+}
+
+/* PATCH v3: Aggressive Mobile Label Dual-line fix for all label types (JA (VIE)) */
+@media (max-width: 900px) {
+  /* Standard Labels (.dp-label-ja, .dp-label-vi) */
+  :where(#detailPanel, .dp-preview-modal) .info-label {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: baseline !important;
+    flex-wrap: wrap !important;
+    gap: 4px !important;
+  }
+  
+  :where(#detailPanel, .dp-preview-modal) .info-label .dp-label-ja,
+  :where(#detailPanel, .dp-preview-modal) .info-label .dp-label-vi,
+  :where(#detailPanel, .dp-preview-modal) .info-label .dp-label-jp {
+    display: inline-flex !important;
+    width: auto !important;
+    flex: 0 0 auto !important;
+    white-space: normal !important;
+  }
+  
+  :where(#detailPanel, .dp-preview-modal) .info-label .dp-label-vi::before {
+    content: "(";
+  }
+  
+  :where(#detailPanel, .dp-preview-modal) .info-label .dp-label-vi::after {
+    content: ")";
+  }
+
+  /* Overview & Snapshots inline wrapper blocks */
+  :where(#detailPanel, .dp-preview-modal) .ov-item .info-label > div {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: baseline !important;
+    flex-wrap: wrap !important;
+    gap: 4px !important;
+  }
+  
+  :where(#detailPanel, .dp-preview-modal) .ov-item .info-label > div > span:last-child::before {
+    content: "(";
+  }
+  
+  :where(#detailPanel, .dp-preview-modal) .ov-item .info-label > div > span:last-child::after {
+    content: ")";
+  }
+}
+
+/* --- PATCH: Mobile Storage Layout & Action Buttons --- */
+@media (max-width: 900px) {
+  /* 1. Nhãn (Nhật - Việt) thông tin lưu trữ: inline, mờ việt */
+  :where(#detailPanel, .dp-preview-modal) .dp-storage-mobile-layout .dp-label-ja {
+    font-size: 11px !important;
+    color: #475569 !important;
+    font-weight: 700 !important;
+  }
+  
+  :where(#detailPanel, .dp-preview-modal) .dp-storage-mobile-layout .dp-label-vi {
+    font-size: 9.5px !important;
+    font-weight: 500 !important;
+    color: #94a3b8 !important;
+    margin-left: 2px !important;
+    white-space: nowrap !important;
+  }
+  
+  :where(#detailPanel, .dp-preview-modal) .dp-storage-mobile-layout > div > div:nth-child(2) > div > div:first-child {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: baseline !important;
+    flex-wrap: nowrap !important;
+  }
+
+  /* 2. Dữ liệu thông tin lưu trữ to hơn */
+  :where(#detailPanel, .dp-preview-modal) .dp-storage-mobile-layout .dp-badge-racklayer {
+    font-size: 13px !important;
+  }
+  :where(#detailPanel, .dp-preview-modal) .dp-storage-mobile-layout [class*="dp-company-badge"] {
+    font-size: 11.5px !important;
+    padding: 2px 6px !important;
+  }
+  :where(#detailPanel, .dp-preview-modal) .dp-storage-mobile-layout .status-badge-compact,
+  :where(#detailPanel, .dp-preview-modal) .dp-storage-mobile-layout .date-badge-compact {
+    font-size: 11.5px !important;
+    padding: 2px 6px !important;
+  }
+  :where(#detailPanel, .dp-preview-modal) .dp-storage-mobile-layout .date-badge-compact .date-text {
+    font-size: 12px !important;
+  }
+  :where(#detailPanel, .dp-preview-modal) .dp-storage-mobile-layout > div:last-child > div > div:last-child {
+    font-size: 13px !important;
+  }
+
+  /* 3. Chữ hướng dẫn trong khung ảnh thumb nhỏ lại */
+  :where(#detailPanel, .dp-preview-modal) [data-dp-photo-upload="1"] > div > div:first-child {
+    font-size: 9px !important;
+    font-weight: 700 !important;
+    line-height: 1.25 !important;
+    color: #475569 !important;
+    margin-bottom: 2px !important;
+  }
+  :where(#detailPanel, .dp-preview-modal) [data-dp-photo-upload="1"] > div > div:last-child {
+    font-size: 8px !important;
+    font-weight: 600 !important;
+    opacity: 0.75 !important;
+  }
+
+  /* 4. Action Buttons (To hơn, Căn giữa) */
+  #detailPanel .dp-action-btn {
+    justify-content: center !important; 
+    padding: 6px !important;
+  }
+  #detailPanel .dp-action-btn > div,
+  #detailPanel .dp-action-btn > span:not(.dp-action-label-ja):not(.dp-action-label-vi):not(.sub):not(.dp-label-group) {
+    align-items: center !important;
+    text-align: center !important;
+  }
+  #detailPanel .dp-action-btn .dp-action-label-ja,
+  #detailPanel .dp-action-btn > div > span:first-child,
+  #detailPanel .dp-action-btn > span:not(.sub):first-child {
+    font-size: 11.5px !important; 
+    line-height: 1.2 !important;
+  }
+  #detailPanel .dp-action-btn .dp-action-label-vi,
+  #detailPanel .dp-action-btn > div > span:last-child,
+  #detailPanel .dp-action-btn > span.sub {
+    font-size: 9.5px !important; 
+    line-height: 1.1 !important;
+    margin-top: 2px !important;
+  }
+  #detailPanel .dp-action-btn i {
+    font-size: 15px !important;
+  }
+}
+/* -------------------------------------------------------------
+   PATCH v8.6.26: Enhance Action Button Label Size To Match Fields
+   ------------------------------------------------------------- */
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .dp-action-btn .dp-action-label-ja,
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .dp-action-btn > span:not(.sub) {
+  font-size: 13px !important;
+  line-height: normal !important;
+}
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .dp-action-btn .dp-action-label-vi,
+:where(#detailPanel, .dp-preview-modal) .dp-d2-card-body .dp-action-btn .sub {
+  font-size: 11px !important;
+  line-height: normal !important;
+}
+
+@media (max-width: 900px) {
+  #detailPanel .dp-action-btn .dp-action-label-ja,
+  #detailPanel .dp-action-btn > div > span:first-child,
+  #detailPanel .dp-action-btn > span:not(.sub):first-child {
+    font-size: 12.5px !important;
+  }
+  #detailPanel .dp-action-btn .dp-action-label-vi,
+  #detailPanel .dp-action-btn > div > span:last-child,
+  #detailPanel .dp-action-btn > span.sub {
+    font-size: 10px !important;
+  }
+}

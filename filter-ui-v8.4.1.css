@@ -1,0 +1,565 @@
+/*
+  FILTER UI v8.1.0-3 (Unified)
+  - Includes legacy filter-module-v8.1.0-2.css (for compatibility)
+  - Includes filter drawer UI (Mercari-style) from filter-drawer-v8.1.0-1.css
+*/
+
+/* =========================================================
+   FILTER MODULE UI - REWRITE FULL
+   Target: sidebar filter section + badge ON + searchbox button
+   File: filter-module-v8.1.0-1.css (replace all)
+   ========================================================= */
+
+/* ---------- Search box: put 絞込 inside .search-bar ---------- */
+/* .search-bar is position: relative in main style [style-v8.1.0.css] */
+.search-bar .search-detail-btn {
+  position: absolute;
+  right: 56px;            /* leave room for qr-btn at right:8px + 40px */
+  top: 4px;
+  height: 40px;
+  padding: 0 10px;
+  border: 2px solid #e0e0e0;
+  border-radius: 20px;
+  background: #fff;
+  color: #424242;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.search-bar .search-detail-btn i {
+  font-size: 14px;
+}
+
+.search-bar .search-detail-btn .btn-text {
+  font-size: 12px;
+}
+
+/* Make room for 絞込 button + QR button */
+.search-input {
+  padding-right: 160px !important; /* override default 100px in base style */
+}
+
+/* Active state when filter ON */
+.search-bar .search-detail-btn.active {
+  border-color: #6a5acd;
+  color: #6a5acd;
+  background: #f5f2ff;
+}
+
+/* On small screens you already use bottom navbar filter; hide button if needed */
+@media (max-width: 767px) {
+  .search-bar .search-detail-btn {
+    display: none;
+  }
+  .search-input {
+    padding-right: 90px !important;
+  }
+}
+
+/* ---------- Sidebar filter section base ---------- */
+#filterSection.filter-section {
+  border-top: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e0e0e0;
+  background: #fff;
+}
+
+/* Header */
+#filterSection .filter-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+}
+
+#filterSection .filter-section-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+#filterSection .filter-section-icon {
+  width: 18px;
+  text-align: center;
+  font-size: 15px;
+  color: #6a5acd;
+  flex-shrink: 0;
+}
+
+/* Title: smaller & compact */
+#filterSection .filter-section-title {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+#filterSection .filter-section-title .title-ja {
+  font-size: 12px;
+  font-weight: 800;
+  color: #424242;
+}
+
+#filterSection .filter-section-title .title-vi {
+  font-size: 10px;
+  color: #757575;
+  font-style: italic;
+}
+
+/* Right area */
+#filterSection .filter-section-header-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+/* Clear button: icon only */
+#filterSection .filter-clear-btn {
+  width: 28px;
+  height: 28px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: #fff;
+  color: #757575;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+#filterSection .filter-clear-btn:hover {
+  background: #f5f5f5;
+  border-color: #bdbdbd;
+  color: #424242;
+}
+
+#filterSection .filter-collapse-icon {
+  font-size: 14px;
+  color: #9e9e9e;
+  transition: transform 0.2s ease;
+}
+
+/* Collapsed filter content */
+#filterSection .filter-section-content {
+  max-height: 1000px;
+  overflow: hidden;
+  transition: max-height 0.25s ease;
+}
+
+#filterSection.collapsed .filter-section-content {
+  max-height: 0;
+}
+
+#filterSection.collapsed .filter-collapse-icon {
+  transform: rotate(-90deg);
+}
+
+/* Body */
+#filterSection .filter-section-body {
+  padding: 10px 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#filterSection .filter-divider {
+  height: 1px;
+  background: #eeeeee;
+}
+
+/* Group */
+#filterSection .filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+#filterSection .filter-group-label {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+#filterSection .filter-group-label .label-ja {
+  font-size: 11px;
+  font-weight: 800;
+  color: #424242;
+}
+
+#filterSection .filter-group-label .label-vi {
+  font-size: 10px;
+  color: #9e9e9e;
+  font-style: italic;
+}
+
+/* Value search box (new) */
+#filterSection .filter-value-search {
+  height: 32px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 0 10px;
+  font-size: 12px;
+  outline: none;
+  background: #fff;
+}
+
+#filterSection .filter-value-search:focus {
+  border-color: #6a5acd;
+  box-shadow: 0 0 0 3px rgba(106, 90, 205, 0.12);
+}
+
+/* Select */
+#filterSection .filter-select {
+  height: 34px;
+  width: 100%;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 0 10px;
+  font-size: 12px;
+  background: #fff;
+  outline: none;
+  cursor: pointer;
+}
+
+#filterSection .filter-select:focus {
+  border-color: #6a5acd;
+  box-shadow: 0 0 0 3px rgba(106, 90, 205, 0.12);
+}
+
+/* ---------- Badge: ON (like nav-badge) ---------- */
+#filterSection .filter-badge {
+  background: #e53935;      /* same danger tone as base theme */
+  color: #fff;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+#filterSection .filter-badge.hidden {
+  display: none;
+}
+
+/* Put badge on right side, same row as other nav badges */
+#filterSection .filter-section-header-right .filter-badge {
+  margin-right: 2px;
+}
+
+/* ---------- Sidebar collapsed: ONLY icon + badge, hide texts fully ---------- */
+/* Base stylesheet already hides nav-link-text etc [style-v8.1.0.css] */
+.sidebar.collapsed #filterSection .filter-section-title,
+.sidebar.collapsed #filterSection .filter-clear-btn,
+.sidebar.collapsed #filterSection .filter-collapse-icon,
+.sidebar.collapsed #filterSection .filter-section-content,
+.sidebar.collapsed #filterSection .filter-value-search,
+.sidebar.collapsed #filterSection .filter-divider,
+.sidebar.collapsed #filterSection .filter-group,
+.sidebar.collapsed #filterSection .filter-group-label,
+.sidebar.collapsed #filterSection .filter-select {
+  display: none !important;
+}
+
+/* Center icon like other sidebar items */
+.sidebar.collapsed #filterSection .filter-section-header {
+  padding: 10px 0;
+  justify-content: center;
+}
+
+.sidebar.collapsed #filterSection .filter-section-header-left {
+  justify-content: center;
+}
+
+.sidebar.collapsed #filterSection .filter-section-icon {
+  font-size: 18px;
+  width: auto;
+}
+
+/* Badge position like .nav-badge when collapsed [style-v8.1.0.css] */
+.sidebar.collapsed #filterSection .filter-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  font-size: 8px;
+  padding: 1px 4px;
+}
+
+/* ---------- Mobile full-screen modal: keep working but more compact ---------- */
+.filter-fullscreen-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: flex-end;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+.filter-fullscreen-modal.show {
+  visibility: visible;
+  opacity: 1;
+}
+
+.filter-fullscreen-modal.hidden {
+  display: none;
+}
+
+.filter-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+}
+
+.filter-modal-container {
+  position: relative;
+  width: 100%;
+  height: 88vh;
+  max-height: 100vh;
+  background: #fff;
+  border-radius: 16px 16px 0 0;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(100%);
+  transition: transform 0.25s ease;
+  overflow: hidden;
+}
+
+.filter-fullscreen-modal.show .filter-modal-container {
+  transform: translateY(0);
+}
+
+.filter-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.filter-modal-title {
+  font-size: 14px;
+  font-weight: 900;
+  color: #424242;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.filter-modal-title .title-vi {
+  font-size: 10px;
+  color: #757575;
+  font-style: italic;
+  font-weight: 600;
+}
+
+.filter-modal-close-btn {
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 10px;
+  background: #f5f5f5;
+  color: #424242;
+  cursor: pointer;
+}
+
+.filter-modal-body {
+  flex: 1;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 12px;
+}
+
+.filter-modal-section {
+  padding: 10px 0 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.filter-modal-section:last-child {
+  border-bottom: none;
+}
+
+.filter-modal-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.filter-modal-section-title {
+  font-size: 12px;
+  font-weight: 900;
+  color: #424242;
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+}
+
+.filter-modal-section-title .title-vi {
+  font-size: 10px;
+  color: #9e9e9e;
+  font-style: italic;
+  font-weight: 600;
+}
+
+.filter-modal-section-reset {
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid #e0e0e0;
+  background: #fff;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #424242;
+  cursor: pointer;
+}
+
+.filter-modal-section-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.filter-modal-group-label {
+  font-size: 11px;
+  font-weight: 900;
+  color: #424242;
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+}
+
+.filter-modal-group-label .label-vi {
+  font-size: 10px;
+  color: #9e9e9e;
+  font-style: italic;
+  font-weight: 600;
+}
+
+.filter-modal-select {
+  height: 40px;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 0 12px;
+  font-size: 13px;
+  background: #fff;
+  outline: none;
+}
+
+.filter-modal-select:focus {
+  border-color: #6a5acd;
+  box-shadow: 0 0 0 3px rgba(106, 90, 205, 0.12);
+}
+
+.filter-modal-footer {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px;
+  border-top: 1px solid #eee;
+  background: #fafafa;
+}
+
+.filter-modal-footer-btn {
+  flex: 1;
+  height: 44px;
+  border: none;
+  border-radius: 12px;
+  font-weight: 900;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.filter-modal-footer-btn.btn-reset {
+  background: #e53935;
+  color: #fff;
+}
+
+.filter-modal-footer-btn.btn-close {
+  background: #616161;
+  color: #fff;
+}
+
+/* Desktop: keep modal hidden */
+@media (min-width: 768px) {
+  .filter-fullscreen-modal { display: none !important; }
+}
+
+/* ======================================================================
+   DRAWER UI (Mercari-style)
+   ====================================================================== */
+
+/* FILTER DRAWER (Mercari style) */
+    #filterDrawer.filter-drawer { position: fixed; inset: 0; z-index: 10000; display: flex; justify-content: flex-end; visibility: hidden; opacity: 0; transition: opacity 0.22s ease, visibility 0.22s ease; }
+    #filterDrawer.filter-drawer.hidden { display: none; }
+    #filterDrawer.filter-drawer.show { visibility: visible; opacity: 1; }
+
+    #filterDrawer .filter-drawer-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.35); }
+
+    #filterDrawer .filter-drawer-panel { position: relative; height: 100%; width: min(420px, 92vw); background: #fff; box-shadow: -12px 0 28px rgba(0,0,0,0.18); transform: translateX(100%); transition: transform 0.22s ease; display: flex; flex-direction: column; }
+    #filterDrawer.filter-drawer.show .filter-drawer-panel { transform: translateX(0); }
+
+    #filterDrawer .filter-drawer-header { display: grid; grid-template-columns: 44px 1fr auto; align-items: center; gap: 8px; padding: 12px 10px; border-bottom: 1px solid #eee; }
+    #filterDrawer .filter-drawer-title { font-weight: 900; font-size: 14px; color: #333; display: flex; align-items: baseline; gap: 8px; justify-content: center; }
+    #filterDrawer .filter-drawer-title .vi { font-size: 11px; color: #777; font-style: italic; font-weight: 700; }
+
+    #filterDrawer .filter-drawer-close { width: 38px; height: 38px; border: none; border-radius: 10px; background: #f2f2f2; color: #333; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+    #filterDrawer .filter-drawer-clear { border: none; background: transparent; color: #1976d2; font-weight: 900; cursor: pointer; padding: 6px 8px; }
+    #filterDrawer .filter-drawer-clear .vi { display: none; }
+
+    #filterDrawer .filter-drawer-body { flex: 1; overflow: auto; -webkit-overflow-scrolling: touch; }
+
+    /* Accordion rows (compact like Mercari) */
+    #filterDrawer .filter-accordion { border-bottom: 1px solid #eee; }
+    #filterDrawer .filter-accordion-header { width: 100%; border: none; background: #fff; padding:4px 12px; display: grid; grid-template-columns: 1fr auto 18px; gap: 4px; align-items: center; cursor: pointer; }
+    #filterDrawer .filter-accordion-label { display: flex; gap: 10px; align-items: baseline; min-width: 0; }
+    #filterDrawer .filter-accordion-label .ja { font-size: 13px; font-weight: 900; color: #333; }
+    #filterDrawer .filter-accordion-label .vi { font-size: 11px; color: #999; font-style: italic; font-weight: 700; }
+    #filterDrawer .filter-accordion-summary { font-size: 12px; color: #666; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    #filterDrawer .filter-accordion-icon { color: #999; transition: transform 0.18s ease; }
+
+    #filterDrawer .filter-accordion-content { display: none; padding: 0 12px 14px 12px; }
+    #filterDrawer .filter-accordion.open .filter-accordion-content { display: block; }
+    #filterDrawer .filter-accordion.open .filter-accordion-icon { transform: rotate(180deg); }
+
+    #filterDrawer .filter-drawer-input, #filterDrawer .filter-drawer-select { width: 100%; height: 40px; border: 1px solid #e0e0e0; border-radius: 12px; padding: 0 12px; font-size: 13px; outline: none; background: #fff; }
+    #filterDrawer .filter-drawer-input:focus, #filterDrawer .filter-drawer-select:focus { border-color: #6a5acd; box-shadow: 0 0 0 3px rgba(106, 90, 205, 0.12); }
+
+    #filterDrawer .filter-group-caption { display: flex; gap: 8px; align-items: baseline; margin: 10px 0 6px; }
+    #filterDrawer .filter-group-caption .ja { font-size: 12px; font-weight: 900; color: #333; }
+    #filterDrawer .filter-group-caption .vi { font-size: 10px; color: #999; font-style: italic; font-weight: 700; }
+
+    #filterDrawer .filter-range-row { display: grid; grid-template-columns: 1fr 24px 1fr; gap: 8px; align-items: center; }
+    #filterDrawer .range-separator { text-align: center; color: #999; font-weight: 900; }
+
+    #filterDrawer .filter-checkbox-list { display: flex; flex-direction: column; gap: 8px; padding: 6px 0; }
+    #filterDrawer .filter-checkbox-item { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+    #filterDrawer .filter-checkbox-item input { width: 18px; height: 18px; }
+
+    #filterDrawer .filter-drawer-footer { border-top: 1px solid #eee; background: #fafafa; padding: 10px 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    #filterDrawer .filter-drawer-btn { height: 46px; border: none; border-radius: 12px; font-weight: 900; cursor: pointer; }
+    #filterDrawer .filter-drawer-btn.apply { background: #e53935; color: #fff; }
+    #filterDrawer .filter-drawer-btn.close { background: #616161; color: #fff; }
+    #filterDrawer .filter-drawer-btn .vi { display: none; }
+
+    /* Mobile: give more width */
+    @media (max-width: 767px) {
+      #filterDrawer .filter-drawer-panel { width: min(520px, 92vw); }
+      #filterDrawer .filter-accordion-summary { max-width: 140px; }
+    }
+
+    

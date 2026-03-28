@@ -1,0 +1,257 @@
+/* ============================================================================
+   PRINT / EXPORT MODULE v8.5.4-1
+   Styling for Dialog and Print Media
+============================================================================ */
+
+/* Nút Refresh - mô phỏng nút 絞込 */
+.search-bar .refresh-btn {
+  position: absolute;
+  right: 140px; /* Ngay bên trái nút 絞込 (right ~56px + width ~70) */
+  top: 4px;
+  height: 40px;
+  padding: 0 10px;
+  border: 2px solid #e0e0e0;
+  border-radius: 20px;
+  background: #fff;
+  color: #424242;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  z-index: 10;
+}
+.search-bar .refresh-btn i { font-size: 14px; }
+.search-bar .refresh-btn .btn-text { font-size: 12px; }
+
+.search-bar .refresh-btn:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+.search-bar .refresh-btn:active {
+  background: #f1f5f9;
+}
+
+/* Đảm bảo ô input đủ dài */
+.search-input {
+  padding-right: 220px !important;
+}
+
+@media (max-width: 767px) {
+  .search-bar .refresh-btn {
+    right: 56px; /* Do nút 絞込 bị ẩn trên mobile, nên đẩy nút Refresh vào vị trí đó */
+  }
+  .search-input {
+    padding-right: 140px !important;
+  }
+}
+
+/* Global Sync Icon */
+.search-bar-wrapper .global-sync-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  font-size: 18px;
+  transition: all 0.3s;
+  flex-shrink: 0;
+}
+
+.search-bar-wrapper .global-sync-icon.syncing {
+  color: #2563eb;
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  animation: pulseSync 1.5s infinite;
+}
+.search-bar-wrapper .global-sync-icon.syncing i {
+  animation: spinSync 1.5s linear infinite;
+}
+.search-bar-wrapper .global-sync-icon.success {
+  color: #16a34a;
+  background: #f0fdf4;
+  border-color: #bcf6d3;
+}
+.search-bar-wrapper .global-sync-icon.error {
+  color: #dc2626;
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+@keyframes spinSync { 100% { transform: rotate(360deg); } }
+@keyframes pulseSync { 
+  0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); } 
+  70% { box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); } 
+  100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); } 
+}
+
+
+/* Modal Dialog */
+.pe-modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999999;
+}
+
+.pe-modal {
+    background: #fff;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.pe-modal-header {
+    padding: 16px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f9fafb;
+}
+
+.pe-modal-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.pe-close-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: #6b7280;
+    cursor: pointer;
+}
+
+.pe-modal-body {
+    padding: 24px 16px;
+    text-align: center;
+}
+
+.pe-modal-desc {
+    font-size: 14px;
+    color: #4b5563;
+    margin-bottom: 24px;
+}
+
+.pe-modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.pe-btn {
+    flex: 1;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    border: none;
+    color: #fff;
+    transition: opacity 0.2s;
+}
+
+.pe-btn:hover {
+    opacity: 0.9;
+}
+
+.pe-btn-print {
+    background: #1a56db;
+}
+
+.pe-btn-export {
+    background: #059669;
+}
+
+/* ============================================================================
+   PRINT AND SCREEN STYLES
+   - Hide #printArea on screen
+   - Hide everything except #printArea on print
+   - A4 Portrait
+============================================================================ */
+@media screen {
+    #printArea {
+        display: none !important;
+    }
+}
+
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    
+    #printArea, #printArea * {
+        visibility: visible;
+    }
+
+    #printArea {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    @page {
+        size: A4 portrait;
+        margin: 1cm;
+    }
+
+    .pe-print-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: sans-serif;
+        font-size: 10px; /* Small enough to fit A4 */
+    }
+
+    .pe-print-table th,
+    .pe-print-table td {
+        border: 1px solid #000;
+        padding: 4px;
+        text-align: left;
+        word-break: break-word;
+    }
+
+    .pe-print-table th {
+        background-color: #f3f4f6 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        font-weight: bold;
+    }
+
+    .pe-print-title {
+        text-align: center;
+        font-size: 16px;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+    
+    .pe-print-date {
+        text-align: right;
+        font-size: 10px;
+        margin-bottom: 10px;
+    }
+}

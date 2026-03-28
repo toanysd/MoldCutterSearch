@@ -1,0 +1,244 @@
+/* ============================================================================
+   MOBILE NAVBAR v8.0.3-1 - Bottom Navigation CSS
+   5-Item Mobile Bottom Bar
+   Created: 2026-01-23
+============================================================================ */
+
+/* ===== MOBILE NAVBAR CONTAINER ===== */
+.mobile-navbar {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--mobile-navbar-height);
+    background: var(--bg-white);
+    border-top: 1px solid var(--border-color);
+    z-index: 999;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+}
+
+/* Show on mobile only */
+@media (max-width: 768px) {
+    .mobile-navbar {
+        display: block;
+    }
+}
+
+/* ===== NAVBAR ITEMS CONTAINER ===== */
+.mobile-navbar-items {
+    display: flex;
+    height: 100%;
+    justify-content: space-around;
+    align-items: center;
+}
+
+/* ===== INDIVIDUAL NAV ITEM ===== */
+.mobile-nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text-muted);
+    padding: var(--spacing-xs);
+    position: relative;
+    height: 100%;
+    border-radius: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-nav-item:active {
+    background: var(--bg-light);
+}
+
+.mobile-nav-item.active {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.mobile-nav-item i {
+    font-size: 20px;
+    transition: transform 0.2s;
+}
+
+.mobile-nav-item.active i {
+    transform: scale(1.1);
+}
+
+.mobile-nav-item span {
+    font-size: 10px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+/* ===== BADGES ===== */
+.mobile-nav-badge {
+    position: absolute;
+    top: 4px;
+    right: 50%;
+    transform: translateX(10px);
+    background: var(--danger-color);
+    color: var(--bg-white);
+    font-size: 9px;
+    padding: 1px 4px;
+    border-radius: 8px;
+    font-weight: 700;
+    min-width: 16px;
+    text-align: center;
+    line-height: 1.2;
+}
+
+.mobile-nav-badge.info {
+    background: var(--info-color);
+}
+
+.mobile-nav-badge.success {
+    background: var(--success-color);
+}
+
+.mobile-nav-badge.warning {
+    background: var(--warning-color);
+}
+
+/* Hide badge when count is 0 */
+.mobile-nav-badge:empty {
+    display: none;
+}
+
+/* ===== SPECIFIC ITEM STYLES ===== */
+.mobile-nav-item[data-nav="search"] i {
+    color: var(--primary-color);
+}
+
+.mobile-nav-item[data-nav="location"] i {
+    color: #2196f3;
+}
+
+.mobile-nav-item[data-nav="checkin"] i {
+    color: var(--warning-color);
+}
+
+.mobile-nav-item[data-nav="inventory"] i {
+    color: var(--success-color);
+}
+
+.mobile-nav-item[data-nav="tools"] i {
+    color: var(--text-muted);
+}
+
+/* Brighten when active */
+.mobile-nav-item.active[data-nav="search"],
+.mobile-nav-item.active[data-nav="location"],
+.mobile-nav-item.active[data-nav="checkin"],
+.mobile-nav-item.active[data-nav="inventory"],
+.mobile-nav-item.active[data-nav="tools"] {
+    color: var(--primary-color);
+}
+
+/* ===== RIPPLE EFFECT ===== */
+.mobile-nav-item::after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: var(--primary-color);
+    opacity: 0;
+    border-radius: 0;
+    transform: scale(0);
+    transition: transform 0.3s, opacity 0.3s;
+}
+
+.mobile-nav-item:active::after {
+    transform: scale(1);
+    opacity: 0.1;
+}
+
+/* ===== SEPARATOR LINES (Optional) ===== */
+.mobile-nav-item:not(:last-child)::before {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 20%;
+    height: 60%;
+    width: 1px;
+    background: var(--border-color);
+    opacity: 0.5;
+}
+
+/* ===== LANDSCAPE MODE ===== */
+@media (max-width: 768px) and (orientation: landscape) {
+    .mobile-navbar {
+        height: 50px;
+    }
+
+    .mobile-nav-item i {
+        font-size: 18px;
+    }
+
+    .mobile-nav-item span {
+        font-size: 9px;
+    }
+
+    .mobile-nav-badge {
+        font-size: 8px;
+        padding: 1px 3px;
+    }
+}
+
+/* ===== IPHONE NOTCH SUPPORT ===== */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+    .mobile-navbar {
+        padding-bottom: env(safe-area-inset-bottom);
+        height: calc(var(--mobile-navbar-height) + env(safe-area-inset-bottom));
+    }
+}
+
+/* ===== DARK MODE SUPPORT (Future) ===== */
+@media (prefers-color-scheme: dark) {
+    .mobile-navbar {
+        background: #1e1e1e;
+        border-top-color: #333;
+    }
+
+    .mobile-nav-item {
+        color: #999;
+    }
+
+    .mobile-nav-item.active {
+        color: var(--primary-color);
+    }
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+.mobile-nav-item.active i {
+    animation: bounce 0.3s ease;
+}
+
+/* Pulse animation for badge */
+@keyframes pulse {
+    0%, 100% {
+        transform: translateX(10px) scale(1);
+    }
+    50% {
+        transform: translateX(10px) scale(1.1);
+    }
+}
+
+.mobile-nav-badge.new {
+    animation: pulse 1s infinite;
+}

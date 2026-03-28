@@ -1,0 +1,318 @@
+/* =============================================================================
+
+MoldCutterSearch - THIẾT KẾ MÀU (TỔNG HỢP)
+
+File: mcs-color-design-v8.4.0.css
+
+Mục tiêu:
+- Chuẩn hoá 1 bộ token (biến CSS) dùng cho TOÀN hệ thống.
+- Mở rộng từ 1 màu “xanh ngọc” thành “bộ màu theo chức năng” (industrial nhưng có nghệ thuật).
+- Giữ tương thích ngược với các token cũ: --primary-*, --success-color, --mold-color...
+
+Nguyên tắc (đọc 30 giây):
+- --ui-accent: chỉ cho hành động chính (Save/Confirm/Apply/Open chính, focus ring).
+- --ui-accent-2: cho tra cứu/điều hướng/lọc/tìm kiếm (search/filter/navigation).
+- Semantic: --ui-success / --ui-warning / --ui-danger / --ui-info phải đúng nghĩa (không dùng để “trang trí”).
+- Type (mold/cutter): chỉ để “nhìn phát biết loại”, KHÔNG thay thế semantic trạng thái.
+- Song ngữ: JA đậm hơn, VI nhỏ hơn + nhạt hơn (có thể italic nhẹ), tránh uppercase tiếng Việt.
+
+Lưu ý tích hợp:
+- File này chỉ khai báo token + 1 số class mẫu prefix mcs-; không cố tình ghi đè layout module.
+- Nếu bạn đã có file mcs-color-design cũ, chỉ cần thay bằng file này (đặt nó sau style chính).
+
+============================================================================= */
+
+/* =============================================================================
+1) BRAND + NEUTRAL (nguồn sự thật)
+============================================================================= */
+
+:root {
+  /* Brand accent (Deep Teal) */
+  --primary-color: #0F766E;
+  --primary-hover: #0A5C56;
+  --primary-light: #CCFBF1;
+
+  /* Accent phụ theo chức năng (Industrial + Artistic) */
+  --accent-2-color: #4F46E5; /* Indigo: search/filter/navigation */
+  --accent-2-hover: #4338CA;
+  --accent-3-color: #9333EA; /* Purple: analytics/tools nâng cao (tuỳ chọn) */
+  --accent-3-hover: #7E22CE;
+
+  /* Semantic (ý nghĩa) */
+  --success-color: #16A34A;
+  --warning-color: #F59E0B;
+  --danger-color: #EF4444;
+  --info-color: #0284C7;
+
+  /* Type colors (nhận diện loại thiết bị, KHÔNG phải trạng thái) */
+  --mold-color: #0891B2;
+  --cutter-color: #EA580C;
+
+  /* Surface / Neutral */
+  --bg-body: #F4F7FB;
+  --bg-white: #FFFFFF;
+  --bg-light: #F1F5F9;
+  --border-color: #E5E9F2;
+
+  /* Text */
+  --text-primary: #0B1220;
+  --text-secondary: #1F2937;
+  --text-muted: #64748B;
+
+  /* Shadows (2 mức là đủ) */
+  --shadow-sm: 0 2px 8px rgba(2, 6, 23, 0.08);
+  --shadow-md: 0 14px 34px rgba(2, 6, 23, 0.14);
+}
+
+/* =============================================================================
+2) TOKEN UI THỐNG NHẤT (--ui-*)
+Tất cả module nên ưu tiên dùng nhóm này.
+============================================================================= */
+
+:root {
+  /* Accent */
+  --ui-accent: var(--primary-color);
+  --ui-accent-hover: var(--primary-hover);
+  --ui-accent-soft: rgba(15, 118, 110, 0.16);
+
+  /* Accent phụ theo chức năng */
+  --ui-accent-2: var(--accent-2-color);
+  --ui-accent-2-hover: var(--accent-2-hover);
+  --ui-accent-2-soft: rgba(79, 70, 229, 0.14);
+
+  /* Accent phụ (analytics/tool) */
+  --ui-accent-3: var(--accent-3-color);
+  --ui-accent-3-hover: var(--accent-3-hover);
+  --ui-accent-3-soft: rgba(147, 51, 234, 0.14);
+
+  /* Link (mặc định ưu tiên accent-2 để khác “hành động chính”) */
+  --ui-link: var(--ui-accent-2);
+  --ui-link-hover: var(--ui-accent-2-hover);
+
+  /* Surface / Border */
+  --ui-surface: var(--bg-white);
+  --ui-surface-2: #F8FAFC;
+  --ui-border: var(--border-color);
+
+  /* Semantic */
+  --ui-success: var(--success-color);
+  --ui-warning: var(--warning-color);
+  --ui-danger: var(--danger-color);
+  --ui-info: var(--info-color);
+
+  /* Focus rings (rõ, mềm) */
+  --ui-focus-ring: 0 0 0 3px rgba(15, 118, 110, 0.26);
+  --ui-focus-ring-2: 0 0 0 3px rgba(79, 70, 229, 0.22);
+  --ui-warn-ring: 0 0 0 3px rgba(245, 158, 11, 0.22);
+
+  /* Shadows */
+  --ui-shadow-sm: var(--shadow-sm);
+  --ui-shadow-md: var(--shadow-md);
+}
+
+/* =============================================================================
+3) SOFT BACKGROUND (badge/card nền nhẹ nhưng đúng ngôn ngữ màu)
+============================================================================= */
+
+:root {
+  --mcs-success-soft: rgba(22, 163, 74, 0.12);
+  --mcs-warning-soft: rgba(245, 158, 11, 0.14);
+  --mcs-danger-soft: rgba(239, 68, 68, 0.10);
+  --mcs-info-soft: rgba(2, 132, 199, 0.12);
+
+  --mcs-mold-soft: rgba(8, 145, 178, 0.12);
+  --mcs-cutter-soft: rgba(234, 88, 12, 0.12);
+
+  --mcs-accent-soft-2: rgba(15, 118, 110, 0.10);
+  --mcs-accent2-soft-2: rgba(79, 70, 229, 0.10);
+  --mcs-accent3-soft-2: rgba(147, 51, 234, 0.10);
+}
+
+/* =============================================================================
+4) MAPPING “KHU VỰC UI” (tuỳ chọn - module có thể đọc)
+Không ép ghi đè, chỉ cung cấp token.
+============================================================================= */
+
+:root {
+  /* Header/Sidebar cảm giác công nghiệp: gradient gọn + có chiều sâu */
+  --mcs-header-bg: linear-gradient(135deg, var(--ui-accent), var(--ui-accent-hover));
+  --mcs-header-text: #FFFFFF;
+
+  /* Search/Filter nổi bật bằng accent-2 (khác với nút chính) */
+  --mcs-search-border: rgba(245, 158, 11, 0.55);
+  --mcs-search-bg: #FFF7DB;
+
+  /* Bảng/khối nội dung */
+  --mcs-card-bg: var(--ui-surface);
+  --mcs-card-border: var(--ui-border);
+  --mcs-card-shadow: var(--ui-shadow-sm);
+}
+
+/* =============================================================================
+5) CHUẨN SONG NGỮ (class dùng chung)
+============================================================================= */
+
+.mcs-bilingual {
+  display: inline-flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.mcs-bilingual .ja,
+.mcs-ja {
+  font-weight: 900;
+  color: var(--text-primary);
+}
+
+.mcs-bilingual .vi,
+.mcs-vi {
+  font-size: 0.86em;
+  font-weight: 700;
+  opacity: 0.78;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* =============================================================================
+6) CLASS MẪU (prefix mcs-) - dùng được ngay khi cần
+============================================================================= */
+
+/* Link */
+.mcs-link {
+  color: var(--ui-link);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+.mcs-link:hover { color: var(--ui-link-hover); }
+
+/* Button */
+.mcs-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.08);
+  background: var(--ui-surface);
+  color: var(--text-secondary);
+  font-weight: 900;
+  font-size: 13px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+.mcs-btn:hover {
+  transform: translateY(-1px);
+  background: var(--bg-light);
+  border-color: rgba(15, 118, 110, 0.28);
+  box-shadow: var(--ui-shadow-sm);
+}
+.mcs-btn:active { transform: translateY(0); }
+.mcs-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.mcs-btn--primary {
+  background: var(--ui-accent);
+  color: #fff;
+}
+.mcs-btn--primary:hover { background: var(--ui-accent-hover); }
+
+.mcs-btn--secondary {
+  background: var(--ui-surface);
+  color: var(--text-secondary);
+  border-color: var(--ui-border);
+}
+.mcs-btn--secondary:hover {
+  background: var(--bg-light);
+  border-color: rgba(79, 70, 229, 0.30);
+}
+
+.mcs-btn--danger {
+  background: var(--ui-danger);
+  color: #fff;
+}
+.mcs-btn--danger:hover { filter: brightness(0.98); }
+
+/* Input */
+.mcs-input,
+.mcs-select,
+.mcs-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--ui-border);
+  background: var(--ui-surface);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 700;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.mcs-input:focus,
+.mcs-select:focus,
+.mcs-textarea:focus {
+  outline: none;
+  border-color: rgba(15, 118, 110, 0.60);
+  box-shadow: var(--ui-focus-ring);
+}
+
+.mcs-input--warn {
+  border-color: var(--mcs-search-border);
+  background: var(--mcs-search-bg);
+}
+.mcs-input--warn:focus {
+  border-color: var(--ui-warning);
+  box-shadow: var(--ui-warn-ring);
+}
+
+/* Badge semantic */
+.mcs-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 950;
+  line-height: 1;
+  border: 1px solid rgba(0,0,0,0.10);
+  background: rgba(0,0,0,0.04);
+  color: rgba(15, 23, 42, 0.78);
+  white-space: nowrap;
+}
+.mcs-badge--success { border-color: rgba(22,163,74,0.22); background: var(--mcs-success-soft); color: #14532D; }
+.mcs-badge--warning { border-color: rgba(245,158,11,0.24); background: var(--mcs-warning-soft); color: #92400E; }
+.mcs-badge--danger  { border-color: rgba(239,68,68,0.22); background: var(--mcs-danger-soft);  color: #7F1D1D; }
+.mcs-badge--info    { border-color: rgba(2,132,199,0.22);  background: var(--mcs-info-soft);    color: #075985; }
+
+/* Chip type (mold/cutter) */
+.mcs-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 950;
+  line-height: 1;
+  border: 1px solid rgba(0,0,0,0.10);
+  background: rgba(0,0,0,0.04);
+  color: rgba(15, 23, 42, 0.78);
+  white-space: nowrap;
+}
+.mcs-chip--mold  { border-color: rgba(8,145,178,0.26);  background: var(--mcs-mold-soft);  color: #0E7490; }
+.mcs-chip--cutter{ border-color: rgba(234,88,12,0.28); background: var(--mcs-cutter-soft); color: #9A3412; }
+
+/* =============================================================================
+7) GHI CHÚ DÙNG MÀU (nhắc lại để giữ đúng nghĩa)
+============================================================================= */
+/*
+- --ui-accent: Nút chính / hành động chính / focus ring chính.
+- --ui-accent-2: Search / Filter / Navigation / các hành động “phụ” có tính điều hướng.
+- Semantic (success/warning/danger/info): chỉ dùng khi có ý nghĩa trạng thái.
+- Type (mold/cutter): chỉ để phân loại, không dùng thay màu semantic.
+*/

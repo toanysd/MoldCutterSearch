@@ -1,0 +1,1273 @@
+/* ============================================================================
+   extended-editor-v8.5.0.css
+   Tab Mở rộng — Section Card Inline Edit
+   MoldCutterSearch v8.5.0  |  2026-03-06
+   Scope: .dp-ext-editor
+============================================================================ */
+
+/* ========== CSS VARIABLES ========== */
+.dp-ext-editor {
+  --ext-bg:           #f4f6fb;
+  --ext-card-bg:      #ffffff;
+  --ext-border:       rgba(2, 6, 23, 0.09);
+  --ext-border-focus: rgba(0, 104, 201, 0.40);
+  --ext-text:         rgba(15, 23, 42, 0.92);
+  --ext-muted:        rgba(15, 23, 42, 0.52);
+  --ext-label:        rgba(15, 23, 42, 0.68);
+
+  --ext-blue:         #0068C9;
+  --ext-blue-soft:    rgba(0, 104, 201, 0.09);
+  --ext-blue-mid:     rgba(0, 104, 201, 0.18);
+  --ext-green:        #16a34a;
+  --ext-green-soft:   rgba(22, 163, 74, 0.10);
+  --ext-red:          #dc2626;
+  --ext-red-soft:     rgba(220, 38, 38, 0.09);
+  --ext-amber:        #d97706;
+  --ext-amber-soft:   rgba(217, 119, 6, 0.09);
+  --ext-purple:       #7c3aed;
+  --ext-purple-soft:  rgba(124, 58, 237, 0.09);
+  --ext-teal:         #0891b2;
+  --ext-teal-soft:    rgba(8, 145, 178, 0.09);
+
+  --ext-radius:       14px;
+  --ext-radius-sm:    10px;
+  --ext-radius-xs:    7px;
+  --ext-shadow:       0 2px 12px rgba(0, 0, 0, 0.07);
+  --ext-shadow-focus: 0 0 0 3px rgba(0, 104, 201, 0.16);
+
+  --ext-transition:   0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  --ext-font-jp:      10px;
+  --ext-font-vi:      12px;
+  --ext-font-val:     13px;
+  --ext-font-lbl:     11px;
+}
+
+/* ========== WRAPPER ========== */
+.dp-ext-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: var(--ext-bg);
+  min-height: 100%;
+  position: relative;
+  padding-bottom: 16px;
+}
+
+/* ========== STICKY COMMIT BAR ========== */
+.ext-commit-bar {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 14px 9px 14px;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--ext-border);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+  flex-wrap: wrap;
+}
+
+.ext-commit-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.ext-commit-title {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--ext-text);
+  white-space: nowrap;
+}
+
+.ext-commit-sub {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ext-muted);
+}
+
+.ext-commit-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
+  background: var(--ext-amber);
+  color: #fff;
+  transition: background var(--ext-transition), transform var(--ext-transition);
+}
+
+.ext-commit-badge[data-count="0"] {
+  background: var(--ext-border);
+  color: var(--ext-muted);
+}
+
+.ext-commit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 34px;
+  padding: 0 16px;
+  border-radius: var(--ext-radius-sm);
+  border: none;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background var(--ext-transition), transform var(--ext-transition), box-shadow var(--ext-transition);
+  white-space: nowrap;
+}
+
+.ext-commit-btn.primary {
+  background: var(--ext-blue);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 104, 201, 0.28);
+}
+
+.ext-commit-btn.primary:hover {
+  background: #005aad;
+  box-shadow: 0 4px 14px rgba(0, 104, 201, 0.36);
+  transform: translateY(-1px);
+}
+
+.ext-commit-btn.primary:active {
+  transform: translateY(0);
+}
+
+.ext-commit-btn.primary:disabled {
+  background: rgba(0, 104, 201, 0.35);
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.ext-commit-btn.secondary {
+  background: var(--ext-card-bg);
+  color: var(--ext-text);
+  border: 1px solid var(--ext-border);
+}
+
+.ext-commit-btn.secondary:hover {
+  background: var(--ext-bg);
+}
+
+/* ========== SECTION LIST ========== */
+.ext-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 12px 0 12px;
+}
+
+/* ========== TWO COLUMN WORKSPACE ========== */
+.ext-workspace {
+display: grid;
+grid-template-columns: minmax(280px, 340px) minmax(0, 1fr);
+gap: 12px;
+padding: 12px;
+align-items: start;
+}
+
+.ext-workspace-left {
+min-width: 0;
+}
+
+.ext-workspace-right {
+min-width: 0;
+}
+
+.ext-sections-sidebar {
+padding: 0;
+gap: 8px;
+position: sticky;
+top: 56px;
+}
+
+.ext-sidebar-item {
+cursor: pointer;
+}
+
+.ext-sidebar-item .ext-section-header {
+border-bottom: none;
+}
+
+.ext-sidebar-item.is-active {
+  border-color: rgba(59, 130, 246, 0.2);
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.08), 0 1px 3px rgba(0,0,0,0.05); /* Bóng đổ mảng rộng hiện đại */
+  transform: translateY(-1px); /* Nổi lên nhẹ */
+}
+
+.ext-sidebar-item.is-active .ext-section-header {
+  background: #f0fdf4; /* Đổi màu xanh nhẹ nếu muốn, hoặc dùng ext-blue-soft */
+}
+
+.ext-sidebar-item.is-active .ext-section-chevron {
+  transform: rotate(0deg);
+  color: var(--ext-blue);
+}
+
+.ext-detail-card {
+min-height: 100%;
+}
+
+.ext-detail-head {
+cursor: default;
+}
+
+.ext-detail-head:hover {
+background: var(--ext-bg);
+}
+
+.ext-section-body-static {
+display: block;
+}
+
+@media (max-width: 900px) {
+.ext-workspace {
+grid-template-columns: 1fr;
+padding: 8px; /* Giảm padding trên Mobile */
+}
+
+.ext-sections-sidebar {
+position: static;
+}
+
+/* Biến Cột phải thành Modal Fullscreen trên Mobile */
+.ext-workspace-right {
+  display: none; /* Mặc định ẩn trên Mobile */
+  
+  /* Modal Overlay Style (Phase 8: Fixed full 100% screen che Navbar & Header đè lấp) */
+  position: fixed;
+  inset: 0; /* top:0, left:0, right:0, bottom:0 */
+  z-index: 999999; /* Luôn nổi trên Menu và Header gốc */
+  background: var(--ext-bg);
+  padding: 12px;
+  overflow-y: auto; /* Vuốt dọc trong Modal */
+  animation: extModalSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* FIX STACKING CONTEXT CỦA CHA: .detail-panel-body (Cha) chỉ có z-index: 1, 
+nên 999999 của Modal bên trong cũng chỉ bằng 1 ở cấp ngoài và bị Tab đè.
+Do đó phải kích z-index thẻ cha lên khi modal đang hiển thị: */
+#detailPanel .detail-panel-body:has(.ext-workspace-right.is-mobile-open) {
+  z-index: 999999 !important;
+}
+
+.ext-workspace-right.is-mobile-open {
+  display: block; /* Hiện Modal */
+}
+
+@keyframes extModalSlideUp {
+  0% { transform: translateY(100%); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+/* Nút quay lại (Chỉ hiện trong Modal) */
+.ext-modal-back-btn {
+  display: inline-flex;
+}
+}
+
+
+/* ========== SECTION CARD ========== */
+.ext-section {
+  background: var(--ext-card-bg);
+  border: 1px solid var(--ext-border);
+  border-radius: var(--ext-radius);
+  box-shadow: var(--ext-shadow);
+  overflow: hidden;
+  transition: box-shadow var(--ext-transition);
+}
+
+.ext-section:hover {
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.09);
+}
+
+.ext-section.is-editing {
+  border-color: var(--ext-blue-mid);
+  box-shadow: 0 0 0 3px var(--ext-blue-mid), var(--ext-shadow);
+}
+
+.ext-section.has-draft {
+  border-color: rgba(217, 119, 6, 0.35);
+}
+
+/* section header */
+.ext-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 13px;
+  cursor: pointer;
+  user-select: none;
+  border-bottom: 1px solid transparent;
+  transition: background var(--ext-transition), border-color var(--ext-transition);
+}
+
+.ext-section-header:hover {
+  background: var(--ext-bg);
+}
+
+.ext-section.is-open > .ext-section-header {
+  border-bottom-color: var(--ext-border);
+  background: var(--ext-bg);
+}
+
+.ext-section-header-left {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+}
+
+.ext-section-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--ext-radius-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+/* Nút Back (Quay lại) - Mặc định ẩn trên Desktop */
+.ext-modal-back-btn {
+  display: none; /* Ẩn mặc định trên PC */
+  margin-right: -2px; /* Rút bớt khoảng cách với Icon section */
+  padding: 0 8px;
+  height: 30px;
+  background: transparent;
+  border: 1px solid transparent; /* Loại bỏ viền thừa */
+}
+.ext-modal-back-btn:hover {
+  background: rgba(0,0,0,0.06);
+}
+
+/* section icon color variants */
+.ext-section[data-section="molds"]              .ext-section-icon { background: var(--ext-blue-soft);   color: var(--ext-blue);   }
+.ext-section[data-section="cutters"]            .ext-section-icon { background: var(--ext-teal-soft);   color: var(--ext-teal);   }
+.ext-section[data-section="molddesign"]         .ext-section-icon { background: var(--ext-purple-soft); color: var(--ext-purple); }
+.ext-section[data-section="customers"]          .ext-section-icon { background: var(--ext-green-soft);  color: var(--ext-green);  }
+.ext-section[data-section="companies"]          .ext-section-icon { background: var(--ext-amber-soft);  color: var(--ext-amber);  }
+.ext-section[data-section="trays"]              .ext-section-icon { background: var(--ext-teal-soft);   color: var(--ext-teal);   }
+.ext-section[data-section="moldcutter"]         .ext-section-icon { background: var(--ext-red-soft);    color: var(--ext-red);    }
+.ext-section[data-section="jobs"]               .ext-section-icon { background: var(--ext-blue-soft);   color: var(--ext-blue);   }
+.ext-section[data-section="processingdeadline"] .ext-section-icon { background: var(--ext-amber-soft);  color: var(--ext-amber);  }
+.ext-section[data-section="worklog"]            .ext-section-icon { background: var(--ext-green-soft);  color: var(--ext-green);  }
+
+.ext-section-title {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ext-section-title-jp {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #475569;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ext-section-title-vi {
+  font-size: 10px;
+  font-weight: 600;
+  color: #94a3b8;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ext-section-header-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.ext-section-badge {
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.ext-section-badge.draft {
+  background: var(--ext-amber-soft);
+  color: var(--ext-amber);
+  border: 1px solid rgba(217, 119, 6, 0.25);
+}
+
+.ext-section-badge.editing {
+  background: var(--ext-blue-soft);
+  color: var(--ext-blue);
+  border: 1px solid rgba(0, 104, 201, 0.20);
+}
+
+.ext-section-badge.nodata {
+  background: var(--ext-bg);
+  color: var(--ext-muted);
+  border: 1px solid var(--ext-border);
+}
+
+.ext-section-chevron {
+  font-size: 11px;
+  color: var(--ext-muted);
+  transition: transform var(--ext-transition);
+}
+
+.ext-section.is-open > .ext-section-header .ext-section-chevron {
+  transform: rotate(180deg);
+}
+
+/* ========== SECTION BODY ========== */
+.ext-section-body {
+  display: none;
+  padding: 12px 13px;
+  animation: extBodyIn 0.16s ease;
+}
+
+.ext-section.is-open > .ext-section-body {
+  display: block;
+}
+
+@keyframes extBodyIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ========== SECTION ACTION BAR (bên dưới header khi mở) ========== */
+.ext-section-actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+/* ========== BUTTONS ========== */
+.ext-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 13px;
+  border-radius: var(--ext-radius-xs);
+  border: 1px solid var(--ext-border);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  background: var(--ext-card-bg);
+  color: var(--ext-text);
+  transition: background var(--ext-transition), border-color var(--ext-transition),
+              color var(--ext-transition), box-shadow var(--ext-transition), transform var(--ext-transition);
+}
+
+.ext-btn:hover {
+  background: var(--ext-bg);
+  border-color: rgba(2, 6, 23, 0.16);
+}
+
+.ext-btn:active {
+  transform: scale(0.97);
+}
+
+.ext-btn.edit {
+  background: var(--ext-blue-soft);
+  border-color: rgba(0, 104, 201, 0.22);
+  color: var(--ext-blue);
+}
+
+.ext-btn.edit:hover {
+  background: var(--ext-blue-mid);
+  border-color: rgba(0, 104, 201, 0.38);
+}
+
+.ext-btn.save {
+  background: var(--ext-green);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(22, 163, 74, 0.28);
+}
+
+.ext-btn.save:hover {
+  background: #15803d;
+  box-shadow: 0 3px 10px rgba(22, 163, 74, 0.36);
+  transform: translateY(-1px);
+}
+
+.ext-btn.cancel {
+  background: var(--ext-card-bg);
+  border-color: var(--ext-border);
+  color: var(--ext-muted);
+}
+
+.ext-btn.cancel:hover {
+  background: var(--ext-red-soft);
+  border-color: rgba(220, 38, 38, 0.22);
+  color: var(--ext-red);
+}
+
+.ext-btn.add {
+  background: var(--ext-blue-soft);
+  border-color: rgba(0, 104, 201, 0.22);
+  color: var(--ext-blue);
+  border-style: dashed;
+}
+
+.ext-btn.add:hover {
+  background: var(--ext-blue-mid);
+  border-style: solid;
+}
+
+.ext-btn.danger {
+  background: var(--ext-red-soft);
+  border-color: rgba(220, 38, 38, 0.22);
+  color: var(--ext-red);
+}
+
+.ext-btn.danger:hover {
+  background: var(--ext-red);
+  color: #fff;
+  border-color: transparent;
+}
+
+.ext-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* icon only variant */
+.ext-btn.icon-only {
+  width: 30px;
+  padding: 0;
+  justify-content: center;
+}
+
+/* ========== FIELD GRID (VIEW MODE) ========== */
+.ext-field-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px 12px;
+}
+
+.ext-field-grid.cols-1 { grid-template-columns: 1fr; }
+.ext-field-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+
+/* field item */
+.ext-field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ext-field.span-2 { grid-column: span 2; }
+.ext-field.span-3 { grid-column: span 3; }
+
+/* view mode label */
+.ext-field-label {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.ext-field-label-jp {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #475569;
+  line-height: 1.2;
+}
+
+.ext-field-label-vi {
+  font-size: 10px;
+  font-weight: 600;
+  color: #94a3b8;
+  line-height: 1.3;
+}
+.ext-field-label-vi::before { content: "("; }
+.ext-field-label-vi::after { content: ")"; }
+
+/* view mode value */
+.ext-field-value {
+  font-size: var(--ext-font-val);
+  font-weight: 600;
+  color: var(--ext-text);
+  line-height: 1.4;
+  word-break: break-word;
+  background: var(--ext-bg);
+  border: 1px solid var(--ext-border);
+  border-radius: var(--ext-radius-xs);
+  padding: 5px 8px;
+  min-height: 28px;
+  transition: background var(--ext-transition);
+}
+
+.ext-field-value.empty {
+  color: var(--ext-muted);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.ext-field-value.is-id {
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ext-blue);
+  background: var(--ext-blue-soft);
+  border-color: rgba(0, 104, 201, 0.14);
+}
+
+/* textarea value */
+.ext-field-value.multiline {
+  white-space: pre-wrap;
+  min-height: 52px;
+}
+
+/* ========== EDIT MODE FIELDS ========== */
+.ext-section.is-editing .ext-field-value {
+  display: none;
+}
+
+.ext-field-input {
+  display: none;
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ext-text);
+  background: #ffffff;
+  border: 1px solid #cbd5e1; /* Đổi viền input thành xám nhạt */
+  border-radius: 6px;
+  padding: 6px 10px;
+  min-height: 34px; /* Khung rộng rãi hơn để dễ chạm */
+  outline: none;
+  transition: border-color var(--ext-transition), box-shadow var(--ext-transition), background 0.2s;
+  font-family: inherit;
+}
+
+.ext-section.is-editing .ext-field-input {
+  display: block;
+}
+
+/* readonly field stays as value even in edit mode */
+.ext-section.is-editing .ext-field[data-readonly="1"] .ext-field-value {
+  display: block;
+  opacity: 0.75;
+  background: rgba(2, 6, 23, 0.03);
+}
+
+.ext-section.is-editing .ext-field[data-readonly="1"] .ext-field-input {
+  display: none;
+}
+
+.ext-field-input:hover {
+  border-color: #94a3b8;
+}
+
+.ext-field-input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  background: #fff;
+}
+
+.ext-field-input.ext-textarea {
+  resize: vertical;
+  min-height: 60px;
+  line-height: 1.5;
+}
+
+/* select arrow */
+.ext-field-input.ext-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%236b7280' d='M4.5 6l3.5 4 3.5-4z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 16px;
+  padding-right: 28px;
+}
+
+/* bool field */
+.ext-field-bool {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+}
+
+.ext-field-bool-toggle {
+  position: relative;
+  width: 38px;
+  height: 22px;
+  flex-shrink: 0;
+  display: none;
+}
+
+.ext-section.is-editing .ext-field-bool-toggle {
+  display: block;
+}
+
+.ext-field-bool-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.ext-field-bool-toggle .ext-toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.15);
+  border-radius: 11px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.ext-field-bool-toggle .ext-toggle-slider:before {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  top: 3px;
+  left: 3px;
+  transition: transform 0.2s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.20);
+}
+
+.ext-field-bool-toggle input:checked + .ext-toggle-slider {
+  background: var(--ext-blue);
+}
+
+.ext-field-bool-toggle input:checked + .ext-toggle-slider:before {
+  transform: translateX(16px);
+}
+
+.ext-field-bool-text {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ext-text);
+}
+
+/* ========== DIVIDER / SUBTITLE ========== */
+.ext-section-sub {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--ext-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 8px 0 4px;
+  border-top: 1px solid var(--ext-border);
+  margin-top: 10px;
+}
+
+.ext-section-sub:first-child {
+  border-top: none;
+  margin-top: 0;
+  padding-top: 0;
+}
+
+/* ========== LIST SECTIONS (worklog, processingdeadline, moldcutter) ========== */
+.ext-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ext-list-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 9px 11px;
+  background: var(--ext-bg);
+  border: 1px solid var(--ext-border);
+  border-radius: var(--ext-radius-sm);
+  transition: background var(--ext-transition), border-color var(--ext-transition);
+}
+
+.ext-list-item:hover {
+  background: rgba(0, 104, 201, 0.04);
+  border-color: rgba(0, 104, 201, 0.16);
+}
+
+.ext-list-item-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: var(--ext-radius-xs);
+  background: var(--ext-blue-soft);
+  color: var(--ext-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.ext-list-item-body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.ext-list-item-title {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--ext-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ext-list-item-meta {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ext-muted);
+  margin-top: 1px;
+}
+
+.ext-list-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+/* empty state */
+.ext-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 20px 12px;
+  color: var(--ext-muted);
+  text-align: center;
+}
+
+.ext-empty i {
+  font-size: 24px;
+  opacity: 0.4;
+}
+
+.ext-empty-text {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.ext-empty-sub {
+  font-size: 11px;
+  font-weight: 600;
+  opacity: 0.75;
+}
+
+/* ========== INLINE ADD FORM ========== */
+.ext-add-form {
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+  background: rgba(0, 104, 201, 0.04);
+  border: 1.5px dashed rgba(0, 104, 201, 0.30);
+  border-radius: var(--ext-radius-sm);
+  margin-top: 6px;
+  animation: extBodyIn 0.16s ease;
+}
+
+.ext-add-form.is-open {
+  display: flex;
+}
+
+.ext-add-form-title {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--ext-blue);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ext-add-form-fields {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.ext-add-form-actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+/* ========== ADD FORM FIELD LABEL ========== */
+.ext-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.ext-form-field.span-2 { grid-column: span 2; }
+
+.ext-form-label {
+  display: flex;
+  flex-direction: column;
+}
+
+.ext-form-label-jp {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--ext-muted);
+}
+
+.ext-form-label-vi {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ext-label);
+}
+
+.ext-form-input {
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ext-text);
+  background: #fff;
+  border: 1.5px solid var(--ext-border);
+  border-radius: var(--ext-radius-xs);
+  padding: 5px 8px;
+  min-height: 30px;
+  outline: none;
+  font-family: inherit;
+  transition: border-color var(--ext-transition), box-shadow var(--ext-transition);
+}
+
+.ext-form-input:focus {
+  border-color: var(--ext-blue);
+  box-shadow: var(--ext-shadow-focus);
+}
+
+.ext-form-input.ext-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%236b7280' d='M4.5 6l3.5 4 3.5-4z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 16px;
+  padding-right: 28px;
+}
+
+.ext-form-input.ext-textarea {
+  resize: vertical;
+  min-height: 56px;
+  line-height: 1.5;
+}
+
+/* ========== CONFIRM DIALOG (Hủy/Lưu unsaved) ========== */
+.ext-confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.40);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  z-index: 9800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: extFadeIn 0.14s ease;
+}
+
+@keyframes extFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.ext-confirm-dialog {
+  background: #fff;
+  border-radius: var(--ext-radius);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.20);
+  padding: 20px 20px 16px;
+  max-width: 340px;
+  width: 100%;
+  animation: extSlideIn 0.16s ease;
+}
+
+@keyframes extSlideIn {
+  from { transform: scale(0.94) translateY(-8px); opacity: 0; }
+  to   { transform: scale(1) translateY(0);       opacity: 1; }
+}
+
+.ext-confirm-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--ext-amber-soft);
+  color: var(--ext-amber);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  margin: 0 auto 12px;
+}
+
+.ext-confirm-title {
+  font-size: 14px;
+  font-weight: 900;
+  color: var(--ext-text);
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.ext-confirm-msg {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ext-muted);
+  text-align: center;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.ext-confirm-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.ext-confirm-actions .ext-btn {
+  flex: 1;
+  justify-content: center;
+}
+
+/* ========== LOADING SPINNER ========== */
+.ext-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 20px;
+  color: var(--ext-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.ext-loading i {
+  font-size: 16px;
+  animation: extSpin 0.8s linear infinite;
+}
+
+@keyframes extSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ========== STATUS BADGE ========== */
+.ext-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.ext-status-badge.available {
+  background: var(--ext-green-soft);
+  color: var(--ext-green);
+}
+
+.ext-status-badge.returning {
+  background: var(--ext-amber-soft);
+  color: var(--ext-amber);
+}
+
+.ext-status-badge.disposed {
+  background: var(--ext-red-soft);
+  color: var(--ext-red);
+}
+
+/* ========== ERROR STATE ========== */
+.ext-error-block {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 10px 12px;
+  background: var(--ext-red-soft);
+  border: 1px solid rgba(220, 38, 38, 0.18);
+  border-radius: var(--ext-radius-sm);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ext-red);
+  line-height: 1.5;
+}
+
+.ext-error-block i {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* ========== INFO NOTE ========== */
+.ext-info-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  padding: 8px 11px;
+  background: var(--ext-blue-soft);
+  border: 1px solid rgba(0, 104, 201, 0.14);
+  border-radius: var(--ext-radius-xs);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ext-blue);
+  line-height: 1.5;
+  margin-top: 8px;
+}
+
+.ext-info-note i {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* ========== LINK CHIP ========== */
+.ext-link-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--ext-bg);
+  border: 1px solid var(--ext-border);
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--ext-blue);
+  cursor: pointer;
+  transition: background var(--ext-transition), border-color var(--ext-transition);
+}
+
+.ext-link-chip:hover {
+  background: var(--ext-blue-soft);
+  border-color: rgba(0, 104, 201, 0.28);
+}
+
+/* ========== UNSAVED INDICATOR DOT ========== */
+.ext-unsaved-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ext-amber);
+  flex-shrink: 0;
+  animation: extPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes extPulse {
+  0%, 100% { opacity: 1;   transform: scale(1);    }
+  50%       { opacity: 0.5; transform: scale(0.75); }
+}
+
+/* ========== REQUIRED FIELD MARKER ========== */
+.ext-required {
+  color: var(--ext-red);
+  font-size: 10px;
+  margin-left: 2px;
+}
+
+/* ========== FIELD INPUT ERROR ========== */
+.ext-field-input.is-error,
+.ext-form-input.is-error {
+  border-color: var(--ext-red);
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.14);
+}
+
+.ext-field-error {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--ext-red);
+  margin-top: 2px;
+  display: none;
+}
+
+.ext-field-input.is-error ~ .ext-field-error,
+.ext-form-input.is-error ~ .ext-field-error {
+  display: block;
+}
+
+/* ========== SECTION COUNT TAG ========== */
+.ext-count-tag {
+  font-size: 10px;
+  font-weight: 800;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--ext-bg);
+  border: 1px solid var(--ext-border);
+  color: var(--ext-muted);
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 480px) {
+  .ext-sections {
+    padding: 8px 8px 0 8px;
+  }
+
+  .ext-field-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ext-field.span-2,
+  .ext-field.span-3 {
+    grid-column: span 1;
+  }
+
+  .ext-add-form-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .ext-add-form-fields .ext-form-field.span-2 {
+    grid-column: span 1;
+  }
+
+  .ext-commit-bar {
+    padding: 8px 10px;
+  }
+
+  .ext-commit-btn.primary span.label-text {
+    display: none;
+  }
+
+  .ext-section-header {
+    padding: 9px 11px;
+  }
+
+  .ext-section-body {
+    padding: 10px 11px;
+  }
+}
+
+@media (min-width: 600px) {
+  .ext-field-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 900px) {
+  .ext-field-grid.cols-auto {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

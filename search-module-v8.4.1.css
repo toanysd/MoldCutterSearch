@@ -1,0 +1,287 @@
+/**
+ * ============================================================================
+ * SEARCH MODULE v8.1.0-1 CSS - Compact & Smart Suggestions
+ * ============================================================================
+ * Created: 2026-01-29
+ * Updated: Fixed for better UX - compact, smart display
+ * 
+ * Changes:
+ * - Compact dropdown (max 5 items visible, scrollable)
+ * - Appropriate width (not too wide)
+ * - Individual delete buttons
+ * - Clear all button
+ * - Close button
+ * - Better mobile support
+ * ============================================================================
+ */
+
+/* Search Suggestions Container - Thu gọn */
+.search-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 4px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  display: none;
+  max-width: 500px; /* Giới hạn độ rộng */
+  width: 100%;
+}
+
+/* Mobile: Rộng full */
+@media (max-width: 768px) {
+  .search-suggestions {
+    max-width: 100%;
+  }
+}
+
+/* Header với Clear và Close cùng dòng */
+.suggestions-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px; /* Giảm từ 8px xuống 6px */
+  border-bottom: 1px solid #eee;
+  background: #f8f9fa;
+  border-radius: 8px 8px 0 0;
+  gap: 8px;
+}
+
+.suggestions-header-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: #666;
+  flex: 1;
+}
+
+.suggestions-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.suggestions-clear-btn {
+  font-size: 11px;
+  color: #e74c3c;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.suggestions-clear-btn:hover {
+  background: #fee;
+  color: #c0392b;
+}
+
+.suggestions-close-btn {
+  background: none;
+  border: none;
+  color: #999;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s;
+  line-height: 1;
+}
+
+.suggestions-close-btn:hover {
+  background: #e0e0e0;
+  color: #333;
+}
+
+
+/* List container - Cuộn tối đa 5 items */
+.suggestions-list {
+  max-height: 200px; /* ~5 items x 48px */
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Custom scrollbar */
+.suggestions-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.suggestions-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.suggestions-list::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+
+.suggestions-list::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}
+
+/* Section */
+.suggestions-section {
+  padding: 4px 0;
+}
+
+.suggestions-section + .suggestions-section {
+  border-top: 1px solid #eee;
+}
+
+
+/* Suggestion Item - Compact */
+.suggestion-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  position: relative;
+}
+
+.suggestion-item:hover,
+.suggestion-item.active {
+  background: #f0f7ff;
+}
+
+/* Icon (history/suggestion) */
+.suggestion-icon {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  color: #999;
+  font-size: 14px;
+}
+
+/* Text container */
+.suggestion-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.suggestion-text {
+  font-size: 13px;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.suggestion-text mark {
+  background: #fff3cd;
+  color: #333;
+  padding: 1px 2px;
+  border-radius: 2px;
+  font-weight: 500;
+}
+
+/* Meta info - compact */
+.suggestion-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: #999;
+}
+
+.suggestion-count {
+  color: #2196F3;
+  font-weight: 500;
+}
+
+.suggestion-time {
+  color: #999;
+}
+
+/* Delete button - chỉ hiện khi hover */
+.suggestion-delete {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: #ccc;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px;
+  width: 24px;
+  height: 24px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s;
+  margin-left: auto;
+}
+
+.suggestion-item:hover .suggestion-delete {
+  display: flex;
+}
+
+.suggestion-delete:hover {
+  background: #fee;
+  color: #e74c3c;
+}
+
+/* No suggestions */
+.no-suggestions {
+  padding: 16px 12px;
+  text-align: center;
+  color: #999;
+  font-size: 13px;
+}
+
+/* Loading state */
+.suggestions-loading {
+  padding: 16px 12px;
+  text-align: center;
+  color: #999;
+  font-size: 13px;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .suggestions-list {
+    max-height: 200px; /* Nhỏ hơn trên mobile */
+  }
+
+  .suggestion-item {
+    padding: 10px 12px;
+  }
+
+  .suggestion-text {
+    font-size: 14px;
+  }
+
+  .suggestion-meta {
+    font-size: 12px;
+  }
+}
+
+/* Animation */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.search-suggestions[style*="display: block"] {
+  animation: slideDown 0.2s ease-out;
+}

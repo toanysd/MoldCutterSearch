@@ -1,0 +1,117 @@
+/* location-move-v8.5.2-1.css */
+.locmove-backdrop {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+  transition: opacity 0.2s;
+}
+.locmove-backdrop.hidden {
+  display: none;
+  opacity: 0;
+}
+.locmove-modal {
+  background: #fff;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.locmove-header {
+  background: #0ea5a0;
+  color: #fff;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.locmove-title {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+.locmove-close {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  cursor: pointer;
+  line-height: 1;
+}
+.locmove-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.locmove-info {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 8px;
+}
+.locmove-info-line {
+  margin: 4px 0;
+  font-size: 0.95rem;
+  color: #166534;
+}
+.locmove-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.locmove-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #555;
+}
+.locmove-select, .locmove-input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+}
+.locmove-footer {
+  padding: 16px;
+  border-top: 1px solid #e5e5e5;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+.locmove-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.locmove-btn.cancel {
+  background: #f1f5f9;
+  color: #475569;
+}
+.locmove-btn.cancel:hover {
+  background: #e2e8f0;
+}
+.locmove-btn.submit {
+  background: #0ea5a0;
+  color: #fff;
+}
+.locmove-btn.submit:hover {
+  background: #0d948f;
+}
+.locmove-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

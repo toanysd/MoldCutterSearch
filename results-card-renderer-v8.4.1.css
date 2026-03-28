@@ -1,0 +1,500 @@
+/* ============================================================================
+   RESULTS CARD RENDERER v8.0.4-6 CSS
+   Modern Unified (Deep Teal) - Đồng bộ styles-v8.3.2-1
+   Updated: 2026-02-11
+
+   Mục tiêu:
+   - Đồng bộ màu theo token: --ui-accent (Deep Teal) và --ui-*
+   - Chữ rõ hơn bằng cách dùng màu tối hơn (tăng tương phản), KHÔNG dùng font-weight quá đậm
+   - Giữ nguyên selector cũ để JS hiện tại hoạt động bình thường
+============================================================================ */
+
+/* ===== Local tokens (fallback nếu token global chưa có) ===== */
+:root{
+  --rc-surface: var(--ui-surface, #ffffff);
+  --rc-surface-2: var(--ui-surface-2, #f8fafc);
+  --rc-border: var(--ui-border, #e6e9f0);
+
+  --rc-text: var(--text-primary, #0f172a);
+  --rc-text-2: var(--text-secondary, #111827);
+  --rc-muted: var(--text-muted, #475569);
+
+  --rc-accent: var(--ui-accent, #0F766E);
+  --rc-accent-hover: var(--ui-accent-hover, #0A5C56);
+  --rc-accent-soft: var(--ui-accent-soft, rgba(15, 118, 110, 0.16));
+
+  --rc-link: var(--ui-link, #2563eb);
+  --rc-link-hover: var(--ui-link-hover, #1d4ed8);
+
+  --rc-success: var(--ui-success, #16a34a);
+  --rc-warning: var(--ui-warning, #f59e0b);
+  --rc-danger: var(--ui-danger, #ef4444);
+  --rc-info: var(--ui-info, #0284c7);
+
+  --rc-shadow-sm: var(--shadow-sm, 0 2px 6px rgba(2, 6, 23, 0.08));
+  --rc-shadow-md: var(--shadow-md, 0 10px 22px rgba(2, 6, 23, 0.12));
+}
+
+/* ===== RESULTS GRID ===== */
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+  padding: 0;
+}
+
+/* ===== CARD CONTAINER ===== */
+.result-card {
+  position: relative;
+  background: var(--rc-surface);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: var(--rc-shadow-sm);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+  cursor: pointer;
+  border: 1px solid rgba(2, 6, 23, 0.08);
+}
+
+.result-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--rc-shadow-md);
+}
+
+.result-card.selected {
+  border-color: rgba(22, 163, 74, 0.60);
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.16), var(--rc-shadow-md);
+}
+
+/* Mold / Cutter subtle modern backgrounds */
+.result-card[data-type="mold"] {
+  background: linear-gradient(135deg, rgba(8,145,178,0.16) 0%, rgba(241,245,249,0.85) 40%, #ffffff 100%);
+}
+
+.result-card[data-type="cutter"] {
+  background: linear-gradient(135deg, rgba(234,88,12,0.16) 0%, rgba(241,245,249,0.85) 40%, #ffffff 100%);
+}
+
+/* ===== CHECKBOX - TOP LEFT ===== */
+.card-checkbox {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  z-index: 15;
+  accent-color: var(--rc-success);
+}
+
+/* ===== TYPE BADGE - TOP RIGHT ===== */
+.item-type-badge{
+  position:absolute;
+  top:10px;
+  right:10px;
+  padding: 3px 9px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:650;
+  color:#fff;
+  z-index:10;
+
+  border: 1px solid rgba(255,255,255,0.45);
+  box-shadow: 0 8px 16px rgba(2,6,23,0.10);
+  opacity:0.88;
+  backdrop-filter: blur(6px);
+}
+
+
+.item-type-badge.mold { background: rgba(8,145,178,0.82); }
+.item-type-badge.cutter { background: rgba(234,88,12,0.82); }
+
+
+/* ===== THUMBNAIL AREA ===== */
+.card-thumbnail {
+  width: 100%;
+  height: 140px;
+  background: linear-gradient(135deg, rgba(15,23,42,0.04) 0%, rgba(15,23,42,0.08) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border-bottom: 1px solid rgba(2,6,23,0.06);
+}
+
+.card-thumbnail .placeholder-icon {
+  font-size: 52px;
+  color: rgba(71, 85, 105, 0.35);
+}
+
+/* Zoom Button - Bottom Right of Thumbnail */
+.image-zoom-btn{
+  position:absolute;
+  bottom:10px;
+  right:10px;
+  width:30px;
+  height:30px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,0.55);
+  background: rgba(15,23,42,0.45);
+  color:#fff;
+  font-size:14px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:12;
+
+  box-shadow: 0 8px 18px rgba(2,6,23,0.16);
+  backdrop-filter: blur(6px);
+  opacity:0.78;
+  transition: transform .15s ease, opacity .15s ease, background .15s ease, box-shadow .15s ease;
+}
+
+.result-card:hover .image-zoom-btn{
+  opacity:1;
+  background: rgba(15,23,42,0.60);
+  box-shadow: 0 12px 24px rgba(2,6,23,0.20);
+}
+
+.image-zoom-btn:active{ transform: scale(0.96); }
+
+
+/* ===== CARD BODY ===== */
+.card-body {
+  padding: 12px;
+}
+
+/* ID Label */
+.item-id {
+  font-size: 10px;
+  color: rgba(71, 85, 105, 0.92);
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+/* Code (đậm vừa, không bold) */
+.item-code {
+  font-size: 16px;
+  font-weight: 650;
+  color: rgba(7, 15, 26, 0.96);
+  margin-bottom: 5px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Courier New", monospace;
+  line-height: 1.2;
+}
+
+/* Product Name */
+.item-name {
+  font-size: 12px;
+  color: rgba(17, 24, 39, 0.88);
+  margin-bottom: 8px;
+  line-height: 1.3;
+  min-height: 32px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-weight: 500;
+}
+
+/* Dimensions */
+.item-dimensions {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--rc-success);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 8px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+.item-dimensions i {
+  font-size: 11px;
+  color: rgba(22, 163, 74, 0.75);
+}
+
+/* ===== META INFO GROUP ===== */
+.item-meta-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(2, 6, 23, 0.06);
+  font-size: 11px;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 500;
+}
+
+/* Location */
+.meta-item.location {
+  flex: 0 0 auto;
+  color: var(--rc-link);
+}
+
+.meta-item.location i { font-size: 10px; }
+
+.location-link {
+  color: var(--rc-link);
+  text-decoration: none;
+  border-bottom: 1px dashed rgba(37, 99, 235, 0.65);
+  transition: color 0.15s, border-bottom-color 0.15s;
+}
+
+.location-link:hover {
+  color: var(--rc-link-hover);
+  border-bottom-color: rgba(29, 78, 216, 0.85);
+  border-bottom-style: solid;
+}
+
+/* Status Badge */
+.meta-item.status {
+  flex: 0 0 auto;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
+  border: 1px solid rgba(2,6,23,0.08);
+}
+
+.meta-item.status.in {
+  background: rgba(22, 163, 74, 0.12);
+  color: #14532d;
+  border-color: rgba(22, 163, 74, 0.22);
+}
+
+.meta-item.status.out {
+  background: rgba(239, 68, 68, 0.10);
+  color: #7f1d1d;
+  border-color: rgba(239, 68, 68, 0.22);
+}
+
+.meta-item.status.audit {
+  background: rgba(2, 132, 199, 0.12);
+  color: #075985;
+  border-color: rgba(2, 132, 199, 0.22);
+}
+
+.meta-item.status.disposed {
+  background: rgba(100, 116, 139, 0.12);
+  color: #334155;
+  border-color: rgba(100, 116, 139, 0.22);
+}
+
+.meta-item.status.returned {
+  background: rgba(245, 158, 11, 0.14);
+  color: #92400e;
+  border-color: rgba(245, 158, 11, 0.24);
+}
+
+/* Date - Right */
+.meta-item.date {
+  flex: 1;
+  justify-content: flex-end;
+  color: rgba(71, 85, 105, 0.92);
+  text-align: right;
+}
+
+.meta-item.date i { font-size: 9px; }
+
+/* ===== CARD FOOTER - DUAL BUTTONS ===== */
+.card-footer {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px 12px;
+  border-top: 1px solid rgba(2, 6, 23, 0.06);
+}
+
+.card-detail-btn,
+.card-action-btn {
+  flex: 1;
+  padding: 9px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 650;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.card-detail-btn i,
+.card-action-btn i { font-size: 12px; }
+
+/* Secondary button (outline accent) */
+.card-detail-btn {
+  background: rgba(255,255,255,0.92);
+  color: var(--rc-accent-hover);
+  border: 1px solid rgba(15, 118, 110, 0.35);
+}
+
+.card-detail-btn:hover {
+  background: rgba(15, 118, 110, 0.08);
+  border-color: rgba(15, 118, 110, 0.55);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 18px rgba(2,6,23,0.14);
+}
+
+/* Primary button (fill accent) */
+.card-action-btn {
+  background: var(--rc-accent);
+  color: #fff;
+  border: 1px solid rgba(0,0,0,0.08);
+}
+
+.card-action-btn:hover {
+  background: var(--rc-accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 18px rgba(2,6,23,0.16);
+}
+
+.card-detail-btn:active,
+.card-action-btn:active { transform: translateY(0); }
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: rgba(71, 85, 105, 0.85);
+}
+
+.empty-state i {
+  font-size: 64px;
+  margin-bottom: 16px;
+  opacity: 0.45;
+}
+
+.empty-state h3 {
+  font-size: 18px;
+  margin-bottom: 8px;
+  color: rgba(17,24,39,0.80);
+  font-weight: 650;
+}
+
+.empty-state p {
+  font-size: 14px;
+  color: rgba(71,85,105,0.85);
+}
+
+/* ===== MOBILE RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .results-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 10px;
+  }
+
+  .card-thumbnail { height: 110px; }
+  .card-thumbnail .placeholder-icon { font-size: 40px; }
+
+  .image-zoom-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 13px;
+    bottom: 6px;
+    right: 6px;
+  }
+
+  .item-code { font-size: 14px; }
+
+  .item-name {
+    font-size: 11px;
+    min-height: 28px;
+  }
+
+  .item-dimensions { font-size: 11px; }
+
+  .item-meta-group {
+    font-size: 10px;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .card-footer {
+    gap: 6px;
+    padding: 8px 8px 10px;
+  }
+
+  .card-detail-btn,
+  .card-action-btn {
+    font-size: 10px;
+    padding: 7px 8px;
+    gap: 3px;
+  }
+
+  .card-detail-btn span,
+  .card-action-btn span {
+    display: none;
+  }
+
+  .card-detail-btn i,
+  .card-action-btn i {
+    font-size: 14px;
+    margin: 0;
+  }
+}
+
+/* ===== TABLET ===== */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .results-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+  }
+}
+
+/* ===== Pagination GO button (nếu đang dùng trong UI) ===== */
+.pagination .btn-go {
+  padding: 8px 12px;
+  background: var(--rc-accent);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 650;
+  transition: background 0.15s, transform 0.15s;
+}
+
+.pagination .btn-go:hover {
+  background: var(--rc-accent-hover);
+  transform: translateY(-1px);
+}
+
+/* ===== MOBILE PAGINATION - 1 DÒNG ===== */
+@media (max-width: 768px) {
+  .pagination {
+    padding: 8px 6px !important;
+    gap: 4px !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+  }
+
+  .pagination button {
+    padding: 6px 10px !important;
+    font-size: 11px !important;
+    min-width: 32px;
+    flex-shrink: 0;
+  }
+
+  .pagination .page-info {
+    font-size: 11px !important;
+    padding: 0 6px !important;
+    white-space: nowrap;
+  }
+
+  .pagination .page-input {
+    width: 45px !important;
+    padding: 4px 6px !important;
+    font-size: 11px !important;
+  }
+
+  .pagination .btn-go {
+    padding: 6px 10px !important;
+    font-size: 14px !important;
+    min-width: 36px;
+  }
+}

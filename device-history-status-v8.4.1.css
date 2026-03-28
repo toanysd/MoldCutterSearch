@@ -1,0 +1,478 @@
+/*
+  device-history-status-v8.3.2-1.css
+  ------------------------------------------------------------
+  CSS cho module DeviceHistoryStatus (JS: device-history-status-v8.3.2-1.js)
+
+  Yêu cầu patch (-1):
+  - Chỉ giảm khoảng cách các dòng record trong Timeline (single spacing như Word).
+  - Các mục khác giữ nguyên, không làm mất định dạng đã đúng.
+  - Đảm bảo record timeline hiển thị 1 dòng (kết hợp với JS v8.3.2-1).
+
+  Scope: .detail-panel .dp-dhs
+*/
+
+.detail-panel .dp-dhs {
+  --dhs-border: rgba(2, 6, 23, 0.10);
+  --dhs-border-2: rgba(2, 6, 23, 0.14);
+  --dhs-bg: rgba(255, 255, 255, 0.96);
+  --dhs-bg-soft: rgba(248, 250, 252, 0.92);
+  --dhs-text: rgba(15, 23, 42, 0.92);
+  --dhs-muted: rgba(15, 23, 42, 0.70);
+  --dhs-muted-2: rgba(15, 23, 42, 0.55);
+  --dhs-blue: #0068C9;
+  --dhs-blue-soft: rgba(0, 104, 201, 0.10);
+  --dhs-shadow: 0 10px 24px rgba(0,0,0,0.07);
+  --dhs-radius: 14px;
+  --dhs-radius-sm: 10px;
+
+  color: var(--dhs-text);
+}
+
+/* Header */
+.detail-panel .dp-dhs .section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.detail-panel .dp-dhs .dp-dhs-count {
+  margin-left: 6px;
+  font-weight: 950;
+  color: rgba(0, 82, 163, 0.98);
+  background: var(--dhs-blue-soft);
+  border: 1px solid rgba(0, 104, 201, 0.28);
+  border-radius: 999px;
+  padding: 2px 8px;
+  line-height: 1.6;
+}
+
+.detail-panel .dp-dhs .info-message {
+  border-left-color: rgba(0, 104, 201, 0.40);
+  background: rgba(0, 104, 201, 0.06);
+  margin-top: 8px;
+  padding: 10px 12px;
+}
+
+/* Toolbar compact */
+.detail-panel .dp-dhs .dp-dhs-toolbar {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.detail-panel .dp-dhs .dp-dhs-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--dhs-border-2);
+  background: var(--dhs-bg-soft);
+  color: var(--dhs-text);
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-weight: 950;
+  font-size: 12px;
+  cursor: pointer;
+  line-height: 1.2;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+}
+
+.detail-panel .dp-dhs .dp-dhs-chip i {
+  opacity: 0.85;
+}
+
+.detail-panel .dp-dhs .dp-dhs-chip:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.07);
+  border-color: rgba(0, 104, 201, 0.24);
+}
+
+.detail-panel .dp-dhs .dp-dhs-chip.active {
+  border-color: rgba(0, 104, 201, 0.40);
+  background: rgba(0, 104, 201, 0.10);
+  color: rgba(0, 82, 163, 0.98);
+}
+
+.detail-panel .dp-dhs .dp-dhs-sep {
+  width: 1px;
+  height: 28px;
+  background: var(--dhs-border);
+  margin: 0 2px;
+}
+
+.detail-panel .dp-dhs .dp-dhs-search {
+  flex: 1 1 260px;
+  min-width: 200px;
+  border: 1px solid var(--dhs-border-2);
+  border-radius: 12px;
+  padding: 7px 10px;
+  background: rgba(255,255,255,0.95);
+  font-size: 12px;
+  font-weight: 750;
+  color: var(--dhs-text);
+  outline: none;
+  line-height: 1.2;
+}
+
+.detail-panel .dp-dhs .dp-dhs-search:focus {
+  border-color: rgba(0, 104, 201, 0.45);
+  box-shadow: 0 0 0 4px rgba(0, 104, 201, 0.10);
+}
+
+.detail-panel .dp-dhs .dp-dhs-select {
+  border: 1px solid var(--dhs-border-2);
+  border-radius: 12px;
+  padding: 7px 10px;
+  background: rgba(255,255,255,0.95);
+  font-size: 12px;
+  font-weight: 950;
+  color: var(--dhs-text);
+  outline: none;
+  line-height: 1.2;
+}
+
+/* Body spacing */
+.detail-panel .dp-dhs .dp-dhs-body {
+  margin-top: 10px;
+}
+
+/* Overview */
+.detail-panel .dp-dhs .dp-dhs-overview {
+  display: grid;
+  gap: 10px;
+}
+
+.detail-panel .dp-dhs .dp-dhs-cards {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+}
+
+@media (max-width: 1200px) {
+  .detail-panel .dp-dhs .dp-dhs-cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .detail-panel .dp-dhs .dp-dhs-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.detail-panel .dp-dhs .dp-dhs-card {
+  border: 1px solid var(--dhs-border);
+  background: rgba(255,255,255,0.92);
+  border-radius: var(--dhs-radius);
+  padding: 10px 10px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+}
+
+.detail-panel .dp-dhs .dp-dhs-card-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--dhs-muted);
+  font-weight: 950;
+  font-size: 12px;
+}
+
+.detail-panel .dp-dhs .dp-dhs-card-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.detail-panel .dp-dhs .dp-dhs-card-main {
+  margin-top: 8px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.detail-panel .dp-dhs .dp-dhs-card-count {
+  font-weight: 1000;
+  font-size: 18px;
+  letter-spacing: 0;
+  color: rgba(15, 23, 42, 0.96);
+}
+
+.detail-panel .dp-dhs .dp-dhs-card-last {
+  font-weight: 900;
+  font-size: 11px;
+  color: var(--dhs-muted-2);
+  white-space: nowrap;
+}
+
+.detail-panel .dp-dhs .dp-dhs-overview-preview {
+  margin-top: 0;
+}
+
+/* Tables compact */
+.detail-panel .dp-dhs table.dp-dhs-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--dhs-border);
+  background: rgba(255,255,255,0.93);
+  border-radius: var(--dhs-radius);
+  overflow: hidden;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+}
+
+.detail-panel .dp-dhs table.dp-dhs-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: rgba(241, 245, 249, 0.98);
+  border-bottom: 1px solid var(--dhs-border);
+  color: rgba(15, 23, 42, 0.78);
+  font-weight: 1000;
+  font-size: 11px;
+  padding: 8px 10px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.detail-panel .dp-dhs table.dp-dhs-table tbody td {
+  border-bottom: 1px solid rgba(2,6,23,0.06);
+  padding: 8px 10px;
+  vertical-align: top;
+  font-size: 12px;
+  line-height: 1.25;
+}
+
+.detail-panel .dp-dhs table.dp-dhs-table tbody tr:hover {
+  background: rgba(0, 104, 201, 0.06);
+}
+
+.detail-panel .dp-dhs .dp-dhs-td-arrow {
+  width: 22px;
+  text-align: center;
+  color: var(--dhs-muted-2);
+  font-weight: 1000;
+}
+
+.detail-panel .dp-dhs .dp-dhs-td-date {
+  white-space: nowrap;
+  color: rgba(15, 23, 42, 0.88);
+  font-weight: 900;
+}
+
+.detail-panel .dp-dhs .dp-dhs-td-status {
+  min-width: 160px;
+}
+
+.detail-panel .dp-dhs .dp-dhs-td-note {
+  color: rgba(15, 23, 42, 0.86);
+}
+
+.detail-panel .dp-dhs .dp-dhs-subtext {
+  margin-top: 4px;
+  color: var(--dhs-muted-2);
+  font-size: 11px;
+  font-weight: 850;
+  line-height: 1.2;
+}
+
+/* Inline helpers (JS v8.3.2-1 dùng để hạn chế xuống dòng) */
+.detail-panel .dp-dhs .dp-dhs-inline-text {
+  margin-left: 8px;
+  color: rgba(15, 23, 42, 0.72);
+  font-size: 11px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.detail-panel .dp-dhs .dp-dhs-inline-muted {
+  color: rgba(15, 23, 42, 0.62);
+  font-size: 11px;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+.detail-panel .dp-dhs .dp-dhs-inline-by {
+  color: rgba(15, 23, 42, 0.62);
+  font-size: 11px;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+/* Compact list for comments */
+.detail-panel .dp-dhs .dp-dhs-list {
+  display: grid;
+  gap: 8px;
+}
+
+.detail-panel .dp-dhs .dp-dhs-list-item {
+  border: 1px solid rgba(2,6,23,0.08);
+  background: rgba(255,255,255,0.92);
+  border-radius: var(--dhs-radius-sm);
+  padding: 10px 10px;
+}
+
+.detail-panel .dp-dhs .dp-dhs-list-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 950;
+  font-size: 11px;
+  color: var(--dhs-muted);
+}
+
+.detail-panel .dp-dhs .dp-dhs-list-body {
+  margin-top: 6px;
+  font-size: 12px;
+  line-height: 1.3;
+  color: rgba(15, 23, 42, 0.92);
+}
+
+.detail-panel .dp-dhs .dp-dhs-list-dot {
+  opacity: 0.6;
+}
+
+/* Timeline baseline (giữ nguyên, patch ở cuối sẽ giảm spacing record) */
+.detail-panel .dp-dhs .dp-dhs-timeline .timeline-item {
+  box-shadow: 0 8px 18px rgba(0,0,0,0.05);
+  border-color: rgba(2, 6, 23, 0.08);
+}
+
+/* Responsive tables: safe horizontal scroll */
+@media (max-width: 860px) {
+  .detail-panel .dp-dhs table.dp-dhs-table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* ============================================================
+   Patch (-1): CHỈ compact Timeline record (single spacing)
+   ============================================================ */
+
+/* Thu nhỏ text trong Timeline một chút để gọn */
+.detail-panel .dp-dhs .dp-dhs-timeline {
+  font-size: 12px;
+}
+
+/* Giảm khoảng cách giữa các record (đây là chỗ chính) */
+.detail-panel .dp-dhs .dp-dhs-timeline .timeline-item {
+  margin: 6px 0;
+}
+
+/* Giảm padding trong content để record thấp hơn */
+.detail-panel .dp-dhs .dp-dhs-timeline .timeline-content {
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+/* Header gọn hơn, vẫn rõ */
+.detail-panel .dp-dhs .dp-dhs-timeline .timeline-header {
+  gap: 10px;
+  margin-bottom: 2px;
+}
+
+.detail-panel .dp-dhs .dp-dhs-timeline .timeline-type {
+  font-weight: 950;
+  font-size: 12px;
+}
+
+.detail-panel .dp-dhs .dp-dhs-timeline .timeline-date {
+  font-size: 11px;
+  color: rgba(15, 23, 42, 0.68);
+}
+
+/* Body: 1 dòng/record (nowrap + ellipsis) */
+.detail-panel .dp-dhs .dp-dhs-timeline .timeline-body {
+  padding-top: 2px;
+}
+
+.detail-panel .dp-dhs .dp-dhs-tl-inline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: nowrap;
+  min-width: 0;
+  overflow: hidden;
+  line-height: 1.25; /* gần single spacing */
+}
+
+.detail-panel .dp-dhs .dp-dhs-tl-summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 950;
+  font-size: 12px;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.detail-panel .dp-dhs .dp-dhs-tl-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.detail-panel .dp-dhs .dp-dhs-tl-meta-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.detail-panel .dp-dhs .dp-dhs-tl-meta {
+  padding: 2px 8px;
+  font-size: 11px;
+  line-height: 1.2;
+  max-width: 460px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.detail-panel .dp-dhs .dp-dhs-tl-meta--note {
+  max-width: 620px;
+}
+
+.detail-panel .dp-dhs .dp-dhs-tl-meta--badge {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  max-width: none;
+}
+
+.detail-panel .dp-dhs .dp-dhs-tl-sep {
+  opacity: 0.55;
+  font-weight: 1000;
+  color: rgba(15, 23, 42, 0.70);
+  flex: 0 0 auto;
+}
+
+/* Icon nhỏ hơn để giảm chiều cao record */
+.detail-panel .dp-dhs .dp-dhs-timeline .timeline-icon {
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+}
+
+.detail-panel .dp-dhs .dp-dhs-timeline .timeline-icon i {
+  font-size: 13px;
+}
+
+/* Mobile: màn hình hẹp cho phép wrap nhẹ (đỡ tràn), desktop vẫn 1 dòng */
+@media (max-width: 520px) {
+  .detail-panel .dp-dhs .dp-dhs-tl-inline {
+    flex-wrap: wrap;
+  }
+  .detail-panel .dp-dhs .dp-dhs-tl-summary {
+    flex: 1 1 100%;
+  }
+}

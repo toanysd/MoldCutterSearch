@@ -24,7 +24,7 @@ class App {
   constructor() {
     this.allItems = [];
     this.filteredItems = [];
-    this.currentView = 'table';
+    this.currentView = 'card';
     this.currentPage = 1;
     this.itemsPerPage = 24;
     this.selectedCategory = 'all';
@@ -362,6 +362,36 @@ class App {
         this.toggleSidebar();
       });
     }
+
+    // Tự động thu gọn sidebar khi click bên ngoài
+    document.addEventListener('click', (e) => {
+      const sidebar = document.getElementById('sidebar');
+      const toggleBtn = document.querySelector('.sidebar-toggle');
+      if (!sidebar) return;
+      
+      const isMobile = window.innerWidth <= 768;
+      const clickedInsideSidebar = sidebar.contains(e.target);
+      const clickedToggleBtn = toggleBtn && toggleBtn.contains(e.target);
+      
+      if (!clickedInsideSidebar && !clickedToggleBtn) {
+        if (isMobile && sidebar.classList.contains('open')) {
+            sidebar.classList.remove('open');
+            this.updateSidebarIcon();
+        } else if (!isMobile && !sidebar.classList.contains('collapsed')) {
+            // Freeze then collapse
+            sidebar.classList.add('sidebar-freeze');
+            sidebar.getBoundingClientRect();
+            sidebar.classList.add('collapsed');
+            
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+                sidebar.classList.remove('sidebar-freeze');
+            }));
+            
+            this.updateSidebarIcon();
+            try { localStorage.setItem(SIDEBAR_STATE_KEY, "1"); } catch(e){}
+        }
+      }
+    });
 
     // Filter toggle
     const filterToggle = document.querySelector('.filter-toggle');
@@ -714,6 +744,7 @@ class App {
     if(isMobile){
       sidebar.classList.toggle('open');
       sidebar.classList.remove('collapsed');
+      this.updateSidebarIcon();
       return;
     }
 
@@ -738,6 +769,18 @@ class App {
       });
     });
 
+    this.updateSidebarIcon();
+  }
+  
+  updateSidebarIcon() {
+    const sidebar = document.getElementById('sidebar');
+    const icon = document.querySelector('.sidebar-toggle i');
+    if (!sidebar || !icon) return;
+    
+    const isMobile = window.innerWidth <= 768;
+    const isOpen = isMobile ? sidebar.classList.contains('open') : !sidebar.classList.contains('collapsed');
+    
+    icon.className = isOpen ? 'fas fa-chevron-left' : 'fas fa-chevron-right';
   }
 
   forceSidebarForViewport(isInitCall) {
@@ -767,6 +810,7 @@ class App {
       this._sidebarRestoredOnce = true;
       this.restoreSidebarState();
     }
+    this.updateSidebarIcon();
   }
 
   restoreSidebarState() {
@@ -789,6 +833,7 @@ class App {
     } else {
       sidebar.classList.remove('collapsed');
     }
+    setTimeout(() => this.updateSidebarIcon(), 100);
   }
 
   /**

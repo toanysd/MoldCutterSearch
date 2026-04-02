@@ -57,14 +57,11 @@ class ResultsCardRenderer {
             }
         }, true);
 
-        // Chuột phải (contextmenu) vào ảnh thumb -> Bật Action Menu giống nút Action
+        // Chuột phải (contextmenu) vào thẻ -> Bật Action Menu giống nút Action
         document.addEventListener('contextmenu', (e) => {
-            const thumbArea = e.target.closest('.card-thumbnail');
-            if (thumbArea) {
+            const card = e.target.closest('.result-card');
+            if (card) {
                 e.preventDefault(); // Chặn menu mặc định của trình duyệt
-
-                const card = thumbArea.closest('.result-card');
-                if (!card) return;
 
                 const itemId = String(card.dataset.id || '').trim();
                 const item = this.items.find(it => {
@@ -74,15 +71,15 @@ class ResultsCardRenderer {
 
                 if (!item) return;
 
-                // Dùng chính vùng thumbArea làm anchor để mở popup menu nhưng truyền thêm sự kiện chuột e
-                this.openCardActionMenu(thumbArea, item, e);
+                // Mở popup menu tại vị trí trỏ chuột thay vì cố định neo ở card
+                this.openCardActionMenu(card, item, e);
             }
         });
 
 
         // Zoom button handler (mở ảnh dạng popup trong trang, giống PhotoManager)
         document.addEventListener('click', async (e) => {
-            const zoomBtn = e.target.closest('.image-zoom-btn');
+            const zoomBtn = e.target.closest('.image-zoom-btn') || e.target.closest('.card-thumbnail');
             if (!zoomBtn) return;
 
             e.preventDefault();
@@ -217,7 +214,7 @@ class ResultsCardRenderer {
 
 
         // Location link handler
-        document.addEventListener('click', (e) => {
+        document.addEventListener('click', async (e) => {
             const locationLink = e.target.closest('.location-link');
             if (locationLink) {
                 e.preventDefault();
@@ -226,9 +223,60 @@ class ResultsCardRenderer {
                 const rackId = locationLink.dataset.rackId;
                 const layerId = locationLink.dataset.layerId;
                 
-                console.log('Open rack map:', { rackId, layerId });
-                // TODO: Open rack map or location image
-                alert(`📍 位置マップ / Bản đồ vị trí\nRack: ${rackId}\n開発中... / Đang phát triển...`);
+                // Get data
+                const rack = window.DataManager?.data?.rack?.find(r => String(r.RackID) === String(rackId)) || {};
+                const layer = window.DataManager?.data?.racklayers?.find(l => String(l.LayerID) === String(layerId)) || {};
+                
+                const rackNotes = rack.Notes || 'Không có ghi chú';
+                const layerNotes = layer.Notes || 'Không có ghi chú';
+                const rackName = rack.RackName || rackId;
+
+                // Build Popup
+                const popup = document.createElement('div');
+                popup.style.position = 'fixed';
+                popup.style.inset = '0';
+                popup.style.background = 'rgba(0,0,0,0.6)';
+                popup.style.zIndex = '99999';
+                popup.style.display = 'flex';
+                popup.style.alignItems = 'center';
+                popup.style.justifyContent = 'center';
+                popup.style.padding = '16px';
+                popup.style.backdropFilter = 'blur(4px)';
+                
+                // Photo
+                let imgHtml = `<div style="padding:40px; background:#f1f5f9; text-align:center; color:#94a3b8;"><i class="fas fa-image fa-3x"></i><p>Không có ảnh</p></div>`;
+                if (window.DevicePhotoStore && typeof window.DevicePhotoStore.getThumbnailUrl === 'function') {
+                    const url = await window.DevicePhotoStore.getThumbnailUrl('racklayer', layerId) || await window.DevicePhotoStore.getThumbnailUrl('rack', rackId);
+                    if (url) {
+                        imgHtml = `<img src="${url}" style="width:100%; max-height:40vh; object-fit:contain; border-radius:8px; border:1px solid #e2e8f0;"/>`;
+                    }
+                }
+
+                popup.innerHTML = `
+                    <div style="background:#fff; border-radius:12px; width:100%; max-width:400px; overflow:hidden; box-shadow:0 10px 25px rgba(0,0,0,0.2); position:relative;">
+                        <button class="close-popup-btn" style="position:absolute; top:8px; right:8px; width:32px; height:32px; border-radius:50%; border:none; background:rgba(0,0,0,0.5); color:#fff; cursor:pointer; font-size:16px;">&times;</button>
+                        <div style="padding:16px; background:#0ea5e9; color:#fff;">
+                            <h3 style="margin:0; font-size:18px;"><i class="fas fa-map-marker-alt"></i> Giá ${rackName} - Tầng ${layer.LayerNumber || layerId || '?'}</h3>
+                        </div>
+                        <div style="padding:16px;">
+                            ${imgHtml}
+                            <div style="margin-top:16px;">
+                                <div style="font-size:14px; font-weight:bold; color:#475569; margin-bottom:4px;">Ghi chú Giá (Rack):</div>
+                                <div style="font-size:14px; color:#334155; padding:8px; background:#f8fafc; border-radius:6px; margin-bottom:12px;">${rackNotes}</div>
+                                <div style="font-size:14px; font-weight:bold; color:#475569; margin-bottom:4px;">Ghi chú Tầng (Layer):</div>
+                                <div style="font-size:14px; color:#334155; padding:8px; background:#f8fafc; border-radius:6px;">${layerNotes}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                popup.addEventListener('click', (ev) => {
+                    if (ev.target === popup || ev.target.closest('.close-popup-btn')) {
+                        popup.remove();
+                    }
+                });
+
+                document.body.appendChild(popup);
             }
         });
 
@@ -264,6 +312,7 @@ class ResultsCardRenderer {
         if (
             e.target.closest('.card-checkbox') ||
             e.target.closest('.image-zoom-btn') ||
+            e.target.closest('.card-thumbnail') ||
             e.target.closest('.location-link') ||
             e.target.closest('.card-action-btn') ||
             e.target.closest('.card-action-menu-v8')
@@ -623,7 +672,7 @@ class ResultsCardRenderer {
             <div class="item-type-badge ${itemType}">${typeBadge}</div>
             
             <!-- Thumbnail Area -->
-            <div class="card-thumbnail">
+            <div class="card-thumbnail" data-id="${itemId}" style="cursor: pointer;" title="Bấm để phóng to">
                 <img class="card-thumb-img"
                     data-devicetype="${itemType}"
                     data-deviceid="${itemId}"
@@ -632,9 +681,6 @@ class ResultsCardRenderer {
                 <div class="placeholder-icon" data-thumb-placeholder="1">
                     <i class="fas fa-${typeIcon}"></i>
                 </div>
-                <button class="image-zoom-btn" data-id="${itemId}" title="Phóng to ảnh">
-                    <i class="fas fa-search-plus"></i>
-                </button>
             </div>
             
             <!-- Card Body -->
@@ -655,27 +701,27 @@ class ResultsCardRenderer {
                 </div>
                 
                 <!-- Meta Info Group: Location + Status + Date -->
-                <div class="item-meta-group">
+                <div class="item-meta-group" style="gap:6px; flex-wrap:wrap;">
                     <!-- Location - Blue (clickable) -->
-                    <div class="meta-item location">
+                    <div class="meta-item location" style="font-size: 12px; font-weight: bold; padding: 4px 8px; background: #e0f2fe; border-radius: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); white-space:nowrap;">
                         <i class="fas fa-map-marker-alt"></i>
                         <a href="#" class="location-link" 
                            data-rack-id="${rackLocation.rackId || ''}" 
                            data-layer-id="${rackLocation.rackLayerId || ''}"
-                           onclick="event.stopPropagation(); event.preventDefault();">
+                           onclick="event.stopPropagation(); event.preventDefault();" style="color: #0369a1; text-decoration: none;">
                             ${location}
                         </a>
                     </div>
                     
                     ${statusInfo.status ? `
                     <!-- Status Badge -->
-                    <div class="meta-item status ${statusClass}">
+                    <div class="meta-item status ${statusClass}" style="font-size: 12px; font-weight: bold; padding: 4px 8px; border-radius: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); white-space:nowrap;">
                         ${statusLabel}
                     </div>
-                    ` : '<div class="meta-item status">-</div>'}
+                    ` : '<div class="meta-item status" style="font-size: 12px; font-weight: bold; padding: 4px 8px;">-</div>'}
                     
                     <!-- Update Date - Right aligned -->
-                    <div class="meta-item date">
+                    <div class="meta-item date" style="font-size: 12px; font-weight: bold; white-space:nowrap; margin-left:auto;">
                     <i class="fas fa-calendar-alt"></i>
                     <span class="meta-date-text">${statusDate || '-'}</span>
 
@@ -684,8 +730,8 @@ class ResultsCardRenderer {
                             data-type="${itemType}"
                             aria-label="actions"
                             onclick="event.stopPropagation();"
-                            style="margin-left:6px;width:28px;height:28px;border-radius:10px;border:1px solid rgba(2,6,23,0.12);background:rgba(255,255,255,0.96);color:var(--ui-accent-hover,#0A5C56);display:inline-flex;align-items:center;justify-content:center;padding:0;cursor:pointer;">
-                        <i class="fas fa-ellipsis-v"></i>
+                            style="margin-left:4px;width:26px;height:26px;border-radius:8px;border:1px solid rgba(2,6,23,0.12);background:rgba(255,255,255,0.96);color:var(--ui-accent-hover,#0A5C56);display:inline-flex;align-items:center;justify-content:center;padding:0;cursor:pointer;">
+                        <i class="fas fa-ellipsis-v" style="font-size:12px;"></i>
                     </button>
                     </div>
 

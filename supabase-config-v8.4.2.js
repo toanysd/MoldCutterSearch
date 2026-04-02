@@ -24,6 +24,22 @@
 
   var VERSION = 'v8.4.2';
 
+  // [Khắc phục cảnh báo Tracking Prevention / file:///]
+  if (window.supabase && typeof window.supabase.createClient === 'function' && !window.supabase._pmPatched) {
+    var _origClient = window.supabase.createClient;
+    window.supabase.createClient = function(url, key, options) {
+      var opt = options || {};
+      opt.auth = opt.auth || {};
+      if (opt.auth.persistSession === undefined) opt.auth.persistSession = false;
+      if (opt.auth.autoRefreshToken === undefined) opt.auth.autoRefreshToken = false;
+      if (opt.auth.detectSessionInUrl === undefined) opt.auth.detectSessionInUrl = false;
+      
+      opt.auth.storage = { getItem: function(){ return null; }, setItem: function(){}, removeItem: function(){} };
+      return _origClient.call(window.supabase, url, key, opt);
+    };
+    window.supabase._pmPatched = true;
+  }
+
   // =========================
   // 1) DEFAULTS (có thể đổi bằng SupabaseConfig.set hoặc SupabaseConfig.init)
   // =========================
@@ -37,7 +53,7 @@
   // 2) PHOTO MAIL SETTINGS (theo yêu cầu)
   // =========================
   var PHOTO_BUCKET_DEFAULT = 'mold-photos';
-  var EDGE_FUNCTION_SEND_PHOTO_AUDIT = 'send-photo-adit';
+  var EDGE_FUNCTION_SEND_PHOTO_AUDIT = 'send-photo-audit';
 
   // Mail TO cố định: KHÔNG hiện trên UI.
   var PHOTO_MAIL_TO_FIXED = 'toan.ysd@gmail.com';

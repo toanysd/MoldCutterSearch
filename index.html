@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
@@ -184,6 +184,15 @@
                                     <span class="vi">Nhập xuất kho</span>
                                 </div>
                                 <span class="nav-badge info">0</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" id="sidebarPlasticManagerBtn">
+                                <i class="fas fa-box-open"></i>
+                                <div class="nav-link-text">
+                                    <span class="ja">プラ材料 (WMS)</span>
+                                    <span class="vi">Quản lý Nhựa</span>
+                                </div>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -587,16 +596,22 @@
 
     <!-- Các module cần DOM, đặt cuối -->
     <script src="device-history-status-v8.4.1.js"></script><!-- Module Detail Panel - Trộn chung Mold/Cutter -->
-<script src="detail-panel-v8.6.17.js"></script>
+<script src="detail-panel-v8.6.16.js"></script>
     <script src="quick-update-module-v8.5.3-5.js"></script>
     
     <!-- Teflon Processing -->
     <script src="teflon-processing-v8.5.12-2.js"></script>
     
+    <!-- Plastic Management WMS -->
+    <script src="plastic-manager-v8.5.26.js?v=sys_clear_cache_26"></script>
+    
     <!-- Trình biên dịch Xuất File ExcelJS (.xlsx native) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
     <script src="print-export-module-v8.5.5-1.js"></script>
-<script src="global-assistive-touch-v8.5.7-7.js"></script>
+    <link rel="stylesheet" href="extended-editor-v8.5.3-6.css">
+    <script src="dp-extended-editor-v8.5.3-6.js"></script>
+
+    <script src="global-assistive-touch-v8.5.7-7.js"></script>
     <script src="detail-panel-photos-tab-v8.4.4.js"></script>
     <script src="detail-panel-related-tab-v8.5.3-6.js"></script>
     
@@ -604,6 +619,13 @@
     <script src="pull-to-refresh-v8.5.11.js"></script>
  
     <script>
+        document.getElementById('sidebarPlasticManagerBtn')?.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (window.PlasticManager && typeof window.PlasticManager.open === 'function') {
+                window.PlasticManager.open();
+            }
+        });
+
         document.getElementById('sidebarTeflonManagerBtn')?.addEventListener('click', function(e) {
             e.preventDefault();
             if (window.TeflonManager && typeof window.TeflonManager.open === 'function') {

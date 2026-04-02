@@ -148,59 +148,37 @@ class ResultsCardRenderer {
 
                 console.log('[CardZoom] open url:', fullUrl);
 
-                // Dùng lightbox của PhotoManager (_openLightbox với gạch dưới)
-                if (window.PhotoManager && typeof window.PhotoManager._openLightbox === 'function') {
-                    // Đảm bảo DOM lightbox đã được tạo (mount nếu chưa có)
-                    if (typeof window.PhotoManager._mount === 'function') {
-                        window.PhotoManager._mount();
+                // Dùng custom popup để hiển thị ảnh vừa phải trên Desktop
+                const popup = document.createElement('div');
+                popup.style.position = 'fixed';
+                popup.style.inset = '0';
+                popup.style.background = 'rgba(0,0,0,0.6)';
+                popup.style.zIndex = '999999';
+                popup.style.display = 'flex';
+                popup.style.alignItems = 'center';
+                popup.style.justifyContent = 'center';
+                popup.style.padding = '16px';
+                popup.style.backdropFilter = 'blur(4px)';
+                
+                popup.innerHTML = `
+                    <div style="background:#fff; border-radius:12px; padding:12px; position:relative; max-width:90vw; max-height:90vh; display:flex; flex-direction:column; align-items:center; box-shadow:0 10px 25px rgba(0,0,0,0.2);">
+                        <div style="width:100%; display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding:0 8px;">
+                            <span style="font-weight:bold; color:#334155; font-size:16px;">${title}</span>
+                            <button class="close-zoom-btn" title="Đóng" style="border:none; background:transparent; font-size:24px; cursor:pointer; color:#64748b; line-height:1; padding:0;">&times;</button>
+                        </div>
+                        <img src="${fullUrl}" style="max-width:100%; max-height:calc(90vh - 70px); object-fit:contain; border-radius:8px;" />
+                    </div>
+                `;
+
+                popup.addEventListener('click', (ev) => {
+                    if (ev.target === popup || ev.target.closest('.close-zoom-btn')) {
+                        popup.remove();
                     }
+                });
 
-                    // Dựng 1 record giả để _renderLightboxSlide hiển thị đúng
-                    const fakeRecord = Object.assign({}, row || {}, {
-                        public_url:       fullUrl,
-                        publicurl:        fullUrl,
-                        originalfilename: title,
-                        devicetype:       deviceType,
-                        deviceid:         String(deviceId)
-                    });
+                document.body.appendChild(popup);
+                return;
 
-                    // Lưu lại danh sách _filtered hiện tại rồi ghi đè tạm 1 record
-                    const savedFiltered = window.PhotoManager._filtered;
-                    const savedLbIndex  = window.PhotoManager._lbIndex;
-                    window.PhotoManager._filtered = [fakeRecord];
-                    window.PhotoManager._lbIndex  = 0;
-                    // Xóa ảnh cũ trước khi mở để tránh flash ảnh cũ
-                    const lbImgEl = document.getElementById('pmLbImg');
-                    if (lbImgEl) { lbImgEl.removeAttribute('src'); lbImgEl.style.opacity = '0'; }
-
-                    // Mở lightbox
-                    window.PhotoManager._openLightbox(0);
-
-                    // Sau khi đóng lightbox thì trả lại _filtered/_lbIndex cũ
-                    const lb = document.getElementById('pmLightbox');
-                    if (lbImgEl) { lbImgEl.onload = () => { lbImgEl.style.opacity = '1'; }; lbImgEl.onerror = () => { lbImgEl.style.opacity = '1'; }; }
-                    if (lb) {
-                        const restore = () => {
-                            window.PhotoManager._filtered = savedFiltered;
-                            window.PhotoManager._lbIndex  = savedLbIndex;
-                            window.PhotoManager._savedFilteredForZoom = undefined;
-                            window.PhotoManager._savedLbIndexForZoom  = undefined;
-
-                            lb.removeEventListener('click', onLbClick);
-                            document.removeEventListener('keydown', onEsc);
-                        };
-                        const pmCloseBtn = document.getElementById('pmLbClose');
-                        if (pmCloseBtn) pmCloseBtn.addEventListener('click', restore, { once: true });
-                        const onLbClick = (ev) => {
-                            const body = lb.querySelector('.pm-lb-body');
-                            if (body && !body.contains(ev.target)) restore();
-                        };
-                        const onEsc = (ev) => { if (ev.key === 'Escape') restore(); };
-                        lb.addEventListener('click', onLbClick);
-                        document.addEventListener('keydown', onEsc);
-                    }
-                    return;
-                }
 
                 // Fallback tuyệt đối nếu không có PhotoManager
                 window.open(fullUrl, '_blank', 'noopener');
@@ -227,9 +205,9 @@ class ResultsCardRenderer {
                 const rack = window.DataManager?.data?.rack?.find(r => String(r.RackID) === String(rackId)) || {};
                 const layer = window.DataManager?.data?.racklayers?.find(l => String(l.LayerID) === String(layerId)) || {};
                 
-                const rackNotes = rack.Notes || 'Không có ghi chú';
-                const layerNotes = layer.Notes || 'Không có ghi chú';
-                const rackName = rack.RackName || rackId;
+                const rackNotes = rack.RackNotes || rack.Notes || 'Không có ghi chú';
+                const layerNotes = layer.RackLayerNotes || layer.Notes || 'Không có ghi chú';
+                const rackLocation = rack.RackLocation || rack.RackName || rackId;
 
                 // Build Popup
                 const popup = document.createElement('div');
@@ -256,7 +234,7 @@ class ResultsCardRenderer {
                     <div style="background:#fff; border-radius:12px; width:100%; max-width:400px; overflow:hidden; box-shadow:0 10px 25px rgba(0,0,0,0.2); position:relative;">
                         <button class="close-popup-btn" style="position:absolute; top:8px; right:8px; width:32px; height:32px; border-radius:50%; border:none; background:rgba(0,0,0,0.5); color:#fff; cursor:pointer; font-size:16px;">&times;</button>
                         <div style="padding:16px; background:#0ea5e9; color:#fff;">
-                            <h3 style="margin:0; font-size:18px;"><i class="fas fa-map-marker-alt"></i> Giá ${rackName} - Tầng ${layer.LayerNumber || layerId || '?'}</h3>
+                            <h3 style="margin:0; font-size:18px;"><i class="fas fa-map-marker-alt"></i> Vị trí: ${rackLocation} - Tầng ${layer.LayerNumber || layerId || '?'}</h3>
                         </div>
                         <div style="padding:16px;">
                             ${imgHtml}
@@ -679,7 +657,6 @@ class ResultsCardRenderer {
                     alt=""
                     style="width:100%;height:100%;object-fit:cover;display:none;" />
                 <div class="placeholder-icon" data-thumb-placeholder="1">
-                    <i class="fas fa-${typeIcon}"></i>
                 </div>
             </div>
             
@@ -694,45 +671,52 @@ class ResultsCardRenderer {
                 <!-- Product Name -->
                 <div class="item-name">${productName}</div>
                 
-                <!-- Dimensions - Green -->
-                <div class="item-dimensions">
-                    <i class="fas fa-ruler-combined"></i>
-                    ${dimensions}
+                <!-- Dimensions + Weight -->
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+                    <div class="item-dimensions" style="margin-bottom:0;">
+                        <i class="fas fa-ruler-combined"></i>
+                        ${dimensions}
+                    </div>
+                    ${item.MoldWeightModified ? `<div style="font-size:12px; font-weight:700; color:#1e3a8a;"><i class="fas fa-weight-hanging" style="margin-right:2px;"></i> ${item.MoldWeightModified}kg</div>` : ''}
                 </div>
                 
-                <!-- Meta Info Group: Location + Status + Date -->
-                <div class="item-meta-group" style="gap:6px; flex-wrap:wrap;">
-                    <!-- Location - Blue (clickable) -->
-                    <div class="meta-item location" style="font-size: 12px; font-weight: bold; padding: 4px 8px; background: #e0f2fe; border-radius: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); white-space:nowrap;">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <a href="#" class="location-link" 
-                           data-rack-id="${rackLocation.rackId || ''}" 
-                           data-layer-id="${rackLocation.rackLayerId || ''}"
-                           onclick="event.stopPropagation(); event.preventDefault();" style="color: #0369a1; text-decoration: none;">
-                            ${location}
-                        </a>
-                    </div>
+                <!-- Meta Info Group: 2 Rows Layout -->
+                <div class="item-meta-group" style="display:flex; flex-direction:column; gap:8px; width:100%; box-sizing: border-box;">
                     
-                    ${statusInfo.status ? `
-                    <!-- Status Badge -->
-                    <div class="meta-item status ${statusClass}" style="font-size: 12px; font-weight: bold; padding: 4px 8px; border-radius: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); white-space:nowrap;">
-                        ${statusLabel}
+                    <!-- Row 1: Location & Status -->
+                    <div style="display:flex; justify-content:space-between; align-items:stretch; gap: 8px; width:100%;">
+                        <!-- Location - Blue (clickable) -->
+                        <div class="meta-item location location-link"
+                             data-rack-id="${rackLocation.rackId || ''}" 
+                             data-layer-id="${rackLocation.rackLayerId || ''}"
+                             style="cursor: pointer; flex:1; display:flex; align-items:center; justify-content:center; font-size: 13px; font-weight: bold; padding: 6px 8px; background: #e0f2fe; border-radius: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color: #0369a1; transition: background 0.2s;">
+                            <i class="fas fa-map-marker-alt" style="margin-right:4px; color:#0284c7;"></i>
+                            <span>${location}</span>
+                        </div>
+                        
+                        <!-- Status Badge -->
+                        <div class="meta-item status ${statusClass}" style="flex:1; display:flex; align-items:center; justify-content:center; font-size: 12px; font-weight: bold; padding: 6px 8px; border-radius: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); white-space:nowrap; ${statusInfo.status ? '' : 'background: #f1f5f9; color: #94a3b8;'}">
+                            ${statusInfo.status ? statusLabel : '-'}
+                        </div>
                     </div>
-                    ` : '<div class="meta-item status" style="font-size: 12px; font-weight: bold; padding: 4px 8px;">-</div>'}
-                    
-                    <!-- Update Date - Right aligned -->
-                    <div class="meta-item date" style="font-size: 12px; font-weight: bold; white-space:nowrap; margin-left:auto;">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span class="meta-date-text">${statusDate || '-'}</span>
 
-                    <button class="card-action-btn"
-                            data-id="${itemId}"
-                            data-type="${itemType}"
-                            aria-label="actions"
-                            onclick="event.stopPropagation();"
-                            style="margin-left:4px;width:26px;height:26px;border-radius:8px;border:1px solid rgba(2,6,23,0.12);background:rgba(255,255,255,0.96);color:var(--ui-accent-hover,#0A5C56);display:inline-flex;align-items:center;justify-content:center;padding:0;cursor:pointer;">
-                        <i class="fas fa-ellipsis-v" style="font-size:12px;"></i>
-                    </button>
+                    <!-- Row 2: Date & Action -->
+                    <div style="display:flex; justify-content:space-between; align-items:center; width:100%; gap: 8px;">
+                        <!-- Update Date -->
+                        <div class="meta-item date" style="flex:1; display:flex; align-items:center; justify-content:center; font-size: 12px; font-weight: bold; padding: 6px 8px; background: #f8fafc; border-radius: 6px; white-space:nowrap; color:#64748b;">
+                            <i class="fas fa-calendar-alt" style="margin-right:6px;"></i>
+                            <span class="meta-date-text">${statusDate || '-'}</span>
+                        </div>
+
+                        <!-- Action Button -->
+                        <button class="card-action-btn"
+                                data-id="${itemId}"
+                                data-type="${itemType}"
+                                aria-label="actions"
+                                onclick="event.stopPropagation();"
+                                style="width:32px;height:32px;flex-shrink:0;border-radius:8px;border:1px solid rgba(2,6,23,0.12);background:rgba(255,255,255,0.96);color:var(--ui-accent-hover,#0A5C56);display:inline-flex;align-items:center;justify-content:center;padding:0;cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,0.05);transition:all 0.2s;">
+                            <i class="fas fa-ellipsis-v" style="font-size:13px;"></i>
+                        </button>
                     </div>
 
                 </div>

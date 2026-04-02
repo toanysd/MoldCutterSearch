@@ -372,8 +372,10 @@ class App {
       const isMobile = window.innerWidth <= 768;
       const clickedInsideSidebar = sidebar.contains(e.target);
       const clickedToggleBtn = toggleBtn && toggleBtn.contains(e.target);
+      const mobileNavbar = document.getElementById('mobileNavbar');
+      const clickedMobileNavbar = mobileNavbar && mobileNavbar.contains(e.target);
       
-      if (!clickedInsideSidebar && !clickedToggleBtn) {
+      if (!clickedInsideSidebar && !clickedToggleBtn && !clickedMobileNavbar) {
         if (isMobile && sidebar.classList.contains('open')) {
             sidebar.classList.remove('open');
             this.updateSidebarIcon();

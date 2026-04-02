@@ -148,35 +148,62 @@ class ResultsCardRenderer {
 
                 console.log('[CardZoom] open url:', fullUrl);
 
-                // Dùng custom popup để hiển thị ảnh vừa phải trên Desktop
+                let thumbSrc = '';
+                const thumbImg = zoomBtn.querySelector ? zoomBtn.querySelector('img.card-thumb-img') : null;
+                if (thumbImg && thumbImg.src && thumbImg.style.display !== 'none') {
+                    thumbSrc = thumbImg.src;
+                }
+
+                // Dùng custom popup để hiển thị ảnh với hiệu ứng mượt mà (smooth transition)
                 const popup = document.createElement('div');
                 popup.style.position = 'fixed';
                 popup.style.inset = '0';
-                popup.style.background = 'rgba(0,0,0,0.6)';
+                popup.style.background = 'rgba(0,0,0,0)';
                 popup.style.zIndex = '999999';
                 popup.style.display = 'flex';
                 popup.style.alignItems = 'center';
                 popup.style.justifyContent = 'center';
                 popup.style.padding = '16px';
-                popup.style.backdropFilter = 'blur(4px)';
+                popup.style.backdropFilter = 'blur(0px)';
+                popup.style.transition = 'background 0.3s ease, backdrop-filter 0.3s ease';
                 
                 popup.innerHTML = `
-                    <div style="background:#fff; border-radius:12px; padding:12px; position:relative; max-width:90vw; max-height:90vh; display:flex; flex-direction:column; align-items:center; box-shadow:0 10px 25px rgba(0,0,0,0.2);">
-                        <div style="width:100%; display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding:0 8px;">
+                    <div style="background:#fff; border-radius:12px; padding:12px; position:relative; width:80vw; max-width:800px; height:80vh; max-height:800px; display:flex; flex-direction:column; align-items:center; box-shadow:0 10px 25px rgba(0,0,0,0.2); opacity: 0; transform: scale(0.95); transition: opacity 0.3s ease, transform 0.3s ease;">
+                        <div style="width:100%; display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding:0 8px; flex-shrink:0;">
                             <span style="font-weight:bold; color:#334155; font-size:16px;">${title}</span>
-                            <button class="close-zoom-btn" title="Đóng" style="border:none; background:transparent; font-size:24px; cursor:pointer; color:#64748b; line-height:1; padding:0;">&times;</button>
+                            <button class="close-zoom-btn" title="Đóng" style="border:none; background:transparent; font-size:24px; cursor:pointer; color:#64748b; line-height:1; padding:0; transition: color 0.2s;" onmouseover="this.style.color='#f43f5e'" onmouseout="this.style.color='#64748b'">&times;</button>
                         </div>
-                        <img src="${fullUrl}" style="max-width:100%; max-height:calc(90vh - 70px); object-fit:contain; border-radius:8px;" />
+                        <div style="flex:1; width:100%; position:relative; display:flex; align-items:center; justify-content:center; background:#f8fafc; border-radius:8px; overflow:hidden;">
+                            ${thumbSrc ? `<img src="${thumbSrc}" style="position:absolute; width:100%; height:100%; object-fit:contain; filter:blur(10px); opacity:0.6; transform: scale(1.05);" />` : ''}
+                            <i class="fas fa-spinner fa-spin" id="zoomSpinner_${deviceId}" style="font-size:2rem; color:#94a3b8; position:absolute; z-index:2;"></i>
+                            <img src="${fullUrl}" onload="
+                                const spinner = document.getElementById('zoomSpinner_${deviceId}');
+                                if(spinner) spinner.style.display='none';
+                                this.style.opacity='1';
+                            " style="width:100%; height:100%; object-fit:contain; position:relative; z-index:3; opacity:0; transition: opacity 0.4s ease;" onerror="this.style.display='none';" />
+                        </div>
                     </div>
                 `;
 
                 popup.addEventListener('click', (ev) => {
                     if (ev.target === popup || ev.target.closest('.close-zoom-btn')) {
-                        popup.remove();
+                        popup.style.background = 'rgba(0,0,0,0)';
+                        popup.style.backdropFilter = 'blur(0px)';
+                        popup.children[0].style.opacity = '0';
+                        popup.children[0].style.transform = 'scale(0.95)';
+                        setTimeout(() => popup.remove(), 300);
                     }
                 });
 
                 document.body.appendChild(popup);
+                
+                // Kích hoạt animation hiện ra
+                requestAnimationFrame(() => {
+                    popup.style.background = 'rgba(0,0,0,0.6)';
+                    popup.style.backdropFilter = 'blur(4px)';
+                    popup.children[0].style.opacity = '1';
+                    popup.children[0].style.transform = 'scale(1)';
+                });
                 return;
 
 
@@ -222,7 +249,7 @@ class ResultsCardRenderer {
                 popup.style.backdropFilter = 'blur(4px)';
                 
                 // Photo
-                let imgHtml = `<div style="padding:40px; background:#f1f5f9; text-align:center; color:#94a3b8;"><i class="fas fa-image fa-3x"></i><p>Không có ảnh</p></div>`;
+                let imgHtml = `<div style="padding:40px; background:#f1f5f9; text-align:center; color:#94a3b8; border-radius:8px;"><i class="fas fa-image fa-3x" style="margin-bottom:8px;"></i><p style="margin:0; font-size:12px; font-weight:600;">画像なし <span style="font-weight:400;">/ Không có ảnh</span></p></div>`;
                 if (window.DevicePhotoStore && typeof window.DevicePhotoStore.getThumbnailUrl === 'function') {
                     const url = await window.DevicePhotoStore.getThumbnailUrl('racklayer', layerId) || await window.DevicePhotoStore.getThumbnailUrl('rack', rackId);
                     if (url) {
@@ -231,18 +258,35 @@ class ResultsCardRenderer {
                 }
 
                 popup.innerHTML = `
-                    <div style="background:#fff; border-radius:12px; width:100%; max-width:400px; overflow:hidden; box-shadow:0 10px 25px rgba(0,0,0,0.2); position:relative;">
-                        <button class="close-popup-btn" style="position:absolute; top:8px; right:8px; width:32px; height:32px; border-radius:50%; border:none; background:rgba(0,0,0,0.5); color:#fff; cursor:pointer; font-size:16px;">&times;</button>
-                        <div style="padding:16px; background:#0ea5e9; color:#fff;">
-                            <h3 style="margin:0; font-size:18px;"><i class="fas fa-map-marker-alt"></i> Vị trí: ${rackLocation} - Tầng ${layer.LayerNumber || layerId || '?'}</h3>
+                    <div style="background:#fff; border-radius:12px; width:100%; max-width:420px; overflow:hidden; box-shadow:0 10px 25px rgba(0,0,0,0.2); position:relative;">
+                        <button class="close-popup-btn" style="position:absolute; top:12px; right:12px; width:32px; height:32px; border-radius:50%; border:none; background:rgba(0,0,0,0.3); color:#fff; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; transition: background 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.6)'" onmouseout="this.style.background='rgba(0,0,0,0.3)'">&times;</button>
+                        <div style="padding:16px 48px 16px 16px; background:#0ea5e9; color:#fff;">
+                            <h3 style="margin:0; font-size:16px; font-weight:600; line-height:1.4;"><i class="fas fa-map-marker-alt" style="margin-right:6px;"></i> 位置 / Vị trí: <br><span style="font-size:18px;">${rackLocation} - 棚段 / Tầng ${layer.LayerNumber || layerId || '?'}</span></h3>
                         </div>
                         <div style="padding:16px;">
                             ${imgHtml}
-                            <div style="margin-top:16px;">
-                                <div style="font-size:14px; font-weight:bold; color:#475569; margin-bottom:4px;">Ghi chú Giá (Rack):</div>
-                                <div style="font-size:14px; color:#334155; padding:8px; background:#f8fafc; border-radius:6px; margin-bottom:12px;">${rackNotes}</div>
-                                <div style="font-size:14px; font-weight:bold; color:#475569; margin-bottom:4px;">Ghi chú Tầng (Layer):</div>
-                                <div style="font-size:14px; color:#334155; padding:8px; background:#f8fafc; border-radius:6px;">${layerNotes}</div>
+                            <div style="margin-top:16px; display:flex; flex-direction:column; gap:12px;">
+                                
+                                <div class="info-group">
+                                    <div style="font-size: 12px; color: #64748b; font-weight: 600; margin-bottom: 4px; display:flex; align-items:baseline; gap:6px;">
+                                        <span>ラックメモ</span>
+                                        <span style="font-size:10px; font-weight:400; color:#94a3b8;">(Ghi chú Giá)</span>
+                                    </div>
+                                    <div style="font-size: 14px; color: #334155; padding: 10px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0; min-height: 20px;">
+                                        ${rackNotes}
+                                    </div>
+                                </div>
+
+                                <div class="info-group">
+                                    <div style="font-size: 12px; color: #64748b; font-weight: 600; margin-bottom: 4px; display:flex; align-items:baseline; gap:6px;">
+                                        <span>棚段メモ</span>
+                                        <span style="font-size:10px; font-weight:400; color:#94a3b8;">(Ghi chú Tầng)</span>
+                                    </div>
+                                    <div style="font-size: 14px; color: #334155; padding: 10px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0; min-height: 20px;">
+                                        ${layerNotes}
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -255,6 +299,39 @@ class ResultsCardRenderer {
                 });
 
                 document.body.appendChild(popup);
+            }
+        });
+
+        // Click vào Status -> Gọi module checkin/checkout nhanh
+        document.addEventListener('click', (e) => {
+            const statusBadge = e.target.closest('.meta-item.status');
+            if (statusBadge) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const card = statusBadge.closest('.result-card');
+                if (!card) return;
+
+                const itemId = String(card.dataset.id || '').trim();
+                const item = this.items.find(it => {
+                    const id = (it.type === 'mold') ? it.MoldID : it.CutterID;
+                    return String(id).trim() === itemId;
+                });
+
+                if (!item) return;
+
+                const itemType = item.type || 'mold';
+                
+                // Xác định trạng thái hiện tại
+                const statusInfo = this.getLatestStatus(item);
+                const currentStatus = statusInfo.status ? statusInfo.status.toUpperCase() : '';
+                
+                // Tự động phân luồng (đang trong kho -> form xuất, ngược lại -> form nhập)
+                const action = (currentStatus === 'OK' || currentStatus === 'IN') ? 'checkout' : 'checkin';
+
+                document.dispatchEvent(new CustomEvent('quick-action', {
+                    detail: { action: action, item, itemType }
+                }));
             }
         });
 
@@ -292,6 +369,7 @@ class ResultsCardRenderer {
             e.target.closest('.image-zoom-btn') ||
             e.target.closest('.card-thumbnail') ||
             e.target.closest('.location-link') ||
+            e.target.closest('.meta-item.status') ||
             e.target.closest('.card-action-btn') ||
             e.target.closest('.card-action-menu-v8')
         ) {
@@ -695,7 +773,7 @@ class ResultsCardRenderer {
                         </div>
                         
                         <!-- Status Badge -->
-                        <div class="meta-item status ${statusClass}" style="flex:1; display:flex; align-items:center; justify-content:center; font-size: 12px; font-weight: bold; padding: 6px 8px; border-radius: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); white-space:nowrap; ${statusInfo.status ? '' : 'background: #f1f5f9; color: #94a3b8;'}">
+                        <div class="meta-item status ${statusClass}" style="flex:1; display:flex; align-items:center; justify-content:center; font-size: 12px; font-weight: bold; padding: 6px 8px; border-radius: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); white-space:nowrap; cursor:pointer; transition: opacity 0.2s; ${statusInfo.status ? '' : 'background: #f1f5f9; color: #94a3b8;'}" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'" title="Nhấp để thay đổi trạng thái (Nhập/Xuất kho)">
                             ${statusInfo.status ? statusLabel : '-'}
                         </div>
                     </div>
@@ -703,7 +781,7 @@ class ResultsCardRenderer {
                     <!-- Row 2: Date & Action -->
                     <div style="display:flex; justify-content:space-between; align-items:center; width:100%; gap: 8px;">
                         <!-- Update Date -->
-                        <div class="meta-item date" style="flex:1; display:flex; align-items:center; justify-content:center; font-size: 12px; font-weight: bold; padding: 6px 8px; background: #f8fafc; border-radius: 6px; white-space:nowrap; color:#64748b;">
+                        <div class="meta-item date" style="flex:1; display:flex; align-items:center; justify-content:flex-start; font-size: 12px; font-weight: 500; white-space:nowrap; color:#64748b; padding-left: 4px;">
                             <i class="fas fa-calendar-alt" style="margin-right:6px;"></i>
                             <span class="meta-date-text">${statusDate || '-'}</span>
                         </div>

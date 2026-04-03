@@ -515,10 +515,10 @@
     <!-- ===== MOBILE BOTTOM NAVBAR ===== -->
     <nav class="mobile-navbar" id="mobileNavbar">
         <div class="mobile-navbar-items">
-            <!-- 1. Search -->
-            <div class="mobile-nav-item active" data-nav="search">
-                <i class="fas fa-search"></i>
-                <span>検索</span>
+            <!-- 1. Menu -->
+            <div class="mobile-nav-item" id="menuNavBtn" data-nav="menu">
+                <i class="fas fa-bars"></i>
+                <span>Menu</span>
             </div>
 
             <!-- 2. Filter -->
@@ -535,16 +535,16 @@
                 </div>
             </div>
 
-            <!-- 4. Photos -->
+            <!-- 4. Photos (View) -->
             <div class="mobile-nav-item" id="mobileNavPhotosBtn" data-nav="photos">
-                <i class="fas fa-camera"></i>
-                <span>写真/Ảnh</span>
+                <i class="fas fa-images"></i>
+                <span>写真</span>
             </div>
 
-            <!-- 5. Menu -->
-            <div class="mobile-nav-item" id="menuNavBtn" data-nav="menu">
-                <i class="fas fa-bars"></i>
-                <span>Menu</span>
+            <!-- 5. Camera (Upload/Scan) -->
+            <div class="mobile-nav-item" id="mobileNavCameraBtn" data-nav="camera">
+                <i class="fas fa-camera"></i>
+                <span>カメラ</span>
             </div>
         </div>
     </nav>
@@ -656,6 +656,13 @@
             e.preventDefault();
             if (window.PhotoManager && typeof window.PhotoManager.open === 'function') {
                 window.PhotoManager.open();
+            }
+        });
+        
+        document.getElementById('mobileNavCameraBtn')?.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (window.PhotoUpload && typeof window.PhotoUpload.open === 'function') {
+               window.PhotoUpload.open({mode: 'standalone'});
             }
         });
         

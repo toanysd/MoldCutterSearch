@@ -7,7 +7,8 @@
 class MobileNavbar {
     constructor(navbarId) {
         this.navbar = document.getElementById(navbarId);
-        this.currentView = 'search';
+        // Thay vì search ta không còn search trên nav bar, set filter làm view mặc định hoặc bỏ null
+        this.currentView = null;
         this.badges = {
             search: 0,
             location: 0,
@@ -60,18 +61,11 @@ class MobileNavbar {
         this.handleNavigation(navType);
     }
 
-    /**
-     * Handle navigation action
-     */
     handleNavigation(navType) {
         switch(navType) {
-            case 'search':
-                this.showSearchView();
-                break;
             case 'filter':
                 const filterContent = document.getElementById('filterContent');
                 if (filterContent && filterContent.classList.contains('expanded')) {
-                    // if already expanded, toggling it is useful for mobile layout toggle
                      const filterBtn = document.getElementById('filterDetailBtn');
                      if(filterBtn) filterBtn.click();
                 } else {
@@ -83,12 +77,16 @@ class MobileNavbar {
                 if (window.ScanSearchModule && typeof window.ScanSearchModule.openModal === 'function') {
                     window.ScanSearchModule.openModal();
                 }
-                // Reset active to search so we don't get stuck on qrscan nav
-                this.setActive('search');
+                this.setActive(null);
                 break;
             case 'photos':
                 if (window.PhotoManager && typeof window.PhotoManager.open === 'function') {
                     window.PhotoManager.open();
+                }
+                break;
+            case 'camera':
+                if (window.PhotoUpload && typeof window.PhotoUpload.open === 'function') {
+                    window.PhotoUpload.open({mode: 'standalone'});
                 }
                 break;
             case 'menu':
@@ -98,46 +96,10 @@ class MobileNavbar {
     }
 
     /**
-     * Show search view
-     */
-    showSearchView() {
-        console.log('Navigated to: Search');
-        // Main view is already search, so just ensure it's visible
-        const sidebar = document.getElementById('sidebar');
-        if (sidebar) {
-            sidebar.classList.remove('open');
-        }
-    }
-
-    /**
-     * Show location view
-     */
-    showLocationView() {
-        console.log('Navigated to: Location');
-        alert('位置管理機能は開発中です\nTính năng quản lý vị trí đang phát triển');
-    }
-
-    /**
-     * Show check-in/out view
-     */
-    showCheckinView() {
-        console.log('Navigated to: Check-in/out');
-        alert('入出庫機能は開発中です\nTính năng nhập xuất kho đang phát triển');
-    }
-
-    /**
-     * Show inventory view
-     */
-    showInventoryView() {
-        console.log('Navigated to: Inventory');
-        alert('棚卸機能は開発中です\nTính năng kiểm kê đang phát triển');
-    }
-
-    /**
      * Show tools view (open sidebar)
      */
     showToolsView() {
-        console.log('Navigated to: Tools');
+        console.log('Navigated to: Menu - Toggling Sidebar manually');
         const sidebar = document.getElementById('sidebar');
         if (sidebar) {
             sidebar.classList.toggle('open');

@@ -893,12 +893,7 @@ Version:  v8.1.0-7
         });
       }
 
-      // Mobile menu
-      if (refs.mobileNavMenuBtn) {
-        refs.mobileNavMenuBtn.addEventListener('click', function () {
-          self.toggleSidebar();
-        });
-      }
+      // Mobile menu - REMOVED double listener to prevent interference with mobile-navbar-v8.4.1.js
 
       // Mobile modal close
       if (refs.modal) {

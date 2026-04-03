@@ -494,7 +494,8 @@ body {
 }
 
 .search-bar {
-  flex: 1;
+  flex-grow: 1;
+  min-width: 0;
   position: relative;
   display: flex;
   align-items: center;
@@ -502,6 +503,7 @@ body {
 
 /* Đồng bộ: nền trắng hiện đại + border cảnh báo nhẹ (giữ “nhắc nhập” như cũ) */
 .search-input {
+  flex-grow: 1;
   width: 100%;
   height: 48px;
   padding: 0 100px 0 50px;
@@ -1059,4 +1061,37 @@ body.detail-panel-open .results-container {
 /* Khi collapsed: bỏ margin icon để canh giữa đúng */
 #sidebar.collapsed .nav-link i{
   margin-right: 0 !important;
+}
+
+/* Search Bar Fixes for Mobile Space */
+.search-bar-wrapper {
+  flex-wrap: nowrap;
+}
+
+@media (max-width: 768px) {
+    .desktop-only {
+        display: none !important;
+    }
+}
+@media (min-width: 769px) {
+    .desktop-only.refresh-btn-standalone {
+        display: flex !important;
+    }
+    .desktop-only.qr-btn {
+        display: flex !important;
+    }
+}
+
+/* Category Toggle Active States */
+.category-dropdown.mold-active {
+    background-color: #eff6ff !important;
+    color: #1d4ed8 !important;
+    border-color: #bfdbfe !important;
+    font-weight: 900;
+}
+.category-dropdown.cutter-active {
+    background-color: #fff7ed !important;
+    color: #c2410c !important;
+    border-color: #fed7aa !important;
+    font-weight: 900;
 }

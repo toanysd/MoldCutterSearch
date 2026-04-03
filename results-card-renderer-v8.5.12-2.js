@@ -142,7 +142,6 @@ class ResultsCardRenderer {
 
                 const fullUrl = row ? String(row.public_url || row.publicurl || row.publicUrl || '') : '';
                 if (!fullUrl) {
-                    alert('Thiết bị này chưa có ảnh (active) để phóng to');
                     return;
                 }
 
@@ -212,7 +211,6 @@ class ResultsCardRenderer {
 
             } catch (err) {
                 console.warn('[CardZoom] error:', err);
-                alert('Không mở được ảnh. Vui lòng thử lại');
             }
         }, true);
 
@@ -228,13 +226,41 @@ class ResultsCardRenderer {
                 const rackId = locationLink.dataset.rackId;
                 const layerId = locationLink.dataset.layerId;
                 
-                // Get data
-                const rack = window.DataManager?.data?.rack?.find(r => String(r.RackID) === String(rackId)) || {};
-                const layer = window.DataManager?.data?.racklayers?.find(l => String(l.LayerID) === String(layerId)) || {};
+                let popupLayerId = layerId ? String(layerId) : '';
+                let popupRackId = rackId ? String(rackId) : '';
+                let calculatedLayerNumber = '?';
+
+                // Quy tắc: số cuối trong RackLayerID là số tầng, các số còn lại là số giá
+                if (popupLayerId.length > 0) {
+                    calculatedLayerNumber = popupLayerId.slice(-1);
+                    if (!popupRackId) {
+                        popupRackId = popupLayerId.slice(0, -1);
+                    }
+                }
                 
-                const rackNotes = rack.RackNotes || rack.Notes || 'Không có ghi chú';
-                const layerNotes = layer.RackLayerNotes || layer.Notes || 'Không có ghi chú';
-                const rackLocation = rack.RackLocation || rack.RackName || rackId;
+                // Get data
+                const rack = window.DataManager?.data?.racks?.find(r => String(r.RackID) === String(popupRackId)) || {};
+                const layer = window.DataManager?.data?.racklayers?.find(l => String(l.RackLayerID) === String(popupLayerId)) || {};
+                
+                const emptyNoteHtml = '<span style="color:#94a3b8; font-style:italic;">メモなし / Không có ghi chú</span>';
+
+                let rackNotes = rack.RackNotes || rack.Notes ? String(rack.RackNotes || rack.Notes).trim() : '';
+                if (!rackNotes || rackNotes.toLowerCase() === 'không có ghi chú') rackNotes = emptyNoteHtml;
+
+                let layerNotes = layer.RackLayerNotes || layer.Notes ? String(layer.RackLayerNotes || layer.Notes).trim() : '';
+                if (!layerNotes || layerNotes.toLowerCase() === 'không có ghi chú') layerNotes = emptyNoteHtml;
+                
+                let rackLocation = rack.RackLocation || '';
+                if (!rackLocation || rackLocation.toLowerCase() === 'không có ghi chú') rackLocation = emptyNoteHtml;
+
+                const finalLayerNumber = layer.RackLayerNumber || calculatedLayerNumber;
+                const displayRackName = rack.RackName || popupRackId || '?';
+
+                let displayLayerText = '';
+                if (String(finalLayerNumber) !== '0') {
+                    displayLayerText = ` - 棚段${finalLayerNumber}番 / Ngăn ${finalLayerNumber}`;
+                }
+                const displayRackText = `ラック${displayRackName}番 / Giá ${displayRackName}`;
 
                 // Build Popup
                 const popup = document.createElement('div');
@@ -248,25 +274,53 @@ class ResultsCardRenderer {
                 popup.style.padding = '16px';
                 popup.style.backdropFilter = 'blur(4px)';
                 
-                // Photo
-                let imgHtml = `<div style="padding:40px; background:#f1f5f9; text-align:center; color:#94a3b8; border-radius:8px;"><i class="fas fa-image fa-3x" style="margin-bottom:8px;"></i><p style="margin:0; font-size:12px; font-weight:600;">画像なし <span style="font-weight:400;">/ Không có ảnh</span></p></div>`;
+                let imgHtml = `
+                    <style>
+                        .rack-popup-img { width:100%; max-height:40vh; object-fit:contain; border-radius:8px; border:1px solid #e2e8f0; cursor:zoom-in; transition:all 0.3s ease; display:block; }
+                        .rack-popup-img.zoomed-img {
+                            position: fixed !important;
+                            top: 0 !important;
+                            left: 0 !important;
+                            width: 100vw !important;
+                            height: 100vh !important;
+                            max-height: none !important;
+                            max-width: none !important;
+                            background-color: rgba(0,0,0,0.9) !important;
+                            z-index: 9999999 !important;
+                            padding: 20px !important;
+                            border: none !important;
+                            border-radius: 0 !important;
+                            cursor: zoom-out !important;
+                        }
+                    </style>
+                    <div style="padding:40px; background:#f1f5f9; text-align:center; color:#94a3b8; border-radius:8px;"><i class="fas fa-image fa-3x" style="margin-bottom:8px;"></i><p style="margin:0; font-size:12px; font-weight:600;">画像なし <span style="font-weight:400;">/ Không có ảnh</span></p></div>`;
                 if (window.DevicePhotoStore && typeof window.DevicePhotoStore.getThumbnailUrl === 'function') {
-                    const url = await window.DevicePhotoStore.getThumbnailUrl('racklayer', layerId) || await window.DevicePhotoStore.getThumbnailUrl('rack', rackId);
+                    const url = await window.DevicePhotoStore.getThumbnailUrl('racklayer', popupLayerId) || await window.DevicePhotoStore.getThumbnailUrl('rack', popupRackId);
                     if (url) {
-                        imgHtml = `<img src="${url}" style="width:100%; max-height:40vh; object-fit:contain; border-radius:8px; border:1px solid #e2e8f0;"/>`;
+                        imgHtml = imgHtml.replace(/<div.*?<\/div>/, `<img class="rack-popup-img" src="${url}" onclick="this.classList.toggle('zoomed-img');" />`);
                     }
                 }
 
                 popup.innerHTML = `
                     <div style="background:#fff; border-radius:12px; width:100%; max-width:420px; overflow:hidden; box-shadow:0 10px 25px rgba(0,0,0,0.2); position:relative;">
-                        <button class="close-popup-btn" style="position:absolute; top:12px; right:12px; width:32px; height:32px; border-radius:50%; border:none; background:rgba(0,0,0,0.3); color:#fff; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; transition: background 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.6)'" onmouseout="this.style.background='rgba(0,0,0,0.3)'">&times;</button>
-                        <div style="padding:16px 48px 16px 16px; background:#0ea5e9; color:#fff;">
-                            <h3 style="margin:0; font-size:16px; font-weight:600; line-height:1.4;"><i class="fas fa-map-marker-alt" style="margin-right:6px;"></i> 位置 / Vị trí: <br><span style="font-size:18px;">${rackLocation} - 棚段 / Tầng ${layer.LayerNumber || layerId || '?'}</span></h3>
+                        <button class="close-popup-btn" style="position:absolute; top:10px; right:12px; width:28px; height:28px; border-radius:50%; border:none; background:rgba(0,0,0,0.2); color:#fff; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; transition: background 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.5)'" onmouseout="this.style.background='rgba(0,0,0,0.2)'">&times;</button>
+                        <div style="padding:12px 48px 12px 16px; background:#0ea5e9; color:#fff; display:flex; align-items:center;">
+                            <h3 style="margin:0; font-size:16px; font-weight:600;"><i class="fas fa-map-marker-alt" style="margin-right:6px;"></i> ${displayRackText}${displayLayerText}</h3>
                         </div>
                         <div style="padding:16px;">
                             ${imgHtml}
                             <div style="margin-top:16px; display:flex; flex-direction:column; gap:12px;">
                                 
+                                <div class="info-group">
+                                    <div style="font-size: 12px; color: #64748b; font-weight: 600; margin-bottom: 4px; display:flex; align-items:baseline; gap:6px;">
+                                        <span>ラックの場所</span>
+                                        <span style="font-size:10px; font-weight:400; color:#94a3b8;">(Vị trí Giá)</span>
+                                    </div>
+                                    <div style="font-size: 14px; color: #334155; padding: 10px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0; min-height: 20px;">
+                                        ${rackLocation}
+                                    </div>
+                                </div>
+
                                 <div class="info-group">
                                     <div style="font-size: 12px; color: #64748b; font-weight: 600; margin-bottom: 4px; display:flex; align-items:baseline; gap:6px;">
                                         <span>ラックメモ</span>
@@ -280,7 +334,7 @@ class ResultsCardRenderer {
                                 <div class="info-group">
                                     <div style="font-size: 12px; color: #64748b; font-weight: 600; margin-bottom: 4px; display:flex; align-items:baseline; gap:6px;">
                                         <span>棚段メモ</span>
-                                        <span style="font-size:10px; font-weight:400; color:#94a3b8;">(Ghi chú Tầng)</span>
+                                        <span style="font-size:10px; font-weight:400; color:#94a3b8;">(Ghi chú Ngăn)</span>
                                     </div>
                                     <div style="font-size: 14px; color: #334155; padding: 10px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0; min-height: 20px;">
                                         ${layerNotes}
@@ -338,11 +392,11 @@ class ResultsCardRenderer {
         // Checkbox handler
         document.addEventListener('change', (e) => {
             if (e.target.classList.contains('card-checkbox')) {
-                const itemId = parseInt(e.target.dataset.id);
+                const uid = e.target.dataset.uid;
                 if (e.target.checked) {
-                    this.selectedItems.add(itemId);
+                    this.selectedItems.add(uid);
                 } else {
-                    this.selectedItems.delete(itemId);
+                    this.selectedItems.delete(uid);
                 }
 
                 // Update card visual state
@@ -363,9 +417,25 @@ class ResultsCardRenderer {
         const card = e.target.closest('.result-card');
         if (!card) return;
 
+        // Phân tách riêng click trên ô Checkbox để bắt Shift
+        const isCheckboxClick = e.target.closest('.card-checkbox');
+        const uid = String(card.dataset.uid || '').trim();
+        if (!uid) return;
+
+        if (isCheckboxClick) {
+             if (e.shiftKey && this._lastCheckedUid) {
+                 e.preventDefault(); // Ngăn ô checkbox tự đổi để hệ thống tính range
+                 const isChecking = !this.selectedItems.has(uid); 
+                 this.toggleRangeSelection(this._lastCheckedUid, uid, isChecking);
+             } else {
+                 this._lastCheckedUid = uid;
+                 // Để "change" event tự bổ sung/xoá như cũ
+             }
+             return;
+        }
+
         // Không mở chi tiết khi bấm vào các phần tương tác
         if (
-            e.target.closest('.card-checkbox') ||
             e.target.closest('.image-zoom-btn') ||
             e.target.closest('.card-thumbnail') ||
             e.target.closest('.location-link') ||
@@ -378,13 +448,27 @@ class ResultsCardRenderer {
 
         e.preventDefault();
 
-        const itemId = String(card.dataset.id || '').trim();
-        if (!itemId) return;
+        // 🌟 KIỂM TRA SELECTION MODE: Nếu đang có phần tử chọn -> Tự động toggle thay vì mở Panel
+        if (this.selectedItems.size > 0) {
+            const isChecking = !this.selectedItems.has(uid);
+            
+            if (e.shiftKey && this._lastCheckedUid) {
+                this.toggleRangeSelection(this._lastCheckedUid, uid, isChecking);
+            } else {
+                if (isChecking) this.selectedItems.add(uid);
+                else this.selectedItems.delete(uid);
+
+                this._lastCheckedUid = uid;
+                this.updateCheckboxes();
+                if (this.onSelectionChange) this.onSelectionChange(Array.from(this.selectedItems));
+            }
+            return;
+        }
 
         if (this.onItemClick) {
             const item = this.items.find(it => {
-            const id = (it.type === 'mold') ? it.MoldID : it.CutterID;
-            return String(id).trim() === itemId;
+            const tempUid = (it.type === 'mold' ? 'M_' : 'C_') + (it.type === 'mold' ? it.MoldID : it.CutterID);
+            return tempUid === uid;
             });
             if (item) this.onItemClick(item);
         }
@@ -675,11 +759,13 @@ class ResultsCardRenderer {
         card.className = 'result-card';
 
         const itemId = item.type === 'mold' ? item.MoldID : item.CutterID;
+        const uid = (item.type === 'mold' ? 'M_' : 'C_') + itemId;
         card.dataset.id = itemId;
         card.dataset.type = item.type;
+        card.dataset.uid = uid; // Đánh dấu UID V8.5
 
         // Check if selected
-        if (this.selectedItems.has(itemId)) {
+        if (this.selectedItems.has(uid)) {
             card.classList.add('selected');
         }
 
@@ -722,7 +808,8 @@ class ResultsCardRenderer {
             <input type="checkbox" 
                    class="card-checkbox" 
                    data-id="${itemId}" 
-                   ${this.selectedItems.has(itemId) ? 'checked' : ''}>
+                   data-uid="${uid}" 
+                   ${this.selectedItems.has(uid) ? 'checked' : ''}>
             
             <!-- Type Badge - Top Right -->
             <div class="item-type-badge ${itemType}">${typeBadge}</div>
@@ -997,8 +1084,8 @@ class ResultsCardRenderer {
     selectAll() {
         const pageItems = this.getCurrentPageItems();
         pageItems.forEach(item => {
-        const itemId = item.type === 'mold' ? item.MoldID : item.CutterID;
-        this.selectedItems.add(itemId);
+        const uid = (item.type === 'mold' ? 'M_' : 'C_') + (item.type === 'mold' ? item.MoldID : item.CutterID);
+        this.selectedItems.add(uid);
         });
         this.updateCheckboxes();
         if (this.onSelectionChange) {
@@ -1010,34 +1097,19 @@ class ResultsCardRenderer {
      * Select ALL results (across all pages)
      */
     selectAllResults() {
-        // Chọn TẤT CẢ items trong this.items (không chỉ trang hiện tại)
-        this.items.forEach(item => {
-        const itemId = item.type === 'mold' ? item.MoldID : item.CutterID;
-        this.selectedItems.add(itemId);
-        });
-        this.updateCheckboxes();
-        if (this.onSelectionChange) {
-        this.onSelectionChange(Array.from(this.selectedItems));
-        }
-        console.log(`✅ Đã chọn TẤT CẢ ${this.selectedItems.size} kết quả`);
-    }
-
-
-    selectAllResults() {
         // Chọn toàn bộ items của kết quả tìm kiếm (mọi trang)
         this.selectedItems.clear();
 
         (this.items || []).forEach(item => {
-            const id = item.type === 'mold' ? item.MoldID : item.CutterID;
-            const n = parseInt(id);
-            if (!isNaN(n)) this.selectedItems.add(n);
+            const uid = (item.type === 'mold' ? 'M_' : 'C_') + (item.type === 'mold' ? item.MoldID : item.CutterID);
+            this.selectedItems.add(uid);
         });
 
         // Cập nhật giao diện trang hiện tại
         const cards = this.container?.querySelectorAll('.result-card') || [];
         cards.forEach(card => {
-            const id = parseInt(card.dataset.id);
-            const checked = this.selectedItems.has(id);
+            const uid = card.dataset.uid;
+            const checked = this.selectedItems.has(uid);
             card.classList.toggle('selected', checked);
 
             const cb = card.querySelector('.card-checkbox');
@@ -1066,8 +1138,8 @@ class ResultsCardRenderer {
     updateCheckboxes() {
         const checkboxes = this.container.querySelectorAll('.card-checkbox');
         checkboxes.forEach(checkbox => {
-        const itemId = parseInt(checkbox.dataset.id);
-        const isSelected = this.selectedItems.has(itemId);
+        const uid = checkbox.dataset.uid;
+        const isSelected = this.selectedItems.has(uid);
         checkbox.checked = isSelected;
         
         // Update card visual state
@@ -1080,6 +1152,34 @@ class ResultsCardRenderer {
 
 
         /**
+     * Cập nhật Range thông qua kết nối Start và End
+     */
+    toggleRangeSelection(startUid, endUid, targetState) {
+        if (!this.items) return;
+        const uids = this.items.map(it => (it.type === 'mold' ? 'M_' : 'C_') + (it.type === 'mold' ? it.MoldID : it.CutterID));
+        const startIdx = uids.indexOf(startUid);
+        const endIdx = uids.indexOf(endUid);
+
+        if (startIdx === -1 || endIdx === -1) return;
+
+        const min = Math.min(startIdx, endIdx);
+        const max = Math.max(startIdx, endIdx);
+
+        for (let i = min; i <= max; i++) {
+            if (targetState) {
+                this.selectedItems.add(uids[i]);
+            } else {
+                this.selectedItems.delete(uids[i]);
+            }
+        }
+
+        this.updateCheckboxes();
+        if (this.onSelectionChange) {
+            this.onSelectionChange(Array.from(this.selectedItems));
+        }
+    }
+
+    /**
      * Lấy trạng thái mới nhất từ statuslogs.csv
      */
     getLatestStatus(item) {

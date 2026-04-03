@@ -1014,15 +1014,21 @@ class App {
     const categoryDropdown = document.getElementById('categoryDropdown');
     if (!categoryDropdown) return;
 
-    const allCount = this.allItems.length;
-    const moldCount = this.allItems.filter(item => item.type === 'mold').length;
-    const cutterCount = this.allItems.filter(item => item.type === 'cutter').length;
-
+    // Remove numbers and update options
     categoryDropdown.innerHTML = `
-      <option value="all">全て (${allCount})</option>
-      <option value="mold">金型 (${moldCount})</option>
-      <option value="cutter">抜型 (${cutterCount})</option>
+      <option value="all">全て</option>
+      <option value="mold">金型</option>
+      <option value="cutter">抜型</option>
     `;
+
+    // Apply color class dynamically
+    const updateDropdownClass = () => {
+        categoryDropdown.classList.remove('mold-active', 'cutter-active');
+        if (categoryDropdown.value === 'mold') categoryDropdown.classList.add('mold-active');
+        if (categoryDropdown.value === 'cutter') categoryDropdown.classList.add('cutter-active');
+    };
+    categoryDropdown.addEventListener('change', updateDropdownClass);
+    updateDropdownClass(); // init
   }
 
   /**
@@ -1074,7 +1080,7 @@ class App {
     if (this.isSyncingSelection) return;
     this.isSyncingSelection = true;
 
-    const ids = (selectedCodes || []).map(n => parseInt(n)).filter(n => !isNaN(n));
+    const ids = (selectedCodes || []).map(n => String(n).trim()).filter(n => n.length > 0);
     this.selectedIds = new Set(ids);
     window.selectedCodes = ids; // IMPORTANT: Sync global variable for toggle button
 

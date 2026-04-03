@@ -68,16 +68,30 @@ class MobileNavbar {
             case 'search':
                 this.showSearchView();
                 break;
-            case 'location':
-                this.showLocationView();
+            case 'filter':
+                const filterContent = document.getElementById('filterContent');
+                if (filterContent && filterContent.classList.contains('expanded')) {
+                    // if already expanded, toggling it is useful for mobile layout toggle
+                     const filterBtn = document.getElementById('filterDetailBtn');
+                     if(filterBtn) filterBtn.click();
+                } else {
+                     const filterBtn = document.getElementById('filterDetailBtn');
+                     if(filterBtn) filterBtn.click();
+                }
                 break;
-            case 'checkin':
-                this.showCheckinView();
+            case 'qrscan':
+                if (window.ScanSearchModule && typeof window.ScanSearchModule.openModal === 'function') {
+                    window.ScanSearchModule.openModal();
+                }
+                // Reset active to search so we don't get stuck on qrscan nav
+                this.setActive('search');
                 break;
-            case 'inventory':
-                this.showInventoryView();
+            case 'photos':
+                if (window.PhotoManager && typeof window.PhotoManager.open === 'function') {
+                    window.PhotoManager.open();
+                }
                 break;
-            case 'tools':
+            case 'menu':
                 this.showToolsView();
                 break;
         }

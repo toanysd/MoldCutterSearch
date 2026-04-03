@@ -23,10 +23,13 @@ class PrintExportModule {
       return;
     }
 
-    // Lọc ra danh sách item đầy đủ
-    this.selectedItems = allItems.filter(item => {
+    // V8.5 Lọc ra danh sách item đầy đủ: Sử dụng mảng global từ App để không bị sót khi user filter nhiều lần
+    const baseItems = (window.app && window.app.allItems && window.app.allItems.length > 0) ? window.app.allItems : allItems;
+    
+    this.selectedItems = baseItems.filter(item => {
       const id = item.type === 'mold' ? item.MoldID : item.CutterID;
-      return selectedIds.includes(parseInt(id, 10));
+      const uid = (item.type === 'mold' ? 'M_' : 'C_') + id;
+      return selectedIds.includes(String(uid));
     });
 
     if (this.selectedItems.length === 0) return;

@@ -336,8 +336,13 @@ class SearchModule {
     console.log('[SearchModule] Searching with keywords:', keywords);
 
     const results = items.filter(item => {
-      return keywords.every(keyword => {
-        return this.matchItemWithKeyword(item, keyword, category);
+      // V8.5: Sử dụng .some() thay cho .every() để triển khai logic OR giữa các keyword cách nhau bởi dấu phẩy
+      return keywords.some(keyword => {
+        // Tách nhỏ các từ khoá trong cùng 1 cụm phẩy (phân tách bởi space) để thành logic AND
+        const subKeywords = keyword.split(/\s+/).filter(k => k.length > 0);
+        if (subKeywords.length === 0) return false;
+        
+        return subKeywords.every(subWord => this.matchItemWithKeyword(item, subWord, category));
       });
     });
 

@@ -588,12 +588,13 @@ class ResultsTableRenderer {
       const statusLabel = this.getStatusLabel(statusInfo.status);
       const statusDate = statusInfo.date ? this.formatDate(statusInfo.date) : '-';
 
-      const isSelected = this.selectedItems.has(Number(itemId));
+      const uid = (item.type === 'mold' ? 'M_' : 'C_') + itemId;
+      const isSelected = this.selectedItems.has(uid);
 
       return `
-        <tr data-id="${itemId}" data-type="${typeClass}" class="${isSelected ? 'selected' : ''}">
+        <tr data-id="${itemId}" data-type="${typeClass}" data-uid="${uid}" class="${isSelected ? 'selected' : ''}">
           <td class="col-checkbox">
-            <input type="checkbox" class="row-checkbox" data-id="${itemId}" ${isSelected ? 'checked' : ''}>
+            <input type="checkbox" class="row-checkbox" data-id="${itemId}" data-uid="${uid}" ${isSelected ? 'checked' : ''}>
           </td>
           <td class="col-id">${itemId}</td>
           <td class="col-code highlight-code" title="Mở chi tiết">${code}</td>
@@ -628,15 +629,26 @@ class ResultsTableRenderer {
 
     // Checkbox events
     tbody.querySelectorAll('.row-checkbox').forEach(checkbox => {
+      checkbox.addEventListener('click', (e) => {
+          const uid = checkbox.dataset.uid;
+          if (e.shiftKey && this._lastCheckedUid) {
+              e.preventDefault(); 
+              const isChecking = !this.selectedItems.has(uid);
+              this.toggleRangeSelection(this._lastCheckedUid, uid, isChecking);
+          } else {
+              this._lastCheckedUid = uid;
+          }
+      });
+      // Giữ change event để phòng các trường hợp toggle qua bàn phím hoặc ngoài click
       checkbox.addEventListener('change', (e) => {
         e.stopPropagation();
-        const id = parseInt(checkbox.dataset.id, 10);
+        const uid = checkbox.dataset.uid;
         if (checkbox.checked) {
-          this.selectedItems.add(id);
+          this.selectedItems.add(uid);
         } else {
-          this.selectedItems.delete(id);
+          this.selectedItems.delete(uid);
         }
-        this.updateRowSelection(id);
+        this.updateRowSelection(uid);
         this.updateSelectAllState();
         this.notifySelectionChange();
       });
@@ -667,10 +679,31 @@ class ResultsTableRenderer {
 
       const codeCell = row.querySelector('td.col-code');
       if (codeCell) {
-        // [Click Mở Chi Tiết]
+        // [Click Mở Chi Tiết hoặc Toggle Selection]
         codeCell.addEventListener('click', (e) => {
           e.preventDefault();
           e.stopPropagation();
+          const uid = row.dataset.uid;
+
+          // SELECTION MODE
+          if (this.selectedItems.size > 0) {
+             const isChecking = !this.selectedItems.has(uid);
+             if (e.shiftKey && this._lastCheckedUid) {
+                 this.toggleRangeSelection(this._lastCheckedUid, uid, isChecking);
+             } else {
+                 if (isChecking) this.selectedItems.add(uid);
+                 else this.selectedItems.delete(uid);
+                 this._lastCheckedUid = uid;
+
+                 const checkbox = row.querySelector('.row-checkbox');
+                 if (checkbox) checkbox.checked = isChecking;
+                 this.updateRowSelection(uid);
+                 this.updateSelectAllState();
+                 this.notifySelectionChange();
+             }
+             return;
+          }
+
           openDetailByRow(row);
         });
       }
@@ -686,7 +719,31 @@ class ResultsTableRenderer {
       row.addEventListener('click', (e) => {
         if (e.target.closest('input[type="checkbox"]')) return;
         if (e.target.closest('button.table-action-btn')) return;
-        if (e.target.closest('td.col-code')) return; // Bỏ qua cột Code
+        // Bỏ qua cột Code đã bắt sự kiện riêng
+        if (e.target.closest('td.col-code')) return;
+
+        const uid = row.dataset.uid;
+
+        // SELECTION MODE
+        if (this.selectedItems.size > 0) {
+             e.preventDefault();
+             e.stopPropagation();
+             const isChecking = !this.selectedItems.has(uid);
+             if (e.shiftKey && this._lastCheckedUid) {
+                 this.toggleRangeSelection(this._lastCheckedUid, uid, isChecking);
+             } else {
+                 if (isChecking) this.selectedItems.add(uid);
+                 else this.selectedItems.delete(uid);
+                 this._lastCheckedUid = uid;
+
+                 const checkbox = row.querySelector('.row-checkbox');
+                 if (checkbox) checkbox.checked = isChecking;
+                 this.updateRowSelection(uid);
+                 this.updateSelectAllState();
+                 this.notifySelectionChange();
+             }
+             return;
+        }
 
         tbody.querySelectorAll('tr.focused-row').forEach(r => r.classList.remove('focused-row'));
         row.classList.add('focused-row');
@@ -753,10 +810,9 @@ class ResultsTableRenderer {
 
     pageItems.forEach(item => {
       const id = item.type === 'mold' ? item.MoldID : item.CutterID;
-      const n = parseInt(id, 10);
-      if (Number.isNaN(n)) return;
-      if (checked) this.selectedItems.add(n);
-      else this.selectedItems.delete(n);
+      const uid = (item.type === 'mold' ? 'M_' : 'C_') + id;
+      if (checked) this.selectedItems.add(uid);
+      else this.selectedItems.delete(uid);
     });
 
     this.renderRows();
@@ -776,17 +832,17 @@ class ResultsTableRenderer {
   selectAllResults() {
     this.filteredItems.forEach(item => {
       const id = item.type === 'mold' ? item.MoldID : item.CutterID;
-      const n = parseInt(id, 10);
-      if (!Number.isNaN(n)) this.selectedItems.add(n);
+      const uid = (item.type === 'mold' ? 'M_' : 'C_') + id;
+      this.selectedItems.add(uid);
     });
     this.renderRows();
     this.notifySelectionChange();
   }
 
-  updateRowSelection(id) {
-    const row = this.container.querySelector(`tr[data-id="${id}"]`);
+  updateRowSelection(uid) {
+    const row = this.container.querySelector(`tr[data-uid="${uid}"]`);
     if (!row) return;
-    row.classList.toggle('selected', this.selectedItems.has(id));
+    row.classList.toggle('selected', this.selectedItems.has(uid));
   }
 
   updateSelectAllState() {
@@ -799,8 +855,8 @@ class ResultsTableRenderer {
 
     const allSelected = pageItems.length > 0 && pageItems.every(item => {
       const id = item.type === 'mold' ? item.MoldID : item.CutterID;
-      const n = parseInt(id, 10);
-      return !Number.isNaN(n) && this.selectedItems.has(n);
+      const uid = (item.type === 'mold' ? 'M_' : 'C_') + id;
+      return this.selectedItems.has(uid);
     });
 
     selectAll.checked = allSelected;
@@ -1001,8 +1057,8 @@ class ResultsTableRenderer {
     this.selectedItems.clear();
     this.filteredItems.forEach(item => {
       const id = item.type === 'mold' ? item.MoldID : item.CutterID;
-      const n = parseInt(id, 10);
-      if (!Number.isNaN(n)) this.selectedItems.add(n);
+      const uid = (item.type === 'mold' ? 'M_' : 'C_') + id;
+      this.selectedItems.add(uid);
     });
 
     this.renderRows();
@@ -1013,8 +1069,8 @@ class ResultsTableRenderer {
   updateCheckboxes() {
     const rows = this.container.querySelectorAll('tbody tr');
     rows.forEach(row => {
-      const id = parseInt(row.dataset.id, 10);
-      const isSelected = this.selectedItems.has(id);
+      const uid = row.dataset.uid;
+      const isSelected = this.selectedItems.has(uid);
 
       const checkbox = row.querySelector('.row-checkbox');
       if (checkbox) checkbox.checked = isSelected;
@@ -1031,6 +1087,31 @@ class ResultsTableRenderer {
 
   selectItems(itemIds) {
     itemIds.forEach(id => this.selectedItems.add(id));
+    this.renderRows();
+    this.updateSelectAllState();
+    this.notifySelectionChange();
+  }
+
+  toggleRangeSelection(startUid, endUid, targetState) {
+    if (!this.filteredItems) return;
+    const uids = this.filteredItems.map(it => (it.type === 'mold' ? 'M_' : 'C_') + (it.type === 'mold' ? it.MoldID : it.CutterID));
+    
+    const startIdx = uids.indexOf(startUid);
+    const endIdx = uids.indexOf(endUid);
+
+    if (startIdx === -1 || endIdx === -1) return;
+
+    const min = Math.min(startIdx, endIdx);
+    const max = Math.max(startIdx, endIdx);
+
+    for (let i = min; i <= max; i++) {
+        if (targetState) {
+            this.selectedItems.add(uids[i]);
+        } else {
+            this.selectedItems.delete(uids[i]);
+        }
+    }
+
     this.renderRows();
     this.updateSelectAllState();
     this.notifySelectionChange();

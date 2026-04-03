@@ -97,6 +97,11 @@
     
     <div class="app-container">
 
+        <!-- Global Sync Icon -->
+        <div class="global-sync-icon success" id="globalSyncIcon" title="Đồng bộ máy chủ" style="position: absolute; right: 12px; top: -8px; z-index: 1000; transform: scale(0.65);">
+            <i class="fas fa-cloud"></i>
+        </div>
+
         <!-- ===== SIDEBAR ===== -->
         <aside class="sidebar collapsed" id="sidebar">
             <div class="sidebar-header">
@@ -280,6 +285,17 @@
                                 </div>
                             </a>
                         </li>
+                        
+                        <li class="nav-item">
+                            <!-- Reload app data in Sidebar -->
+                            <a href="#" id="sidebarRefreshDataBtn" class="nav-link" onclick="location.reload(true);">
+                                <i class="fas fa-sync-alt" style="color:#ef4444;"></i>
+                                <div class="nav-link-text">
+                                    <span class="ja">ハードリセット</span>
+                                    <span class="vi">Tải lại Dữ liệu</span>
+                                </div>
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </nav>
@@ -329,21 +345,15 @@
                                 <i class="fas fa-sliders-h"></i>
                                 <span class="btn-text">絞込</span>
                             </button>
-                            <button class="qr-btn" title="QRスキャン / Quét QR">
+                            <button class="qr-btn desktop-only" title="QRスキャン / Quét QR" style="display: none;">
                                 <i class="fas fa-qrcode"></i>
                             </button>
                         </div>
                         
-                        
                         <!-- Refresh Data Button Outside -->
-                        <button class="refresh-btn-standalone" id="refreshDataBtn" type="button" title="データを更新 / Tải lại trang để cập nhật dữ liệu mới nhất" onclick="var i=this.querySelector('i');if(i){i.classList.add('fa-spin');setTimeout(function(){i.classList.remove('fa-spin')},1500);}" style="background: var(--bg-white, #ffffff); border: 1px solid var(--border-color, #e2e8f0); border-radius: 8px; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-muted, #64748b); font-size: 16px; margin-left: 12px; margin-right: 0px; transition: all 0.2s ease; box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05)); flex-shrink: 0;">
+                        <button class="refresh-btn-standalone desktop-only" id="refreshDataBtn" type="button" title="データを更新 / Tải lại trang để cập nhật dữ liệu mới nhất" onclick="var i=this.querySelector('i');if(i){i.classList.add('fa-spin');setTimeout(function(){i.classList.remove('fa-spin')},1500);}" style="display: none; background: var(--bg-white, #ffffff); border: 1px solid var(--border-color, #e2e8f0); border-radius: 8px; width: 44px; height: 44px; align-items: center; justify-content: center; cursor: pointer; color: var(--text-muted, #64748b); font-size: 16px; margin-left: 12px; margin-right: 0px; transition: all 0.2s ease; box-shadow: var(--shadow-sm, 0 1px 2px 0 rgba(0, 0, 0, 0.05)); flex-shrink: 0;">
                             <i class="fas fa-sync-alt"></i>
                         </button>
-
-                        <!-- Global Sync Icon -->
-                        <div class="global-sync-icon success" id="globalSyncIcon" title="Đồng bộ máy chủ">
-                            <i class="fas fa-cloud"></i>
-                        </div>
                     </div>
                     <!-- Detail Filter Button -->
 
@@ -505,38 +515,33 @@
     <!-- ===== MOBILE BOTTOM NAVBAR ===== -->
     <nav class="mobile-navbar" id="mobileNavbar">
         <div class="mobile-navbar-items">
+            <!-- 1. Search -->
             <div class="mobile-nav-item active" data-nav="search">
                 <i class="fas fa-search"></i>
                 <span>検索</span>
             </div>
 
+            <!-- 2. Filter -->
             <div class="mobile-nav-item" id="filterNavBtn" data-nav="filter">
                 <i class="fas fa-filter"></i>
-                <span>フィルター</span>
+                <span>絞込</span>
                 <span class="mobile-nav-badge" id="filterNavBadge" style="display:none;">0</span>
             </div>
 
-            <div class="mobile-nav-item" data-nav="location" id="mobileLocationManagerBtn">
-                <i class="fas fa-map-marker-alt"></i>
-                <span>位置</span>
-                <span class="mobile-nav-badge">0</span>
+            <!-- 3. QR Scan (Center FAB) -->
+            <div class="mobile-nav-item qr-nav-btn" data-nav="qrscan" title="Quét QR" style="position: relative;">
+                <div style="background: var(--ui-accent, #0f766e); width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); box-shadow: 0 4px 12px rgba(15, 118, 110, 0.4); border: 4px solid var(--bg-white, #ffffff); color: white; font-size: 24px;">
+                    <i class="fas fa-qrcode"></i>
+                </div>
             </div>
 
-            <div class="mobile-nav-item" data-nav="checkin">
-                <i class="fas fa-exchange-alt"></i>
-                <span>入出庫</span>
-                <span class="mobile-nav-badge">0</span>
-            </div>
-
-            <div class="mobile-nav-item" data-nav="inventory">
-                <i class="fas fa-clipboard-check"></i>
-                <span>棚卸</span>
-                <span class="mobile-nav-badge">0</span>
-            </div>
+            <!-- 4. Photos -->
             <div class="mobile-nav-item" id="mobileNavPhotosBtn" data-nav="photos">
-                <i class="fas fa-images"></i>
+                <i class="fas fa-camera"></i>
                 <span>写真/Ảnh</span>
             </div>
+
+            <!-- 5. Menu -->
             <div class="mobile-nav-item" id="menuNavBtn" data-nav="menu">
                 <i class="fas fa-bars"></i>
                 <span>Menu</span>

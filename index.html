@@ -379,7 +379,7 @@
                         <!-- Toggle Select All Button -->
                         <button class="btn-action btn-toggle-select" id="btnToggleSelect" style="display: none; margin-left: 12px; padding: 0 12px; height: 32px; border-radius: 4px; border: 1px solid #d1d5db; background: #fff; font-size: 13px; cursor: pointer; align-items: center; gap: 6px; color: #4b5563;">
                             <i class="far fa-square"></i>
-                            全選択
+                            <span class="btn-text desktop-only">全選択</span>
                         </button>
 
                         <!-- Result Count -->
@@ -399,24 +399,30 @@
                     <!-- Old Selection Controls (Removed in v8.5.4 toggle unified feature) -->
 
                     <!-- Action Buttons -->
-                    <div class="action-buttons">
-                        <button class="btn-action btn-print" disabled>
-                            <i class="fas fa-print"></i>
-                            印刷
+                    <div class="action-buttons-wrapper" style="position: relative; display: flex; align-items: center;">
+                        <button class="btn-action mobile-actions-btn" id="mobileActionsBtn" style="display: none;" title="アクション">
+                            <i class="fas fa-ellipsis-v"></i>
+                            <span class="btn-text desktop-only">アクション</span>
                         </button>
-                        <button class="btn-action btn-inventory" disabled>
-                            <i class="fas fa-clipboard-check"></i>
-                            棚卸
-                        </button>
-                        <button class="btn-action btn-reset-all">
-                            <i class="fas fa-sync-alt"></i>
-                            Reset
-                        </button>
-                        
-                        <button class="btn-action btn-lock unlocked" id="lockBtn">
-                            <i class="fas fa-unlock"></i>
-                            <span id="lockText">Unlock</span>
-                        </button>
+                        <div class="action-buttons" id="actionButtonsList">
+                            <button class="btn-action btn-print" disabled>
+                                <i class="fas fa-print"></i>
+                                <span>印刷</span>
+                            </button>
+                            <button class="btn-action btn-inventory" disabled>
+                                <i class="fas fa-clipboard-check"></i>
+                                <span>棚卸</span>
+                            </button>
+                            <button class="btn-action btn-reset-all">
+                                <i class="fas fa-sync-alt"></i>
+                                <span>Reset</span>
+                            </button>
+                            
+                            <button class="btn-action btn-lock unlocked" id="lockBtn">
+                                <i class="fas fa-unlock"></i>
+                                <span id="lockText">Unlock</span>
+                            </button>
+                        </div>
                     </div>
 
                 </div>

@@ -991,12 +991,12 @@ body.detail-panel-open .results-container {
   .search-bar-wrapper { flex-wrap: nowrap; }
   .category-dropdown { min-width: 100px; flex-shrink: 0; }
 
-  .search-input { padding: 0 90px 0 44px; font-size: 12px; }
+  .search-input { padding: 0 12px 0 44px; font-size: 12px; }
   .clear-btn { left: 6px; width: 28px; height: 28px; }
   .qr-btn { width: 36px; height: 36px; right: 6px; }
 
-  .view-controls { flex-wrap: nowrap; overflow-x: auto; gap: 6px; }
-  .view-controls-left { flex-wrap: nowrap; gap: 6px; }
+  .view-controls { flex-wrap: wrap; overflow: visible; gap: 6px; }
+  .view-controls-left { flex-wrap: wrap; gap: 6px; }
   .view-toggle { flex-shrink: 0; }
 
   .result-count { font-size: 11px; white-space: nowrap; }
@@ -1017,10 +1017,56 @@ body.detail-panel-open .results-container {
     margin: 0;
   }
 
-  .action-buttons { flex-wrap: nowrap; flex-shrink: 0; gap: 3px; }
-  .btn-action { padding: 5px 6px; font-size: 10px; gap: 2px; min-width: 32px; }
-  .btn-action i { font-size: 13px; }
-  .btn-action span { display: none; }
+  /* Thay đổi Action Buttons thành Popover trên Mobile */
+  .mobile-actions-btn { display: flex !important; justify-content: center; width: 34px; height: 34px; padding: 0; align-items: center; }
+  
+  .action-buttons {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    flex-direction: column;
+    background: var(--bg-white, #fff);
+    border: 1px solid var(--border-color, #eee);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    padding: 8px;
+    z-index: 1000;
+    min-width: 140px;
+    
+    /* Ẩn theo mặc định */
+    display: none;
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+  
+  .action-buttons.show {
+    display: flex;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .action-buttons .btn-action {
+    width: 100%;
+    justify-content: flex-start;
+    padding: 12px 14px;
+    border: none;
+    border-bottom: 1px solid rgba(0,0,0,0.04);
+    border-radius: 6px;
+    background: transparent;
+    font-size: 13px;
+    min-width: auto;
+    color: var(--text-primary);
+  }
+  
+  .action-buttons .btn-action:last-child {
+    border-bottom: none;
+  }
+  
+  .action-buttons .btn-action i { font-size: 14px; min-width: 20px; text-align: center; }
+  
+  /* Bắt buộc hiển thị lại chữ bên trong menu */
+  .action-buttons .btn-action span { display: inline-block !important; }
 
   .filter-content.expanded { max-height: 400px; }
 }

@@ -395,6 +395,27 @@ class App {
       }
     });
 
+    // Thêm tính năng vuốt sang trái để đóng sidebar trên mobile (Swipe Left to Close)
+    const sidebarEl = document.getElementById('sidebar');
+    if (sidebarEl) {
+      let touchStartX = 0;
+      let touchEndX = 0;
+      sidebarEl.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+      }, { passive: true });
+      sidebarEl.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        const isMobile = window.innerWidth <= 768;
+        if (isMobile && sidebarEl.classList.contains('open')) {
+          // Vuốt sang trái dứt khoát > 50px
+          if (touchStartX - touchEndX > 50) {
+            sidebarEl.classList.remove('open');
+            this.updateSidebarIcon();
+          }
+        }
+      }, { passive: true });
+    }
+
     // Filter toggle
     const filterToggle = document.querySelector('.filter-toggle');
     if (filterToggle) {
@@ -425,6 +446,29 @@ class App {
       resetAllBtn.addEventListener('click', () => this.resetAll());
     }
 
+    // Toggle dropdown Action Buttons trên Mobile
+    const mobileActionsBtn = document.getElementById('mobileActionsBtn');
+    const actionButtonsList = document.getElementById('actionButtonsList');
+    if (mobileActionsBtn && actionButtonsList) {
+      mobileActionsBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const isShowing = actionButtonsList.classList.contains('show');
+        if (isShowing) {
+           actionButtonsList.classList.remove('show');
+        } else {
+           actionButtonsList.classList.add('show');
+        }
+      });
+
+      // Tự động đóng popup actions khi click ra ngoài
+      document.addEventListener('click', (e) => {
+        if (!actionButtonsList.contains(e.target) && !mobileActionsBtn.contains(e.target)) {
+          actionButtonsList.classList.remove('show');
+        }
+      });
+    }
+
     // Single Toggle Select button
     const btnToggleSelect = document.getElementById('btnToggleSelect');
     if (btnToggleSelect) {
@@ -438,11 +482,14 @@ class App {
       });
     }
 
-    // QR Scanner button
-    const qrBtn = document.querySelector('.qr-btn');
-    if (qrBtn) {
-      qrBtn.addEventListener('click', () => this.openQRScanner());
-    }
+    // QR Scanner button (for both desktop search bar and mobile bottom nav)
+    const qrBtns = document.querySelectorAll('.qr-btn, .qr-nav-btn');
+    qrBtns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.openQRScanner();
+      });
+    });
 
     // Listen to quick action events (from cards)
     document.addEventListener('quick-action', (e) => {
@@ -1122,14 +1169,14 @@ class App {
     if (btnToggleSelect) {
       if (hasSelected) {
         // Mode: Deselect All
-        btnToggleSelect.innerHTML = '<i class="far fa-square"></i> 選択解除';
+        btnToggleSelect.innerHTML = '<i class="far fa-square"></i> <span class="btn-text desktop-only">選択解除</span>';
         btnToggleSelect.disabled = false;
         btnToggleSelect.style.display = 'inline-flex';
         btnToggleSelect.style.borderColor = '#9ca3af';
         btnToggleSelect.style.backgroundColor = '#f3f4f6';
       } else {
         // Mode: Select All
-        btnToggleSelect.innerHTML = '<i class="fas fa-check-square"></i> 全選択';
+        btnToggleSelect.innerHTML = '<i class="fas fa-check-square"></i> <span class="btn-text desktop-only">全選択</span>';
         btnToggleSelect.disabled = !hasResults;
         btnToggleSelect.style.display = hasResults ? 'inline-flex' : 'none';
         btnToggleSelect.style.borderColor = '#d1d5db';

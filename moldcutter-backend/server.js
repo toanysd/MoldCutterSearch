@@ -73,19 +73,19 @@ const FILE_HEADERS = {
   'cutters.csv': ['CutterID', 'CutterNo', 'CutterName', 'CutterDesignCode', 'CutterCode', 'CustomerID', 'MoldDesignID', 'MoldShared', 'ItemTypeID', 'RackLayerID', 'storage_company', 'CutterNote', 'CutterDetail', 'CutterManufactureDate', 'SatoCode', 'SatoCodeDate', 'Description', 'UsageStatus', 'BladeCount', 'CutterPresence', 'Pitch', 'PlasticCutType', 'PostCutLength', 'PostCutWidth', 'CutlineLength', 'CutlineWidth', 'CutterLength', 'CutterWidth', 'CutterHeight', 'CutterThickness', 'CutterCorner', 'CutterChamfer', 'CutterType', 'CutterDim', 'PPcushionUse', 'CutterEntry', 'CutterMasterID'],
 
   'molds.csv': [
-  'MoldID', 'MoldName', 'MoldCode', 'CustomerID', 'TrayID', 'MoldDesignID',
-  'storage_company', 'RackLayerID', 'ItemTypeID',
-  'MoldLengthModified', 'MoldWidthModified', 'MoldHeightModified',
-  'MoldWeightModified', 'MoldNotes', 'MoldUsageStatus', 'MoldOnCheckList',
-  'JobID', 'MoldReturning', 'MoldReturnedDate', 'MoldDisposing',
-  'MoldDisposedDate', 'MoldEntry'
+    'MoldID', 'MoldName', 'MoldCode', 'CustomerID', 'TrayID', 'MoldDesignID',
+    'storage_company', 'RackLayerID', 'ItemTypeID',
+    'MoldLengthModified', 'MoldWidthModified', 'MoldHeightModified',
+    'MoldWeightModified', 'MoldNotes', 'MoldUsageStatus', 'MoldOnCheckList',
+    'JobID', 'MoldReturning', 'MoldReturnedDate', 'MoldDisposing',
+    'MoldDisposedDate', 'MoldEntry'
   ],
 
 
   'statuslogs.csv': ['StatusLogID', 'MoldID', 'CutterID', 'ItemType', 'Status', 'Timestamp', 'EmployeeID', 'DestinationID', 'Notes', 'AuditDate', 'AuditType', 'SessionID', 'SessionName', 'SessionMode'],
 
   'teflonlog.csv': ['TeflonLogID', 'MoldID', 'TeflonStatus', 'RequestedBy', 'RequestedDate', 'SentBy', 'SentDate', 'ExpectedDate', 'ReceivedDate', 'SupplierID', 'CoatingType', 'Reason', 'TeflonCost', 'Quality', 'TeflonNotes', 'CreatedDate', 'UpdatedBy', 'UpdatedDate'],
- 
+
   'destinations.csv': ['DestinationID', 'DestinationName', 'DestinationCode', 'CompanyID', 'Address', 'Notes'],
 
   'CAV.csv': ['CAVCode', 'Serial', 'CAV', 'CAVlength', 'CAVwidth', 'CAVnote'],
@@ -100,7 +100,7 @@ const FILE_HEADERS = {
 
   'machiningcustomer.csv': ['MachiningCustomerID', 'CustomerName', 'CustomerCode', 'Notes'],
 
-  'tray.csv': ['TrayID', 'TrayName', 'TrayCode', 'TrayCapacity', 'Notes', 'CustomerTrayName', 'CustomerDrawingNo', 'CustomerEquipmentNo', 'TrayWeight'],
+  'tray.csv': ['TrayID', 'TrayName', 'TrayCode', 'TrayCapacity', 'Notes'],
 
   'worklog.csv': ['WorkLogID', 'MoldID', 'CutterID', 'EmployeeID', 'WorkDate', 'WorkType', 'Notes'],
   'datachangehistory.csv': ['DataChangeID', 'TableName', 'RecordID', 'RecordIDField', 'FieldName', 'OldValue', 'NewValue', 'ChangedAt', 'ChangedBy', 'BaseValueAtEdit', 'BaseCommitID', 'BaseCommitAt', 'ChangeSource', 'ChangeNote', 'IsConflict', 'ResolvedValue', 'ResolvedAt', 'ResolvedBy'],
@@ -191,42 +191,42 @@ try {
       if (/\.csv$/i.test(fn)) ALLOWED_CSV_FILES.add(fn);
     });
   }
-} catch (e0) {}
+} catch (e0) { }
 
 // TableKey -> filename mapping (for overlay apply)
 
 const TABLE_KEY_TO_FILENAME = {
-molds: 'webmolds.csv',
-cutters: 'webcutters.csv',
-customers: 'webcustomers.csv',
-molddesign: 'webmolddesign.csv',
-moldcutter: 'webmoldcutter.csv',
-racks: 'webracks.csv',
-racklayers: 'webracklayers.csv',
-companies: 'webcompanies.csv',
-employees: 'webemployees.csv',
-jobs: 'webjobs.csv',
-processingitems: 'webprocessingitems.csv',
-destinations: 'webdestinations.csv',
+  molds: 'webmolds.csv',
+  cutters: 'webcutters.csv',
+  customers: 'webcustomers.csv',
+  molddesign: 'webmolddesign.csv',
+  moldcutter: 'webmoldcutter.csv',
+  racks: 'webracks.csv',
+  racklayers: 'webracklayers.csv',
+  companies: 'webcompanies.csv',
+  employees: 'webemployees.csv',
+  jobs: 'webjobs.csv',
+  processingitems: 'webprocessingitems.csv',
+  destinations: 'webdestinations.csv',
 
-// Logs
-statuslogs: 'webstatuslogs.csv',
-shiplog: 'webshiplog.csv',
-locationlog: 'weblocationlog.csv',
-usercomments: 'webusercomments.csv',
-teflonlog: 'webteflonlog.csv',
+  // Logs
+  statuslogs: 'webstatuslogs.csv',
+  shiplog: 'webshiplog.csv',
+  locationlog: 'weblocationlog.csv',
+  usercomments: 'webusercomments.csv',
+  teflonlog: 'webteflonlog.csv',
 
-// New tables
-processingdeadline: 'webprocessingdeadline.csv',
-processingstatus: 'webprocessingstatus.csv',
-itemtype: 'webitemtype.csv',
-plasticforforming: 'webplasticforforming.csv',
-machiningcustomer: 'webmachiningcustomer.csv',
-tray: 'webtray.csv',
-trays: 'webtray.csv',
-worklog: 'webworklog.csv',
-datachangehistory: 'datachangehistory.csv',
-accesscommithistory: 'accesscommithistory.csv'
+  // New tables
+  processingdeadline: 'webprocessingdeadline.csv',
+  processingstatus: 'webprocessingstatus.csv',
+  itemtype: 'webitemtype.csv',
+  plasticforforming: 'webplasticforforming.csv',
+  machiningcustomer: 'webmachiningcustomer.csv',
+  tray: 'webtray.csv',
+  trays: 'webtray.csv',
+  worklog: 'webworklog.csv',
+  datachangehistory: 'datachangehistory.csv',
+  accesscommithistory: 'accesscommithistory.csv'
 
 };
 
@@ -244,7 +244,7 @@ function httpError(status, message, extra) {
 function getHttpStatus(err) {
   try {
     if (err && Number.isFinite(err.httpStatus)) return err.httpStatus;
-  } catch (e0) {}
+  } catch (e0) { }
   return null;
 }
 
@@ -259,7 +259,7 @@ function getGitHubStatusCode(err) {
   try {
     if (err && Number.isFinite(err.status)) return err.status;
     if (err && err.response && Number.isFinite(err.response.status)) return err.response.status;
-  } catch (e0) {}
+  } catch (e0) { }
   return null;
 }
 
@@ -466,13 +466,13 @@ function normalizeTableKey(k) {
 }
 
 function tableKeyToFilename(tableKey) {
-const t0 = normalizeTableKey(tableKey);
-const keyLower = String(t0 || '').trim().toLowerCase();
+  const t0 = normalizeTableKey(tableKey);
+  const keyLower = String(t0 || '').trim().toLowerCase();
 
-if (TABLE_KEY_TO_FILENAME[t0]) return TABLE_KEY_TO_FILENAME[t0];
-if (TABLE_KEY_TO_FILENAME[keyLower]) return TABLE_KEY_TO_FILENAME[keyLower];
+  if (TABLE_KEY_TO_FILENAME[t0]) return TABLE_KEY_TO_FILENAME[t0];
+  if (TABLE_KEY_TO_FILENAME[keyLower]) return TABLE_KEY_TO_FILENAME[keyLower];
 
-throw httpError(400, `Table key not mapped to web csv: ${tableKey}`);
+  throw httpError(400, `Table key not mapped to web csv: ${tableKey}`);
 }
 
 
@@ -486,7 +486,7 @@ function ensureAllowedFilename(filename) {
 function ensureAllowedWebFilename(filename) {
   const fn = ensureAllowedFilename(filename);
   if (!fn.startsWith('web')) {
-  throw httpError(400, `Only web*.csv is writable: ${fn}`);
+    throw httpError(400, `Only web*.csv is writable: ${fn}`);
   }
   return fn;
 }
@@ -522,135 +522,135 @@ function toSafeString(v) {
 }
 
 function normalizeMaybeId(v) {
-const s = String(v || '').trim();
-return s;
+  const s = String(v || '').trim();
+  return s;
 }
 
 function getRackLayerTargetMetaFromBody(body) {
-const moldId = normalizeMaybeId(body && body.MoldID);
-const cutterId = normalizeMaybeId(body && body.CutterID);
+  const moldId = normalizeMaybeId(body && body.MoldID);
+  const cutterId = normalizeMaybeId(body && body.CutterID);
 
-if (moldId) {
-return {
-tableName: 'molds',
-filename: 'webmolds.csv',
-idField: 'MoldID',
-idValue: moldId,
-legacyIdField: 'LegacyMoldID'
-};
-}
+  if (moldId) {
+    return {
+      tableName: 'molds',
+      filename: 'webmolds.csv',
+      idField: 'MoldID',
+      idValue: moldId,
+      legacyIdField: 'LegacyMoldID'
+    };
+  }
 
-if (cutterId) {
-return {
-tableName: 'cutters',
-filename: 'webcutters.csv',
-idField: 'CutterID',
-idValue: cutterId,
-legacyIdField: 'LegacyCutterID'
-};
-}
+  if (cutterId) {
+    return {
+      tableName: 'cutters',
+      filename: 'webcutters.csv',
+      idField: 'CutterID',
+      idValue: cutterId,
+      legacyIdField: 'LegacyCutterID'
+    };
+  }
 
-return null;
+  return null;
 }
 
 async function updateRackLayerTargetWithRetry(targetMeta, newRackLayer, employeeId) {
-if (!targetMeta || !targetMeta.filename || !targetMeta.idField || !targetMeta.idValue) {
-throw httpError(400, 'Missing target meta for RackLayer update');
-}
+  if (!targetMeta || !targetMeta.filename || !targetMeta.idField || !targetMeta.idValue) {
+    throw httpError(400, 'Missing target meta for RackLayer update');
+  }
 
-const newRack = String(newRackLayer || '').trim();
-if (!newRack) throw httpError(400, 'New RackLayerID is required');
+  const newRack = String(newRackLayer || '').trim();
+  if (!newRack) throw httpError(400, 'New RackLayerID is required');
 
-const changedBy = String(employeeId || '').trim();
+  const changedBy = String(employeeId || '').trim();
 
-await updateWebCsvFileWithRetry(
-targetMeta.filename,
-`Update ${targetMeta.filename} ${targetMeta.idField}=${targetMeta.idValue} RackLayerID ${getJSTDate()}`,
-async (records, headers) => {
-let found = false;
-const idVal = String(targetMeta.idValue).trim();
+  await updateWebCsvFileWithRetry(
+    targetMeta.filename,
+    `Update ${targetMeta.filename} ${targetMeta.idField}=${targetMeta.idValue} RackLayerID ${getJSTDate()}`,
+    async (records, headers) => {
+      let found = false;
+      const idVal = String(targetMeta.idValue).trim();
 
-records = (Array.isArray(records) ? records : []).map(r => {
-if (String((r && r[targetMeta.idField]) || '').trim() === idVal) {
-found = true;
-r.RackLayerID = newRack;
-if (headers.includes('UpdatedAt')) r.UpdatedAt = getJSTTimestamp();
-if (headers.includes('UpdatedBy')) r.UpdatedBy = changedBy;
-}
-return r;
-});
+      records = (Array.isArray(records) ? records : []).map(r => {
+        if (String((r && r[targetMeta.idField]) || '').trim() === idVal) {
+          found = true;
+          r.RackLayerID = newRack;
+          if (headers.includes('UpdatedAt')) r.UpdatedAt = getJSTTimestamp();
+          if (headers.includes('UpdatedBy')) r.UpdatedBy = changedBy;
+        }
+        return r;
+      });
 
-if (!found) {
-const newRow = {};
-(headers || []).forEach(h => { newRow[h] = ''; });
+      if (!found) {
+        const newRow = {};
+        (headers || []).forEach(h => { newRow[h] = ''; });
 
-newRow[targetMeta.idField] = idVal;
+        newRow[targetMeta.idField] = idVal;
 
-if (targetMeta.legacyIdField && headers.includes(targetMeta.legacyIdField) && !String(newRow[targetMeta.legacyIdField] || '').trim()) {
-newRow[targetMeta.legacyIdField] = idVal;
-}
+        if (targetMeta.legacyIdField && headers.includes(targetMeta.legacyIdField) && !String(newRow[targetMeta.legacyIdField] || '').trim()) {
+          newRow[targetMeta.legacyIdField] = idVal;
+        }
 
-if (headers.includes('RackLayerID')) newRow.RackLayerID = newRack;
-if (headers.includes('UpdatedAt')) newRow.UpdatedAt = getJSTTimestamp();
-if (headers.includes('UpdatedBy')) newRow.UpdatedBy = changedBy;
-if (headers.includes('WebUUID') && !String(newRow.WebUUID || '').trim()) newRow.WebUUID = genId('WEBUUID');
+        if (headers.includes('RackLayerID')) newRow.RackLayerID = newRack;
+        if (headers.includes('UpdatedAt')) newRow.UpdatedAt = getJSTTimestamp();
+        if (headers.includes('UpdatedBy')) newRow.UpdatedBy = changedBy;
+        if (headers.includes('WebUUID') && !String(newRow.WebUUID || '').trim()) newRow.WebUUID = genId('WEBUUID');
 
-records.unshift(newRow);
-}
+        records.unshift(newRow);
+      }
 
-const seen = new Set();
-records = records.filter(r => {
-const k = String((r && r[targetMeta.idField]) || '').trim();
-if (!k) return true;
-if (seen.has(k)) return false;
-seen.add(k);
-return true;
-});
+      const seen = new Set();
+      records = records.filter(r => {
+        const k = String((r && r[targetMeta.idField]) || '').trim();
+        if (!k) return true;
+        if (seen.has(k)) return false;
+        seen.add(k);
+        return true;
+      });
 
-return { records };
-},
-{ maxRetry: 4, requireExisting: true }
-);
+      return { records };
+    },
+    { maxRetry: 4, requireExisting: true }
+  );
 }
 
 async function appendLocationHistoryEntry(targetMeta, oldRackLayer, newRackLayer, employeeId, changeSource, changeNote) {
-if (!targetMeta || !targetMeta.tableName || !targetMeta.idField || !targetMeta.idValue) return;
+  if (!targetMeta || !targetMeta.tableName || !targetMeta.idField || !targetMeta.idValue) return;
 
-const oldRack = String(oldRackLayer || '').trim();
-const newRack = String(newRackLayer || '').trim();
+  const oldRack = String(oldRackLayer || '').trim();
+  const newRack = String(newRackLayer || '').trim();
 
-if (!newRack || oldRack === newRack) return;
+  if (!newRack || oldRack === newRack) return;
 
-const historyEntry = {
-DataChangeID: genId('DCH'),
-TableName: targetMeta.tableName,
-RecordID: String(targetMeta.idValue || ''),
-RecordIDField: String(targetMeta.idField || ''),
-FieldName: 'RackLayerID',
-OldValue: oldRack,
-NewValue: newRack,
-ChangedAt: getJSTTimestamp(),
-ChangedBy: String(employeeId || ''),
-BaseValueAtEdit: oldRack,
-BaseCommitID: '',
-BaseCommitAt: '',
-ChangeSource: String(changeSource || 'locationlog'),
-ChangeNote: String(changeNote || ''),
-IsConflict: 'FALSE',
-ResolvedValue: '',
-ResolvedAt: '',
-ResolvedBy: ''
-};
+  const historyEntry = {
+    DataChangeID: genId('DCH'),
+    TableName: targetMeta.tableName,
+    RecordID: String(targetMeta.idValue || ''),
+    RecordIDField: String(targetMeta.idField || ''),
+    FieldName: 'RackLayerID',
+    OldValue: oldRack,
+    NewValue: newRack,
+    ChangedAt: getJSTTimestamp(),
+    ChangedBy: String(employeeId || ''),
+    BaseValueAtEdit: oldRack,
+    BaseCommitID: '',
+    BaseCommitAt: '',
+    ChangeSource: String(changeSource || 'locationlog'),
+    ChangeNote: String(changeNote || ''),
+    IsConflict: 'FALSE',
+    ResolvedValue: '',
+    ResolvedAt: '',
+    ResolvedBy: ''
+  };
 
-await updateWebCsvFileWithRetry(
-'datachangehistory.csv',
-`Add history entry for ${targetMeta.tableName} ${targetMeta.idValue} RackLayerID ${getJSTDate()}`,
-async (records) => {
-records.unshift(historyEntry);
-return { records };
-},
-{ maxRetry: 4, requireExisting: true }
-);
+  await updateWebCsvFileWithRetry(
+    'datachangehistory.csv',
+    `Add history entry for ${targetMeta.tableName} ${targetMeta.idValue} RackLayerID ${getJSTDate()}`,
+    async (records) => {
+      records.unshift(historyEntry);
+      return { records };
+    },
+    { maxRetry: 4, requireExisting: true }
+  );
 }
 
 // ========================================
@@ -711,22 +711,8 @@ async function updateWebCsvFileWithRetry(webFilename, commitMessage, mutateFn, o
 }
 
 // ========================================
-// HEALTH CHECK & SHA INFO
+// HEALTH CHECK
 // ========================================
-
-app.get('/api/latest-sha', async (req, res) => {
-  try {
-    const { data } = await octokit.git.getRef({
-      owner,
-      repo,
-      ref: `heads/${branch}`,
-    });
-    res.json({ sha: data.object.sha });
-  } catch (error) {
-    console.error('[SERVER] /api/latest-sha error:', error.message);
-    res.status(500).json({ error: error.message, sha: 'main' });
-  }
-});
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'OK',
@@ -752,7 +738,7 @@ app.post('/api/csv/upsert', async (req, res) => {
     if (!idF || !idV) throw httpError(400, 'Missing idField or idValue');
     if (!updates || typeof updates !== 'object') throw httpError(400, 'Missing updates object');
     if (isTempKey(idV)) throw httpError(400, `TEMP key is not allowed for real write: ${idV}`);
-    if (!['update', 'insert', 'upsert'].includes(opMode)) throw httpError(400, 'mode must be update|insert|upsert');
+    if (!['update', 'insert', 'upsert', 'delete'].includes(opMode)) throw httpError(400, 'mode must be update|insert|upsert|delete');
 
     const writer = fn.startsWith('web')
       ? updateWebCsvFileWithRetry
@@ -770,13 +756,15 @@ app.post('/api/csv/upsert', async (req, res) => {
           });
         }
 
-        const unknown = pickUnknownFields(updates, headers);
-        if (unknown.length > 0) {
-          throw httpError(400, 'Unknown fields for ' + fn, {
-            filename: fn,
-            unknownFields: unknown,
-            allowedHeadersCount: headers.length
-          });
+        if (opMode !== 'delete') {
+          const unknown = pickUnknownFields(updates, headers);
+          if (unknown.length > 0) {
+            throw httpError(400, 'Unknown fields for ' + fn, {
+              filename: fn,
+              unknownFields: unknown,
+              allowedHeadersCount: headers.length
+            });
+          }
         }
 
         const idValTrim = String(idV).trim();
@@ -798,6 +786,10 @@ app.post('/api/csv/upsert', async (req, res) => {
               idValue: idV
             });
           }
+          if (opMode === 'delete') {
+            records.splice(foundIndex, 1);
+            return { records };
+          }
 
           const row = records[foundIndex];
           Object.keys(updates).forEach(k => {
@@ -806,6 +798,14 @@ app.post('/api/csv/upsert', async (req, res) => {
           row[idF] = idV;
           records[foundIndex] = row;
           return { records };
+        }
+
+        if (opMode === 'delete') {
+          throw httpError(404, 'Delete mode row not found', {
+            filename: fn,
+            idField: idF,
+            idValue: idV
+          });
         }
 
         if (opMode === 'update') {
@@ -963,31 +963,31 @@ app.post('/api/csv/apply-overlay-batch', async (req, res) => {
               records[foundIndex] = row;
 
             } else {
-            const newRow = {};
-            headers.forEach(h => { newRow[h] = ''; });
-            newRow[idF] = idV;
+              const newRow = {};
+              headers.forEach(h => { newRow[h] = ''; });
+              newRow[idF] = idV;
 
-            Object.keys(it.fields || {}).forEach(k => {
-            newRow[k] = toSafeString(it.fields[k]);
-            });
+              Object.keys(it.fields || {}).forEach(k => {
+                newRow[k] = toSafeString(it.fields[k]);
+              });
 
-            if (filename === 'webmolds.csv' && headers.includes('LegacyMoldID') && !String(newRow.LegacyMoldID || '').trim()) {
-            newRow.LegacyMoldID = String(idV);
-            }
+              if (filename === 'webmolds.csv' && headers.includes('LegacyMoldID') && !String(newRow.LegacyMoldID || '').trim()) {
+                newRow.LegacyMoldID = String(idV);
+              }
 
-            if (headers.includes('WebUUID') && !String(newRow.WebUUID || '').trim()) {
-            newRow.WebUUID = genId('WEB_UUID_');
-            }
+              if (headers.includes('WebUUID') && !String(newRow.WebUUID || '').trim()) {
+                newRow.WebUUID = genId('WEB_UUID_');
+              }
 
-            if (headers.includes('UpdatedAt')) {
-            newRow.UpdatedAt = getJSTTimestamp();
-            }
+              if (headers.includes('UpdatedAt')) {
+                newRow.UpdatedAt = getJSTTimestamp();
+              }
 
-            if (headers.includes('UpdatedBy') && !String(newRow.UpdatedBy || '').trim()) {
-            newRow.UpdatedBy = String((it.fields && (it.fields.UpdatedBy || it.fields.EmployeeID)) || '');
-            }
+              if (headers.includes('UpdatedBy') && !String(newRow.UpdatedBy || '').trim()) {
+                newRow.UpdatedBy = String((it.fields && (it.fields.UpdatedBy || it.fields.EmployeeID)) || '');
+              }
 
-            records.unshift(newRow);
+              records.unshift(newRow);
             }
 
           }
@@ -1079,56 +1079,56 @@ app.post('/api/update-item', async (req, res) => {
     const safeTargetFilename = ensureAllowedWebFilename(targetFilename);
 
     await updateWebCsvFileWithRetry(
-    safeTargetFilename,
-    `Update ${safeTargetFilename} item ${itemIdValue}`,
-    async (records, headers) => {
-    let itemFound = false;
-    const idVal = String(itemIdValue).trim();
+      safeTargetFilename,
+      `Update ${safeTargetFilename} item ${itemIdValue}`,
+      async (records, headers) => {
+        let itemFound = false;
+        const idVal = String(itemIdValue).trim();
 
-    records = records.map(record => {
-    if (String((record && record[itemIdField]) || '').trim() === idVal) {
-    itemFound = true;
-    Object.keys(updates || {}).forEach(key => {
-    if ((headers || []).includes(key)) {
-    record[key] = toSafeString(updates[key]);
-    }
-    });
-    if ((headers || []).includes('UpdatedAt')) record.UpdatedAt = getJSTTimestamp();
-    if ((headers || []).includes('UpdatedBy') && !String((updates || {}).UpdatedBy || '').trim()) {
-    record.UpdatedBy = String((updates && (updates.EmployeeID || updates.UpdatedBy)) || record.UpdatedBy || '');
-    }
-    }
-    return record;
-    });
+        records = records.map(record => {
+          if (String((record && record[itemIdField]) || '').trim() === idVal) {
+            itemFound = true;
+            Object.keys(updates || {}).forEach(key => {
+              if ((headers || []).includes(key)) {
+                record[key] = toSafeString(updates[key]);
+              }
+            });
+            if ((headers || []).includes('UpdatedAt')) record.UpdatedAt = getJSTTimestamp();
+            if ((headers || []).includes('UpdatedBy') && !String((updates || {}).UpdatedBy || '').trim()) {
+              record.UpdatedBy = String((updates && (updates.EmployeeID || updates.UpdatedBy)) || record.UpdatedBy || '');
+            }
+          }
+          return record;
+        });
 
-    if (!itemFound) {
-    const newRow = {};
-    (headers || []).forEach(h => { newRow[h] = ''; });
-    newRow[itemIdField] = idVal;
+        if (!itemFound) {
+          const newRow = {};
+          (headers || []).forEach(h => { newRow[h] = ''; });
+          newRow[itemIdField] = idVal;
 
-    Object.keys(updates || {}).forEach(key => {
-    if ((headers || []).includes(key)) {
-    newRow[key] = toSafeString(updates[key]);
-    }
-    });
+          Object.keys(updates || {}).forEach(key => {
+            if ((headers || []).includes(key)) {
+              newRow[key] = toSafeString(updates[key]);
+            }
+          });
 
-    if (safeTargetFilename === 'webmolds.csv' && (headers || []).includes('LegacyMoldID') && !String(newRow.LegacyMoldID || '').trim()) {
-    newRow.LegacyMoldID = idVal;
-    }
-    if ((headers || []).includes('WebUUID') && !String(newRow.WebUUID || '').trim()) {
-    newRow.WebUUID = genId('WEB_UUID_');
-    }
-    if ((headers || []).includes('UpdatedAt')) newRow.UpdatedAt = getJSTTimestamp();
-    if ((headers || []).includes('UpdatedBy') && !String(newRow.UpdatedBy || '').trim()) {
-    newRow.UpdatedBy = String((updates && (updates.EmployeeID || updates.UpdatedBy)) || '');
-    }
+          if (safeTargetFilename === 'webmolds.csv' && (headers || []).includes('LegacyMoldID') && !String(newRow.LegacyMoldID || '').trim()) {
+            newRow.LegacyMoldID = idVal;
+          }
+          if ((headers || []).includes('WebUUID') && !String(newRow.WebUUID || '').trim()) {
+            newRow.WebUUID = genId('WEB_UUID_');
+          }
+          if ((headers || []).includes('UpdatedAt')) newRow.UpdatedAt = getJSTTimestamp();
+          if ((headers || []).includes('UpdatedBy') && !String(newRow.UpdatedBy || '').trim()) {
+            newRow.UpdatedBy = String((updates && (updates.EmployeeID || updates.UpdatedBy)) || '');
+          }
 
-    records.unshift(newRow);
-    }
+          records.unshift(newRow);
+        }
 
-    return { records };
-    },
-    { maxRetry: 4, requireExisting: true }
+        return { records };
+      },
+      { maxRetry: 4, requireExisting: true }
     );
 
 
@@ -1274,310 +1274,310 @@ app.post('/api/checklog', async (req, res) => {
 });
 
 app.post('/api/locationlog', async (req, res) => {
-console.log('[SERVER] locationlog POST called');
-try {
-const { LocationLogID, MoldID, CutterID, OldRackLayer, NewRackLayer, notes, DateEntry, Employee, EmployeeID } = req.body || {};
-const targetMeta = getRackLayerTargetMetaFromBody(req.body || {});
+  console.log('[SERVER] locationlog POST called');
+  try {
+    const { LocationLogID, MoldID, CutterID, OldRackLayer, NewRackLayer, notes, DateEntry, Employee, EmployeeID } = req.body || {};
+    const targetMeta = getRackLayerTargetMetaFromBody(req.body || {});
 
-if (!targetMeta) {
-return res.status(400).json({ success: false, message: 'MoldID or CutterID required' });
-}
+    if (!targetMeta) {
+      return res.status(400).json({ success: false, message: 'MoldID or CutterID required' });
+    }
 
-if (!NewRackLayer || !String(NewRackLayer).trim()) {
-return res.status(400).json({ success: false, message: 'NewRackLayer required' });
-}
+    if (!NewRackLayer || !String(NewRackLayer).trim()) {
+      return res.status(400).json({ success: false, message: 'NewRackLayer required' });
+    }
 
-const locId = LocationLogID && String(LocationLogID).trim() ? String(LocationLogID).trim() : genId('WEBLOC');
-const actorId = String(Employee || EmployeeID || '').trim();
-const nowTs = getJSTTimestamp();
-const oldRack = String(OldRackLayer || '').trim();
-const newRack = String(NewRackLayer || '').trim();
+    const locId = LocationLogID && String(LocationLogID).trim() ? String(LocationLogID).trim() : genId('WEBLOC');
+    const actorId = String(Employee || EmployeeID || '').trim();
+    const nowTs = getJSTTimestamp();
+    const oldRack = String(OldRackLayer || '').trim();
+    const newRack = String(NewRackLayer || '').trim();
 
-const locEntry = {
-LocationLogID: locId,
-LegacyLocationLogID: '',
-OldRackLayer: oldRack,
-NewRackLayer: newRack,
-MoldID: String(MoldID || '').trim(),
-CutterID: String(CutterID || '').trim(),
-notes: notes || '',
-EmployeeID: actorId,
-DateEntry: DateEntry || nowTs,
-WebUUID: genId('WEBUUID'),
-UpdatedAt: nowTs,
-UpdatedBy: actorId
-};
+    const locEntry = {
+      LocationLogID: locId,
+      LegacyLocationLogID: '',
+      OldRackLayer: oldRack,
+      NewRackLayer: newRack,
+      MoldID: String(MoldID || '').trim(),
+      CutterID: String(CutterID || '').trim(),
+      notes: notes || '',
+      EmployeeID: actorId,
+      DateEntry: DateEntry || nowTs,
+      WebUUID: genId('WEBUUID'),
+      UpdatedAt: nowTs,
+      UpdatedBy: actorId
+    };
 
-await updateWebCsvFileWithRetry(
-'weblocationlog.csv',
-`Add location log for ${targetMeta.idField}=${targetMeta.idValue} ${getJSTDate()}`,
-async (records) => {
-const exists = records.some(r => String((r && r.LocationLogID) || '').trim() === locId);
-if (!exists) records.unshift(locEntry);
-return { records };
-},
-{ maxRetry: 4, requireExisting: true }
-);
+    await updateWebCsvFileWithRetry(
+      'weblocationlog.csv',
+      `Add location log for ${targetMeta.idField}=${targetMeta.idValue} ${getJSTDate()}`,
+      async (records) => {
+        const exists = records.some(r => String((r && r.LocationLogID) || '').trim() === locId);
+        if (!exists) records.unshift(locEntry);
+        return { records };
+      },
+      { maxRetry: 4, requireExisting: true }
+    );
 
-await updateRackLayerTargetWithRetry(targetMeta, newRack, actorId);
+    await updateRackLayerTargetWithRetry(targetMeta, newRack, actorId);
 
-try {
-await appendLocationHistoryEntry(
-targetMeta,
-oldRack,
-newRack,
-actorId,
-'api/locationlog',
-`Location change via /api/locationlog log=${locId}`
-);
-} catch (historyErr) {
-console.error('[SERVER] Failed to write datachangehistory.csv:', historyErr);
-}
+    try {
+      await appendLocationHistoryEntry(
+        targetMeta,
+        oldRack,
+        newRack,
+        actorId,
+        'api/locationlog',
+        `Location change via /api/locationlog log=${locId}`
+      );
+    } catch (historyErr) {
+      console.error('[SERVER] Failed to write datachangehistory.csv:', historyErr);
+    }
 
-res.json({
-success: true,
-message: `Location change recorded for ${targetMeta.idField}=${targetMeta.idValue}`,
-logId: locId
-});
-} catch (error) {
-const st = getHttpStatus(error);
-if (st) return res.status(st).json({ success: false, message: error.message });
-console.error('[SERVER] Error in locationlog POST:', error);
-res.status(500).json({ success: false, message: error.message });
-}
+    res.json({
+      success: true,
+      message: `Location change recorded for ${targetMeta.idField}=${targetMeta.idValue}`,
+      logId: locId
+    });
+  } catch (error) {
+    const st = getHttpStatus(error);
+    if (st) return res.status(st).json({ success: false, message: error.message });
+    console.error('[SERVER] Error in locationlog POST:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
 });
 
 app.post('/api/audit-batch', async (req, res) => {
-console.log('[SERVER] audit-batch called');
-try {
-const { statusLogs, locationLogs } = req.body || {};
+  console.log('[SERVER] audit-batch called');
+  try {
+    const { statusLogs, locationLogs } = req.body || {};
 
-if ((!statusLogs || !Array.isArray(statusLogs) || statusLogs.length === 0) && (!locationLogs || !Array.isArray(locationLogs) || locationLogs.length === 0)) {
-return res.status(400).json({ success: false, message: 'At least one of statusLogs or locationLogs required' });
-}
+    if ((!statusLogs || !Array.isArray(statusLogs) || statusLogs.length === 0) && (!locationLogs || !Array.isArray(locationLogs) || locationLogs.length === 0)) {
+      return res.status(400).json({ success: false, message: 'At least one of statusLogs or locationLogs required' });
+    }
 
-let statusCount = 0;
-let locationCount = 0;
-let moldUpdateCount = 0;
-let cutterUpdateCount = 0;
+    let statusCount = 0;
+    let locationCount = 0;
+    let moldUpdateCount = 0;
+    let cutterUpdateCount = 0;
 
-if (Array.isArray(statusLogs) && statusLogs.length > 0) {
-await updateWebCsvFileWithRetry(
-'webstatuslogs.csv',
-`Batch add ${statusLogs.length} audit logs`,
-async (records) => {
-for (const log of statusLogs) {
-const id = (log && log.StatusLogID && String(log.StatusLogID).trim()) ? String(log.StatusLogID).trim() : genId('WEBSL');
-const exists = records.some(r => String((r && r.StatusLogID) || '').trim() === id);
-if (exists) continue;
+    if (Array.isArray(statusLogs) && statusLogs.length > 0) {
+      await updateWebCsvFileWithRetry(
+        'webstatuslogs.csv',
+        `Batch add ${statusLogs.length} audit logs`,
+        async (records) => {
+          for (const log of statusLogs) {
+            const id = (log && log.StatusLogID && String(log.StatusLogID).trim()) ? String(log.StatusLogID).trim() : genId('WEBSL');
+            const exists = records.some(r => String((r && r.StatusLogID) || '').trim() === id);
+            if (exists) continue;
 
-records.unshift({
-StatusLogID: id,
-MoldID: (log && log.MoldID) || '',
-CutterID: (log && log.CutterID) || '',
-ItemType: (log && log.ItemType) || '',
-Status: (log && log.Status) || 'AUDIT',
-Timestamp: (log && log.Timestamp) || getJSTTimestamp(),
-EmployeeID: (log && log.EmployeeID) || '',
-DestinationID: (log && log.DestinationID) || '',
-Notes: (log && log.Notes) || 'Kiểm kê',
-AuditDate: (log && log.AuditDate) || getJSTDate(),
-AuditType: (log && log.AuditType) || 'AUDITONLY',
-SessionID: (log && log.SessionID) || '',
-SessionName: (log && log.SessionName) || '',
-SessionMode: (log && log.SessionMode) || '',
-UpdatedAt: getJSTTimestamp(),
-UpdatedBy: String((log && log.EmployeeID) || '')
-});
+            records.unshift({
+              StatusLogID: id,
+              MoldID: (log && log.MoldID) || '',
+              CutterID: (log && log.CutterID) || '',
+              ItemType: (log && log.ItemType) || '',
+              Status: (log && log.Status) || 'AUDIT',
+              Timestamp: (log && log.Timestamp) || getJSTTimestamp(),
+              EmployeeID: (log && log.EmployeeID) || '',
+              DestinationID: (log && log.DestinationID) || '',
+              Notes: (log && log.Notes) || 'Kiểm kê',
+              AuditDate: (log && log.AuditDate) || getJSTDate(),
+              AuditType: (log && log.AuditType) || 'AUDITONLY',
+              SessionID: (log && log.SessionID) || '',
+              SessionName: (log && log.SessionName) || '',
+              SessionMode: (log && log.SessionMode) || '',
+              UpdatedAt: getJSTTimestamp(),
+              UpdatedBy: String((log && log.EmployeeID) || '')
+            });
 
-statusCount++;
-}
+            statusCount++;
+          }
 
-return { records };
-},
-{ maxRetry: 4, requireExisting: true }
-);
-}
+          return { records };
+        },
+        { maxRetry: 4, requireExisting: true }
+      );
+    }
 
-const moldUpdates = new Map();
-const cutterUpdates = new Map();
-const historyJobs = [];
+    const moldUpdates = new Map();
+    const cutterUpdates = new Map();
+    const historyJobs = [];
 
-if (Array.isArray(locationLogs) && locationLogs.length > 0) {
-await updateWebCsvFileWithRetry(
-'weblocationlog.csv',
-`Batch add ${locationLogs.length} location logs`,
-async (records) => {
-for (const log of locationLogs) {
-const id = (log && log.LocationLogID && String(log.LocationLogID).trim()) ? String(log.LocationLogID).trim() : genId('WEBLOC');
-const exists = records.some(r => String((r && r.LocationLogID) || '').trim() === id);
-if (exists) continue;
+    if (Array.isArray(locationLogs) && locationLogs.length > 0) {
+      await updateWebCsvFileWithRetry(
+        'weblocationlog.csv',
+        `Batch add ${locationLogs.length} location logs`,
+        async (records) => {
+          for (const log of locationLogs) {
+            const id = (log && log.LocationLogID && String(log.LocationLogID).trim()) ? String(log.LocationLogID).trim() : genId('WEBLOC');
+            const exists = records.some(r => String((r && r.LocationLogID) || '').trim() === id);
+            if (exists) continue;
 
-const oldRack = String((log && log.OldRackLayer) || '').trim();
-const newRack = String((log && log.NewRackLayer) || '').trim();
-const moldId = String((log && log.MoldID) || '').trim();
-const cutterId = String((log && log.CutterID) || '').trim();
-const actorId = String((log && log.EmployeeID) || '').trim();
-const nowTs = getJSTTimestamp();
+            const oldRack = String((log && log.OldRackLayer) || '').trim();
+            const newRack = String((log && log.NewRackLayer) || '').trim();
+            const moldId = String((log && log.MoldID) || '').trim();
+            const cutterId = String((log && log.CutterID) || '').trim();
+            const actorId = String((log && log.EmployeeID) || '').trim();
+            const nowTs = getJSTTimestamp();
 
-records.unshift({
-LocationLogID: id,
-LegacyLocationLogID: '',
-OldRackLayer: oldRack,
-NewRackLayer: newRack,
-MoldID: moldId,
-CutterID: cutterId,
-notes: (log && log.notes) || 'Di chuyển khi kiểm kê',
-EmployeeID: actorId,
-DateEntry: (log && log.DateEntry) || nowTs,
-WebUUID: genId('WEBUUID'),
-UpdatedAt: nowTs,
-UpdatedBy: actorId
-});
+            records.unshift({
+              LocationLogID: id,
+              LegacyLocationLogID: '',
+              OldRackLayer: oldRack,
+              NewRackLayer: newRack,
+              MoldID: moldId,
+              CutterID: cutterId,
+              notes: (log && log.notes) || 'Di chuyển khi kiểm kê',
+              EmployeeID: actorId,
+              DateEntry: (log && log.DateEntry) || nowTs,
+              WebUUID: genId('WEBUUID'),
+              UpdatedAt: nowTs,
+              UpdatedBy: actorId
+            });
 
-locationCount++;
+            locationCount++;
 
-if (moldId && newRack) moldUpdates.set(moldId, { newRack, actorId, oldRack });
-if (cutterId && newRack) cutterUpdates.set(cutterId, { newRack, actorId, oldRack });
+            if (moldId && newRack) moldUpdates.set(moldId, { newRack, actorId, oldRack });
+            if (cutterId && newRack) cutterUpdates.set(cutterId, { newRack, actorId, oldRack });
 
-if (moldId && newRack && oldRack !== newRack) {
-historyJobs.push({
-tableName: 'molds',
-idField: 'MoldID',
-idValue: moldId,
-oldRack,
-newRack,
-actorId,
-source: 'api/audit-batch',
-note: `Audit batch location log=${id}`
-});
-}
+            if (moldId && newRack && oldRack !== newRack) {
+              historyJobs.push({
+                tableName: 'molds',
+                idField: 'MoldID',
+                idValue: moldId,
+                oldRack,
+                newRack,
+                actorId,
+                source: 'api/audit-batch',
+                note: `Audit batch location log=${id}`
+              });
+            }
 
-if (cutterId && newRack && oldRack !== newRack) {
-historyJobs.push({
-tableName: 'cutters',
-idField: 'CutterID',
-idValue: cutterId,
-oldRack,
-newRack,
-actorId,
-source: 'api/audit-batch',
-note: `Audit batch location log=${id}`
-});
-}
-}
+            if (cutterId && newRack && oldRack !== newRack) {
+              historyJobs.push({
+                tableName: 'cutters',
+                idField: 'CutterID',
+                idValue: cutterId,
+                oldRack,
+                newRack,
+                actorId,
+                source: 'api/audit-batch',
+                note: `Audit batch location log=${id}`
+              });
+            }
+          }
 
-return { records };
-},
-{ maxRetry: 4, requireExisting: true }
-);
-}
+          return { records };
+        },
+        { maxRetry: 4, requireExisting: true }
+      );
+    }
 
-if (moldUpdates.size > 0) {
-try {
-await updateWebCsvFileWithRetry(
-'webmolds.csv',
-`Batch update molds RackLayerID Audit ${getJSTDate()}`,
-async (records, headers) => {
-records = (Array.isArray(records) ? records : []).map(r => {
-const mid = String((r && r.MoldID) || '').trim();
-if (mid && moldUpdates.has(mid)) {
-const job = moldUpdates.get(mid);
-r.RackLayerID = String(job.newRack || '').trim();
-if (headers.includes('UpdatedAt')) r.UpdatedAt = getJSTTimestamp();
-if (headers.includes('UpdatedBy')) r.UpdatedBy = String(job.actorId || '').trim();
-moldUpdateCount++;
-}
-return r;
-});
-return { records };
-},
-{ maxRetry: 4, requireExisting: true }
-);
-} catch (mErr) {
-console.error('[SERVER] webmolds.csv update failed in audit-batch:', mErr && mErr.message ? mErr.message : mErr);
-}
-}
+    if (moldUpdates.size > 0) {
+      try {
+        await updateWebCsvFileWithRetry(
+          'webmolds.csv',
+          `Batch update molds RackLayerID Audit ${getJSTDate()}`,
+          async (records, headers) => {
+            records = (Array.isArray(records) ? records : []).map(r => {
+              const mid = String((r && r.MoldID) || '').trim();
+              if (mid && moldUpdates.has(mid)) {
+                const job = moldUpdates.get(mid);
+                r.RackLayerID = String(job.newRack || '').trim();
+                if (headers.includes('UpdatedAt')) r.UpdatedAt = getJSTTimestamp();
+                if (headers.includes('UpdatedBy')) r.UpdatedBy = String(job.actorId || '').trim();
+                moldUpdateCount++;
+              }
+              return r;
+            });
+            return { records };
+          },
+          { maxRetry: 4, requireExisting: true }
+        );
+      } catch (mErr) {
+        console.error('[SERVER] webmolds.csv update failed in audit-batch:', mErr && mErr.message ? mErr.message : mErr);
+      }
+    }
 
-if (cutterUpdates.size > 0) {
-try {
-await updateWebCsvFileWithRetry(
-'webcutters.csv',
-`Batch update cutters RackLayerID Audit ${getJSTDate()}`,
-async (records, headers) => {
-records = (Array.isArray(records) ? records : []).map(r => {
-const cid = String((r && r.CutterID) || '').trim();
-if (cid && cutterUpdates.has(cid)) {
-const job = cutterUpdates.get(cid);
-r.RackLayerID = String(job.newRack || '').trim();
-if (headers.includes('UpdatedAt')) r.UpdatedAt = getJSTTimestamp();
-if (headers.includes('UpdatedBy')) r.UpdatedBy = String(job.actorId || '').trim();
-cutterUpdateCount++;
-}
-return r;
-});
-return { records };
-},
-{ maxRetry: 4, requireExisting: true }
-);
-} catch (cErr) {
-console.error('[SERVER] webcutters.csv update failed in audit-batch:', cErr && cErr.message ? cErr.message : cErr);
-}
-}
+    if (cutterUpdates.size > 0) {
+      try {
+        await updateWebCsvFileWithRetry(
+          'webcutters.csv',
+          `Batch update cutters RackLayerID Audit ${getJSTDate()}`,
+          async (records, headers) => {
+            records = (Array.isArray(records) ? records : []).map(r => {
+              const cid = String((r && r.CutterID) || '').trim();
+              if (cid && cutterUpdates.has(cid)) {
+                const job = cutterUpdates.get(cid);
+                r.RackLayerID = String(job.newRack || '').trim();
+                if (headers.includes('UpdatedAt')) r.UpdatedAt = getJSTTimestamp();
+                if (headers.includes('UpdatedBy')) r.UpdatedBy = String(job.actorId || '').trim();
+                cutterUpdateCount++;
+              }
+              return r;
+            });
+            return { records };
+          },
+          { maxRetry: 4, requireExisting: true }
+        );
+      } catch (cErr) {
+        console.error('[SERVER] webcutters.csv update failed in audit-batch:', cErr && cErr.message ? cErr.message : cErr);
+      }
+    }
 
-if (historyJobs.length > 0) {
-try {
-await updateWebCsvFileWithRetry(
-'datachangehistory.csv',
-`Batch add ${historyJobs.length} RackLayerID history ${getJSTDate()}`,
-async (records) => {
-for (const job of historyJobs) {
-records.unshift({
-DataChangeID: genId('DCH'),
-TableName: job.tableName,
-RecordID: job.idValue,
-RecordIDField: job.idField,
-FieldName: 'RackLayerID',
-OldValue: job.oldRack || '',
-NewValue: job.newRack || '',
-ChangedAt: getJSTTimestamp(),
-ChangedBy: job.actorId || '',
-BaseValueAtEdit: job.oldRack || '',
-BaseCommitID: '',
-BaseCommitAt: '',
-ChangeSource: job.source || 'api/audit-batch',
-ChangeNote: job.note || '',
-IsConflict: 'FALSE',
-ResolvedValue: '',
-ResolvedAt: '',
-ResolvedBy: ''
-});
-}
-return { records };
-},
-{ maxRetry: 4, requireExisting: true }
-);
-} catch (historyErr) {
-console.error('[SERVER] datachangehistory.csv update failed in audit-batch:', historyErr && historyErr.message ? historyErr.message : historyErr);
-}
-}
+    if (historyJobs.length > 0) {
+      try {
+        await updateWebCsvFileWithRetry(
+          'datachangehistory.csv',
+          `Batch add ${historyJobs.length} RackLayerID history ${getJSTDate()}`,
+          async (records) => {
+            for (const job of historyJobs) {
+              records.unshift({
+                DataChangeID: genId('DCH'),
+                TableName: job.tableName,
+                RecordID: job.idValue,
+                RecordIDField: job.idField,
+                FieldName: 'RackLayerID',
+                OldValue: job.oldRack || '',
+                NewValue: job.newRack || '',
+                ChangedAt: getJSTTimestamp(),
+                ChangedBy: job.actorId || '',
+                BaseValueAtEdit: job.oldRack || '',
+                BaseCommitID: '',
+                BaseCommitAt: '',
+                ChangeSource: job.source || 'api/audit-batch',
+                ChangeNote: job.note || '',
+                IsConflict: 'FALSE',
+                ResolvedValue: '',
+                ResolvedAt: '',
+                ResolvedBy: ''
+              });
+            }
+            return { records };
+          },
+          { maxRetry: 4, requireExisting: true }
+        );
+      } catch (historyErr) {
+        console.error('[SERVER] datachangehistory.csv update failed in audit-batch:', historyErr && historyErr.message ? historyErr.message : historyErr);
+      }
+    }
 
-res.json({
-success: true,
-message: 'Audit batch completed',
-saved: {
-statusLogs: statusCount,
-locationLogs: locationCount,
-moldsUpdated: moldUpdateCount,
-cuttersUpdated: cutterUpdateCount
-}
-});
-} catch (error) {
-const st = getHttpStatus(error);
-if (st) return res.status(st).json({ success: false, message: error.message });
-console.error('[SERVER] Error in audit-batch:', error);
-res.status(500).json({ success: false, message: error.message });
-}
+    res.json({
+      success: true,
+      message: 'Audit batch completed',
+      saved: {
+        statusLogs: statusCount,
+        locationLogs: locationCount,
+        moldsUpdated: moldUpdateCount,
+        cuttersUpdated: cutterUpdateCount
+      }
+    });
+  } catch (error) {
+    const st = getHttpStatus(error);
+    if (st) return res.status(st).json({ success: false, message: error.message });
+    console.error('[SERVER] Error in audit-batch:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
 });
 
 
@@ -1626,8 +1626,8 @@ app.post('/api/delete-log', async (req, res) => {
   try {
     const { filename, logId } = req.body || {};
     const targetFilename = String(filename || '').trim().startsWith('web')
-    ? String(filename || '').trim()
-    : `web${String(filename || '').trim()}`;
+      ? String(filename || '').trim()
+      : `web${String(filename || '').trim()}`;
 
     if (!filename || !logId) {
       return res.status(400).json({ success: false, message: 'Missing filename or logId' });
@@ -1664,7 +1664,7 @@ app.post('/api/delete-log', async (req, res) => {
 
 app.post('/api/deletelog', async (req, res) => {
   req.url = '/api/delete-log';
-  return app._router.handle(req, res, () => {});
+  return app._router.handle(req, res, () => { });
 });
 
 // ============================================
@@ -1674,7 +1674,6 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`✅ Server v8.2.6 running on port ${PORT}`);
   console.log(`📋 Endpoints:`);
-  console.log(`  - /api/latest-sha (GET)  [NEW v8.2.7]`);
   console.log(`  - /api/health (GET)`);
   console.log(`  - /api/add-log (POST)`);
   console.log(`  - /api/update-item (POST)`);

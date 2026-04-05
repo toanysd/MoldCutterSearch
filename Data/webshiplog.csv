@@ -1,1 +1,2 @@
 ShipID,LegacyShipID,CustomerID,ItemTypeID,ShipItemName,ShipDate,ToCompanyID,FromCompanyID,ShipItemType,ShipStatus,FromCompany,ToCompany,MoldID,CutterID,FrameID,OtherEquipID,WaterBaseID,ShipNotes,DateEntry,handler,EmployeeID,WebUUID,UpdatedAt,UpdatedBy
+SHIP429502,,,,,2026-04-05,,,,,7,2,5765,,,,,Teflon Return,,,1,,,

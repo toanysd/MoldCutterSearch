@@ -1,4 +1,5 @@
 DataChangeID,TableName,RecordID,RecordIDField,FieldName,OldValue,NewValue,ChangedAt,ChangedBy,BaseValueAtEdit,BaseCommitID,BaseCommitAt,ChangeSource,ChangeNote,IsConflict,ResolvedValue,ResolvedAt,ResolvedBy
+DCH1775446284491turm6,webteflonlog,TL263046,TeflonLogID,TeflonStatus,ACTIVE,DELETED,2026-04-06T03:31:24.491Z,1,,,,teflon_wizard_delete,User trigger deletion,FALSE,,,
 DCH1775446263047s08wz,webteflonlog,TL263046,TeflonLogID,TeflonStatus,,Requested,2026-04-06T03:31:03.047Z,1,,,,teflon_wizard,Wizard Update,FALSE,,,
 DCH1775445390888wa5kk,webteflonlog,TL425196,TeflonLogID,TeflonStatus,Approved,Sent,2026-04-06T03:16:30.888Z,1,,,,teflon_wizard,Wizard Update,FALSE,,,
 DCH17754446231934m8v8,webteflonlog,TL425196,TeflonLogID,TeflonStatus,Requested,Approved,2026-04-06T03:03:43.193Z,1,,,,teflon_wizard,Wizard Update,FALSE,,,

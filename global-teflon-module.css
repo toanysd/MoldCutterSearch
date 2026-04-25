@@ -1,0 +1,824 @@
+/* v9.0.2 */
+/* global-teflon-module.css */
+
+
+
+/* Badge colors - Teflon specific */
+
+:root {
+
+    --tef-badge-unprocessed: #6c757d;
+
+    --tef-badge-pending: #fd7e14;
+
+    --tef-badge-approved: #dc3545;
+
+    --tef-badge-processing: #21808d;
+
+    --tef-badge-completed: #28a745;
+
+
+
+    --tef-row-unprocessed: #ffffff;
+
+    --tef-row-pending: rgba(253, 126, 20, 0.06);
+
+    --tef-row-approved: rgba(220, 53, 69, 0.06);
+
+    --tef-row-processing: rgba(33, 128, 141, 0.06);
+
+    --tef-row-completed: rgba(40, 167, 69, 0.06);
+
+
+
+    --tef-warning-7: rgba(253, 126, 20, 0.20);
+
+    --tef-warning-9: rgba(253, 126, 20, 0.30);
+
+    --tef-warning-11: rgba(253, 126, 20, 0.50);
+
+    --tef-warning-14: #dc3545;
+
+}
+
+
+
+/* History DataGrid Common Rules */
+
+.gt-module-container {
+
+    padding: 16px;
+
+    background-color: var(--mcs-bg);
+
+    height: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+}
+
+
+
+.gt-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 16px;
+
+    background: var(--mcs-surface);
+
+    padding: 12px 20px;
+
+    border-radius: 8px;
+
+    box-shadow: var(--mcs-shadow);
+
+}
+
+
+
+.gt-header h2 {
+
+    margin: 0;
+
+    font-size: 16px;
+
+    color: var(--color-text);
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+}
+
+
+
+.gt-actions {
+
+    display: flex;
+
+    gap: 12px;
+
+}
+
+
+
+.gt-btn {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    padding: 8px 16px;
+
+    background: #f1f5f9;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 6px;
+
+    cursor: pointer;
+
+    font-size: 14px;
+
+    color: #475569;
+
+    transition: background 0.2s;
+
+    white-space: nowrap;
+
+}
+
+
+
+.gt-btn:hover {
+
+    background: #e2e8f0;
+
+}
+
+
+
+/* Stats Component (Teflon Top Row) */
+
+.gt-stats {
+
+    display: flex;
+
+    gap: 8px;
+
+    margin-bottom: 12px;
+
+    flex-wrap: wrap;
+
+}
+
+
+
+.gt-stat-card {
+
+    flex: 1;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 8px 12px;
+
+    background: #fff;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 6px;
+
+    min-width: 100px;
+
+    cursor: pointer;
+
+    box-shadow: var(--mcs-shadow);
+
+    transition: all 0.2s;
+
+}
+
+
+
+.gt-stat-card:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+
+}
+
+
+
+.gt-stat-card.gt-stat-active {
+
+    outline: 2px solid var(--color-primary);
+
+    background: #f0fdf4;
+
+}
+
+
+
+.gt-stat-icon {
+
+    width: 28px;
+
+    height: 28px;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    color: #fff;
+
+}
+
+
+
+.gt-stat-icon.total {
+
+    background: var(--color-primary);
+
+}
+
+
+
+.gt-stat-icon.pending {
+
+    background: var(--tef-badge-pending);
+
+}
+
+
+
+.gt-stat-icon.approved {
+
+    background: var(--tef-badge-approved);
+
+}
+
+
+
+.gt-stat-icon.processing {
+
+    background: var(--tef-badge-processing);
+
+}
+
+
+
+.gt-stat-icon.completed {
+
+    background: var(--tef-badge-completed);
+
+}
+
+
+
+.gt-stat-label {
+
+    font-size: 11px;
+
+    line-height: 1.2;
+
+    color: #64748b;
+
+    font-weight: 600;
+
+}
+
+
+
+.gt-stat-value {
+
+    font-size: 18px;
+
+    font-weight: 700;
+
+    color: #1e293b;
+
+    line-height: 1;
+
+}
+
+
+
+.gt-table-container {
+
+    flex: 1;
+
+    background: var(--mcs-surface);
+
+    border-radius: 8px;
+
+    box-shadow: var(--mcs-shadow);
+
+    overflow: auto;
+
+}
+
+
+
+.gt-table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+    font-size: 90%;
+
+}
+
+
+
+.gt-table th {
+
+    position: sticky;
+
+    top: 0;
+
+    background: #f8fafc;
+
+    color: #64748b;
+
+    padding: 8px 12px;
+
+    text-align: left;
+
+    font-weight: 600;
+
+    border: 1px solid #e2e8f0;
+
+    z-index: 10;
+
+    position: relative;
+
+    user-select: none;
+
+    cursor: pointer;
+
+}
+
+
+
+.gt-table th:hover {
+
+    background: #e2e8f0;
+
+}
+
+
+
+.gt-table td {
+
+    padding: 8px 12px;
+
+    border: 1px solid #e2e8f0;
+
+    color: var(--color-text);
+
+    vertical-align: middle;
+
+}
+
+
+
+.gt-resizer {
+
+    position: absolute;
+
+    top: 0;
+
+    right: 0;
+
+    width: 5px;
+
+    cursor: col-resize;
+
+    user-select: none;
+
+    height: 100%;
+
+    z-index: 15;
+
+    background-color: transparent;
+
+    transition: background-color 0.2s;
+
+}
+
+
+
+.gt-resizer:hover,
+
+.gt-resizer.resizing {
+
+    background-color: #94a3b8;
+
+}
+
+
+
+.gt-table tr:hover {
+
+    background: #f8fafc;
+
+}
+
+
+
+/* Base Cells Rules */
+
+.gt-cell-status,
+
+.gt-cell-date,
+
+.gt-cell-id {
+
+    white-space: nowrap;
+
+}
+
+
+
+.gt-cell-name {
+
+    min-width: 120px;
+
+    font-weight: 600;
+
+}
+
+
+
+/* Sort indicator */
+
+.gt-sort-indicator::after {
+
+    font-size: 10px;
+
+    margin-left: 5px;
+
+}
+
+
+
+.gt-table th.sorted-asc .gt-sort-indicator::after {
+
+    content: "▲";
+
+}
+
+
+
+.gt-table th.sorted-desc .gt-sort-indicator::after {
+
+    content: "▼";
+
+}
+
+
+
+/* Teflon Specific Cells */
+
+.tef-badge {
+
+    display: inline-block;
+
+    padding: 4px 10px;
+
+    border-radius: 12px;
+
+    font-size: 11px;
+
+    font-weight: bold;
+
+    color: white;
+
+    text-align: center;
+
+}
+
+
+
+.tef-badge-processing {
+
+    background: var(--tef-badge-processing);
+
+}
+
+
+
+.tef-badge-pending {
+
+    background: var(--tef-badge-pending);
+
+}
+
+
+
+.tef-badge-approved {
+
+    background: var(--tef-badge-approved);
+
+}
+
+
+
+.tef-badge-completed {
+
+    background: var(--tef-badge-completed);
+
+}
+
+
+
+.tef-badge-unprocessed {
+
+    background: var(--tef-badge-unprocessed);
+
+    color: white;
+
+}
+
+
+
+.tef-row-processing {
+
+    background: var(--tef-row-processing);
+
+}
+
+
+
+.tef-row-pending {
+
+    background: var(--tef-row-pending);
+
+}
+
+
+
+.tef-row-approved {
+
+    background: var(--tef-row-approved);
+
+}
+
+
+
+.tef-row-completed {
+
+    background: var(--tef-row-completed);
+
+}
+
+
+
+.tef-row-unprocessed {
+
+    background: var(--tef-row-unprocessed);
+
+}
+
+
+
+/* Date overdue strings */
+
+.tef-req-overdue-14 {
+
+    font-weight: bold;
+
+    color: white;
+
+    background: var(--tef-warning-14);
+
+    padding: 2px 6px;
+
+    border-radius: 4px;
+
+}
+
+
+
+.tef-req-overdue-11 {
+
+    font-weight: bold;
+
+    background: var(--tef-warning-11);
+
+    padding: 2px 6px;
+
+    border-radius: 4px;
+
+}
+
+
+
+.tef-req-overdue-9 {
+
+    font-weight: bold;
+
+    background: var(--tef-warning-9);
+
+    padding: 2px 6px;
+
+    border-radius: 4px;
+
+}
+
+
+
+.tef-req-overdue-7 {
+
+    font-weight: bold;
+
+    background: var(--tef-warning-7);
+
+    padding: 2px 6px;
+
+    border-radius: 4px;
+
+}
+
+
+
+.gt-search-wrapper {
+
+    position: relative;
+
+    display: inline-flex;
+
+    align-items: center;
+
+}
+
+
+
+.gt-search-wrapper i {
+
+    position: absolute;
+
+    left: 10px;
+
+    color: #94a3b8;
+
+}
+
+
+
+.gt-search-input {
+
+    padding: 8px 12px 8px 32px;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 6px;
+
+    outline: none;
+
+    font-size: 14px;
+
+    width: 250px;
+
+}
+
+
+
+.gt-toggle-mobile {
+
+    display: none;
+
+}
+
+
+
+@media (max-width: 768px) {
+
+    .gt-module-container {
+
+        padding: 6px;
+
+    }
+
+
+
+    .gt-header {
+
+        flex-direction: column;
+
+        align-items: flex-start;
+
+    }
+
+
+
+    .gt-actions {
+
+        width: 100%;
+
+        display: flex;
+
+        gap: 6px;
+
+    }
+
+
+
+    .gt-search-wrapper {
+
+        flex: 1;
+
+        width: 100%;
+
+    }
+
+
+
+    .gt-search-input {
+
+        width: 100%;
+
+    }
+
+
+
+    .desktop-only {
+
+        display: none !important;
+
+    }
+
+
+
+    .gt-toggle-mobile {
+
+        display: inline-flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        gap: 6px;
+
+        padding: 8px 16px;
+
+        background: #eef2ff;
+
+        border: 1px solid #c7d2fe;
+
+        border-radius: 6px;
+
+        color: #4f46e5;
+
+        font-weight: bold;
+
+        width: 100%;
+
+    }
+
+
+
+    .gt-table th,
+
+    .gt-table td {
+
+        font-size: 11px;
+
+        padding: 6px 4px;
+
+    }
+
+
+
+    .gt-table-container:not(.table-unlocked) .gt-col-hidden-mobile {
+
+        display: none !important;
+
+    }
+
+
+
+    .gt-table-container.table-unlocked {
+
+        overflow-x: auto;
+
+    }
+
+}
+
+
+
+/* Sidebar Nav Badge Fix when collapsed */
+
+.sidebar.collapsed .nav-badge.notify-badge {
+
+    right: 8px !important;
+
+    top: 8px !important;
+
+}

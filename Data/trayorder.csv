@@ -1,0 +1,3 @@
+﻿TrayOrderID,TrayOrderDate,CustomerID,TrayID,TrayOrderPerson,TrayOderQuantity,TrayDeliveryDate,TrayOrderStatus,TrayOrderNotes,TrayOrderCustomerID
+1,3/10/2026,9,5230,小林,44,3/24/2026,NEW,LOT 261881; 出荷 2026-03-23; 納期 2026-03-24; MTM-194; 22 shot; 44 pcs; 台湾機成形; 別抜き; 袋詰め; PET黒0.70 640,9
+2,3/10/2026,1,1239,seed-plan,120,3/20/2026,NEW,seed-plan-20260310-01,1

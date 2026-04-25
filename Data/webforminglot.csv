@@ -1,0 +1,1 @@
+﻿FormingLotID,ProductionScheduleItemID,JobTrayID,JobID,LotNo,MachineID,EmployeeID,StartTime,EndTime,InputQty,GoodQty,NGQty,HoldQty,ReworkQty,LotStatus,ShipDate,PackageSpec,InspectionRequired,Notes,CreatedBy,CreatedDate,UpdatedBy,UpdatedDate

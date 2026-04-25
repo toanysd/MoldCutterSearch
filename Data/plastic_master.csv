@@ -1,0 +1,657 @@
+plastic_id,plastic_code,plastic_family,plastic_subtype,thickness_mm,width_mm,standard_length_m,color_code_raw,color_name_normalized,electrical_property,silicone_status_normalized,additive_flags,additive_text_raw,appearance_text_raw,an_code_raw,an_meaning_normalized,si_code_raw,ab_code_raw,status_review,remarks_raw,is_active,created_by,created_at,updated_at
+de9dffdc-e5ea-467d-a64c-16bc0ebcbf72,PLA-5A5D0EE9,PS,,0.3,520.0,600.0,N,natural,conductive,,,,,AN,,,,approved,PS(N)0.30x520x600 AN,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+4305b466-3b03-46bb-ad58-ee0166ac7247,PLA-9C8DD259,PS,,0.48,420.0,400.0,導電,,conductive,,,,,,,,,approved,PS(導電)0.48x420x400,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+0dd44816-f369-4302-94aa-b707d9490db1,PLA-1855EDA8,PET,,0.38,520.0,450.0,CL,clear,conductive,,,,,AN,,,,approved,PET(CL)0.38x520x450 AN(AB材),1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+d253998e-76fd-45f1-aa89-fa0b5bed019b,PLA-715E1C4C,PS,PST,0.8,520.0,250.0,N,natural,conductive,unknown,,,,AN,,SI,,approved,PST(N)0.80x520x250 AN Si,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+74a4b46b-abbe-4410-86ed-8afd3c4afa63,PLA-BC1C69DB,PS,,0.38,405.0,500.0,N,natural,conductive,,,,,,,,,approved,PS(N)0.38x405x500AN,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+c7ad73a2-9337-4478-9f65-90bc590f65a2,PLA-768584FC,PS,,0.48,550.0,400.0,導電,,conductive,,,,,,,,,approved,PS(導電)0.48x550x400,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+fb85db7a-e4aa-4d3a-9f00-8f20fe5cf199,PLA-5CFC83D5,PET,,0.38,520.0,450.0,CL,clear,conductive,unknown,,,,,,SI,,approved,PET(CL)0.38x520x450 SI,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+475a938a-23d5-4da2-853e-fe3ea47f6d3b,PLA-601CD626,PS,PST,0.8,670.0,200.0,N,natural,conductive,unknown,,,,AN,,SI,,approved,PST(N)0.80x670x200 AN Si,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+8c87f8a9-e9d5-4bad-95ff-bbf8f907e056,PLA-8141BA3D,PS,,0.38,520.0,500.0,N,natural,conductive,,,,,AN,,,,approved,PS(N)0.38x520x500 AN,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+857aa17c-051a-47bd-b4d6-deb688b5e5f4,PLA-660DAF0A,PS,,0.58,420.0,350.0,導電,,conductive,,,,,,,,,approved,PS(導電)0.58x420x350,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+f6a8c42c-1036-4026-8642-cbfafb187159,PLA-8AA543C5,PET,,0.48,520.0,350.0,CL,clear,conductive,,,,,,,,,approved,PET(CL)0.48x520x350AN,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+1d05e7a7-1b4e-4256-ba2a-d279d0d3f25e,PLA-F3E99861,PS,PST,0.9,520.0,200.0,N,natural,conductive,unknown,,,,AN,,SI,,approved,PST(N)0.90x520x200 AN Si,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+e6823834-668a-42df-bf17-41330a53488e,PLA-588BA4DA,PS,,0.48,405.0,400.0,N,natural,conductive,,,,,AN,,,,approved,PS(N)0.48x405x400 AN,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+1e4e36e2-02a3-4310-b89f-584801b99c42,PLA-4C3582C8,PS,,0.58,485.0,350.0,導電,,conductive,,,,,,,,,approved,PS(導電)0.58x485x350,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+80eee832-9e64-4e64-8bb2-7c791c55933a,PLA-5264A992,PET,,0.58,520.0,300.0,CL,clear,conductive,,,,,AN,,,,approved,PET(CL)0.58x520x300 AN,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+ed756d32-b6d8-412d-a64f-28f4474cb062,PLA-D1458DC5,PS,PST,0.88,585.0,200.0,N,natural,conductive,unknown,,,,AN,,SI,,approved,PST(N)0.88x585x200 AN SI 0m,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+d4676442-1da6-402b-9915-6f582c9d2a87,PLA-46B1F2EC,PS,PST,0.98,520.0,200.0,N,natural,conductive,unknown,,,,AN,,SI,,approved,PST(N)0.98x520x200 AN Si,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+91698caa-2517-4292-8d7b-db1a0ad1fffb,PLA-761F7A08,PS,,0.48,405.0,400.0,N,natural,conductive,unknown,,,,AN,,SI,,approved,PS(N)0.48x405x400 AN SI,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+6545fc23-4a8f-451f-b479-0b3c53a0630b,PLA-D2CD2202,PS,,0.68,640.0,200.0,導電,,conductive,,,,,,,,,approved,PS(導電)0.68x640x200(マルアイ),1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+b4b54436-cf77-4dd5-a1b8-ec1f03314a48,PLA-8A95E5B5,PET,,0.68,350.0,300.0,CL,clear,conductive,unknown,,,,,,SI,,approved,PET(CL)0.68x350x300m SI,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+dd011735-9615-4b08-bfa0-acaf8ce8c533,PLA-38CBC1F0,PS,PST,0.98,640.0,200.0,N,natural,conductive,unknown,,,,AN,,SI,,approved,PST(N)0.98X640X200 AN SI,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+64208661-c251-4361-aa8e-38035c441f9f,PLA-52DBF07E,PS,,0.48,520.0,400.0,N,natural,conductive,,,,,AN,,,,approved,PS(N)0.48x520x400 AN,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+f93f7c51-6f78-464e-928e-b786d52466db,PLA-1E5A1843,PS,,0.7,640.0,220.0,,,conductive,,,,,,,,,approved,ミクローム0.70x640x220,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+74918730-9565-4d94-959d-7384399b3f33,PLA-E7E9C6FE,PET,,0.68,640.0,200.0,CL,clear,conductive,,,,,,,,,approved,PET(CL)0.68x640x200SI,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+e7369eb6-cd38-4f07-ab78-61c011717fe9,PLA-0A85234E,PS,PST,1.18,520.0,200.0,N,natural,conductive,unknown,,,,AN,,SI,,approved,PST(N)1.18x520x200 AN Si,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+ad042650-de25-4d43-b2f9-8b4f45932e96,PLA-47B7DDFB,PS,,0.48,550.0,400.0,N,natural,conductive,,,,,AN,,,,approved,PS(N)0.48x550x400 AN,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+f7f6c4be-3a0c-4567-890b-2dcdf0b5db09,PLA-02EBCACF,PS,,0.78,405.0,250.0,導電,,conductive,,,,,,,,,approved,PS(導電)0.78x405x250,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+798c2107-72d1-4e6c-bbd8-006d88d4f7d8,PLA-344A300F,PET,,0.78,520.0,200.0,CL,clear,conductive,,,,,AN,,,,approved,PET(CL)0.78x520x200m AN,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+ed90251a-835f-42e0-87d3-42f72ca5c195,PLA-18E16C07,PS,PST,0.8,550.0,250.0,B,black_or_blue_or_brown_unconfirmed,conductive,,,,,,,,,approved,PST(B)0.8x550x250 250m,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+881828cf-5c15-406b-b2d7-74b38eaaf089,PLA-112FA9BF,PS,,0.58,405.0,350.0,N,natural,conductive,unknown,,,,AN,,SI,,approved,PS(N)0.58x405x350 AN Si,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+bb4c21e6-d945-40e1-a80c-8a87fe702469,PLA-9740F724,PS,,0.78,435.0,250.0,導電,,conductive,,,,,,,,,approved,PS(導電)0.78x435x250,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+ca9edfdd-7198-47f8-b4c3-e9239d103c2f,PLA-B62920FA,PET,,0.78,520.0,200.0,CL,clear,conductive,,,,,,,,,approved,PET(CL)0.78x520x200mSI,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+52592ed5-ad02-46eb-9f5a-ad5c6643ee2c,PLA-75A68694,PS,PST,0.8,640.0,100.0,B,black_or_blue_or_brown_unconfirmed,conductive,,,,,,,,,approved,PST(B)0.8x640x100 65m,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+2ca5e75b-1961-43fa-b31e-b17c6c81e03a,PLA-0CCD42CF,PS,PST,1.0,550.0,200.0,B,black_or_blue_or_brown_unconfirmed,conductive,,,,,,,,,approved,PST(B)1.0x550x200 800m,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+b7392afe-2a72-4ea1-81d6-c5cee0c9977b,PLA-536D8F15,PS,,0.58,405.0,350.0,N,natural,conductive,,,,,AN,,,,approved,PS(N)0.58x405x350 AN,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+7c702acd-fb35-4b37-87b0-69b9bd1b5b70,PLA-6B08ECE2,PS,,0.78,520.0,250.0,導電,,conductive,,,,,,,,,approved,PS(導電)0.78x520x250,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+b19c9145-4efe-47e7-8a98-6af351bc6f56,PLA-89B43553,PET,,0.78,640.0,200.0,CL,clear,conductive,,,,,,,,,approved,PET(CL)0.78x640x200AN,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+8a2bd8db-1b0c-4334-9aa0-b85b9a373ef0,PLA-94D4D44E,PS,PST,1.0,550.0,200.0,グレー,gray,conductive,unknown,,,,AN,,SI,,approved,PST(グレー)1.0x550x200 AN Si 600m,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+4df8dc41-53e5-4c10-92c1-efc3abfdf8e2,PLA-3C33A81D,PS,,0.58,435.0,350.0,N,natural,normal,unknown,,,,AN,,SI,,approved,PS(N)0.58x435x350 AN Si,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+f75b9b4a-dd8d-441c-a45e-f6770a98b9d5,PLA-1DF9F96F,PS,,0.98,405.0,250.0,導電,,conductive,,,,,,,,,approved,PS(導電)0.98x405x250ＶＮ,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+f1a654ce-4e4c-411e-b1c1-90da6465bc06,PLA-CF264B3E,PS,,0.58,520.0,350.0,N,natural,normal,,,,,AN,,,,approved,PS(N)0.58x520x350 AN,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+102fcb82-6d02-4ea9-a518-2337b9a218dc,PLA-F5E64A33,PET,,0.98,405.0,200.0,CL,clear,normal,,,,,,,,,approved,PET(CL)0.98x405x200mSI,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+cf2a10d6-7862-46b7-a5af-0dc8a9935654,PLA-CE10B5BA,PS,,0.58,520.0,350.0,N,natural,normal,unknown,,,,AN,,SI,,approved,PS(N)0.58x520x350 AN Si,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+018f2083-f314-4d16-b66e-5ee8b81e638b,PLA-92C6C6BA,PS,,1.0,640.0,200.0,導電,,conductive,,,,,,,,,approved,PS(導電)1.00x640x200,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+8e6f331c-34ca-4645-9859-47afd4b40266,PLA-857B5584,PET,,0.98,520.0,200.0,CL,clear,normal,,,,,AN,,,,approved,PET(CL)0.98x520x200m AN AB剤,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+ff4d8b71-b7b0-412a-a575-2a4f25e0c6b8,PLA-9E776FD6,PS,,0.58,520.0,350.0,W,white,normal,unknown,,,,AN,,SI,,approved,PS(W)0.58x520x350 AN Si,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+089cb273-5f28-452b-97bb-9d2141468aca,PLA-12A02874,PS,,1.18,435.0,200.0,導電,,conductive,,,,,,,,,approved,PS(導電)1.18x435x200,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+46b3e291-a562-4a61-bae9-d5c712618620,PLA-B82A02CE,PET,,0.98,550.0,200.0,CL,clear,normal,,,,,AN,,,,approved,PET(CL)0.98x550x200m AN AB剤,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+8d37bcb2-b6c4-4609-afbc-aca146068ca7,PLA-D8DA63DB,PET,A-PET,0.5,640.0,200.0,,,normal,,,,,,,,,approved,C-APET0.5x640x200 0m,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+3be2c9ad-5fc2-4c27-ba17-4a42873ea0de,PLA-18A58C94,PET,A-PET,0.5,640.0,200.0,TB,tb_unconfirmed,normal,,,,,,,,,approved,TB-APET0.5x640x200 49m,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+756eae83-4617-4761-bb3d-dbc3397ce4a0,PLA-86DEED99,PS,,0.58,550.0,350.0,N,natural,normal,,,,,AN,,,,approved,PS(N)0.58x550x350 AN,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+0b2091c0-34f9-4fca-b0b8-17a830287605,PLA-1D10EBE0,PS,,1.18,520.0,200.0,導電,,conductive,,,,,,,,,approved,PS(導電)1.18x520x200,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+b80f0153-e082-4f2c-916f-ac8b31fcc49d,PLA-9B756DB8,PET,,0.98,640.0,150.0,CL,clear,normal,unknown,,,,,,SI,,approved,PET(CL)0.98x640x150 SI,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+00e75f51-a1f1-4661-aa86-adfb9705c1d5,PLA-F640273C,PET,A-PET,0.7,640.0,150.0,TB,tb_unconfirmed,normal,,,,,,,,,approved,TB-APET0.7x640x150 135m,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+db66aa7d-08f6-4c17-b52d-f3f024ed4b02,PLA-D06CD789,PS,,0.58,640.0,350.0,N,natural,normal,unknown,,,,,,SI,,approved,PS(N)0.58x640x350 Si,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+ec96d5be-df2d-4ec1-bf13-ad70740709b1,PLA-7B3CEAD1,PS,,1.48,520.0,100.0,導電,,conductive,,,,,,,,,approved,PS(導電)1.48x520x100 255m,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+12a3b58c-6ada-4248-8638-930af080603f,PLA-4130850B,PS,,0.68,435.0,300.0,N,natural,conductive,unknown,,,,AN,,SI,,approved,PS(N)0.68x435x300 AN Si,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+e3b0395f-2591-4f70-993e-4a2ff5d4531c,PLA-4592D7BF,PP,,0.38,405.0,500.0,N,natural,conductive,,,,,AN,,,,approved,PP(N)0.38x405x500 AN,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+177efef0-6aed-49e2-b070-b8ad88bb3bed,PLA-26877075,PET,,0.4,640.0,350.0,G,gray_or_green_unconfirmed,conductive,,,,,,,,,approved,PET(G)0.40x640x350 レグルス,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+a65d5203-51c6-4652-8965-14745c74facd,PLA-50DA7A99,PS,,0.68,640.0,300.0,N,natural,conductive,unknown,,,,,,SI,,approved,PS(N)0.68x640x300 Si,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+b828c257-5671-413f-aade-7dcea16da980,PLA-0756FC35,PP,,0.38,520.0,500.0,N,natural,conductive,,,,,AN,,,,approved,PP(N)0.38x520x500 AN,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+e34f30cd-6b98-40b1-96a4-92f2ce8ac8e4,PLA-D858EADC,PET,,0.48,520.0,300.0,G,gray_or_green_unconfirmed,conductive,,,,,,,,,approved,PET(G)0.48x520x300 レグルス,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+78f41439-ad6c-4e5c-a563-0b7e72a6b05b,PLA-06CB98A3,PS,,0.78,405.0,250.0,N,natural,conductive,unknown,,,,AN,,SI,,approved,PS(N)0.78x405x250 AN Si,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+271fcf94-0e64-466d-a91f-8292c2e38bdc,PLA-9A42A08E,PP,,0.38,565.0,500.0,N,natural,conductive,unknown,,,,,,SI,,approved,PP(N)0.38x565x500AN SI,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+e71b63aa-0deb-44f5-acd4-c2a1386df6bb,PLA-11840517,PET,,0.58,520.0,300.0,G,gray_or_green_unconfirmed,conductive,,,,,,,,,approved,PET(G)0.58x520x300,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+e01afa05-e6dd-4636-9e63-524f224892eb,PLA-AC85B5B8,PS,,0.8,640.0,250.0,N,natural,conductive,unknown,,,,,,SI,,approved,PS(N)0.80x640x250 Si 0m,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+10f08a85-5e42-403c-8711-706572bb4681,PLA-CC5F95C1,PS,,0.78,405.0,250.0,N,natural,conductive,,,,,AN,,,,approved,PS(N)0.78x405x250 AN,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+308810ca-ea95-47ed-94f6-5fbaef98acf5,PLA-99D4C2C7,PP,,0.48,405.0,400.0,N,natural,conductive,,,,,AN,,,,approved,PP(N)0.48x405x400 AN,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+06fe0b37-2a48-48d5-a869-e62ae316d82e,PLA-227A7B38,PET,,0.68,550.0,150.0,G,gray_or_green_unconfirmed,conductive,,,,,,,,,approved,PET(G)0.68x550x150,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+63e0b45d-6625-4251-8ccf-4aa42931d330,PLA-4365E4D7,PS,,1.0,640.0,150.0,N,natural,conductive,,,,,,,,,approved,PS(N)1.0x640x150Si 859m,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+95ed964a-d53f-4d5e-9bb9-d3b01e7f05c4,PLA-6719D014,PS,,0.78,435.0,300.0,N,natural,conductive,unknown,,,,AN,,SI,,approved,PS(N)0.78x435x300 AN Si,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+cc430b34-879a-4f67-b84e-98b26fe4e5f9,PLA-CE17A793,PP,,0.48,520.0,400.0,N,natural,conductive,,,,,AN,,,,approved,PP(N)0.48x520x400 AN,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+db5a31b3-6621-472e-b353-577bdabc5433,PLA-10F4211F,PET,,0.68,520.0,250.0,B,black_or_blue_or_brown_unconfirmed,conductive,,,,,,,,,approved,PET(B)0.68x520x250(レグルス) 400m,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+2a2fa83c-248b-430c-ae2e-c4c683de0225,PLA-12E017FB,PS,,0.78,520.0,250.0,N,natural,conductive,,,,,AN,,,,approved,PS(N)0.78x520x250 AN,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+2cd3ad66-9d0a-4d11-9c79-7ce0d92ccd3a,PLA-5F50FB3A,PP,,0.48,550.0,400.0,N,natural,conductive,,,,,AN,,,,approved,PP(N)0.48x550x400 AN,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+b4d753cf-9106-4d27-8468-68abfe3053af,PLA-A2F91680,PET,,0.68,550.0,150.0,B,black_or_blue_or_brown_unconfirmed,conductive,,,,,,,,,approved,PET(B)0.68x550x150 0m,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+eb6dfeda-d4a6-4be4-be2e-f20a1ab7d770,PLA-C92D7AA3,PET,,0.68,640.0,150.0,B,black_or_blue_or_brown_unconfirmed,conductive,,,,,,,,,approved,PET(B)0.68x640x150 マルアイ,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+194ece59-4b8e-4a02-80ce-78d8ac9364f7,PLA-FCB4A12E,PS,,0.55,520.0,300.0,W,white,conductive,,,,,,,,,approved,PS(W)0.55x520x300 300m,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+1560e5af-86b3-4af7-b6f3-583e34896a8f,PLA-9BC60501,PS,,0.78,520.0,250.0,N,natural,normal,unknown,,,,AN,,SI,,approved,PS(N)0.78x520x250 AN Si,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+4ca2580c-51df-467e-a59f-93a27786d17e,PLA-AF7DE7BB,PP,,0.5,640.0,300.0,N,natural,normal,,,,,,,,,approved,PP(N)0.5x640x300(共栄),1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+f65c43a4-3b6e-4246-8c4f-fa18ed015aa0,PLA-4BF7524D,PET,,0.78,420.0,250.0,G,gray_or_green_unconfirmed,normal,,,,,,,,,approved,PET(G)0.78x420x250(レグルス),1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+ffa8c66b-55ec-4300-91ac-d6242c2143f6,PLA-92824F33,PS,,0.78,550.0,250.0,N,natural,normal,unknown,,,,AN,,SI,,approved,PS(N)0.78x550x250 AN Si,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+cab076d9-493b-4a46-9e13-5430132603c6,PLA-70C1CD04,PP,,0.58,405.0,350.0,N,natural,normal,,,,,AN,,,,approved,PP(N)0.58x405x350 AN,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+e41c00a8-226b-40ce-8051-56d83cc52cf0,PLA-21C4E3C6,PP,,0.7,520.0,300.0,B,black_or_blue_or_brown_unconfirmed,normal,,,,,AN,,,,approved,PP(B)0.7x520x300 AN 1342m,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+250c86a7-3494-4cd9-abfa-a10836ee251f,PLA-7254E2E5,PET,,0.78,520.0,250.0,G,gray_or_green_unconfirmed,normal,,,,,,,,,approved,PET(G)0.78x520x250,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+d4f2c52e-1dfa-43c4-bfb5-d6ff493ba0d7,PLA-09F7B641,PP,,1.0,405.0,150.0,B,black_or_blue_or_brown_unconfirmed,normal,,,,,,,,,approved,PP(B)1.0x405x150(マルアイ)10m,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+1b2bfd0c-3f77-494f-83b8-424dd7c9149e,PLA-16F80149,PS,,0.98,405.0,200.0,N,natural,normal,unknown,,,,AN,,SI,,approved,PS(N)0.98x405x200 AN Si,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+28d7ab3c-9bb6-4a43-98c8-75415db6c7bf,PLA-35387410,PP,,0.58,520.0,350.0,N,natural,normal,,,,,AN,,,,approved,PP(N)0.58x520x350 AN,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+230093b0-5b2c-4d73-8f1c-0e423468cf6a,PLA-449D1307,PP,,1.0,520.0,200.0,B,black_or_blue_or_brown_unconfirmed,normal,,,,,,,,,approved,PP(B)1.0X520X200(ミクローム) 240m,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+7ab39207-1d04-43a8-a32d-9e0e42dd2d3e,PLA-A4B40990,PP,,1.0,640.0,200.0,B,black_or_blue_or_brown_unconfirmed,normal,,,,,,,,,approved,PP(B)1.0X640X200(ミクローム) 0m,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+925be86a-f2c1-4844-a8b8-1a565402243a,PLA-39EF13F4,PS,,0.98,435.0,250.0,N,natural,normal,unknown,,,,AN,,SI,,approved,PS(N)0.98x435x250 AN SI,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+d4357d49-ab54-4036-ad95-6d18ae511252,PLA-BC278803,PP,,0.58,550.0,350.0,N,natural,normal,,,,,AN,,,,approved,PP(N)0.58x550x350 AN,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+9126abaa-cbb6-4c9f-9cac-c5f46c21d290,PLA-29926858,PET,,0.98,550.0,150.0,G,gray_or_green_unconfirmed,normal,,,,,,,,,approved,PET(G)0.98x550x150,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+c14a317f-deff-45fe-8e72-0386b4093771,PLA-47207E33,PP,,0.98,550.0,200.0,N,natural,normal,,,,,,,,,approved,PP(N)0.98x550x200 スプ 1087m,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+5cd31f3e-c843-4a94-bbf2-95506832db4d,PLA-3A64F99B,PS,,0.98,520.0,200.0,N,natural,normal,,,,,AN,,,,approved,PS(N)0.98x520x200 AN,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+2bf34f94-f0a1-408a-9afe-eb0bf79c2643,PLA-3E6CACFE,PET,,1.0,550.0,150.0,B,black_or_blue_or_brown_unconfirmed,normal,,,,,,,,,approved,PET(B)1.0x550x150(レグルス),1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+ca14a75a-d62d-4154-9284-a4ec34c2c3c7,PLA-2A4378A5,PS,,0.98,520.0,200.0,N,natural,normal,unknown,,,,AN,,SI,,approved,PS(N)0.98x520x200 AN Si,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+69e320b3-dad7-449d-8264-502288e05f2f,PLA-4AE11275,PVC,,0.2,640.0,300.0,CL,clear,normal,,,,,,,,,approved,PVC(CL)0.2x640x300SI 300m,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+81d8e8b1-5c1c-47f1-801b-5a291299f4b2,PLA-B67D59CC,PVC,,0.3,640.0,200.0,CL,clear,normal,,,,,,,,,approved,PVC(CL)0.3x640x200SI 0m,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+d822c8fe-b7e4-4040-b1b3-416cb58e1916,PLA-E0568AB6,PS,,0.98,550.0,200.0,N,natural,normal,,,,,AN,,,,approved,PS(N)0.98x550x200 AN,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+17520f59-5481-4639-95de-bcefd7d57d42,PLA-81F15CC2,PP,,0.78,520.0,250.0,N,natural,normal,,,,,AN,,,,approved,PP(N)0.78x520x250 AN(東プラ),1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+30f0bfe1-e758-43e0-a14f-1db5c7b33894,PLA-B2F2D085,PVC,,0.4,640.0,150.0,CL,clear,normal,,,,,,,,,approved,PVC(CL)0.4x640x150SI 432m,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+83ae21dd-4f38-4fa6-af74-f323bb4811bc,PLA-00CFE2A9,PVC,,0.5,460.0,120.0,CL,clear,normal,,,,,,,,,approved,PVC(CL)0.5x460x120SI 217m,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+6e470b67-c838-41bd-8baa-d295832b0523,PLA-0B886537,PS,,0.98,550.0,200.0,N,natural,normal,,,,,,,,,approved,PS(N)0.98x550x200 ANSi,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+982755ba-b6c7-4fec-b04a-56881e0bff9e,PLA-9D3E3B6B,PP,,0.78,520.0,250.0,N,natural,normal,,,,,AN,,,,approved,PP(N)0.78x520x250 AN (SR),1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+b003b2e2-3f23-49a3-a7a3-c58b4468eda5,PLA-10648C75,PVC,,0.5,640.0,120.0,CL,clear,normal,,,,,,,,,approved,PVC(CL)0.5x640x120 169m,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+19f0fd6a-88a9-4ece-8fad-3c248c46bcad,PLA-EAE07761,PVC,,0.6,640.0,100.0,CL,clear,normal,,,,,,,,,approved,PVC(CL)0.6x640x100SI 120m,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+f015bd22-657c-43be-9f31-19e74b62ac1a,PLA-BF2A0B40,PS,,1.08,405.0,200.0,N,natural,normal,,,,,AN,,,,approved,PS(N)1.08x405x200m AN,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+67bf4678-407f-45b0-bf34-c04785bc73d8,PLA-AE25C52E,PP,,0.78,550.0,300.0,N,natural,normal,,,,,AN,,,,approved,PP(N)0.78x550x300 AN,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+d03eb401-e0df-4b29-8cf1-d44397dbec29,PLA-C0DE8FB2,PET,,0.4,640.0,300.0,CL,clear,normal,,,,,,,,,approved,PET(CL)0.4x640x300AN 1231m,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+a06e65ba-5989-4036-b7b8-460cabcb95dd,PLA-71393FBD,PVC,,0.8,640.0,100.0,CL,clear,normal,,,,,,,,,approved,PVC(CL)0.8x640x100SI 38m,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+cb668139-67a8-42cf-a270-5c1c8d61b93d,PLA-C83C46DB,PVC,,1.0,640.0,70.0,CL,clear,normal,,,,,,,,,approved,PVC(CL)1.0x640x70SI 70m,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+378d43ed-1a46-446e-84bf-c96c4c4e3746,PLA-675A7ADB,PS,,1.18,435.0,200.0,N,natural,normal,,,,,AN,,,,approved,PS(N)1.18x435x200 AN,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+7da79f6f-b603-4b7b-a9fb-9b791cacd17b,PLA-9561C903,PP,,0.78,640.0,250.0,N,natural,normal,,,,,AN,,,,approved,PP(N)0.78x640x250 AN,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+c098d4d7-47b9-4178-bb26-2362559a7fb3,PLA-E03B22ED,PS,,1.18,520.0,200.0,N,natural,normal,,,,,AN,,,,approved,PS(N)1.18x520x200 AN,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+df791f1e-fad7-40b4-a00b-0092b021872d,PLA-1680BB43,PP,,0.98,405.0,200.0,N,natural,normal,,,,,AN,,,,approved,PP(N)0.98x405x200 AN,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+9cfd44f5-2664-4a9b-92c0-dc0456c2490a,PLA-B8FA21F8,PPF,,1.0,640.0,150.0,,,normal,,,,,,,,,approved,PPF1.0X640X150ジェイウィング 150m,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+9fdb08f7-1739-4c11-b861-611a4e185e12,PLA-FF8414A7,PS,,1.48,520.0,155.0,N,natural,normal,,,,,,,,,approved,PS(N)1.48x520x155 ANSi,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+f6c4d64e-1771-4ecd-aad2-9a554c3bba28,PLA-FDD55FB3,PP,,0.98,520.0,200.0,N,natural,normal,,,,,AN,,,,approved,PP(N)0.98x520x200 AN,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+8ae8229a-fa2b-47d6-836e-4639a9a57e27,PLA-9A86CC92,PS,,0.48,520.0,400.0,CL,clear,normal,,,,,AN,,,,approved,PS(CL)0.48x520x400 AN,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+e5caa827-0f2b-4033-8429-651e53374882,PLA-13A26DCA,PS,,0.78,405.0,250.0,CL,clear,normal,,,,,AN,,,,approved,PS(CL)0.78x405x250 AN,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+d7d0596c-2a97-4a8c-84e8-48e1cdb17791,PLA-124EF670,PP,,0.98,670.0,200.0,N,natural,normal,,,,,AN,,,,approved,PP(N)0.98x670x200 AN,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+006164a8-e98a-4175-816c-7b7a78c5d1fa,PLA-BEB8FB20,PS,,0.98,450.0,200.0,CL,clear,normal,unknown,,,,AN,,SI,,approved,PS(CL)0.98x450x200 AN Si,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+a73b88d9-ee7e-4888-bc96-022fe3706e02,PLA-7D091227,PS,,1.0,450.0,200.0,CL,clear,conductive,unknown,,,,,,SI,,approved,PS(CL)1.0x450x200 Si,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+8b6bad7b-d53d-41fe-9ed6-139d9e1b7acd,PLA-50603261,PET,A-PET,0.48,540.0,300.0,G,gray_or_green_unconfirmed,conductive,,,,,,,,,approved,SCS.NK.APET(G)0.48x540x300 180m,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+cd64b3e6-f502-4fa2-a33f-dcbe9a26b57c,PLA-E9B27CD5,PP,,1.18,520.0,200.0,N,natural,conductive,,,,,AN,,,,approved,PP(N)1.18x520x200 AN (SR),1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+2c5e7391-496f-4d3e-8f16-3ec0b1f501fa,PLA-22E36E82,PS,,1.0,400.0,200.0,CL,clear,conductive,unknown,,,,,,SI,,approved,PS(CL)1.00x400x200 Si,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+2d957a2e-e615-40ac-b420-162784799520,PLA-F1719DDE,PET,A-PET,1.0,550.0,150.0,,,conductive,,,,,,,,,approved,SCS.V.APET1.0x550x150 32m,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+76f79343-779a-4948-b67f-ed3b0cb80edd,PLA-873025A2,PET,A-PET,0.98,670.0,100.0,,,conductive,,,,,,,,,approved,SCS.V.APET0.98x670x100 23m,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+78f1cb79-ece3-41df-bd94-472331e9860b,PLA-98C9803F,PS,,0.78,435.0,250.0,茶,brown,normal,unknown,,,,AN,,SI,,approved,PS(茶)0.78x435x250m AN Si,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+2658cb53-056b-4b2a-ba83-69c6a606a867,PLA-1FBD00E1,PS,,2.0,640.0,100.0,,,normal,,,,,,,,,approved,ミクロームＰＰ2.0x640x100 0m,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+21d81674-152f-43bf-8107-7ead3bb700ae,PLA-B611F252,PS,,0.78,575.0,250.0,N,natural,normal,,,,,AN,,,,approved,PS(N)0.78x575x250 AN,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+ae90f73a-280b-4eb4-a003-86fbe2b224ec,PLA-C718BF48,PS,,0.6,600.0,340.0,N,natural,normal,unknown,,,,,,SI,,approved,PS(N)0.6x600x340 Si,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+adf10346-cbef-4907-9254-3a3f52ac51d8,PLA-F9312991,PET,,1.0,640.0,100.0,G,gray_or_green_unconfirmed,normal,,,,,,,,,approved,PET(G)1.0X640X100(マルアイ) 100m,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+6a28ec8f-80af-4d98-8494-518a2a96bca5,PLA-4AF92F3F,PET,,0.5,640.0,200.0,CL,clear,normal,,,,,,,,,approved,PET(CL)0.5x640x200(東プラ) 816m,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+78797af4-4d47-406b-bfe8-177e42f0ef29,PLA-90273294,PET,,0.6,640.0,250.0,CL,clear,normal,,,,,,,,,approved,PET(CL)0.6x640x250SI(東プラ) 200m,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+fe3e32e9-dd92-44b0-b1ee-4d8f7d12e7a9,PLA-5AAD7989,PET,,0.8,640.0,110.0,CL,clear,normal,,,,,,,,,approved,PET(CL)0.8X640X110(ウツミ) 11m,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+debcb166-a43e-4478-aa9f-ae533a5ac64f,PLA-9297796A,PS,,1.0,405.0,200.0,青,,normal,,,,,,,,,approved,耐熱PET(青)1.0X405x200(支給材) 7609m,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+a72b712d-b2f4-46a7-9b2d-28e1c2393918,PLA-BF30130E,PET,,1.0,640.0,100.0,CL,clear,normal,,,,,,,,,approved,PET(CL)1.0X640X100(ウツミ) 0m,1.0,System,2026-04-10 10:11:25,2026-04-10 10:11:25
+9584781d-5064-4da5-babb-59b094d2f594,PLA-1CEA75B5,PS,,0.38,640.0,500.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2026-03-19,2026-03-19
+b40ff18b-638a-4ef4-88e9-5dd5cac2a9ba,PLA-36D12879,PS,,0.45,630.0,350.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2026-03-19,2026-03-19
+ef798a7d-675b-4b41-b533-aede8d29619f,PLA-91E744B4,PS,,0.78,670.0,250.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2026-03-19,2026-03-19
+9e3dadb2-4e07-4a01-9b09-4bf3b1a425a0,PLA-5DBC8F4B,PS,,0.88,520.0,200.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2026-03-19,2026-03-19
+e9cfcb3e-c99e-407d-8884-0d294de3fcc6,PLA-3DBAA108,PS,,0.88,670.0,250.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2026-03-19,2026-03-19
+e5c89a5a-bd8a-476a-8c32-23390f0500df,PLA-134F54A1,PS,,1.18,550.0,200.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2026-03-19,2026-03-19
+e35364ef-af93-4c05-b974-4aa3b9841e3f,PLA-5CBEB040,PP,,0.58,580.0,350.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2026-03-19,2026-03-19
+9f47d4b9-9453-40b6-8af0-4099f77221c6,PLA-58A039B4,PP,,0.98,580.0,200.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2026-03-19,2026-03-19
+a13cbb52-acea-436b-87aa-0d00fb3f5c0c,PLA-A0A304F7,PP,,1.08,530.0,200.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2026-03-19,2026-03-19
+ca614f1f-d232-4e86-adff-52cca372944f,PLA-9491B2E2,PP,,1.18,640.0,150.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2026-03-19,2026-03-19
+149a5e82-14ed-4312-9a5b-d3494cb0debd,PLA-F103C969,PP,,1.18,670.0,150.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2026-03-19,2026-03-19
+6fef0c60-ed77-43dd-bd61-e659cee3baa9,PLA-DBB3E903,PP,,1.5,640.0,100.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2026-03-19,2026-03-19
+ad2362f0-42d4-430f-bf4f-c9e5027c0073,PLA-2C9E6035,PP,,1.48,640.0,150.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2026-03-19,2026-03-19
+c64d6a56-5d6d-4f09-88eb-eb6bb63b560d,PLA-EBEE9908,UNK,,0.48,580.0,350.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2026-03-19,2026-03-19
+7101ced3-f061-4c6c-bab8-e17cb9f591ac,PLA-80C52BF1,UNK,,0.68,580.0,250.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2026-03-19,2026-03-19
+227b00ec-8bf6-4a02-a345-2421ba1a0cdd,PLA-38443ACE,UNK,,0.78,690.0,150.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2026-03-19,2026-03-19
+73c0d2b7-65d7-4653-b540-0517d2ae8fc9,PLA-C0C38DC9,UNK,,0.78,580.0,200.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2026-03-19,2026-03-19
+3bbab894-0e9f-4f30-ba6a-70724ddc8f73,PLA-6690B917,UNK,,0.98,690.0,150.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2026-03-19,2026-03-19
+1bdca1ab-0d63-46cd-a1d7-eac7cf9edefe,PLA-148F51E3,PS,,1.5,520.0,100.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2026-03-19,2026-03-19
+9539bca0-ca84-434f-a0eb-b20f8b3a93b0,PLA-4E5149C0,PET,,0.48,515.0,400.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2026-03-19,2026-03-19
+cb799d01-d9aa-414c-8c00-7531ad3893dd,PLA-F7C7C0D2,PET,,0.48,560.0,250.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2026-03-19,2026-03-19
+,EBS051L,PS,,0.58,,,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.58tX640X350mｼﾘｺﾝ付,,,,
+,EBS025,PS,,0.68,,,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.68tX640X250mｼﾘｺﾝ付,,,,
+,EBS025L,PS,,0.68,,,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.68tX640X300mｼﾘｺﾝ付,,,,
+,EBS036,PS,,0.3,,,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.30tX520X600m帯電防止練り込みｼﾘｺﾝ無,,,,
+,EBS010,PS,,0.38,405,500.0,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.38tX405X500m帯電防止練りこみｼﾘｺﾝ無,,,,
+,EBS010S,PS,,0.38,AS-NE-S Sﾅｼ 0.38ｔ,405.0,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.38tX405X500m帯電防止練りこみｼﾘｺﾝ無,,,,
+,EBS002,PS,,0.38,520,500.0,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.38tX520X500m帯電防止練りこみｼﾘｺﾝ無,,,,
+,EBS002RP,PS,,0.38,AS-NE-S Sﾅｼ 0.38ｔ,520.0,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.38tX520X500m帯電防止練りこみｼﾘｺﾝ無,,,,
+,EBS030,PS,,0.48,,,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.48ｔX405X400m帯電防止練り込みｼﾘｺﾝ付,,,,
+,EBS049,PS,,0.48,,,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.48t×405×400m帯電防止練りこみｼﾘｺﾝ帯防塗布,,,,
+,EBS015,PS,,0.48,,,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.48tX405X400m帯電防止練りこみｼﾘｺﾝ無,,,,
+,EBS023,PS,,0.48,,,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.48tX520X400m帯電防止練り込みｼﾘｺﾝ無,,,,
+,EBS023N,PS,,0.48,,,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.48tX520X400m帯電防止練り込みｼﾘｺﾝ無,,,,
+,EBS003,PS,,0.48,550,400.0,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.48tX550X400m帯電防止練りこみｼﾘｺﾝ無,,,,
+,EBS004,PS,,0.58,405,350.0,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.58tX405X350m帯電防止練りこみｼﾘｺﾝ無,,,,
+,EBS038,PS,,0.58,,,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.58tX405X350m帯電防止練りこみｼﾘｺﾝ無,,,,
+,EBS005,PS,,0.58,405,350.0,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.58tX405X350m帯電防止練りこみｼﾘｺﾝ付,,,,
+,EBS013,PS,,0.58,,,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.58tX435X350m帯電防止練りこみｼﾘｺﾝ付,,,,
+,EBS011,PS,,0.58,520,350.0,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.58tX520X350m帯電防止練りこみｼﾘｺﾝ無,,,,
+,EBS006,PS,,0.58,520,350.0,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.58tX520X350m帯電防止練りこみｼﾘｺﾝ付,,,,
+,EBS048,PS,,0.58,,,,,,,,,,,,,,,PS白0.58tX520X350m帯電防止練り込みｼﾘｺﾝ付,,,,
+,EBS007,PS,,0.58,550,350.0,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.58tX550X350m帯電防止練りこみｼﾘｺﾝ無,,,,
+,EBS007N,PS,,0.58,550,351.0,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.58tX550X350m帯電防止練りこみｼﾘｺﾝ無,,,,
+,EBS035,PS,,0.68,,,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.68tX435X300m帯電防止練りこみｼﾘｺﾝ付,,,,
+,EBS016,PS,,0.78,,,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.78tX405X250m帯電防止練りこみｼﾘｺﾝ無,,,,
+,EBS012,PS,,0.78,405,250.0,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.78tX405X250m帯電防止練りこみｼﾘｺﾝ付,,,,
+,EBS012RG,PS,,0.78,405,250.0,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.78tX405X250m帯電防止練りこみｼﾘｺﾝ付,,,,
+,EBS008,PS,,0.78,435,250.0,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.78tX435X250m帯電防止練りこみｼﾘｺﾝ付,,,,
+,EBS028,PS,,0.78,,,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.78tX520X250m帯電防止練り込みｼﾘｺﾝ無,,,,
+,EBS009,PS,,0.78,520,250.0,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.78tX520X250m帯電防止練りこみｼﾘｺﾝ付,,,,
+,EBS021,PS,,0.78,,,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.78tX520X250m帯電防止練り込みｼﾘｺﾝ付,,,,
+,EBS021RG,PS,,0.78,520,250.0,,,,,,,,,,,,,HIPSﾅﾁｭﾗﾙ0.78tX520X250m帯電防止練りこみシリコン代替塗布,,,,
+,EBS037,PS,,0.78,,,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.78tX550X250m帯電防止練り込みｼﾘｺﾝ付,,,,
+,EBS072,PS,,0.78,,,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.78tX640X250m帯電防止練り込みｼﾘｺﾝ無,,,,
+,EBS043,PS,,0.78,,,,,,,,,,,,,,,PS茶色0.78tX435X250m帯電防止練り込みｼﾘｺﾝ付,,,,
+,EBS039,PS,,0.78,,,,,,,,,,,,,,,耐摩耗PSﾅﾁｭﾗﾙ0.78ｔX520X250m帯電防止練り込みｼﾘｺﾝ付,,,,
+,EBS046,PS,,0.8,,,,,,,,,,,,,,,発泡PSﾅﾁｭﾗﾙ0.8tX520X300m,,,,
+,EBS040,PS,,0.88,,,,,,,,,,,,,,,耐摩耗PSﾅﾁｭﾗﾙ0.88ｔX520X200m帯電防止練り込みｼﾘｺﾝ付,,,,
+,EBS071,PS,,0.88,,,,,,,,,,,,,,,耐摩耗PSﾅﾁｭﾗﾙ0.88ｔX585X200m帯電防止練り込みｼﾘｺﾝ代替塗布,,,,
+,EBS031,PS,,0.98,,,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.98ｔX405X200m帯電防止練り込みｼﾘｺﾝ付,,,,
+,EBS069,PS,,0.98,,,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.98ｔX435X250m帯電防止練り込みｼﾘｺﾝ付,,,,
+,EBS024,PS,,0.98,,,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.98tX520X200m帯電防止練り込みｼﾘｺﾝ付,,,,
+,EBS073,PS,,0.98,,,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.98tX520X200m帯電防止練り込みｼﾘｺﾝ無,,,,
+,EBS073RG,PS,,0.98,,,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.98tX520X200m帯電防止練り込みｼﾘｺﾝ無,,,,
+,EBS077,PS,,0.98,,,,,,,,,,,,,,,耐摩耗PSﾅﾁｭﾗﾙ0.98ｔX520X200m帯電防止練り込みｼﾘｺﾝ付,,,,
+,EBS033,PS,,0.98,,,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.98tX550X200m帯電防止練り込みｼﾘｺﾝ無,,,,
+,EBS074,PS,,0.98,,,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.98tX550X200m帯電防止練り込みｼﾘｺﾝ付,,,,
+,EBS034,PS,,1.08,,,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ1.08tX405X200m帯電防止練り込みｼﾘｺﾝ無,,,,
+,EBS029,PS,,1.18,,,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ1.18tX435X200m帯電防止練り込みｼﾘｺﾝ無,,,,
+,EBS047,PS,,1.18,,,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ1.18tX520X200m帯電防止練り込みｼﾘｺﾝ無,,,,
+,EBS076,PS,,1.18,550,200.0,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ1.18tX550X200m帯電防止練り込みｼﾘｺﾝ無,,,,
+,EBS064L,PS,,1.18,,,,,,,,,,,,,,,耐摩耗PSﾅﾁｭﾗﾙ1.18ｔX520X200m帯電防止練り込みｼﾘｺﾝ代替付,,,,
+,EBS068,PS,,1.48,,,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ1.48ｔX520X155m帯電防止練りこみｼﾘｺﾝ付,,,,
+,EBS067,PS,,0.48,520,400.0,,,,,,,,,,,,,PS(透明)0.48tX520X400m帯電防止練り込みｼﾘｺﾝ無,,,,
+,EBS023C,PS,,0.48,,,,,,,,,,,,,,,PS透明(Clear)0.48tX520X400m帯電防止練り込みｼﾘｺﾝ無,,,,
+,EBS062,PS,,0.78,,,,,,,,,,,,,,,PS透明(Clear)0.78tX405X250m帯電防止練り込みｼﾘｺﾝ無,,,,
+,EBS053,PS,,0.98,,,,,,,,,,,,,,,PS透明(Clear)0.98tX440X200m帯電防止練り込みｼﾘｺﾝ付,,,,
+,EBS053L,PS,,0.98,,,,,,,,,,,,,,,PS透明(Clear)0.98tX450X200m帯電防止練り込みｼﾘｺﾝ付,,,,
+,EBS054,PS,,0.48,,,,,,,,,,,,,,,PS黒 0.48tX420X400m導電印刷,,,,
+,EBS055,PS,,0.48,,,,,,,,,,,,,,,PS黒 0.48tX550X400m導電印刷,,,,
+,EBS052,PS,,0.58,,,,,,,,,,,,,,,PS黒 0.58tX485X350m導電印刷,,,,
+,EBS057,PS,,0.68,,,,,,,,,,,,,,,SCS・B-PSHI 黒　0.68tX640X300 導電印刷,,,,
+,EBS065,PS,,0.78,405,250.0,,,,,,,,,,,,,PS黒0.78tX405X250m巻導電練りこみ,,,,
+,EBS078,PS,,0.78,,,,,,,,,,,,,,,PS黒 0.78tX420X250m導電印刷,,,,
+,EBS063,PS,,0.78,435,250.0,,,,,,,,,,,,,PS黒0.78tX435X250m巻導電練りこみ,,,,
+,EBS058,PS,,0.98,,,,,,,,,,,,,,,PS黒0.98tX405X250m巻導電練りこみ,,,,
+,EBS079,PS,,0.98,,,,,,,,,,,,,,,PS黒0.98tX640X200m巻導電練りこみ,,,,
+,EBS080,PS,,0.98,L210  0.98,550.0,,,,,,,,,,,,,耐摩耗PS黒0.98tx550x200m,,,,
+,EBS081,PS,,0.78,550,250.0,,,,,,,,,,,,,耐摩耗PS黒0.78tx550x250m,,,,
+,EBS082,PS,,0.78,575,250.0,,,,,,,,,,,,,PS(N)0.78tX575X250m帯電防止練り込みシリコン無,,,,
+,EBS083,A-,,1.0,,,,,,,,,,,,,,,HD6200HRB 1.00X405X200　帯電,,,,
+,EBS066,PS,,0.98,,,,,,,,,,,,,,,SCS・NK-PSHI 緑　0.98tX550X150m,,,,
+,EBS075,PS,,1.18,435,200.0,,,,,,,,,,,,,PS黒1.18tX435X200m巻導電練りこみ,,,,
+,EBS060,PS,,1.18,520,200.0,,,,,,,,,,,,,PS黒1.18tX520X200m巻導電練りこみ,,,,
+,EBS061,PS,,1.5,520,100.0,,,,,,,,,,,,,PS黒1.5tX520X100m巻導電練りこみ,,,,
+,EBS070,PS,,0.98,,,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.98tX520X200m帯電防止練り込みｼﾘｺﾝ無,,,,
+,EBS001,PS,,0.38,520,500.0,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.38tX520X500mｼﾘｺﾝ無,,,,
+,EBS014,PS,,0.68,,,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.68tX350X350mｼﾘｺﾝ付,,,,
+,EBS017,ﾐｸ,,0.78,,,,,,,,,,,,,,,ﾐｸﾛｰﾑPS0.78tX520X250m,,,,
+,EBS018,ﾐｸ,,0.78,,,,,,,,,,,,,,,ﾐｸﾛｰﾑPS0.78tX405X250m,,,,
+,EBS019,PS,,0.68,,,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.68tX640X250mｼﾘｺﾝ付,,,,
+,EBS020,PP,,0.4,,,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ 6FD-SS 0.4t×575×400mｼﾘｺﾝ付,,,,
+,EBS022,PS,,0.58,,,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.58tX520X350m帯電防止練り込みｼﾘｺﾝ無,,,,
+,EBS026,ﾐｸ,,0.98,,,,,,,,,,,,,,,ﾐｸﾛｰﾑPS 0.98ｔX405X200m,,,,
+,EBS026L,ﾐｸ,,0.98,,,,,,,,,,,,,,,ﾐｸﾛｰﾑPS 0.98ｔX405X250m,,,,
+,EBS027,PS,,0.58,,,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.58tX520X350m帯電防止練り込みｼﾘｺﾝ付,,,,
+,EBS031RP,PS,,0.98,,,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.98ｔX405X200m帯電防止練り込みｼﾘｺﾝ付,,,,
+,EBS032,PS,,1.18,,,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ1.18tX435X200m帯電防止練り込みｼﾘｺﾝ無,,,,
+,EBS041,PS,,0.98,,,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.98ｔX520X200m帯電防止練り込みｼﾘｺﾝ付,,,,
+,EBS042,PS,,0.78,,,,,,,,,,,,,,,PS茶色0.78tX520X250m帯電防止練り込みｼﾘｺﾝ付,,,,
+,EBS044,ﾐｸ,,1.5,520,100.0,,,,,,,,,,,,,ﾐｸﾛｰﾑPS1.5tX520X100m,,,,
+,EBS044L,ﾐｸ,,1.5,520,150.0,,,,,,,,,,,,,ﾐｸﾛｰﾑPS1.5tX520X150m,,,,
+,EBS045,ﾐｸ,,0.78,435,250.0,,,,,,,,,,,,,ﾐｸﾛｰﾑPS0.78tX435X250m,,,,
+,EBS050,ﾐｸ,,1.2,,,,,,,,,,,,,,,ﾐｸﾛｰﾑPS1.2tX520X200m,,,,
+,EBS051,PS,,0.58,,,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.58tX640X300mｼﾘｺﾝ付,,,,
+,EBS051S,PS,,0.58,,,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.58tX640X250mｼﾘｺﾝ付,,,,
+,EBS056,PS,,0.58,,,,,,,,,,,,,,,PSﾅﾁｭﾗﾙ0.58tX405X350m帯電防止練りこみｼﾘｺﾝ付,,,,
+,EBS058S,PS,,0.98,,,,,,,,,,,,,,,PS黒0.98tX405X200m導電練りこみ,,,,
+,EBS059,ﾐｸ,,1.18,,,,,,,,,,,,,,,ﾐｸﾛｰﾑPS1.18tX520X200m,,,,
+,EBS064,PS,,1.18,,,,,,,,,,,,,,,耐摩耗PSﾅﾁｭﾗﾙ1.18ｔX520X180m帯電防止練り込みｼﾘｺﾝ付,,,,
+541902bd-9f46-4aa9-a7ef-a0aa65748186,PLA-FD8049B2,mm,,0.78,520.0,250.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2017-03-31,2017-03-31
+14fa9741-5bdc-4eb3-acd2-e9ac6d0dce56,PLA-B0F6D5E1,mm,,0.78,405.0,250.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2017-03-31,2017-03-31
+ed9c35aa-f8a9-44f2-baab-7d7799b7dc7a,PLA-0DB6AC85,M,,0.48,520.0,300.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2017-03-31,2017-03-31
+c8f5f54d-2500-4888-b7be-756d7392b10d,PLA-6640CB6B,P,,0.38,405.0,500.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2017-03-31,2017-03-31
+26644f48-26d2-4019-9c98-98745394f4fc,PLA-39AE4BD1,P,,0.38,520.0,500.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2017-03-31,2017-03-31
+f3c6c52d-e469-4fc9-b321-605663e80a9e,PLA-161CB74E,P,,0.48,550.0,400.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2017-03-31,2017-03-31
+050f1b85-9e68-419f-a496-a4e9d35d1dc2,PLA-488CB22F,P,,0.58,405.0,350.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2017-03-31,2017-03-31
+958ce681-511a-4e20-b776-b974b6255b16,PLA-CE166A06,P,,0.58,550.0,350.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2017-03-31,2017-03-31
+902c8993-7e43-43eb-815f-85f8ad954e43,PLA-16B5E5B2,P,,0.58,520.0,350.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2017-03-31,2017-03-31
+fa2710ff-376d-4040-8f31-d69ea7eda20c,PLA-19CA54FE,UNK,,0.98,520.0,200.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2017-03-31,2017-03-31
+ef901847-92f1-4ff2-b7dd-9e37cf8d46b3,PLA-FF0D5102,M,,0.68,350.0,300.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2017-03-31,2017-03-31
+bc64283f-125b-46db-aff1-9c7a9c793916,PLA-DC3A6FB0,P,,0.48,405.0,400.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2017-03-31,2017-03-31
+e8791d5c-ebfd-444e-a314-64a3dedda140,PLA-5C8DD5B7,PET,,0.68,640.0,200.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2017-03-31,2017-03-31
+6250c216-c708-4435-b175-6fbbf26455a3,PLA-150790E9,NATS,,380.0,565.0,500.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2017-03-31,2017-03-31
+5203a1d2-a49f-4051-8173-981ab091f8e7,PLA-427D1B3C,NAT,,980.0,520.0,250.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2017-03-31,2017-03-31
+abbde3c9-1fdf-44a6-a48b-6b80abd8178e,PLA-DDAABFFB,PET,,0.98,550.0,200.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2017-03-31,2017-03-31
+2a3f863c-e513-479d-94e8-297187bc3832,PLA-E5FD0989,UNK,,0.78,690.0,150.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2017-03-31,2017-03-31
+a7d6aece-de72-47f1-b067-19644d7a1c2b,PLA-206E623A,UNK,,0.4,350.0,400.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2017-03-31,2017-03-31
+95f274b1-fb99-4558-906e-21c8defe5076,PLA-17A75ADD,PS,,0.78,435.0,250.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2017-03-31,2017-03-31
+605812e1-daed-4627-8220-69e48da4f39f,PLA-92AC5723,UNK,,0.58,435.0,350.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2017-03-31,2017-03-31
+2b3f3e4b-6d21-4044-9628-9ddc3fbe1f29,PLA-4B54399E,SS,,0.4,575.0,400.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2017-03-31,2017-03-31
+5e1be775-463e-46e3-b1b7-75f6e67a23df,PLA-7B7C327B,PS,,0.98,405.0,200.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2017-03-31,2017-03-31
+62c7eeca-86a8-417e-9ea8-a553ccc69699,PLA-5434F389,UNK,,1.18,435.0,200.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2017-03-31,2017-03-31
+4444b9f2-c5d7-45f0-9a2f-0a424c4fa6b7,PLA-E553C4CD,UNK,,1.08,405.0,200.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2017-03-31,2017-03-31
+d7d8d78d-338c-4df8-875b-b22c1c1cac84,PLA-E6E724E2,UNK,,0.68,435.0,300.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2017-03-31,2017-03-31
+b4866c73-2d1c-4460-a444-a8143474dd74,PLA-7934FF9B,UNK,,0.3,520.0,600.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2017-03-31,2017-03-31
+0d0e8576-abc4-4f64-8e30-1e866ee51c7b,PLA-4BC6C2A0,UNK,,0.78,550.0,250.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2017-03-31,2017-03-31
+072b6939-c61c-4f2a-a610-10c5efd65645,PLA-155CE4F8,UNK,,0.88,520.0,200.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2017-03-31,2017-03-31
+b178df14-22dd-405e-a3d7-bca2a1b4b23d,PLA-AB25C6E0,PS,,1.5,520.0,100.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2017-03-31,2017-03-31
+8742de55-6161-4c58-9e86-f593e8e90a7f,PLA-1BABD3D1,UNK,,1.18,520.0,200.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2017-03-31,2017-03-31
+b53e4c2b-fb9e-4aa7-aba2-d571c2eea316,PLA-73599E91,UNK,,0.58,640.0,350.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-01-06,2024-01-06
+00736a9a-75b6-42c6-a25c-f9e78199af94,PLA-25E50021,UNK,,0.78,640.0,250.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-01-06,2024-01-06
+1a43ed01-4acd-4d3d-8c26-93eec44a2f08,PLA-D3DF5E98,UNK,,0.8,520.0,300.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-01-06,2024-01-06
+3bfbc88b-157e-40c2-8a93-d82a284c5ae0,PLA-666DEEB6,UNK,,0.88,670.0,250.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-01-06,2024-01-06
+d3a7acfe-9623-4762-87cd-1656c6683a9a,PLA-41233C8D,m,,0.88,585.0,200.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-01-06,2024-01-06
+7749d832-2804-4937-9193-ba04d12b587f,PLA-A4D51C65,S,,0.98,435.0,250.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-01-06,2024-01-06
+74b60179-bd32-4723-9f05-2807003042a1,PLA-DD22724A,UNK,,1.18,550.0,200.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-01-06,2024-01-06
+d0fca786-468f-4d93-952f-d1ef4ac88b7d,PLA-6A72E9F9,UNK,,48.0,520.0,155.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-01-06,2024-01-06
+412dbb17-749c-42a5-95cd-ebb0f2f50e38,PLA-5EA3C125,PP,,0.38,565.0,500.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-01-06,2024-01-06
+24e159fe-0269-4071-9a75-73d66417fad0,PLA-73B9DB63,UNK,,0.58,580.0,350.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-01-06,2024-01-06
+70e54857-b828-4fe2-8a0d-b23afe495f3e,PLA-18382C23,UNK,,0.98,580.0,200.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-01-06,2024-01-06
+b3044609-7a94-4ebf-9bad-b072eb89df52,PLA-AC02F36B,UNK,,0.98,670.0,200.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-01-06,2024-01-06
+e2757d59-e78f-498d-a8d2-a9af8c82c793,PLA-FCB3371E,UNK,,1.08,520.0,200.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-01-06,2024-01-06
+1118f577-d9fa-4e64-a971-113cd65dc50b,PLA-54889B05,UNK,,1.08,530.0,250.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-01-06,2024-01-06
+9a860ea1-f7c8-4c62-bac4-81ff97d23fb3,PLA-42CFD411,UNK,,1.1,520.0,200.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-01-06,2024-01-06
+b984a2bd-bcb7-4358-b5ca-d6b2484fac2e,PLA-BF41C748,UNK,,1.18,670.0,150.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-01-06,2024-01-06
+249a1607-215a-45ed-b1dc-748273065e19,PLA-00FC2607,UNK,,1.48,640.0,150.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-01-06,2024-01-06
+e67e7cd6-9525-415f-86c6-8e668216c107,PLA-6F9C6B1A,UNK,,0.25,520.0,500.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-01-06,2024-01-06
+de3c7e80-90ac-4ecd-b7a8-249378c67a33,PLA-60386AD5,PET,,0.4,640.0,300.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-01-06,2024-01-06
+c24fc3c0-5af8-44d6-a5cd-76949842fdd6,PLA-88759BFE,PET,,0.98,690.0,150.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-01-06,2024-01-06
+2754a11c-fc0d-4ab2-b304-9d0a4a00a94f,PLA-42E1B8A6,PET,,0.98,640.0,150.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-01-06,2024-01-06
+527f6a66-89d8-4a49-a4ae-a94edc5ab278,PLA-E6EED6DB,P,,0.98,440.0,200.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-01-06,2024-01-06
+3a9a9399-e683-4922-a689-ddc412c5c0ef,PLA-E5FFD394,UNK,,0.48,420.0,400.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-01-06,2024-01-06
+26801b8e-9d74-43d0-8fd4-7bdc812af71a,PLA-D6B5D8EA,UNK,,0.58,485.0,350.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-01-06,2024-01-06
+298239a5-bfb5-4c1d-a956-0f8cf3755e35,PLA-D8882F55,UNK,,0.78,420.0,250.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-01-06,2024-01-06
+487836ea-b2f7-453a-bc76-69259461f172,PLA-3AE7B3E6,UNK,,1.0,550.0,100.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-01-06,2024-01-06
+bfd8f4fb-d65e-4ddc-9b2b-27d049ff7c7f,PLA-D57F34AD,m,,0.68,520.0,300.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-01-06,2024-01-06
+85b33eb5-44a6-43b6-aa3a-e1ec6b4d71c7,PLA-B3EE5F42,UNK,,0.48,515.0,400.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-01-06,2024-01-06
+1b04b4e0-c6b2-42f3-a942-d8bcc5705349,PLA-42653ED2,APET,,0.48,540.0,300.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-01-06,2024-01-06
+22680a32-c0e0-41b4-ab6c-a5664de7da38,PLA-4D266081,APET,,0.5,640.0,200.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-01-06,2024-01-06
+91e01485-3d15-40ba-97c6-768c65a98469,PLA-B79A6483,UNK,,0.48,560.0,250.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-01-06,2024-01-06
+a28ffab9-d7d8-4076-b508-b406843c58b0,PLA-5477419D,UNK,,0.68,550.0,150.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-01-06,2024-01-06
+b586f091-9753-41e3-9aaf-b4c118eaf677,PLA-47232D78,PS,,1.2,520.0,200.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-01-06,2024-01-06
+a1c64f59-c869-4fe8-b0ed-436111b2e5ec,PLA-844FCC25,UNK,,0.48,610.0,250.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-01-06,2024-01-06
+3d4692d9-d53f-45a0-a3e4-edfd48242751,PLA-84A3AC5E,m,,0.7,520.0,200.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-01-06,2024-01-06
+3ca600ef-eef1-40c3-abcd-6641d8f81980,PLA-22F22794,PS,,0.45,630.0,350.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-03-18,2024-03-18
+d721b74c-6f1b-4166-a121-c2750577d3fc,PLA-AB72BDA1,PS,,0.55,520.0,300.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-03-18,2024-03-18
+abe13424-7fac-44f1-a7ee-6e53355b1c07,PLA-E964CDE3,PS,,0.58,600.0,350.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-03-18,2024-03-18
+f2665237-a40e-4d0a-b082-555c28f04072,PLA-1E76AAFF,PS,,0.78,575.0,250.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-03-18,2024-03-18
+3f1be39b-ed4b-48e8-9484-7c8de5d7a19d,PLA-A005F155,PS,,0.78,670.0,250.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-03-18,2024-03-18
+e4afac4b-6959-4245-945c-980b9e2cd5fb,PLA-029DEDD7,PS,,1.0,640.0,150.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-03-18,2024-03-18
+555262fb-5eea-4863-83b6-92e7dda4b05a,PLA-13EC105E,PS,,1.48,520.0,155.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-03-18,2024-03-18
+fbd80d8e-db88-4f2c-ae7e-928beeef44df,PLA-943F5CF0,PP,,1.18,640.0,150.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-03-18,2024-03-18
+9ea0f13d-ff9f-42a6-a957-983305b86e86,PLA-4F4A02FF,PP,,1.5,640.0,100.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-03-18,2024-03-18
+5d313198-aa04-4382-b133-fb8da70c653c,PLA-0432C19C,UNK,,0.5,460.0,100.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-03-18,2024-03-18
+e5850582-cd1d-40f3-a3a6-e62038ae2d6c,PLA-1863CC53,UNK,,0.48,580.0,350.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-03-18,2024-03-18
+49ecdb0d-5691-49e9-91cd-b9b11ea67c2f,PLA-F2561B62,UNK,,0.6,640.0,100.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-03-18,2024-03-18
+cfa42114-11ed-4750-8d9c-7b2ec1f013eb,PLA-78A80093,UNK,,0.68,580.0,250.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-03-18,2024-03-18
+9135be15-02c2-40e9-8107-5c91649ee28b,PLA-4A6E3DC5,UNK,,0.8,640.0,100.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-03-18,2024-03-18
+05b5b640-2848-4c0c-afd2-0478f191dc01,PLA-67993821,UNK,,0.78,580.0,200.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-03-18,2024-03-18
+d4cf49fa-8aa5-44b5-a696-27a1cd2cfcd4,PLA-CFE974B3,PS,,1.0,450.0,200.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-03-18,2024-03-18
+c2e2cd6b-763a-42c8-8aaf-a640ab72b593,PLA-0204175B,PS,,0.7,640.0,220.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-03-18,2024-03-18
+d4231ed3-3b8c-4e24-9263-6eae09673c1d,PLA-3E6EE2CD,PP,,2.0,640.0,100.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-03-18,2024-03-18
+778f7015-8bb7-490f-a415-2c4476285221,PLA-7869D50C,PVC,,0.2,640.0,300.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-03-18,2024-03-18
+f02e0b42-2d6f-401c-98a5-0a4cd8b01647,PLA-AF8AE894,PVC,,0.3,640.0,200.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-03-18,2024-03-18
+fe46d356-d20c-4e58-8616-dc8230e655d1,PLA-0913430C,PS,,0.6,600.0,340.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2024-11-25,2024-11-25
+7157db84-214c-4f80-b0bf-c10808bf3970,PLA-83FF0370,PS,,0.38,640.0,500.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2025-04-30,2025-04-30
+4020da85-6876-47b3-be7b-5e79506db96d,PLA-7FD5707E,HRB,,1.0,405.0,200.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2025-08-01,2025-08-01
+92c26ad9-caff-485b-bb7c-1ebd0351effb,PLA-6B226D36,P,,0.98,450.0,200.0,,,,,,,,,,,,approved,Auto-created by ETL,1.0,ETL Script,2026-01-01,2026-01-01
+,JPL#,材質,,厚み,,,,,,,,,,,,,,,"商品名
+(ヨシダパッケージ様 使用名称)",,,,
+,YSD068,PS,,0.88,,,,,,,,,,,,,,,耐摩耗PSﾅﾁｭﾗﾙ0.88ｔX670X250m帯電防止練り込みｼﾘｺﾝ付,,,,
+,YSD005,PP,,0.38,AS-NE-P4　0.38,405.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.38tX405X500m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD005SL,PP,,0.38,405,500.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.38tX405X500m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD022VN,PP,,0.38,405,500.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.38tX405X500m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD006,PP,,0.38,AS-NE-P4　0.38,520.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.38ｔX520X500m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD006VN,PP,,0.38,520,500.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.38ｔX520X500m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD075,PP,,0.38,520,500.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.38tX520X500m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD026SL,PP,,0.38,,,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.38ｔX565X500mｼﾘｺﾝ付,,,,
+,YSD069SL,PP,,0.38,565,500.0,,,,,,,,,,,,,PP(N)0.38tX565X500m  ｼﾘｺﾝ付,,,,
+,YSD017,PP,,0.48,AS-NE-P4 Sﾅｼ 0.48ｔ,405.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.48tX405X400m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD017VN,PP,,0.48,405,400.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.48tX405X400m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD010,PP,,0.48,AS-NE-P　0.48,520.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.48tX520X400m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD010SL,PP,,0.48,AS-NE-P　0.48,520.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.48tX520X400m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD010VN,PP,,0.48,520,400.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.48tX520X400m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD007,PP,,0.48,AS-NE-P　0.48,550.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.48tX550X400m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD007SL,PP,,0.48,550,400.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.48tX550X400m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD007VN,PP,,0.48,,,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.48tX550X400m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD008,PP,,0.58,AS-NE-P　0.58,405.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.58tX405X350m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD008VN,PP,,0.58,405,350.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.58tX405X350m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD008SL,PP,,0.58,405,350.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.58tX405X350m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD011,PP,,0.58,AS-NE-P　0.58,520.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.58tX520X350m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD011SL,PP,,0.58,AS-NE-P　0.58,520.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.58tX520X350m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD011VN,PP,,0.58,520,350.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.58tX520X350m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD009,PP,,0.58,AS-NE-P　0.58,550.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.58tX550X350m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD009VN,PP,,0.58,550,350.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.58tX550X350m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD009SL,PP,,0.58,550,350.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.58tX550X350m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD047SL,PP,,0.58,,,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.58tX580X350m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD063SL,PP,,0.58,640,300.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.58ｔX640X300m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD063SLL,PP,,0.58,640,350.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.58ｔX640X350m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD063SLm,PP,,0.58,640,250.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.58ｔX640X250m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD012,PP,,0.78,AS-NE-P4 Sﾅｼ　0.78ｔ,520.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.78tX520X250m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD012VN,PP,,0.78,520,250.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.78tX520X250m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD012SL,PP,,0.78,520,250.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.78tX520X250m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD076,PP,,0.78,AS-NE-P4　0.78ｔ,550.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.78tX550X300m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD057SL,PP,,0.78,640,250.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.78tX640X250m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD057,PP,,0.78,640,250.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.78tX640X250m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD057RP,PP,,0.78,AS-NE-P4 Sﾅｼ 0.78ｔ,640.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.78tX640X250m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD072,PP,,0.8,520,250.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.8tX520X250m帯電防止練りこみｼﾘｺﾝ付,,,,
+,YSD053,PP,,0.98,,,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.98tX405X300m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD053SL,PP,,0.98,,,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.98tX405X300m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD062SL,PP,,0.98,520,200.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.98tX520X200m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD028,PP,,0.98,,,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.98tX520X200m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD013,PP,,0.98,AS-NE-P　0.98ｔ,520.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.98tX520X200m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD048SL,PP,,0.98,,,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.98tX580X200m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD049SLL,PP,,0.98,670,200.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.98tX670X200m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD067SL,PP,,1.08,520,200.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ1.08tX520X200m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD085,PP,,1.08,530,250.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ1.08tX530X250m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD061SL,PP,,1.1,520,200.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ1.10tX520X200m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD083,PP,,1.18,520,200.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ1.18ｔX520X200m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD065SL,PP,,1.18,670,150.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ1.18ｔX670X150m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD066SL,PP,,1.48,640,150.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ1.48ｔX640X150m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD079SL,PP,,1.48,640,150.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ1.48ｔX640X150m帯電防止練りこみｼﾘｺﾝ無（ドローダウン対策品）,,,,
+,YSD091SL,PP,,0.98,550,200.0,,,,,,,,,,,,,PP(N)0.98tX550X200m帯電防止練り込みシリコン無,,,,
+,YSD088,A-,,0.25,,,,,,,,,,,,,,,カネロンA-PET透明0.25tX520X500mｼﾘｺﾝ付,,,,
+,YSD014,A-,,0.38,,,,,,,,,,,,,,,A-PET0.38tX520X400mｼﾘｺﾝ付,,,,
+,YSD037VN,A-,,0.38,,,,,,,,,,,,,,,A-PET0.38tX520X450m帯電防止ｺｰﾃｨﾝｸﾞｼﾘｺﾝ無,,,,
+,YSD037M,A-,,0.38,,,,,,,,,,,,,,,A-PET(VRV)0.38tX520X450m帯電防止練り込みｼﾘｺﾝ無AB剤入,,,,
+,YSD080,A-,,0.38,,,,,,,,,,,,,,,A-PET(VRV)0.38tX520X450mｼﾘｺﾝ付,,,,
+,YSD081,A-,,0.4,,,,,,,,,,,,,,,A-PET(VRV)0.4tX640X300m帯電防止練り込みｼﾘｺﾝ無,,,,
+,YSD004,A-,,0.48,,,,,,,,,,,,,,,A-PET0.48tX520X300m巻帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD058,A-,,0.48,,,,,,,,,,,,,,,A-PET透明0.48tX520X350m巻帯電防止練りこみｼﾘｺﾝ無AB剤入,,,,
+,YSD084,A-,,0.48,,,,,,,,,,,,,,,A-PET(VRV)0.48tX520X350m帯帯電防止練り込みｼﾘｺﾝ無AB剤入,,,,
+,YSD041,A-,,0.48,,,,,,,,,,,,,,,A-PET(VRV)0.48tX550X250m帯帯電防止練り込みｼﾘｺﾝ無AB剤入,,,,
+,YSD030RP,A-,,0.58,,,,,,,,,,,,,,,A-PET(VRV)0.58tX520X300m巻帯電防止練りこみｼﾘｺﾝ無AB剤入,,,,
+,YSD051,A-,,0.58,,,,,,,,,,,,,,,A-PET規格同配合0.58tX640X250m巻ｼﾘｺﾝ付,,,,
+,YSD051VN,A-,,0.58,640,250.0,,,,,,,,,,,,,A-PET0.58tX640X250mｼﾘｺﾝ付,,,,
+,YSD019VN,A-,,0.68,350,300.0,,,,,,,,,,,,,A-PET0.68tX350X300mｼﾘｺﾝ付,,,,
+,YSD019RP,A-,,0.68,,,,,,,,,,,,,,,A-PET0.68tX350X300mｼﾘｺﾝ有,,,,
+,YSD025RP,A-,,0.68,,,,,,,,,,,,,,,A-PET(VRV)0.68tX640X200mｼﾘｺﾝ付,,,,
+,YSD003VN,A-,,0.78,,,,,,,,,,,,,,,A-PET0.78tX520X200m巻帯電防止ｺｰﾃｨﾝｸﾞｼﾘｺﾝ無,,,,
+,YSD018RP,A-,,0.78,,,,,,,,,,,,,,,A-PET0.78tX520X200m帯電防止練りこみｼﾘｺﾝ無AB剤入,,,,
+,YSD077RP,A-,,0.78,,,,,,,,,,,,,,,A-PET0.78tX520X200m帯電防止練りこみｼﾘｺﾝ付,,,,
+,YSD027,A-,,0.78,,,,,,,,,,,,,,,A-PET0.78tX640X200m巻帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD027VN,A-,,0.78,,,,,,,,,,,,,,,A-PET0.78tX640X200m巻帯電防止ｺｰﾃｨﾝｸﾞｼﾘｺﾝ無,,,,
+,YSD027RP,A-,,0.78,,,,,,,,,,,,,,,A-PET0.78tX640X200m巻帯電防止練りこみｼﾘｺﾝ無AB剤入,,,,
+,YSD032,A-,,0.78,,,,,,,,,,,,,,,A-PET0.78tX690X150m巻帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD055,A-,,0.98,,,,,,,,,,,,,,,A-PET0.98tX405X200m帯電防止練り込みｼﾘｺﾝ付,,,,
+,YSD055VN,A-,,0.98,405,200.0,,,,,,,,,,,,,A-PET0.98tX405X200m帯電防止付ｼﾘｺﾝ付,,,,
+,YSD031,A-,,0.98,,,,,,,,,,,,,,,A-PET0.98tX550X200m帯電防止練り込みｼﾘｺﾝ無 アンチブロッキング材入,,,,
+,YSD052,A-,,0.98,,,,,,,,,,,,,,,A-PET(VRV)0.98tX520X200m巻帯電防止練り込みｼﾘｺﾝ無AB剤入,,,,
+,YSD089,A-,,0.98,550,130.0,,,,,,,,,,,,,SCS・B-APET黒 0.98tX550X150m 導電印刷,,,,
+,YSD074,A-,,0.98,,,,,,,,,,,,,,,A-PET0.98tX550X200m帯電防止練り込みｼﾘｺﾝ無,,,,
+,YSD042,A-,,0.98,,,,,,,,,,,,,,,A-PET(VRV)0.98tX690X150m帯電防止練り込みｼﾘｺﾝ無AB剤入,,,,
+,YSD056,A-,,0.98,,,,,,,,,,,,,,,A-PET0.98tX640X150mｼﾘｺﾝ付,,,,
+,YSD056VN,A-,,0.98,,,,,,,,,,,,,,,A-PET0.98tX640X150mｼﾘｺﾝ付,,,,
+,YSD002VN,PS,,0.78,,,,,,,,,,,,,,,PS黒0.78tX405X250m巻導電練りこみ,,,,
+,YSD001,PS,,0.78,,,,,,,,,,,,,,,PS黒0.78tX520X250m巻導電練りこみ,,,,
+,YSD070,A-,,1,550,100.0,,,,,,,,,,,,,SCS・B-APET黒 1.0tX550X100m 導電印刷,,,,
+,YSD073,PP,,0.68,,,,,,,,,,,,,,,SCS・B-ＰＰ黒 0.68tX520X300m導電印刷,,,,
+,YSD044,A-,,0.4,,,,,,,,,,,,,,,A-PET緑0.4tX640X350m導電印刷,,,,
+,YSD086,A-,,0.48,,,,,,,,,,,,,,,A-PET緑0.48tX515X400m導電印刷,,,,
+,YSD029,A-,,0.48,,,,,,,,,,,,,,,A-PET緑0.48tX520X300m導電印刷,,,,
+,YSD078,A-,,0.48,,,,,,,,,,,,,,,SCS・N-APET緑 0.48tX540X300m導電印刷（490mm幅）,,,,
+,YSD087,A-,,0.5,,,,,,,,,,,,,,,SCS・N-APET緑 0.5tX640X200m導電印刷,,,,
+,YSD059,A-,,0.48,,,,,,,,,,,,,,,A-PET緑0.48ｔX560X250m導電印刷,,,,
+,YSD054,A-,,0.58,,,,,,,,,,,,,,,A-PET緑0.58ｔX520X300m導電印刷,,,,
+,YSD040,A-,,0.68,,,,,,,,,,,,,,,A-PET緑0.68ｔX550X150m導電印刷,,,,
+,YSD040L,A-,,0.68,,,,,,,,,,,,,,,A-PET緑0.68ｔX550X250m導電印刷,,,,
+,YSD045,A-,,0.68,,,,,,,,,,,,,,,SCS・B-APET黒 0.68tX640X300m 導電印刷,,,,
+,YSD082,A-,,0.68,,,,,,,,,,,,,,,SCS・Ｃ-APET透明 0.68tX640X250m,,,,
+,YSD050,A-,,0.78,,,,,,,,,,,,,,,A-PET緑0.78ｔX420X250m導電印刷,,,,
+,YSD046,A-,,0.78,,,,,,,,,,,,,,,A-PET緑0.78ｔX520X200m導電印刷,,,,
+,YSD039,A-,,0.98,,,,,,,,,,,,,,,A-PET緑0.98ｔX550X150m導電印刷,,,,
+,YSD071,A-,,0.48,550,250.0,,,,,,,,,,,,,A-PET(CL)0.48tX550X250m帯電防止練り込みｼﾘｺﾝ無,,,,
+,YSD032RP,A-,,0.78,,,,,,,,,,,,,,,A-PET0.78tX690X150m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD090,PS,,0.98,,,,,,,,,,,,,,,PSナチュラル0.98tx640x150m帯電防止練り込みシリコン付,,,,
+,YSD090RP,PS,,0.98,,,,,,,,,,,,,,,PSナチュラル0.98tx640x150m帯電防止練り込みシリコン付,,,,
+,YSD092,PS,,0.98,L220耐摩耗PS(グレー)0.98t,550.0,,,,,,,,,,,,,XL220耐摩耗PS(グレー)0.98t×550×200m,,,,
+,YSD001S,PS,,0.78,,,,,,,,,,,,,,,PS黒0.78tX520X250m導電練りこみ(73m巻),,,,
+,YSD002,PS,,0.78,,,,,,,,,,,,,,,PS黒0.78tX405X250m導電練りこみ,,,,
+,YSD003,A-,,0.78,,,,,,,,,,,,,,,A-PET0.78tX520X200m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD015,A-,,0.38,520mm,400.0,,,,,,,,,,,,,A-PET0.38tX520X400m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD016,A-,,0.68,350mm,300.0,,,,,,,,,,,,,A-PET0.68tX350X300mｼﾘｺﾝ付,,,,
+,YSD018,A-,,0.78,,,,,,,,,,,,,,,A-PET0.78tX520X200m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD019,A-,,0.68,,,,,,,,,,,,,,,A-PET0.68tX350X300mｼﾘｺﾝ付,,,,
+,YSD020,A-,,0.78,,,,,,,,,,,,,,,A-PET0.78tX520X250m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD021,A-,,0.48,,,,,,,,,,,,,,,A-PET0.48tX520X300m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD022,PP,,0.38,405,500.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.38tX405X500m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD023,PP,,0.58,405,500.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.58tX405X350m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD024,PP,,0.48,550,400.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.48tX550X400m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD025,A-,,0.68,,,,,,,,,,,,,,,A-PET0.68tX640X200mｼﾘｺﾝ付,,,,
+,YSD026,PP,,0.38,,,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.38ｔX565X500mｼﾘｺﾝ付,,,,
+,YSD030,A-,,0.58,,,,,,,,,,,,,,,A-PET(VRV)0.58tX520X300m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD030VN,A-,,0.58,,,,,,,,,,,,,,,A-PET0.58tX520X300m帯電防止ｺｰﾃｨﾝｸﾞｼﾘｺﾝ無,,,,
+,YSD033,A-,,0.4,,,,,,,,,,,,,,,A-PET緑0.4tX350巾X400m レグルス,,,,
+,YSD034,A-,,0.98,550,200620.0,,,,,,,,,,,,,"A-PET透明0.98ｔX550X200m帯電防止練り込みｼﾘｺﾝ無
+→A-PETシート 0.98X550X200 ＰＡ－620ﾅﾁｭﾗﾙ",,,,
+,YSD035,PP,,0.8,,,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.80ｔX520X250mｼﾘｺﾝ付,,,,
+,YSD036,A-,,0.48,,,,,,,,,,,,,,,A-PET緑0.48ｔX610X250m導電印刷,,,,
+,YSD037,A-,,0.38,,,,,,,,,,,,,,,A-PET(VRV)0.38tX520X500m帯電防止練り込みｼﾘｺﾝ無AB剤入,,,,
+,YSD037S,A-,,0.38,,,,,,,,,,,,,,,A-PET(VRV)0.38tX520X400m帯電防止練り込みｼﾘｺﾝ無AB剤入,,,,
+,YSD038,A-,,0.98,,,,,,,,,,,,,,,A-PET(VRV)0.98tX405X200m帯電防止練り込みｼﾘｺﾝ付,,,,
+,YSD043,A-,,0.98,,,,,,,,,,,,,,,A-PET(再生)0.98tX405X200m帯電防止練り込みｼﾘｺﾝ付,,,,
+,YSD049SL,PP,,0.98,670,150.0,,,,,,,,,,,,,(※注：納品時パレット積替‼)PPﾅﾁｭﾗﾙ0.98t×670×150m帯電防止練りこみｼﾘｺﾝ無,,,,
+,YSD060SL,PP,,0.98,670,250.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.98tX670X250m帯電防止練りこみｼﾘｺﾝ無（YSD049長さ違い）,,,,
+,YSD064,PP,,0.7,,,,,,,,,,,,,,,SCS・B-PP 0.7㎜ 520㎜幅×200m,,,,
+,YSD022SL,PP,,0.38,405,500.0,,,,,,,,,,,,,PPﾅﾁｭﾗﾙ0.38tX405X500m帯電防止練りこみｼﾘｺﾝ無,,,,
+c12009bc-c666-4b05-b02b-7d9db208e2bf,YSD-PS-0.5x670,PS,,0.5,670,,N,,,YES,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:43.990939,2026-04-10T14:57:48.748313
+b8b376c3-7f48-449c-80f2-d336955823af,YSD-PS-0.6x520,PS,,0.6,520,,N,,,YES,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:43.990939,2026-04-10T14:57:48.748413
+c3cddbb7-3fa1-4817-ade7-bd9842bbc746,YSD-PS-0.7x520,PS,,0.7,520,,白,,,YES,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:43.990939,2026-04-10T14:57:48.748493
+27ccfa1c-8570-462e-bf14-877a60bdf0d6,YSD-PET-0.3x520,PET,,0.3,520,,RRR,,,YES,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:43.990939,2026-04-10T14:57:48.748570
+e67e655c-2a49-44a4-ac70-3ba160c0f2e1,YSD-PET-0.3x670,PET,,0.3,670,,RRR,,,YES,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:43.990939,2026-04-10T14:57:48.748645
+20f94e27-cf33-4ffb-81a2-6e39bf124136,YSD-PET-0.4x640,PET,,0.4,640,,VRV,,,NO,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:43.990939,2026-04-10T14:57:48.748719
+3890555c-1577-4a77-8be6-6c803de6dd18,YSD-PET-0.5x520,PET,,0.5,520,,VVV,,,YES,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:43.990939,2026-04-10T14:57:48.748795
+10580508-b3a6-4422-be6f-8b569dc32f3d,YSD-PET-0.5x540,PET,,0.5,540,,VVV,,,YES,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:43.990939,2026-04-10T14:57:48.748869
+7b9d2384-10ff-46ba-8d2f-c37fb4469ccd,YSD-PET-0.5x570,PET,,0.5,570,,RRR,,,YES,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:43.990939,2026-04-10T14:57:48.748948
+c2bf5e27-7a32-4fed-bc52-03275fabb132,YSD-PET-0.5x610,PET,,0.5,610,,RRR,,,YES,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:43.990939,2026-04-10T14:57:48.749084
+d39aa439-52a4-40ab-8f27-3c2a0865d423,YSD-PET-0.5x640,PET,,0.5,640,,VRV,,,YES,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:43.990939,2026-04-10T14:57:48.749180
+a46f0588-f6bc-4527-a89e-da3e3ef4d88f,YSD-PET-0.5x690,PET,,0.5,690,,RRR,,,YES,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:43.990939,2026-04-10T14:57:48.749255
+f3b3537e-4ff2-4d39-aa88-41facdcc9056,YSD-PET-0.5x740,PET,,0.5,740,,VVV,,,YES,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:43.990939,2026-04-10T14:57:48.749329
+62d373f8-e856-43c6-a615-170d075a8ee2,YSD-PET-0.5x710,PET,,0.5,710,,VRV,,,NO,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:43.990939,2026-04-10T14:57:48.749405
+3575dcb7-0731-4526-9b60-674133c1e147,YSD-PET-0.6x640,PET,,0.6,640,,VVV,,,YES,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:43.990939,2026-04-10T14:57:48.749479
+f8817516-0c47-400a-8a29-3b542c3ae9a3,YSD-PET-0.6x670,PET,,0.6,670,,RRR,,,YES,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:43.990939,2026-04-10T14:57:48.749554
+a66ebc53-9af2-4000-9e41-7e90852b13e2,YSD-PET-0.7x520,PET,,0.7,520,,RRR,,,YES,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:43.990939,2026-04-10T14:57:48.749628
+d035dc86-f8c2-4e73-ab1e-466a363ae0f7,YSD-PET-0.8x520,PET,,0.8,520,,RRR,,,YES,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:43.990939,2026-04-10T14:57:48.749707
+355b04b3-d17b-4a71-90fd-4fa3ee2666e7,YSD-PET-0.8x680,PET,,0.8,680,,VVV,,,NO,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:43.990939,2026-04-10T14:57:48.749781
+b22e238a-424c-4bb4-9323-5ea31c1608bb,YSD-PET-1.0x520,PET,,1.0,520,,RRR,,,YES,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:43.990939,2026-04-10T14:57:48.749855
+ace219a4-6d0c-4a61-94cd-f5a3a416455a,YSD-PET-1.0x570,PET,,1.0,570,,RRR,,,YES,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:43.990939,2026-04-10T14:57:48.749928
+906612da-eb2f-409c-ba46-963fd08b32aa,YSD-PET-1.0x635,PET,,1.0,635,,VRV,,,NO,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:43.990939,2026-04-10T14:57:48.750001
+5acc6777-f690-43e2-a263-347b8b2eba34,YSD-PET-1.0x650,PET,,1.0,650,,VRV,,,YES,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:43.990939,2026-04-10T14:57:48.750074
+f513ba23-7932-40f5-9be2-6441ffa56815,YSD-PET-1.0x670,PET,,1.0,670,,VRV,,,NO,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:43.990939,2026-04-10T14:57:48.750148
+f7652539-2a4f-441b-a78e-d56a188bcf1c,YSD-PET-1.0x680,PET,,1.0,680,,VVV,,,NO,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:43.990939,2026-04-10T14:57:48.750221
+3b8502d8-1d7f-42ae-bb7d-ac3c8195e7eb,YSD-PET-1.0x710,PET,,1.0,710,,VRV,,,NO,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:43.990939,2026-04-10T14:57:48.750294
+26f50add-0fe7-4a79-8fa0-037d903a9368,YSD-PET-1.0x640,PET,,1.0,640,,黒,,,NO,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:43.990939,2026-04-10T14:57:48.750368
+182554d9-d726-47f7-b717-eca8849f6682,YSD-PET-1.2x570,PET,,1.2,570,,VVV,,,YES,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:43.990939,2026-04-10T14:57:48.750441
+c1a04b9f-2862-4c50-9a30-17150ecac809,YSD-PET-1.2x640,PET,,1.2,640,,VVV,,,YES,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:43.990939,2026-04-10T14:57:48.750514
+4b577e85-cd98-42d5-9d23-2917d0d8c718,YSD-PET-1.2x670,PET,,1.2,670,,VVV,,,YES,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:43.990939,2026-04-10T14:57:48.750590
+86253e7e-e16d-42de-ac01-92239027e8a4,YSD-PET-1.5x520,PET,,1.5,520,,VVV,,,YES,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:43.990939,2026-04-10T14:57:48.750663
+b042d6fe-c5d6-4ec5-9ced-0939a4486a34,YSD-PP-0.55x570,PP,,0.55,570,,N,,,YES,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:43.990939,2026-04-10T14:57:48.750736
+985a4c1c-4b94-45c5-a36f-8c077a791e98,YSD-PP-0.55x690,PP,,0.55,690,,N,,,YES,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:43.990939,2026-04-10T14:57:48.750810
+b0a2d3c9-9a97-4ea4-860b-f1529a5ed75a,YSD-PP-0.6x610,PP,,0.6,610,,N,,,YES,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:43.990939,2026-04-10T14:57:48.750883
+e1906f0b-ce1d-415d-8676-fc8d033a06a1,YSD-PP-0.8x640,PP,,0.8,640,,N,,,YES,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:43.990939,2026-04-10T14:57:48.750956
+ca73e1c7-93c5-458b-b3c8-874a83d0aa42,YSD-PP-1.0x570,PP,,1.0,570,,N,,,YES,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:43.990939,2026-04-10T14:57:48.751029
+c6d2d6a7-0b60-4591-85d9-693e265ded54,YSD-PP-1.2x570,PP,,1.2,570,,N,,,YES,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:43.990939,2026-04-10T14:57:48.751109
+9429fe3a-55c5-45f0-b2e1-8921489d609a,YSD-PP-2.0x750,PP,,2.0,750,,N,,,NO,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:43.990939,2026-04-10T14:57:48.751183
+ec718e72-f5e3-41c8-bb00-53150c30c53a,YSD-ABS-1.0x640,ABS,,1.0,640,,黒,,,YES,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:43.990939,2026-04-10T14:57:48.751256
+96ccf451-8af0-4830-a0f6-1f9fcb0bb79d,YSD-PS-2.0x520,PS,,2.0,520,,,,,YES,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:43.990939,2026-04-10T14:57:48.751334
+3e10345e-cd17-46c8-81e0-d15f360a6753,YSD-nan-ps(n)0.38x640si,,,ps(n)0.38,640si,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:44.098348,2026-04-10T14:57:48.751409
+8983106a-392c-47bb-878a-c5db6aa0769d,YSD-nan-ps(n)0.58x640,,,ps(n)0.58,640,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:44.098348,2026-04-10T14:57:48.751483
+33c87975-2970-458c-8e8f-b3bc338bcde9,YSD-nan-ps(n)0.68x640,,,ps(n)0.68,640,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:44.098348,2026-04-10T14:57:48.751557
+f42617ed-331a-4ea9-ab72-d804eafdc40b,YSD-nan-axpet(cl)0.58,,,a-pet(cl)0.58,640,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:44.098348,2026-04-10T14:57:48.751631
+34634ccc-1818-46a2-a3e2-d6f9595b073f,YSD-nan-axpet(cl)0.68,,,a-pet(cl)0.68,640,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:44.098348,2026-04-10T14:57:48.751706
+c3589ca0-1e69-4b2c-b863-dc54978a26f9,YSD-nan-axpet(cl)0.98,,,a-pet(cl)0.98,640,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:44.098348,2026-04-10T14:57:48.751805
+e4d47ee9-5201-417f-91f5-01ef5bd05e55,YSD-nan-570x292.5,,,570,292.5,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:44.203814,2026-04-10T14:57:48.752057
+a1a7c176-105b-446b-8ca2-233d70fb4c64,YSD-nan-605x292.5,,,605,292.5,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:44.203814,2026-04-10T14:57:48.752358
+5e9e0310-6d69-4485-ab48-7eca78396abf,YSD-nan-605x292.5（shape）,,,605,292.5（shape）,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:44.203814,2026-04-10T14:57:48.752497
+7346493a-1a09-420d-89e2-565ecbe2cb35,YSD-nan-505x355,,,505,355,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:44.203814,2026-04-10T14:57:48.752575
+0826ecb6-0565-4180-b9b9-7c7d101a76ad,YSD-nan-461x292.5,,,461,292.5,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:44.203814,2026-04-10T14:57:48.752709
+49874565-16f1-4b24-92ca-981769a95035,YSD-nan-585.8x357.2,,,585.8,357.2,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:36:44.203814,2026-04-10T14:57:48.752798
+2a6d7fb5-304f-4a6c-9deb-5c81377cbee0,YSD-PS-1.0x640.0,PS,,1.0,640.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.752895
+d5b505a3-8a98-4da8-9c47-2670c2624308,YSD-PS-0.8x550.0,PS,,0.8,550.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.752976
+52e38832-d830-4936-91c0-5033650b04b2,YSD-PS黒印刷-0.6x485.0,PS黒印刷,,0.6,485.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.753088
+75bac277-b794-4dc6-8626-7bd31680dd85,YSD-PS-0.98x550.0,PS,,0.98,550.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.753182
+a40c88cb-fb77-4864-afec-9af33bdcec10,YSD-ＰＳ黒印刷-0.5x550.0,ＰＳ黒印刷,,0.5,550.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.753259
+4f1705dd-6cc9-4a4f-b55d-bf3fb179fa2e,YSD-PP-0.48x520.0,PP,,0.48,520.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.753333
+1e4ae1e6-9546-4ff6-a629-5e7ec53ba076,YSD-PP-0.38x565.0,PP,,0.38,565.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.753408
+3f5e2711-f1c1-4f31-ad91-b924b53363d6,YSD-PS-0.78x550.0,PS,,0.78,550.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.753481
+ee4c0088-5566-498f-b566-6f45268327b4,YSD-PP-0.48x550.0,PP,,0.48,550.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.753558
+26cf6a85-6013-4cac-a146-bfae7de0936c,YSD-PS-0.78x520.0,PS,,0.78,520.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.753662
+3b4d154b-e9da-484f-8f7f-8e25263f1baf,YSD-ＰＳ黒印刷-0.6x485.0,ＰＳ黒印刷,,0.6,485.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.753737
+338f081f-655d-4803-a3f4-95290b52771a,YSD-nan-1.2x520.0,,,1.2,520.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.753811
+32ae54e8-2515-4dd7-9b0b-ead74925ff73,YSD-PS黒練込-0.8x520.0,PS黒練込,,0.8,520.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.753886
+8762b057-7be7-4166-aa10-c1e6a3226911,YSD-PS-0.78x520.0,PS,,0.78,520.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.753959
+51fea2af-5900-45f4-8d2b-4e5bfa982e26,YSD-PP-0.38x520.0,PP,,0.38,520.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.754033
+65fedbc9-55e7-457e-8f6c-ec40d8c0c2da,YSD-PP-0.38x405.0,PP,,0.38,405.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.754106
+934a51be-9b36-47d4-b69b-5683e5819098,YSD-透明ＰＳ-0.48x520.0,透明ＰＳ,,0.48,520.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.754182
+b9cffa91-3962-4cba-81c6-0eee7e064ba6,YSD-nan-0.78x405.0,,,0.78,405.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.754257
+0938a3a0-ba9b-4d03-b1b0-0d2ef3fc476d,YSD-PS黒練込-0.6x485.0,PS黒練込,,0.6,485.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.754331
+3df8fb02-86a9-4bcd-a245-ebd5bada4fff,YSD-PS-N-0.58x435.0,PS-N,,0.58,435.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.754405
+28d6b919-06d5-4522-bc13-e323c65dbf81,YSD-PS-0.6x520.0,PS,,0.6,520.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.754479
+91d0e711-689e-41c2-93e8-706ca8c41b2d,YSD-PS-1.2x520.0,PS,,1.2,520.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.754553
+3e454df9-1283-46a3-8d1e-104b397ce22b,YSD-PS黒練込-0.5x420.0,PS黒練込,,0.5,420.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.754627
+e6995e2e-7ac6-4e50-8463-671b53d6e62e,YSD-PS黒-0.78x520.0,PS黒,,0.78,520.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.754702
+3deb6caf-96a5-410e-8bf6-bbe8547c07c9,YSD-PS-0.78x405.0,PS,,0.78,405.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.754778
+ad283fef-9157-4b3c-9691-d9399e0d38bc,YSD-PS黒練込-1.0x510.0,PS黒練込,,1.0,510.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.754853
+f355be48-4b75-452a-a305-5908acf66111,YSD-nan-0.8x520.0,,,0.8,520.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.754928
+81302d4f-04e6-4e39-9b05-f3a636d6971e,YSD-PP-0.48x405.0,PP,,0.48,405.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.755003
+94787647-d6ca-4ddd-bc0d-cbc12a3b08f6,YSD-nan-1.2x520.0,,,1.2,520.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.755078
+bb8c4bd0-d8c6-46ef-8e5a-2aba78ae4001,YSD-PS黒練込-0.5x540.0,PS黒練込,,0.5,540.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.755153
+26882788-e15b-44e0-833c-7953cbe72cad,YSD-PP-0.58x455.0,PP,,0.58,455.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.755227
+4bad2e37-346c-49c3-b368-1d2f3d0c6915,YSD-PP-0.48x550.0,PP,,0.48,550.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.755301
+9b88410b-71af-42a3-a743-510d1a0c11ca,YSD-PS-N-0.48x550.0,PS-N,,0.48,550.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.755375
+7041bc4a-9b06-4aa4-be76-41d673007303,YSD-nan-0.78x550.0,,,0.78,550.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.755449
+e7db320b-ee4e-4ae9-afc6-45f42c007c24,YSD-透明ＰＳ-0.98x440.0,透明ＰＳ,,0.98,440.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.755525
+4623d2b8-c991-4253-ad87-bb9c62b3f564,YSD-PS-0.58x550.0,PS,,0.58,550.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.755602
+f0b59527-1331-4277-b0be-0f5eb2d21802,YSD-PS-1.2x520.0,PS,,1.2,520.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.755677
+349029af-47c7-479e-a186-50e412ab9012,YSD-PS-N-0.8x550.0,PS-N,,0.8,550.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.755754
+13242375-a356-4430-af40-ba1fa6f9eaf7,YSD-PS-N-0.6x435.0,PS-N,,0.6,435.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.755830
+dd50ef1f-d52b-42d8-bd59-1b4c9b264455,YSD-ＰＶＣ-0.5x460.0,ＰＶＣ,,0.5,460.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.755907
+1d39c568-f68d-41de-9365-e46a8e2407fc,YSD-PP-0.38x405.0,PP,,0.38,405.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.755982
+126e458c-7598-4aea-bf8c-5f992da2d16e,YSD-PP-0.78x520.0,PP,,0.78,520.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.756056
+72f278bb-9e6e-4e19-a9d2-a6ef1d50eabe,YSD-PS-0.78x520.0,PS,,0.78,520.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.756130
+602de067-ae02-4bc4-846a-dfbc4cf0adc2,YSD-PS-N-1.0x550.0,PS-N,,1.0,550.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.756205
+eb21335a-6108-40a8-87a0-44f096afafde,YSD-nan-0.78x520.0,,,0.78,520.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.756280
+315b4874-5cfd-4bed-9439-33daf5e3ad6b,YSD-透明ＰＳ-1.0x440.0,透明ＰＳ,,1.0,440.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.756355
+37fee0df-49c3-4b36-b024-3e8f0e1faa4c,YSD-PP-1.0x520.0,PP,,1.0,520.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.756430
+672173e8-7253-4a91-b0be-a03202c57379,YSD-PS-0.5x540.0,PS,,0.5,540.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.756505
+c057582f-4035-4898-b65b-d15be96bc35f,YSD-透明ＰＳ-1.0x400.0,透明ＰＳ,,1.0,400.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.756580
+da1c5c47-c5f3-4a32-b3ad-49ce956976fb,YSD-PP-1.4x520.0,PP,,1.4,520.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.756654
+2358166a-1463-4229-bf39-a34ce036dde9,YSD-ＰＳ黒印刷-0.58x420.0,ＰＳ黒印刷,,0.58,420.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.756729
+53c27752-a084-4024-854c-ffd2ffd80277,YSD-nan-0.5x550.0,,,0.5,550.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.756803
+c14f6965-2389-4f7f-8ec5-54adb2508fcf,YSD-透明ＰＳ-0.8x405.0,透明ＰＳ,,0.8,405.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.756878
+f1294c07-088c-42c7-b3cb-645542aa8504,YSD-PS-0.48x550.0,PS,,0.48,550.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.756952
+f102cc7a-252e-4c6b-8bb1-fb570bdc2275,YSD-nan-0.6x550.0,,,0.6,550.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.757026
+70a1746d-bd04-41e4-8b04-cb383e537dfb,YSD-PS-0.78x520.0,PS,,0.78,520.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.757101
+051a2d60-cb6e-4c72-9edd-11bccd61a41b,YSD-ＰＳ黒印刷-0.48x420.0,ＰＳ黒印刷,,0.48,420.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.757204
+28a5c0b6-a544-495a-bbb3-2da4c4d19efb,YSD-nan-0.98x520.0,,,0.98,520.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.757300
+19f2c0d4-0754-48b6-a8e2-cddad0cc1454,YSD-nan-0.58x550.0,,,0.58,550.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.757379
+029ce290-d677-4ab7-a12b-005809072dd1,YSD-PS-N-1.1x405.0,PS-N,,1.1,405.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.757455
+3a8baf6d-5ea5-4ae8-9fbe-0e434638adb4,YSD-PS-1.0x405.0,PS,,1.0,405.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.757534
+2a19825b-ac1b-4c6a-895d-7811bb1828b7,YSD-PS-N-0.78x405.0,PS-N,,0.78,405.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.757611
+f2841065-b1c0-45c0-9d29-ab73c4e909f3,YSD-nan-0.78x405.0,,,0.78,405.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.757717
+9437333c-309c-4018-a592-3252e1afc6bd,YSD-PS-N-0.68x435.0,PS-N,,0.68,435.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.757801
+61e867b0-0a1c-4d1c-b88a-c8735cd19bdb,YSD-ＰＳ黒印刷-1.18x520.0,ＰＳ黒印刷,,1.18,520.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.757882
+914ffe9a-629a-4ab6-9b68-45e590e9df31,YSD-PS-N-0.38x520.0,PS-N,,0.38,520.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.757962
+1fa660e8-f180-4012-aa35-a5970bb6d5df,YSD-PS-N-0.38x520.0,PS-N,,0.38,520.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.758073
+619a6d83-93b3-441a-89a7-17225458eb5d,YSD-nan-0.38x405.0,,,0.38,405.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.758223
+4e33a37b-609b-480c-b4d7-63d71f554fa4,YSD-nan-0.4x405.0,,,0.4,405.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.758320
+525f3333-5310-40a9-99c0-b55ef7b2a28a,YSD-PS-N-0.68x350.0,PS-N,,0.68,350.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.758397
+c4e3c7a5-cade-42d4-a1d4-235b41030e96,YSD-PS-N-0.78x520.0,PS-N,,0.78,520.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.758475
+ee3b54e9-f388-4ab2-96fc-1664f7d3c873,YSD-PS-N-0.58x550.0,PS-N,,0.58,550.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.758553
+a0fdc631-c650-4b23-9c9a-2ec4e30c998b,YSD-PS-N-0.38x405.0,PS-N,,0.38,405.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.758632
+e8871f33-c7cb-4085-b8d7-da9ceb27d7de,YSD-PS-N-0.58x520.0,PS-N,,0.58,520.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.758709
+bb2d1e69-0a01-4e3e-b96b-3d7fa5ff0072,YSD-PS-0.48x405.0,PS,,0.48,405.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.758784
+f9dde766-f631-4f82-b41f-43e1460e8d88,YSD-PS-0.98x405.0,PS,,0.98,405.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.758859
+8c57ee48-f2a4-4545-8016-67a53d7ea6ec,YSD-PS-N-0.9x520.0,PS-N,,0.9,520.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.758935
+4c14f60f-de35-42b5-ba74-01b88a6f85d3,YSD-PS-0.48x520.0,PS,,0.48,520.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.759009
+bbcae08d-a8cc-402a-8cf0-4f13f8a71357,YSD-PS-N-0.48x405.0,PS-N,,0.48,405.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.759086
+b702e5e8-9a22-4bbe-919a-cc68f2778eb9,YSD-ＰＳ-0.68x405.0,ＰＳ,,0.68,405.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.759167
+8f52e4d0-a75e-4098-b542-eb0a092dec50,YSD-PS-N-0.58x405.0,PS-N,,0.58,405.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.759246
+fb056fe3-01ae-45ff-b2a5-b96ad2f87fb4,YSD-PS-N-0.52x520.0,PS-N,,0.52,520.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.759328
+60342e66-d0ea-4289-b48e-4ba8436b3986,YSD-ＰＳ-0.78x405.0,ＰＳ,,0.78,405.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.759407
+e3707a09-5583-4297-bbbe-126564c5d845,YSD-ＰＳ-0.98x405.0,ＰＳ,,0.98,405.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.759485
+57cbc4e0-dfc3-48de-aa1b-43604d2c9eff,YSD-ＰＳ-0.5x520.0,ＰＳ,,0.5,520.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.759560
+57007e94-54b5-4d88-bfa2-bfeb612abe56,YSD-ＰＳ-0.3x520.0,ＰＳ,,0.3,520.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.759635
+8fa49437-d4e5-4cf3-b777-22f52d8123da,YSD-ＰＳ-0.68x435.0,ＰＳ,,0.68,435.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.759711
+a53fdb9b-a00c-4951-87df-fa78edaf8d4b,YSD-ＰＳ-0.58x405.0,ＰＳ,,0.58,405.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.759787
+19c7dc10-0bf7-4db9-b534-465a6d35f587,YSD-ＰＳ-1.18x520.0,ＰＳ,,1.18,520.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.759862
+cfdc33c5-fff8-4a81-9012-c40301494e22,YSD-ＰＳ-0.98x405.0,ＰＳ,,0.98,405.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.759937
+81bca27b-76b2-4cd0-8530-43af0fc9cfc1,YSD-nan-0.6x640.0,,,0.6,640.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.760013
+6942e8e5-8a71-4169-aa78-0f13272f4b86,YSD-ＰＳ-0.78x520.0,ＰＳ,,0.78,520.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.760087
+884b63bb-8ddf-4b4a-b12e-47cda465518c,YSD-ＰＳ-0.78x405.0,ＰＳ,,0.78,405.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.760192
+2c269add-9089-462f-929f-938646acb126,YSD-ＰＳ-0.6x435.0,ＰＳ,,0.6,435.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.760323
+807528c7-01fa-489b-ba37-ff60243e1367,YSD-ＰＳ-0.75x520.0,ＰＳ,,0.75,520.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.760458
+98172ec9-9c45-4f0e-b8ef-d746edb61de9,YSD-ＰＳ-0.7x520.0,ＰＳ,,0.7,520.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.760584
+eaa45928-9f15-4c60-bf62-e5a12c8850e7,YSD-ＰＳ-0.8x520.0,ＰＳ,,0.8,520.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.760709
+24efb22a-3d35-42c4-8747-11a3101b8066,YSD-ＰＳ-0.75x520.0,ＰＳ,,0.75,520.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.760818
+865b6e00-2beb-48b6-9a42-1064d4e83300,YSD-ＰＳ-0.5x360.0,ＰＳ,,0.5,360.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.760904
+6a897c88-b6ff-44a2-9e9f-9404344a946e,YSD-ＰＳ-0.48x405.0,ＰＳ,,0.48,405.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.760986
+90816522-b963-4922-b3bf-888f5a834581,YSD-ＰＳ-0.3x405.0,ＰＳ,,0.3,405.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.761090
+9967a0a9-4648-4f57-a84d-9a1d0f7761aa,YSD-ＰＳ-0.58x550.0,ＰＳ,,0.58,550.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.761174
+f7442b45-9786-4d6b-86e8-b9cb60a83b9c,YSD-ＰＳ-0.48x550.0,ＰＳ,,0.48,550.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.761266
+a3148e96-e163-4067-8a1d-4c071724b9d3,YSD-ＰＳ-0.58x520.0,ＰＳ,,0.58,520.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.761344
+39c29488-9e65-43a0-bb57-43a75c9c4783,YSD-ＰＳ-0.78x435.0,ＰＳ,,0.78,435.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.761421
+cc326164-54b7-4a1a-ae4d-ae07683d6a70,YSD-ＰＳ-0.78x520.0,ＰＳ,,0.78,520.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.761497
+4ece7b84-c5ab-4f5b-8153-7db9708e3105,YSD-ＰＳ-0.6x405.0,ＰＳ,,0.6,405.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.761574
+31d50997-9e0c-4943-a3fc-b6412849e5ea,YSD-ＰＳ-0.58x435.0,ＰＳ,,0.58,435.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.761651
+a2c78e06-2ed4-4a08-af48-1b5d9ab634a7,YSD-ＰＳ-0.5x405.0,ＰＳ,,0.5,405.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.761727
+c88c2f0c-da35-475c-94ce-860ec3c10ca5,YSD-ＰＳ-0.7x405.0,ＰＳ,,0.7,405.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.761801
+fd05515d-74b5-421d-82bc-585e74c5e6fd,YSD-ＰＳ-0.8x520.0,ＰＳ,,0.8,520.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.761876
+b9b8cf08-308d-4d1a-b7ce-287f6fc4d2bd,YSD-ＰＳ-1.34x670.0,ＰＳ,,1.34,670.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.761950
+84138253-963e-4b90-9f34-39473dbed43b,YSD-ＰＳ-0.4x550.0,ＰＳ,,0.4,550.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.762024
+4cd29ef2-01d1-47ca-9b15-1ff6f679d77b,YSD-ＰＳ-1.0x520.0,ＰＳ,,1.0,520.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.762099
+d47fc581-a129-4496-bd54-a3252920815f,YSD-ＰＳ-0.6x550.0,ＰＳ,,0.6,550.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.762173
+17db11b0-74d8-4441-9d8f-e61a33d2dfa9,YSD-ＰＳ-0.5x550.0,ＰＳ,,0.5,550.0,,,,,,,,,,,,,,,1.0,ETL_System_Custom,2026-04-10T14:39:10.365463,2026-04-10T14:57:48.762247

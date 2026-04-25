@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <title>金型・抜型検索システム / Mold Cutter System v9.1.15</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="favicon.png">
+
+    <!-- Cấu hình các thư mục cần Đóng Gói Lên Github (Công cụ Deploy sẽ đọc cái này) -->
+    <meta name="deploy-include" content="moldcutter-backend/">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+
+    <!-- CSS Files - v8.0.4 
+
+    -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="mcs-color-design.css">
+    <link rel="stylesheet" href="patch-mockup-v9.css">
+    <link rel="stylesheet" href="mobile-navbar.css">
+    <link rel="stylesheet" href="login-ui.css">
+
+    <!-- ✅ THÊM mới Phím Nổi -->
+    <link rel="stylesheet" href="search-layout-mobile.css">
+
+    <link rel="stylesheet" href="detail-panel.css?v=9.3.3">
+    <link rel="stylesheet" href="quick-update-module.css?v=9.1.15">
+    <link rel="stylesheet" href="print-export-module.css">
+    <link rel="stylesheet" href="detail-print-module.css">
+
+    <link rel="stylesheet" href="photo-upload.css?v=9.1.15">
+    <link rel="stylesheet" href="photo-manager.css">
+
+    <link rel="stylesheet" href="device-history-status.css">
+    <link rel="stylesheet" href="global-history-module.css">
+    <link rel="stylesheet" href="global-teflon-module.css">
+
+    <link rel="stylesheet" href="search-module.css">
+
+    <link rel="stylesheet" href="filter-ui.css">
+
+    <link rel="stylesheet" href="checkin-checkout.css">
+
+    <link rel="stylesheet" href="location-move.css">
+    <!-- ✅ THÊM mới: Location (Rack) Manager -->
+    <link rel="stylesheet" href="location-manager.css">
+
+    <!-- ✅ THÊM mới: Tray Manager -->
+    <link rel="stylesheet" href="tray-manager.css">
+
+    <!-- Teflon Processing -->
+    <link rel="stylesheet" href="teflon-processing.css">
+
+    <link rel="stylesheet" href="results-card-renderer.css?v=9.1.14">
+    <link rel="stylesheet" href="results-table-renderer.css">
+
+    <style id="mcs-sidebar-preload-fix">
+        /* Không cho transition chạy trong giai đoạn vừa load (tránh giật) */
+        html.mcs-preload .sidebar,
+        html.mcs-preload .main-content {
+            transition: none !important;
+        }
+    </style>
+
+    <script>
+        (function () {
+            // Dùng đúng key đang khai báo trong App: 'moldcutter_sidebar_v81'
+            // (xem const SIDEBAR_STATE_KEY = 'moldcutter_sidebar_v81';) 
+            // [Trong code hiện tại key này đang tồn tại] 
+            try {
+                var KEY = 'moldcutter_sidebar_v81';
+                var saved = localStorage.getItem(KEY);
+                // Nếu saved !== '0' thì mặc định collapsed
+                window.__MCS_SIDEBAR_COLLAPSED__ = (saved !== '0');
+            } catch (e) {
+                window.__MCS_SIDEBAR_COLLAPSED__ = true;
+            }
+            document.documentElement.classList.add('mcs-preload');
+        })();
+    </script>
+
+    <link rel="stylesheet" href="virtual-keyboard.css">
+</head>
+
+<body>
+
+    <!-- ===== LOGIN OVERLAY (AUTH GUARD) ===== -->
+    <div id="login-overlay"
+        style="display:flex; position:fixed; inset:0; z-index:99999; background:var(--mcs-bg); flex-direction:column; align-items:center; justify-content:center;">
+        <div class="login-card">
+            <div class="login-header">
+                <i class="fas fa-lock" style="font-size: 32px; color: var(--mcs-primary); margin-bottom: 16px;"></i>
+                <h2 style="margin: 0 0 8px; font-size: 20px; color: var(--mcs-text);">MoldCutterSearch</h2>
+                <p style="margin: 0; font-size: 14px; color: var(--mcs-text-secondary);">v9.1.15 - Yêu cầu Đăng nhập</p>
+            </div>
+            <form id="auth-login-form" style="display:flex; flex-direction:column; gap:16px;">
+                <input type="email" id="auth-email" placeholder="メールアドレス / Email tài khoản" required
+                    style="padding:12px; border:1px solid var(--mcs-border); border-radius:8px; font-size:16px;">
+                <input type="password" id="auth-password" placeholder="パスワード / Mật khẩu" required
+                    style="padding:12px; border:1px solid var(--mcs-border); border-radius:8px; font-size:16px;">
+
+                <div class="remember-me-container"
+                    style="display:flex; align-items:center; font-size: 14px; gap: 8px; margin-top: -8px;">
+                    <input type="checkbox" id="auth-remember" checked style="accent-color: var(--mcs-primary);">
+                    <label for="auth-remember" style="color: var(--mcs-text-secondary); cursor: pointer;">記憶する / Ghi nhớ
+                        đăng nhập</label>
+                </div>
+
+                <div id="auth-error-msg" style="color:#ef4444; font-size:14px; text-align:center; display:none;"></div>
+                <button type="submit" id="auth-submit-btn"
+                    style="padding:12px; background:var(--mcs-primary); color:white; border:none; border-radius:8px; font-size:16px; font-weight:600; cursor:pointer;">
+                    ログイン / Đăng nhập
+                </button>
+            </form>
+
+            <div id="auth-loading-ui"
+                style="display:none; flex-direction:column; align-items:center; gap:16px; padding: 20px 0;">
+                <div
+                    style="width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top-color: var(--mcs-primary); border-radius: 50%; animation: qrs-spin 1s linear infinite;">
+                </div>
+                <div style="font-size: 15px; color: var(--mcs-text-secondary); font-weight: 500; text-align:center;">
+                    システム初期化中...<br>Đang tải dữ liệu máy chủ
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== QR DIRECT LINK LOADER ===== -->
+    <div id="qr-direct-loader"
+        style="display:none; position:fixed; inset:0; z-index:99999; background:var(--mcs-bg); flex-direction:column; align-items:center; justify-content:center;">
+        <div
+            style="width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top-color: #3b82f6; border-radius: 50%; padding:0; margin:0; animation: qrs-spin 1s linear infinite;">
+        </div>
+        <div style="margin-top: 16px; font-size: 15px; color: #475569; font-weight: 500;">詳細データを読み込み中...</div>
+        <style>
+            @keyframes qrs-spin {
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
+        </style>
+    </div>
+    <script>
+        if (new URLSearchParams(window.location.search).get('scan') === 'qr') {
+            var ql = document.getElementById('qr-direct-loader');
+            if (ql) ql.style.display = 'flex';
+        }
+    </script>
+
+    <div class="app-container" id="main-app-container" style="display: none;">
+
+        <!-- Global Sync Icon -->
+        <div class="global-sync-icon success" id="globalSyncIcon" title="Đồng bộ máy chủ"
+            style="position: absolute; right: 12px; top: -8px; z-index: 1000; transform: scale(0.65);">
+            <i class="fas fa-cloud"></i>
+        </div>
+
+        <!-- ===== SIDEBAR ===== -->
+        <aside class="sidebar collapsed" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <i class="fas fa-search"></i>
+                    <div class="sidebar-logo-text">
+                        <span class="title">MoldCutter</span>
+                        <span class="subtitle">検索システム v9.1.15</span>
+                    </div>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggleBtn">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+
+                <!-- Main Section -->
+                <div class="nav-section">
+                    <div class="nav-section-title">
+                        <i class="fas fa-th-large"></i>
+                        <span>メイン / Main</span>
+                    </div>
+                    <ul class="nav-items">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" id="sidebarNavMolds">
+                                <i class="fas fa-search"></i>
+                                <div class="nav-link-text">
+                                    <span class="ja">金型・抜型 検索</span>
+                                    <span class="vi">Tìm kiếm Khuôn</span>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Warehouse Section -->
+                <div class="nav-section">
+                    <div class="nav-section-title">
+                        <i class="fas fa-warehouse"></i>
+                        <span>倉庫 / Warehouse</span>
+                    </div>
+                    <ul class="nav-items">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" id="sidebarHistoryModuleBtn">
+                                <i class="fas fa-history"></i>
+                                <div class="nav-link-text">
+                                    <span class="ja">履歴</span>
+                                    <span class="vi">Lịch sử</span>
+                                </div>
+                                <span class="nav-badge notify-badge notify-red" id="historyNavBadge"
+                                    style="display: none;">0</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" id="sidebarNavTrays">
+                                <i class="fas fa-layer-group"></i>
+                                <div class="nav-link-text">
+                                    <span class="ja">トレイ管理</span>
+                                    <span class="vi">Quản lý Khay</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" id="sidebarPlasticManagerBtn">
+                                <i class="fas fa-tape"></i>
+                                <div class="nav-link-text">
+                                    <span class="ja">プラ材料 (WMS)</span>
+                                    <span class="vi">Quản lý Nhựa</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" id="sidebarTeflonModuleBtn">
+                                <i class="fas fa-paint-roller"></i>
+                                <div class="nav-link-text">
+                                    <span class="ja">テフロン状態</span>
+                                    <span class="vi">Theo dõi mạ Teflon</span>
+                                </div>
+                                <span class="nav-badge notify-badge notify-red" id="teflon-nav-badge"
+                                    style="display: none;">0</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" id="sidebarLocationManagerBtn">
+                                <i class="fas fa-server"></i>
+                                <div class="nav-link-text">
+                                    <span class="ja">位置管理 (金型)</span>
+                                    <span class="vi">Vị trí (Khuôn)</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" id="sidebarLocationManagerTrayBtn">
+                                <i class="fas fa-boxes"></i>
+                                <div class="nav-link-text">
+                                    <span class="ja">位置管理 (トレイ)</span>
+                                    <span class="vi">Vị trí (Khay)</span>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Tools Section -->
+                <div class="nav-section">
+                    <div class="nav-section-title">
+                        <i class="fas fa-tools"></i>
+                        <span>ツール / Tools</span>
+                    </div>
+                    <ul class="nav-items">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" id="sidebarInventoryAuditBtn">
+                                <i class="fas fa-check-square"></i>
+                                <div class="nav-link-text">
+                                    <span class="ja">棚卸ツール</span>
+                                    <span class="vi">Công cụ Kiểm kê</span>
+                                </div>
+                                <span class="nav-badge success" style="display:none;">0</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" id="sidebarPhotoUploadBtn">
+                                <i class="fas fa-camera"></i>
+                                <div class="nav-link-text">
+                                    <span class="ja">写真アップロード</span>
+                                    <span class="vi">Tải / Chụp ảnh</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" id="sidebarPhotoManagerBtn">
+                                <i class="fas fa-images"></i>
+                                <div class="nav-link-text">
+                                    <span class="ja">写真管理</span>
+                                    <span class="vi">Quản lý ảnh</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" id="sidebarActionSettingsBtn" class="nav-link">
+                                <i class="fas fa-bolt" style="color:#60a5fa;"></i>
+                                <div class="nav-link-text">
+                                    <span class="ja">アクション設定</span>
+                                    <span class="vi">Thiết lập Action</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" id="sidebarRefreshDataBtn" class="nav-link" onclick="location.reload(true);">
+                                <i class="fas fa-sync-alt" style="color:#ef4444;"></i>
+                                <div class="nav-link-text">
+                                    <span class="ja">ハードリセット</span>
+                                    <span class="vi">Tải lại Dữ liệu</span>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+        <script>
+            (function () {
+                var sb = document.getElementById('sidebar');
+                if (sb) {
+                    if (window.__MCS_SIDEBAR_COLLAPSED__) sb.classList.add('collapsed');
+                    else sb.classList.remove('collapsed');
+                }
+                requestAnimationFrame(function () {
+                    document.documentElement.classList.remove('mcs-preload');
+                });
+            })();
+        </script>
+
+        <!-- ===== MAIN CONTENT ===== -->
+        <main class="main-content">
+
+            <!-- TOP BAR — GLOBAL (search isolated to active module) -->
+            <div class="topbar" id="topbar">
+
+                <!-- Module icon + name -->
+                <div class="topbar-module" id="topbar-module-info">
+                    <div class="topbar-module-icon" id="topbar-icon"><i class="fas fa-search"></i></div>
+                    <div class="topbar-module-label">
+                        <span class="ja" id="topbar-ja">金型・抜型 検索</span>
+                        <span class="vi" id="topbar-vi">Tìm kiếm Khuôn / Dao cắt</span>
+                    </div>
+                </div>
+                <div class="topbar-sep"></div>
+
+                <!-- SEARCH — scope pill shows which module -->
+                <div class="search-wrap" id="globalSearchWrap">
+                    <select class="category-dropdown" id="categoryDropdown" title="カテゴリ / Loại">
+                        <option value="all">全て (0)</option>
+                        <option value="mold">金型 (0)</option>
+                        <option value="cutter">抜型 (0)</option>
+                        <option value="tray">トレイ (0)</option>
+                    </select>
+                    <div class="search-divider"></div>
+                    <!-- scope pill shows which module search applies to -->
+                    <div class="search-scope-pill mcs-hidden" id="search-scope-pill">
+                        <i class="fas fa-box-open"></i>
+                        <span class="ja">WMS Nhựa</span>
+                    </div>
+                    <input type="text" class="search-input" id="searchInput" autocomplete="off" autocorrect="off"
+                        autocapitalize="off" spellcheck="false" placeholder="コード・名称検索...">
+                    <button class="clear-btn" title="クリア / Xóa"><i class="fas fa-times"></i></button>
+                </div>
+
+                <!-- Actions -->
+                <div class="topbar-actions">
+                    <button class="topbar-btn" id="filterDetailBtn" title="絞込 / Bộ lọc">
+                        <i class="fas fa-sliders-h"></i>
+                        <span class="ja">絞込</span>
+                    </button>
+                    <button class="topbar-btn icon-only" id="refreshDataBtn" title="データ更新 / Tải lại"
+                        onclick="var i=this.querySelector('i');if(i){i.classList.add('fa-spin');setTimeout(function(){i.classList.remove('fa-spin')},1500);}">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                    <button class="theme-toggle" id="themeToggle" title="テーマ切替 / Đổi giao diện">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <div
+                        style="width:28px;height:28px;border-radius:50%;background:var(--color-primary);display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700;cursor:pointer;">
+                        YSD</div>
+                </div>
+            </div>
+
+            <!-- Content Area for MOLDS -->
+            <div class="content-area" id="mcs-view-mold">
+                <!-- View Controls -->
+                <div class="view-controls">
+                    <div class="view-controls-left">
+                        <!-- View Toggle -->
+                        <div class="view-toggle">
+                            <button class="view-toggle-btn active" data-view="card" title="カードビュー">
+                                <i class="fas fa-th-large"></i>
+                            </button>
+                            <button class="view-toggle-btn" data-view="table" title="テーブルビュー">
+                                <i class="fas fa-table"></i>
+                            </button>
+                        </div>
+
+                        <!-- Toggle Select All Button -->
+                        <button class="btn-action btn-toggle-select" id="btnToggleSelect"
+                            style="display: none; margin-left: 12px; padding: 0 12px; height: 32px; border-radius: 4px; border: 1px solid var(--mcs-border); background: var(--mcs-surface); font-size: 13px; cursor: pointer; align-items: center; gap: 6px; color: #4b5563;">
+                            <i class="far fa-square"></i>
+                            <span class="btn-text desktop-only">全選択</span>
+                        </button>
+
+                        <!-- Result Count -->
+                        <div class="result-count">
+                            <span class="count">0</span>
+                            <span>件</span>
+                        </div>
+
+                        <!-- Selection Info -->
+                        <div class="selection-info" id="selectionInfo" style="display: none;">
+                            <i class="fas fa-check-circle"></i>
+                            <span id="selectedCount">0</span> 件選択
+                        </div>
+
+                    </div>
+
+                    <!-- Old Selection Controls (Removed in v8.5.4 toggle unified feature) -->
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons-wrapper" style="position: relative; display: flex; align-items: center;">
+                        <button class="btn-action btn-reset-all" style="margin-right: 8px;"
+                            title="Reset Filters & Search">
+                            <i class="fas fa-sync-alt"></i>
+                            <span class="btn-text desktop-only">Reset</span>
+                        </button>
+
+                        <button class="btn-action mobile-actions-btn" id="mobileActionsBtn" style="display: none;"
+                            title="アクション">
+                            <i class="fas fa-ellipsis-v"></i>
+                            <span class="btn-text desktop-only">アクション</span>
+                        </button>
+                        <div class="action-buttons" id="actionButtonsList">
+                            <button class="btn-action btn-print" disabled>
+                                <i class="fas fa-print"></i>
+                                <span>印刷</span>
+                            </button>
+                            <button class="btn-action" id="topInventoryAuditBtn">
+                                <i class="fas fa-clipboard-check"></i>
+                                <span>棚卸</span>
+                            </button>
+
+                            <button class="btn-action btn-lock unlocked" id="lockBtn">
+                                <i class="fas fa-unlock"></i>
+                                <span id="lockText">Unlock</span>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Results Container -->
+                <div class="results-container">
+                    <!-- Card View (Grid) -->
+                    <div class="results-grid" id="cardView">
+                        <!-- Cards will be inserted here by ResultsCardRenderer -->
+                    </div>
+
+                    <!-- Pagination cho card -->
+                    <div class="pagination pagination-card" style="display: none;">
+                        <!-- Card pagination buttons will be inserted here -->
+                    </div>
+
+                    <!-- Table View -->
+                    <div class="results-table-wrapper" id="tableView" style="display: none;">
+                        <!-- Table content will be created by JS -->
+                    </div>
+
+                    <!-- Pagination cho table -->
+                    <div class="pagination pagination-table" style="display: none;">
+                        <!-- Table pagination buttons will be inserted here -->
+                    </div>
+
+                </div>
+
+
+
+            </div>
+
+            <!-- Content Area for TRAYS -->
+            <div class="content-area" id="mcs-view-tray" style="display: none; padding: 0; overflow-y: auto;">
+                <div id="trayManagerRoot"
+                    style="width: 100%; height: 100%; background: var(--mcs-surface); border-radius: 0;">
+                    <!-- Tray App Injects Here -->
+                </div>
+            </div>
+
+            <!-- Content Area for TEFLON -->
+            <div class="content-area" id="mcs-view-teflon"
+                style="display: none; padding: 16px; overflow-y: auto; background: var(--mcs-bg);">
+                <div id="teflonManagerRoot"
+                    style="width: 100%; min-height: calc(100vh - 120px); background: var(--mcs-surface); border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); padding: 20px;">
+                    <!-- Teflon App Injects Here -->
+                </div>
+            </div>
+
+            <!-- Content Area for PLASTIC (WMS) -->
+            <div class="content-area" id="plastic-app-root"
+                style="display: none; padding: 16px; overflow-y: auto; background: var(--mcs-bg);">
+                <!-- Plastic App Injects Here -->
+            </div>
+
+            <!-- Content Area for GLOBAL HISTORY -->
+            <div class="content-area" id="mcs-view-history" style="display: none; padding: 0;">
+                <!-- Internal layout will be populated by global-history-module.js -->
+            </div>
+
+            <!-- Content Area for LOCATION MANAGER -->
+            <div class="content-area" id="mcs-view-location" style="display: none; padding: 0;">
+                <!-- Internal layout will be populated by location-manager.js -->
+            </div>
+
+        </main>
+    </div>
+
+    <!-- ===== DETAIL PANEL ===== -->
+    <detailPanel class="detail-panel" id="detailPanel">
+        <div class="detail-panel-header">
+            <span class="detail-panel-title">詳細情報</span>
+            <button class="detail-panel-close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div class="detail-tabs">
+            <button class="detail-tab active" data-tab="info">基本情報</button>
+            <button class="detail-tab" data-tab="history">履歴</button>
+            <button class="detail-tab" data-tab="photos">写真</button>
+        </div>
+
+        <div class="detail-panel-body">
+            <div class="tab-content active" data-tab="info">
+                <!-- Content will be inserted by DetailPanel -->
+            </div>
+            <div class="tab-content" data-tab="history">
+                <!-- Content will be inserted by DetailPanel -->
+            </div>
+            <div class="tab-content" data-tab="photos">
+                <!-- Content will be inserted by DetailPanel -->
+            </div>
+        </div>
+
+        <div class="detail-panel-actions">
+            <button class="btn-detail-action secondary">
+                <i class="fas fa-edit"></i> 編集
+            </button>
+            <button class="btn-detail-action primary">
+                <i class="fas fa-print"></i> 印刷
+            </button>
+            <button class="btn-detail-action info">
+                <i class="fas fa-qrcode"></i> QR
+            </button>
+            <button class="btn-detail-action warning">
+                <i class="fas fa-camera"></i> 写真
+            </button>
+        </div>
+    </detailPanel>
+
+    <!-- ===== BACKDROP ===== -->
+    <div class="backdrop" id="backdrop"></div>
+
+    <!-- ===== MOBILE BOTTOM NAVBAR ===== -->
+    <nav class="mobile-navbar" id="mobileNavbar">
+        <div class="mobile-navbar-items">
+            <!-- 1. Menu -->
+            <div class="mobile-nav-item" id="menuNavBtn" data-nav="menu">
+                <i class="fas fa-bars"></i>
+                <span>Menu</span>
+            </div>
+
+            <!-- 2. Filter -->
+            <div class="mobile-nav-item" id="filterNavBtn" data-nav="filter">
+                <i class="fas fa-filter"></i>
+                <span>絞込</span>
+                <span class="mobile-nav-badge" id="filterNavBadge" style="display:none;">0</span>
+            </div>
+
+            <!-- 3. QR Scan (Center FAB) -->
+            <div class="mobile-nav-item qr-nav-btn" data-nav="qrscan" title="Quét QR" style="position: relative;">
+                <div
+                    style="background: var(--mcs-primary); width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); box-shadow: var(--mcs-shadow-lg); border: 4px solid var(--mcs-surface); color: white; font-size: 24px;">
+                    <i class="fas fa-qrcode"></i>
+                </div>
+            </div>
+
+            <!-- 4. Photos (View) -->
+            <div class="mobile-nav-item" id="mobileNavPhotosBtn" data-nav="photos">
+                <i class="fas fa-images"></i>
+                <span>写真</span>
+            </div>
+
+            <!-- 5. Camera (Upload/Scan) -->
+            <div class="mobile-nav-item" id="mobileNavCameraBtn" data-nav="camera">
+                <i class="fas fa-camera"></i>
+                <span>カメラ</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ===== JAVASCRIPT FILES ===== -->
+
+    <script src="checkin-checkout.js"></script>
+    <script src="transfer-location-module.js?v=v8.8.2_return"></script>
+    <script src="relocate-wizard-module.js"></script>
+    <script src="location-move.js?v=v8.8.2_return"></script>
+
+    <!-- ✅ Tích hợp: Location (Rack) Manager -->
+    <script src="location-manager.js"></script>
+
+    <!-- App Data -->
+    <script src="data-manager.js"></script> <!-- Will be created -->
+
+    <!-- View Switcher -->
+    <script src="view-manager.js"></script>
+
+    <!-- Tray Manager -->
+    <script src="tray-manager.js?v=v9.1.15_tm"></script> <!-- Will be created -->
+
+    <!-- Main App Controller (v8.1.0-4) -->
+    <script src="filter-core.js"></script>
+    <script src="filter-ui.js"></script>
+
+    <script src="app.js"></script>
+    <!-- UI Modules (v8.0.4) -->
+    <script src="results-card-renderer.js?v=9.1.14"></script>
+    <script src="results-table-renderer.js"></script>
+
+    <script src="search-module.js?v=v8.8.2_swipe2"></script>
+
+    <!-- UI Modules (v8.0.3-1) - Still compatible -->
+    <!-- Notification Module -->
+    <script src="notification-module.js"></script>
+
+    <script src="mobile-navbar.js"></script>
+
+    <!-- Cấu trúc Auth Data -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="auth-module.js"></script>
+    <!-- Store phải có trước tool -->
+    <script src="device-photo-store.js"></script>
+    <script src="photo-upload.js?v=9.1.15"></script>
+    <script src="photo-manager.js"></script>
+
+    <!-- Hệ thống tạo mã QR và Camera quét mã vạch (html5-qrcode CDN) -->
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <script src="qr-export.js"></script>
+    <script src="qr-scanner.js"></script>
+
+    <!-- Các module cần DOM, đặt cuối -->
+    <script src="device-history-status.js?v=v8.3.1_sync"></script><!-- Module Detail Panel - Trộn chung Mold/Cutter -->
+    <script src="global-history-module.js"></script>
+    <script src="detail-panel.js?v=9.3.7"></script>
+    <script src="quick-update-module.js?v=9.1.15"></script>
+
+    <!-- Teflon Processing -->
+    <script src="teflon-processing.js?v=v8.3.1_sync"></script>
+
+    <!-- Plastic Management WMS -->
+
+
+    <!-- Trình biên dịch Xuất File ExcelJS (.xlsx native) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+    <script src="print-export-module.js"></script>
+    <script src="detail-print-module.js"></script>
+    <link rel="stylesheet" href="extended-editor.css">
+    <script src="dp-extended-editor.js"></script>
+
+    <script src="global-assistive-touch.js"></script>
+    <script src="detail-panel-photos-tab.js"></script>
+    <script src="detail-panel-related-tab.js"></script>
+    <script src="scrap-wizard-module.js"></script>
+    <script src="global-teflon-module.js?v=9.3.7"></script>
+    <link rel="stylesheet" href="inventory-audit-module.css?v=8.5.3">
+    <script src="inventory-audit-module.js?v=8.5.3"></script>
+
+    <!-- Kích hoạt Module Vuốt Load Của Mobile Phase 50 -->
+    <script src="pull-to-refresh.js"></script>
+
+    <script>
+        document.getElementById('sidebarPlasticManagerBtn')?.addEventListener('click', function (e) {
+            e.preventDefault();
+            if (window.PlasticManager && typeof window.PlasticManager.open === 'function') {
+                window.PlasticManager.open();
+            }
+        });
+
+        document.getElementById('sidebarTeflonModuleBtn')?.addEventListener('click', function (e) {
+            e.preventDefault();
+            if (window.ViewManager) {
+                window.ViewManager.switchView('teflon');
+            }
+        });
+
+        document.getElementById('sidebarPhotoUploadBtn')?.addEventListener('click', function (e) {
+            e.preventDefault();
+            if (window.PhotoUpload && typeof window.PhotoUpload.open === 'function') {
+                window.PhotoUpload.open({ mode: 'standalone' });
+            }
+        });
+
+        document.getElementById('sidebarPhotoManagerBtn')?.addEventListener('click', function (e) {
+            e.preventDefault();
+            if (window.PhotoManager && typeof window.PhotoManager.open === 'function') {
+                window.PhotoManager.open();
+            }
+        });
+
+        document.getElementById('mobileNavPhotosBtn')?.addEventListener('click', function (e) {
+            e.preventDefault();
+            if (window.PhotoManager && typeof window.PhotoManager.open === 'function') {
+                window.PhotoManager.open();
+            }
+        });
+
+        document.getElementById('mobileNavCameraBtn')?.addEventListener('click', function (e) {
+            e.preventDefault();
+            if (window.PhotoUpload && typeof window.PhotoUpload.open === 'function') {
+                window.PhotoUpload.open({ mode: 'standalone' });
+            }
+        });
+
+        // Mở module quản lý Vị Trí/Rack
+        document.getElementById('sidebarLocationManagerBtn')?.addEventListener('click', function (e) {
+            e.preventDefault();
+            if (window.ViewManager) window.ViewManager.switchView('location');
+            if (window.LocationManager && window.LocationManager.open) {
+                window.LocationManager.setMode && window.LocationManager.setMode('mold');
+                window.LocationManager.open();
+            }
+            const sb = document.getElementById('sidebar');
+            if (sb && window.innerWidth <= 768) { sb.classList.remove('open'); const backdrop = document.getElementById('backdrop'); if (backdrop) backdrop.classList.remove('show'); }
+        });
+
+        document.getElementById('sidebarLocationManagerTrayBtn')?.addEventListener('click', function (e) {
+            e.preventDefault();
+            if (window.ViewManager) window.ViewManager.switchView('location');
+            if (window.LocationManager && window.LocationManager.open) {
+                window.LocationManager.setMode && window.LocationManager.setMode('tray');
+                window.LocationManager.open();
+            }
+            // Đóng sidebar nếu ở mobile
+            const sb = document.getElementById('sidebar');
+            if (sb && window.innerWidth <= 768) {
+                sb.classList.remove('open');
+                const backdrop = document.getElementById('backdrop');
+                if (backdrop) backdrop.classList.remove('show');
+            }
+        });
+        document.getElementById('mobileLocationManagerBtn')?.addEventListener('click', function (e) {
+            e.preventDefault();
+            if (window.ViewManager) window.ViewManager.switchView('location');
+            if (window.LocationManager && window.LocationManager.open) {
+                window.LocationManager.open();
+            }
+        });
+        document.getElementById('sidebarActionSettingsBtn')?.addEventListener('click', function (e) {
+            e.preventDefault();
+            // Đóng sidebar trước khi hiện Settings
+            const sb = document.getElementById('sidebar');
+            const backdrop = document.getElementById('backdrop');
+            if (sb) { sb.classList.remove('open'); sb.classList.add('collapsed'); }
+            if (backdrop) backdrop.classList.remove('show');
+
+            if (window.GlobalAssistive && typeof window.GlobalAssistive.openSettings === 'function') {
+                window.GlobalAssistive.openSettings();
+            }
+        });
+    </script>
+
+
+    <!-- Chart.js for Premium Dashboards -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Plastic Management WMS (V3 Modular via Mock Adapter) -->
+    <script src="plastic/supabase-csv-adapter.js"></script>
+    <script src="plastic/plastic-manager-schema.js"></script>
+
+    <!-- Bilingual Translator -->
+    <script src="plastic/plastic-i18n.js"></script>
+
+    <script src="plastic/plastic-dashboard-ui.js"></script>
+    <script src="plastic/plastic-master-ui.js"></script>
+    <script src="plastic/plastic-receipt-ui.js"></script>
+    <script src="plastic/plastic-usage-ui.js"></script>
+    <script src="plastic/plastic-stock-ui.js"></script>
+    <script src="plastic/plastic-adjustment-ui.js"></script>
+    <script src="plastic/plastic-dictionary-ui.js"></script>
+    <script src="plastic/plastic-router-ui.js"></script>
+    <script src="plastic/plastic-mold-cutter-search.js"></script>
+    <script src="plastic/plastic-app-entry.js"></script>
+    <script src="plastic/plastic-integration-patch.js"></script>
+
+    <!-- Floating Module Switcher (Assistive Touch Style) -->
+    <style id="assistive-module-css">
+        .module-switcher {
+            display: none !important;
+        }
+
+        /* Kill standard box */
+
+        .assistive-switcher-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .assistive-fab {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #1e293b;
+            color: white;
+            border: none;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s;
+            outline: none;
+        }
+
+        .assistive-fab:hover {
+            background: #334155;
+            transform: scale(1.05);
+        }
+
+        .assistive-fab:active {
+            transform: scale(0.95);
+        }
+
+        .assistive-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: white;
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            margin-bottom: 12px;
+            width: 260px;
+
+            /* Hidden State */
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px) scale(0.9);
+            transform-origin: bottom right;
+            transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+            pointer-events: none;
+        }
+
+        .assistive-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        .assistive-menu-header {
+            font-size: 13px;
+            font-weight: 700;
+            color: #64748b;
+            margin-bottom: 4px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .assistive-menu-close {
+            cursor: pointer;
+            font-size: 16px;
+            color: #94a3b8;
+        }
+
+        .assistive-menu .ms-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: 8px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            color: #334155;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.15s;
+            text-align: left;
+            width: 100%;
+        }
+
+        .assistive-menu .ms-btn:hover {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+        }
+
+        .assistive-menu .ms-btn i {
+            width: 22px;
+            text-align: center;
+            color: var(--color-primary);
+            font-size: 16px;
+        }
+
+        /* Hide FAB completely on Mobile screens */
+        @media (max-width: 768px) {
+            .assistive-switcher-container {
+                display: none !important;
+            }
+        }
+    </style>
+
+    <div class="assistive-switcher-container" id="assistiveSwitcherContainer">
+        <!-- Floating Menu Popup -->
+        <div class="assistive-menu" id="assistiveMenu">
+            <div class="assistive-menu-header">
+                モジュール切替
+                <i class="fas fa-times assistive-menu-close" onclick="toggleAssistiveMenu()"></i>
+            </div>
+
+            <button class="ms-btn active"
+                onclick="if(window.ViewManager) window.ViewManager.switchView('mold'); toggleAssistiveMenu();">
+                <i class="fas fa-search"></i> 金型検索 <span
+                    style="margin-left:auto;font-size:11px;opacity:0.6;">(Main)</span>
+            </button>
+            <button class="ms-btn"
+                onclick="if(window.showPlasticView) { window.showPlasticView(); } else if(window.ViewManager) { window.ViewManager.switchView('plastic'); } toggleAssistiveMenu();">
+                <i class="fas fa-box-open"></i> プラ材料 WMS <span
+                    style="margin-left:auto;font-size:11px;opacity:0.6;">(Mới)</span>
+            </button>
+            <button class="ms-btn"
+                onclick="if(window.ViewManager) window.ViewManager.switchView('tray'); toggleAssistiveMenu();">
+                <i class="fas fa-inbox"></i> トレイ管理
+            </button>
+        </div>
+
+        <!-- Base Floating Button -->
+        <button class="assistive-fab" id="assistiveFab" title="Mở danh sách Module">
+            <i class="fas fa-th-large"></i>
+        </button>
+    </div>
+
+    <script>
+        (function () {
+            const container = document.getElementById('assistiveSwitcherContainer');
+            const fab = document.getElementById('assistiveFab');
+            const menu = document.getElementById('assistiveMenu');
+
+            function toggleAssistiveMenu() {
+                menu.classList.toggle('show');
+                if (menu.classList.contains('show')) {
+                    fab.innerHTML = '<i class="fas fa-times"></i>';
+                } else {
+                    fab.innerHTML = '<i class="fas fa-th-large"></i>';
+                }
+            }
+
+            // Expose globally for inline onclicks
+            window.toggleAssistiveMenu = toggleAssistiveMenu;
+
+            // Draggable Logic
+            let isDragging = false;
+            let startX, startY, initLeft, initTop;
+
+            fab.addEventListener('mousedown', (e) => {
+                isDragging = false;
+                startX = e.clientX;
+                startY = e.clientY;
+
+                const rect = container.getBoundingClientRect();
+                initLeft = rect.left;
+                initTop = rect.top;
+
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+            });
+
+            function onMouseMove(e) {
+                const dx = e.clientX - startX;
+                const dy = e.clientY - startY;
+
+                if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
+                    isDragging = true;
+                }
+
+                if (isDragging) {
+                    container.style.right = 'auto';
+                    container.style.bottom = 'auto';
+                    container.style.left = (initLeft + dx) + 'px';
+                    container.style.top = (initTop + dy) + 'px';
+                }
+            }
+
+            function onMouseUp() {
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+            }
+
+            fab.addEventListener('click', (e) => {
+                if (isDragging) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                } else {
+                    toggleAssistiveMenu();
+                }
+            });
+        })();
+    </script>
+    <!-- Virtual Keyboard Module -->
+    <script src="virtual-keyboard-module.js?v=v8.8.2_vkfix3"></script>
+</body>
+
+</html>

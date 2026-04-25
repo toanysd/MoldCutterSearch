@@ -1,0 +1,62 @@
+/* login-ui.css - v9.1.15 */
+/* Chịu trách nhiệm thiết kế khung đăng nhập Memory Palace */
+
+.login-card {
+    background: var(--mcs-surface);
+    width: 90%;
+    max-width: 400px;
+    border-radius: 12px;
+    padding: 32px 24px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    border: 1px solid var(--mcs-border);
+    animation: loginFadeIn 0.3s ease-out;
+}
+
+@keyframes loginFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.login-card input[type="email"],
+.login-card input[type="password"] {
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.login-card input[type="email"]:focus,
+.login-card input[type="password"]:focus {
+    outline: none;
+    border-color: var(--mcs-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+#auth-submit-btn {
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+#auth-submit-btn:hover {
+    background: #2563eb;
+    /* Tailwind blue-600 */
+}
+
+#auth-submit-btn:active {
+    transform: scale(0.98);
+}
+
+#auth-submit-btn:disabled {
+    background: #94a3b8;
+    /* Tailwind slate-400 */
+    cursor: not-allowed;
+    transform: none;
+}

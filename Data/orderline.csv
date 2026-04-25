@@ -1,0 +1,3 @@
+﻿OrderLineID,OrderHeadID,LineNo,TrayID,MoldDesignID,TrayOrderID,Quantity,Unit,DueDate,LineStatus,PlanPriority,Notes
+1,3,1,5230,4751,1,44,PCS,3/24/2026,NEW,1,LOT 261881; 22 shot; 2 cav; PET black 0.70 640
+2,2,1,1239,1377,2,120,PCS,,NEW,1,Created from TrayOrderID=2

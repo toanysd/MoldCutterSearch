@@ -67,7 +67,7 @@ async function jwtAuthMiddleware(req, res, next) {
 
   // 3. Truy vấn Role nóng trên bảng user_roles (Xóa quyền tức thì)
   // Lấy role từ JWT làm base
-  const jwtRole = req.user.app_metadata?.role || req.user.user_metadata?.role || 'viewer';
+  const jwtRole = req.user.app_metadata?.role || req.user.user_metadata?.role || (req.user.role === 'admin' ? 'admin' : 'viewer');
 
   if (!supabaseServerClient) {
     req.user.role = jwtRole; // Safety fallback

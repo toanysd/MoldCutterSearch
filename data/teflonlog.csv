@@ -1,4 +1,4 @@
-﻿TeflonLogID,MoldID,TeflonStatus,RequestedBy,RequestedDate,ApprovedDate,ApprovedBy,SentBy,SentDate,ExpectedDate,ReceivedDate,SupplierID,CoatingType,Reason,TeflonCost,Quality,TeflonNotes,CreatedDate,UpdatedBy,UpdatedAt
+TeflonLogID,MoldID,TeflonStatus,RequestedBy,RequestedDate,ApprovedDate,ApprovedBy,SentBy,SentDate,ExpectedDate,ReceivedDate,SupplierID,CoatingType,Reason,TeflonCost,Quality,TeflonNotes,CreatedDate,UpdatedBy,UpdatedAt
 1,261,テフロン加工済,,,,,,1/5/2024,,1/11/2024,7,テフロン加工済,Historical Data,,,,9/26/2025,,12/10/2025
 2,263,テフロン加工済,,,,,,4/3/2023,,4/6/2023,7,テフロン加工済,Historical Data,,,,9/26/2025,,12/10/2025
 3,284,テフロン加工済,,,,,,9/5/2023,,9/8/2023,7,テフロン加工済,Historical Data,,,,9/26/2025,,12/10/2025
@@ -4640,7 +4640,7 @@
 4654,5683,テフロン加工中,1,4/10/2026,,,1,4/10/2026,4/17/2026,,7,,,,,,4/10/2026,,4/10/2026
 4655,5683,テフロン加工済,1,4/10/2026,,,1,4/10/2026,4/17/2026,4/15/2026,7,,,,,,4/15/2026,,4/15/2026
 4656,5769,承認済(発送待ち),,4/22/2026,,,,,,,7,,,,,,4/22/2026,,4/22/2026
-4657,5769,テフロン加工中,,4/22/2026,,,1,4/22/2026,4/29/2026,,7,,,,,,4/22/2026,,4/22/2026
+4657,5769,Completed,,4/22/2026,,,1,4/22/2026,4/29/2026,2026-04-27,7,,,,,,4/22/2026,,2026-04-27
 4658,5695,承認済(発送待ち),1,4/22/2026,,,,,,,7,,,,,,4/22/2026,,4/22/2026
 4659,5695,テフロン加工中,1,4/22/2026,,,1,4/23/2026,4/30/2026,,7,,,,,,4/23/2026,,4/23/2026
 4660,4461,テフロン加工済,,,,,,,,,,,KSP-200 R1　初回のテフロン加工,,,,,,

@@ -1,0 +1,452 @@
+/* v9.0.2 */
+/* 
+
+  virtual-keyboard.css 
+
+  Bàn phím ảo nội bộ thay thế Native Keyboard trên Mobile 
+
+*/
+
+
+
+#vKeyboardContainer {
+
+    position: fixed;
+
+    bottom: -60%;
+
+    /* Hidden initially */
+
+    left: 0;
+
+    width: 100%;
+
+    background: #ebeced;
+
+    z-index: 9999;
+
+    box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.2);
+
+    transition: bottom 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+    display: flex;
+
+    flex-direction: column;
+
+    user-select: none;
+
+    font-family: var(--font-body, "Inter", sans-serif);
+
+    touch-action: none;
+
+}
+
+
+
+#vKeyboardContainer.vk-active {
+
+    bottom: 0;
+
+}
+
+
+
+/* Thanh Gợi ý (Autocomplete Wizard) */
+
+.vk-wizard-bar {
+
+    display: flex;
+
+    height: 44px;
+
+    background: var(--color-surface, #ffffff);
+
+    border-bottom: 1px solid var(--color-border, #ddd);
+
+    align-items: center;
+
+    padding: 0 8px;
+
+    overflow-x: auto;
+
+    gap: 8px;
+
+    white-space: nowrap;
+
+}
+
+
+
+.vk-wizard-item {
+
+    background: var(--color-surface-offset, #f1f3f5);
+
+    border: 1px solid var(--color-border, #ddd);
+
+    padding: 6px 12px;
+
+    border-radius: 16px;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    color: var(--color-primary, #0d6d6e);
+
+    cursor: pointer;
+
+}
+
+
+
+.vk-wizard-item:active {
+
+    background: var(--color-primary, #0d6d6e);
+
+    color: #fff;
+
+}
+
+
+
+/* Text Display & Action bar */
+
+.vk-top-bar {
+
+    display: flex;
+
+    background: #d1d5db;
+
+    padding: 8px;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+}
+
+
+
+.vk-preview-input {
+
+    flex: 1;
+
+    background: #fff;
+
+    height: 38px;
+
+    border-radius: 8px;
+
+    border: 1px solid #aaa;
+
+    display: flex;
+
+    align-items: center;
+
+    padding: 0 12px;
+
+    font-size: 16px;
+
+    font-weight: bold;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+}
+
+
+
+.vk-preview-cursor {
+
+    display: inline-block;
+
+    width: 2px;
+
+    height: 20px;
+
+    background: var(--color-primary, #0d6d6e);
+
+    animation: blink 1s step-end infinite;
+
+    margin-left: 2px;
+
+}
+
+
+
+@keyframes blink {
+
+    50% {
+
+        opacity: 0;
+
+    }
+
+}
+
+
+
+.vk-close-btn {
+
+    margin-left: 10px;
+
+    background: #9ca3af;
+
+    color: #fff;
+
+    border: none;
+
+    padding: 8px 16px;
+
+    border-radius: 8px;
+
+    font-weight: bold;
+
+    font-size: 12px;
+
+}
+
+
+
+/* Bàn phím chính Container */
+
+.vk-keypad-wrapper {
+
+    padding: 6px;
+
+    background: #e5e7eb;
+
+}
+
+
+
+.vk-row {
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 4px;
+
+    margin-bottom: 6px;
+
+}
+
+
+
+/* Nút bấm tiêu chuẩn */
+
+.vk-key {
+
+    flex: 1;
+
+    background: #fdfdfd;
+
+    min-width: 0;
+
+    /* allows flex compression */
+
+    height: 48px;
+
+    border-radius: 6px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 18px;
+
+    font-weight: bold;
+
+    color: #333;
+
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2), inset 0 -2px 0 rgba(0, 0, 0, 0.1);
+
+    cursor: pointer;
+
+}
+
+
+
+.vk-key:active {
+
+    background: #d1d5db;
+
+    transform: translateY(1px);
+
+    box-shadow: 0 0 1px rgba(0, 0, 0, 0.2);
+
+}
+
+
+
+.vk-key.vk-special {
+
+    background: #bcc1c6;
+
+    font-size: 16px;
+
+}
+
+
+
+.vk-key.vk-primary {
+
+    background: var(--color-primary, #0d6d6e);
+
+    color: #fff;
+
+}
+
+
+
+.vk-key.vk-wide {
+
+    flex: 1.5;
+
+}
+
+
+
+/* Các layout (Alpha, Numeric) */
+
+.vk-layout {
+
+    display: none;
+
+}
+
+
+
+.vk-layout.vk-visible {
+
+    display: block;
+
+}
+
+
+
+/* Radial Menu (Giao diện giữ QR) */
+
+#vkRadialOverlay {
+
+    position: fixed;
+
+    top: 0;
+
+    left: 0;
+
+    right: 0;
+
+    bottom: 0;
+
+    z-index: 10000;
+
+    display: none;
+
+    background: rgba(0, 0, 0, 0.4);
+
+    touch-action: none;
+
+}
+
+
+
+.vk-radial-menu {
+
+    position: absolute;
+
+    width: 200px;
+
+    height: 200px;
+
+    border-radius: 50%;
+
+    pointer-events: none;
+
+    /* Centered dynamically by JS around the QR button */
+
+}
+
+
+
+/* Các node của radial menu */
+
+.vk-radial-item {
+
+    position: absolute;
+
+    width: 60px;
+
+    height: 60px;
+
+    background: #fff;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    flex-direction: column;
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+    transform: translate(-50%, -50%) scale(0.5);
+
+    opacity: 0;
+
+    transition: all 0.2s ease-out;
+
+    color: var(--color-text, #333);
+
+}
+
+
+
+.vk-radial-item.active {
+
+    transform: translate(-50%, -50%) scale(1.2);
+
+    background: var(--color-primary, #0d6d6e);
+
+    color: #fff;
+
+}
+
+
+
+.vk-radial-item.show {
+
+    opacity: 1;
+
+    transform: translate(-50%, -50%) scale(1);
+
+}
+
+
+
+.vk-radial-icon {
+
+    font-size: 20px;
+
+}
+
+
+
+.vk-radial-lbl {
+
+    font-size: 10px;
+
+    font-weight: bold;
+
+    margin-top: 2px;
+
+}

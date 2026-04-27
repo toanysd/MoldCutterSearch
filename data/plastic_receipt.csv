@@ -1,0 +1,2 @@
+receipt_id,receipt_no,receipt_date,supplier_name,invoice_no,delivery_note_no,status,notes,created_by,created_at,updated_at
+REC-INIT,RC00001,2026-04-10 10:11:25,Initial Setup,-,-,completed,Seed data,System,2026-04-10 10:11:25,2026-04-10 10:11:25

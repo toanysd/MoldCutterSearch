@@ -67,7 +67,10 @@ async function jwtAuthMiddleware(req, res, next) {
 
   // 3. Truy vấn Role nóng trên bảng user_roles (Xóa quyền tức thì)
   // Lấy role từ JWT làm base
-  const jwtRole = req.user.app_metadata?.role || req.user.user_metadata?.role || (req.user.role === 'admin' ? 'admin' : 'viewer');
+  const rawRole = req.user.app_metadata?.role
+    || req.user.user_metadata?.role
+    || req.user.role
+  const jwtRole = rawRole === 'admin' ? 'admin' : 'viewer'
 
   if (!supabaseServerClient) {
     req.user.role = jwtRole; // Safety fallback
@@ -89,7 +92,7 @@ async function jwtAuthMiddleware(req, res, next) {
   // 4. Áp Dụng Endpoint Security (Block Viewer write operations)
   if (req.method === 'POST' || req.method === 'PUT' || req.method === 'DELETE') {
     if (req.user.role === 'viewer') {
-      return res.status(403).json({ error: 'Access Denied (403): Viewers do not have write permissions' });
+      return res.status(403).json({ error: `Access Denied (403): Viewers do not have write permissions. Debug: jwtRole='${jwtRole}', FinalRole='${req.user.role}'` });
     }
   }
 

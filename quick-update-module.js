@@ -1,16 +1,17 @@
-// v9.0.2-3
+// v9.0.2-4
 /* ============================================================================
-   quick-update-module-v8.5.3-4.js
-   Module cập nhật nhanh (Wizard Flow) - Version 4
+   quick-update-module-v8.5.3-5.js
+   Module cập nhật nhanh (Wizard Flow) - Version 5
    - Hỗ trợ: Các bước (Steps), Shiplog, Background save.
    - Fix: Sửa lỗi 404 API bằng resolveApiUrl.
    - UI: Bổ sung nút Hủy bỏ vào tất cả các bước.
+   - Sec: Inject JWT logic into API fetch (auth guard).
    ============================================================================ */
 
 (function (global) {
     'use strict';
 
-    var VERSION = 'v8.5.3-4';
+    var VERSION = 'v8.5.3-5';
     var DCH_FILE = 'datachangehistory.csv';
 
     function resolveApiUrl(path) {
@@ -452,6 +453,11 @@
                 var m = MODES[this.currentMode];
                 var changedAt = new Date().toISOString();
 
+                var fetchHeaders = { 'Content-Type': 'application/json' };
+                if (global.__MCS_JWT__) {
+                    fetchHeaders['Authorization'] = 'Bearer ' + global.__MCS_JWT__;
+                }
+
                 for (var key in this.wizardState.fields) {
                     var newVal = this.wizardState.fields[key];
                     var oldVal = this.wizardState.originalFields[key];
@@ -464,7 +470,7 @@
                         // 1. Ghi web*.csv
                         var resWeb = await fetch(API_UPSERT, {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: fetchHeaders,
                             body: JSON.stringify({
                                 filename: tInfo.filename,
                                 idField: tInfo.idField,
@@ -475,7 +481,7 @@
                         });
                         if (!resWeb.ok) {
                             var errData = await resWeb.json().catch(function () { return {}; });
-                            throw new Error('Lỗi cập nhật ' + tInfo.filename + ': ' + (errData.message || resWeb.status));
+                            throw new Error('Lỗi cập nhật ' + tInfo.filename + ': ' + (errData.error || errData.message || resWeb.status));
                         }
 
                         // 2. Ghi datachangehistory.csv
@@ -496,7 +502,7 @@
 
                         var resHistory = await fetch(API_UPSERT, {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: fetchHeaders,
                             body: JSON.stringify({
                                 filename: DCH_FILE,
                                 idField: 'DataChangeID',
@@ -507,7 +513,7 @@
                         });
                         if (!resHistory.ok) {
                             var errLog = await resHistory.json().catch(function () { return {}; });
-                            throw new Error('Lỗi ghi Log ' + DCH_FILE + ': ' + (errLog.message || resHistory.status));
+                            throw new Error('Lỗi ghi Log ' + DCH_FILE + ': ' + (errLog.error || errLog.message || resHistory.status));
                         }
                     }
                 }
@@ -516,7 +522,7 @@
                     var s = this.wizardState.shipping;
                     await fetch(API_ADD_LOG, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: fetchHeaders,
                         body: JSON.stringify({
                             filename: 'shiplog.csv',
                             entry: {

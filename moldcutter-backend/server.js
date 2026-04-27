@@ -132,7 +132,7 @@ const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
 const owner = process.env.GITHUB_OWNER || 'toanysd';
 const repo = 'MoldCutterSearch';
 const branch = process.env.GITHUB_BRANCH || 'main';
-const DATA_PATH_PREFIX = 'Data/';
+const DATA_PATH_PREFIX = 'data/';
 
 // ============================================
 // TIMEZONE CONFIGURATION (JST = UTC+9)

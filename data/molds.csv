@@ -1,4 +1,4 @@
-﻿MoldID,MoldName,MoldCode,CustomerID,TrayID,MoldDesignID,storage_company,RackLayerID,ItemTypeID,MoldLengthModified,MoldWidthModified,MoldHeightModified,MoldWeightModified,MoldNotes,MoldUsageStatus,MoldOnCheckList,JobID,MoldReturning,MoldReturnedDate,MoldDisposing,MoldDisposedDate,MoldEntry,MoldRevisionID,DeviceStatus,KeeperCompany,UpdatedAt,UpdatedBy
+MoldID,MoldName,MoldCode,CustomerID,TrayID,MoldDesignID,storage_company,RackLayerID,ItemTypeID,MoldLengthModified,MoldWidthModified,MoldHeightModified,MoldWeightModified,MoldNotes,MoldUsageStatus,MoldOnCheckList,JobID,MoldReturning,MoldReturnedDate,MoldDisposing,MoldDisposedDate,MoldEntry,MoldRevisionID,DeviceStatus,KeeperCompany,UpdatedAt,UpdatedBy
 10,TIH-014,TIH014,,2528,3018,2,12,2,,,,,,,TRUE,,,,,,,3072,,2,,
 12,TKO-009T,TKO009T,,2579,3078,2,11,2,,,,,,,TRUE,,,,,,,3119,,2,,
 13,TYJ-001,TYJ001,,2664,3172,2,11,2,,,,,,,TRUE,,,,,,,3213,,2,,
@@ -2577,7 +2577,7 @@
 2711,KDS-089,KDS089,,856,911,2,262,2,,,,,,,TRUE,,,,,,,991,,2,,
 2712,KDS-073,KDS073,,848,903,2,264,2,,,,,,,TRUE,,,,,,,983,,2,,
 2713,KDS-122,KDS122,,883,939,2,264,2,,,,,,,TRUE,294,,,,,,1019,,2,,
-2714,KDS-063,KDS063,,842,895,2,264,2,,,,,,,TRUE,,,,,,,975,,2,,
+2714,KDS-063,KDS063,,842,895,2,264,2,,,,6.6,,,TRUE,,,,,,,975,,2,,
 2715,KDS-129,KDS129,,888,944,2,264,2,,,,,,,TRUE,,,,,,,1024,,2,,
 2716,KDS-095,KDS095,,861,916,2,264,2,,,,,,,TRUE,,,,,,,996,,2,,
 2717,KDS-094,KDS094,,860,915,2,264,2,,,,,,,TRUE,,,,,,,995,,2,,

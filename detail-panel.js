@@ -3437,6 +3437,12 @@ Created: 2026-02-04
         if (this.panel.classList.contains('open') && this.currentItem) this.refreshCurrentTab();
       });
 
+      // Vá lỗi event name lệch pha với data-manager.js
+      document.addEventListener('data-manager:updated', () => {
+        this.loadDataReferences();
+        if (this.panel.classList.contains('open') && this.currentItem) this.refreshCurrentTab();
+      });
+
       document.addEventListener('mcs-data-sync', (e) => {
         if (!this.panel.classList.contains('open') || !this.currentItem) return;
         var detail = e.detail;

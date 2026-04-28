@@ -1423,6 +1423,10 @@
             // Fix legacy FieldName map from datachangehistory.csv
             if (fieldName === 'MoldWeightModified') fieldName = 'MoldWeight';
 
+            // [V10 Patch] Không cho phép DataChangeHistory ảo ghi đè lên các trường Vị trí & Destination
+            // Nguyên nhân: Wizard ghi trực tiếp thông số xịn vào Molds.csv thông qua Delta Sync. Nếu không block, lịch sử cũ của Extended Editor sẽ đè nát số liệu mới.
+            if (fieldName === 'RackLayerID' || fieldName === 'KeeperCompany') return;
+
             var changedAt = normHistoryValue(row.ChangedAt)
 
             if (!fieldName || !changedAt) return
@@ -2412,7 +2416,6 @@
             if (this._recomputeTimer) clearTimeout(this._recomputeTimer);
             this._recomputeTimer = setTimeout(() => {
                 applyWebLatestMerge();
-                processDataRelationships();
                 document.dispatchEvent(new CustomEvent('data-manager:updated'));
             }, 300); // 300ms để kịp cho mcs-data-sync chạy xong animation scale(1.2) trên results-card
         },

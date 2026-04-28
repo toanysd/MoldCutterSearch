@@ -1,4 +1,5 @@
 ShipID,CustomerID,ItemTypeID,ShipItemName,ShipDate,ToCompanyID,FromCompanyID,ShipItemType,ShipStatus,FromCompany,ToCompany,MoldID,CutterID,FrameID,OtherEquipID,WaterBaseID,ShipNotes,DateEntry,handler,EmployeeID,UpdatedAt,UpdatedBy
+SHIP144787,,,,2026-04-28,2,7,,,,,5695,,,,,Teflon,,,1,,
 SHIP946594,,,,2026-04-28,2,7,,,,,5695,,,,,Teflon,,,1,,
 SHIP050674,,,,2026-04-27,2,7,,,,,5769,,,,,Teflon,,,1,,
 4,108,10,ネル,9/30/2024,8,2,,,2,ベトナム,,,,1,,760x320x200 5.4kg,,,,,

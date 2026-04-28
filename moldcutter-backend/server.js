@@ -51,7 +51,7 @@ const MAX_CHANGES = 1000;
 function pushDeltaEvent(filename, idField, idValue, payload) {
   const table = String(filename || '').replace(/\.csv$/i, '');
   recentChanges.push({
-    version: globalDataVersion,
+    version: Date.now(),
     table,
     idField,
     idValue,

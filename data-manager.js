@@ -2409,9 +2409,12 @@
 
 
         recompute() {
-            applyWebLatestMerge();
-            processDataRelationships();
-            document.dispatchEvent(new CustomEvent('data-manager:updated'));
+            if (this._recomputeTimer) clearTimeout(this._recomputeTimer);
+            this._recomputeTimer = setTimeout(() => {
+                applyWebLatestMerge();
+                processDataRelationships();
+                document.dispatchEvent(new CustomEvent('data-manager:updated'));
+            }, 300); // 300ms để kịp cho mcs-data-sync chạy xong animation scale(1.2) trên results-card
         },
 
         syncRecordLocally(tb, idField, idValue, payload) {

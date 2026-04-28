@@ -1558,6 +1558,17 @@
 
                 batch.push({ filename: 'molds.csv', idField: 'MoldID', idValue: self.currentMold.MoldID, updates: mEntry, mode: 'update' });
 
+                if (mEntry.KeeperCompany) {
+                    var dchMold = {
+                        DataChangeID: 'DCH' + Date.now().toString() + Math.random().toString(36).substr(2, 5),
+                        TableName: 'molds',
+                        RecordID: self.currentMold.MoldID, RecordIDField: 'MoldID', FieldName: 'KeeperCompany',
+                        OldValue: String(self.currentMold.KeeperCompany || ''), NewValue: String(mEntry.KeeperCompany),
+                        ChangedAt: new Date().toISOString(), ChangedBy: String(employee), ChangeSource: 'teflon_wizard', ChangeNote: 'Keeper Update', IsConflict: 'FALSE'
+                    };
+                    batch.push({ filename: 'datachangehistory.csv', idField: 'DataChangeID', idValue: dchMold.DataChangeID, updates: dchMold, mode: 'insert' });
+                }
+
             }
 
         }

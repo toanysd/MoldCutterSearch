@@ -1,4 +1,4 @@
-// v10.0.0-PubSub
+// v10.0.0-PubSub-1
 /* ============================================================================
 
    DATA MANAGER v8.1.0
@@ -1499,6 +1499,8 @@
 
         d.companies = overlayRowByHistory(d.companies, 'companies', 'CompanyID');
 
+        d.teflonlog = overlayRowByHistory(d.teflonlog, 'teflonlog', 'TeflonLogID');
+
 
 
         // Build lookup maps
@@ -2397,17 +2399,41 @@
             if (this._deltaInterval) return;
             const POLL = 30000; // Tăng tính real-time (từ 60s rút ngắn còn 30s)
             this._deltaInterval = setInterval(() => {
-                const url = (window.getCfg && typeof window.getCfg === 'function')
-                    ? (window.getCfg().apiUrl || fallbackUrl) + '/sync/check-version'
-                    : '/api/sync/check-version';
+                const currentVer = window.globalDataVersion || 0;
+                // Tránh ping lấy delta khi chưa load data lần đầu thành công
+                if (!currentVer) return;
+
+                const baseUrl = (window.getCfg && typeof window.getCfg === 'function')
+                    ? (window.getCfg().apiUrl || fallbackUrl)
+                    : '/api';
+                const url = baseUrl + '/sync/delta?since=' + currentVer;
+
                 fetch(url)
                     .then(r => r.json())
                     .then(res => {
-                        if (res && res.version > (window.globalDataVersion || 0)) {
+                        if (res && res.version > currentVer) {
                             window.globalDataVersion = res.version;
-                            if (typeof loadAllData === 'function') loadAllData();
+
+                            // Nếu Backend thông báo cần tải lại toàn bộ
+                            if (res.fullReload === true) {
+                                console.warn('🔄 Background Sync: Quá nhiều thay đổi, fallback tải full loadAllData()');
+                                if (typeof loadAllData === 'function') loadAllData();
+                                return;
+                            }
+
+                            // Cập nhật từng phần (Delta Patches) cho UI (Facebook-like)
+                            if (res.changes && Array.isArray(res.changes)) {
+                                console.log(`⚡ Background Sync: Áp dụng ${res.changes.length} Delta patches`);
+                                res.changes.forEach(change => {
+                                    if (change.table && change.idField && change.idValue && change.payload) {
+                                        this.syncRecordLocally(change.table, change.idField, change.idValue, change.payload);
+                                    }
+                                });
+                            }
                         }
-                    }).catch(() => { });
+                    }).catch(err => {
+                        // Suppress background errors
+                    });
             }, POLL);
         }
 

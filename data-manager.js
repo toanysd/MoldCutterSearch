@@ -1,4 +1,4 @@
-// v9.0.2
+// v10.0.0-PubSub
 /* ============================================================================
 
    DATA MANAGER v8.1.0
@@ -1080,7 +1080,7 @@
                 console.log(`📥 Loaded from GitHub: ${filename}`);
 
                 const text = await res.text();
-                
+
                 if (text.trim().toLowerCase().startsWith('<!doctype html>') || text.toLowerCase().includes('<html')) {
                     throw new Error(`GitHub backend returned HTML instead of CSV for ${filename} (Auth/Routing Error)`);
                 }
@@ -1132,7 +1132,7 @@
                 console.log(`📥 Loaded from local: ${filename}`);
 
                 const textLocal = await resLocal.text();
-                
+
                 if (textLocal.trim().toLowerCase().startsWith('<!doctype html>') || textLocal.toLowerCase().includes('<html')) {
                     throw new Error(`Local fetch returned HTML instead of CSV for ${filename} (SPA Fallback Trap)`);
                 }
@@ -1205,7 +1205,11 @@
 
 
 
-        const headers = splitCSVLine(lines[0]).map(h => stripQuotes(h.trim()));
+        const headers = splitCSVLine(lines[0]).map(h => {
+            let hv = stripQuotes(h.trim());
+            if (hv === 'MoldWeightModified') hv = 'MoldWeight';
+            return hv;
+        });
 
         const rows = [];
 
@@ -1376,6 +1380,8 @@
 
 
             var fieldName = normHistoryValue(row.FieldName)
+            // Fix legacy FieldName map from datachangehistory.csv
+            if (fieldName === 'MoldWeightModified') fieldName = 'MoldWeight';
 
             var changedAt = normHistoryValue(row.ChangedAt)
 
@@ -2361,12 +2367,49 @@
 
 
         recompute() {
-
             applyWebLatestMerge();
-
             document.dispatchEvent(new CustomEvent('data-manager:updated'));
-
         },
+
+        syncRecordLocally(tb, idField, idValue, payload) {
+            try {
+                if (!state.allData[tb]) return false;
+                let arr = state.allData[tb];
+                let f = arr.find(x => String(x[idField]) === String(idValue));
+                if (f) Object.assign(f, payload);
+
+                if (tb === 'molds' && state.allData['webmolds']) {
+                    let wf = state.allData['webmolds'].find(x => String(x[idField]) === String(idValue));
+                    if (wf) Object.assign(wf, payload);
+                }
+                if (tb === 'cutters' && state.allData['webcutters']) {
+                    let wfc = state.allData['webcutters'].find(x => String(x[idField]) === String(idValue));
+                    if (wfc) Object.assign(wfc, payload);
+                }
+
+                this.recompute();
+                document.dispatchEvent(new CustomEvent('mcs-data-sync', { detail: { idValue, payload } }));
+                return true;
+            } catch (e) { return false; }
+        },
+
+        startBackgroundDeltaSync(fallbackUrl) {
+            if (this._deltaInterval) return;
+            const POLL = 30000; // Tăng tính real-time (từ 60s rút ngắn còn 30s)
+            this._deltaInterval = setInterval(() => {
+                const url = (window.getCfg && typeof window.getCfg === 'function')
+                    ? (window.getCfg().apiUrl || fallbackUrl) + '/sync/check-version'
+                    : '/api/sync/check-version';
+                fetch(url)
+                    .then(r => r.json())
+                    .then(res => {
+                        if (res && res.version > (window.globalDataVersion || 0)) {
+                            window.globalDataVersion = res.version;
+                            if (typeof loadAllData === 'function') loadAllData();
+                        }
+                    }).catch(() => { });
+            }, POLL);
+        }
 
 
 
@@ -2402,6 +2445,13 @@
         autoInit();
     }
 
+    // Khởi động Background Auto-Sync (Kiểm tra version ngầm 30s một lần, cực nhẹ)
+    setTimeout(() => {
+        if (typeof DataManager.startBackgroundDeltaSync === 'function') {
+            console.log('🔄 Data Manager: Auto-Sync nền đã được kích hoạt');
+            DataManager.startBackgroundDeltaSync();
+        }
+    }, 5000);
 
 
     console.log('✅ Data Manager v8.0.3-1 loaded and ready');

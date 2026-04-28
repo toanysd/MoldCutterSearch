@@ -162,6 +162,15 @@
 
     <div class="app-container" id="main-app-container">
 
+        <!-- ===== LIGHT APP LOADER ===== -->
+        <div id="app-light-loader"
+            style="display:none; position:fixed; top:4px; left:50%; transform:translateX(-50%); z-index:99999; background:rgba(15,23,42,0.85); color:#fff; border-radius:20px; padding:6px 16px; font-size:13px; font-weight:600; align-items:center; gap:8px; box-shadow:0 10px 25px rgba(0,0,0,0.2); backdrop-filter:blur(8px);">
+            <div
+                style="width:16px; height:16px; border:3px solid #64748b; border-top-color:#38bdf8; border-radius:50%; animation:qrs-spin 1s linear infinite;">
+            </div>
+            <span>同期中... Đang nạp dữ liệu...</span>
+        </div>
+
         <!-- Global Sync Icon -->
         <div class="global-sync-icon success" id="globalSyncIcon" title="Đồng bộ máy chủ"
             style="position: absolute; right: 12px; top: -8px; z-index: 1000; transform: scale(0.65);">
@@ -184,6 +193,55 @@
             </div>
 
             <nav class="sidebar-nav">
+
+                <!-- Account / Login Section (Hiển thị chủ yếu cho Mobile khi topbar bị ẩn) -->
+                <div class="nav-section" id="sidebarAuthSection">
+                    <div class="nav-section-title">
+                        <i class="fas fa-user-circle"></i>
+                        <span>アカウント / Account</span>
+                    </div>
+                    <ul class="nav-items" id="sidebarAuthItems">
+                        <!-- Nút Đăng nhập -->
+                        <li class="nav-item" id="sidebarLoginItem">
+                            <a href="#" class="nav-link" id="sidebarAuthLoginBtn">
+                                <i class="fas fa-sign-in-alt"></i>
+                                <div class="nav-link-text">
+                                    <span class="ja">ログイン</span>
+                                    <span class="vi">Đăng nhập</span>
+                                </div>
+                            </a>
+                        </li>
+                        <!-- Thông tin User -->
+                        <li class="nav-item" id="sidebarUserItem" style="display:none;">
+                            <div class="nav-link" style="pointer-events:none;">
+                                <i class="fas fa-check-circle" style="color:var(--mcs-primary);"></i>
+                                <div class="nav-link-text">
+                                    <span class="ja" id="sidebarAuthUserEmail"
+                                        style="font-weight:700; color:var(--mcs-text);"></span>
+                                    <span class="vi">Đã đăng nhập</span>
+                                </div>
+                            </div>
+                        </li>
+                        <!-- Nút Đăng xuất -->
+                        <li class="nav-item" id="sidebarLogoutItem" style="display:none;">
+                            <a href="#" class="nav-link" id="sidebarAuthLogoutBtn">
+                                <i class="fas fa-sign-out-alt" style="color:#ef4444;"></i>
+                                <div class="nav-link-text">
+                                    <span class="ja" style="color:#ef4444;">ログアウト</span>
+                                    <span class="vi" style="color:#ef4444;">Đăng xuất</span>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <style>
+                    /* Ẩn Auth Section này trên Desktop (màn hình > 768px) vì Topbar đã có nút Login rồi */
+                    @media (min-width: 769px) {
+                        #sidebarAuthSection {
+                            display: none !important;
+                        }
+                    }
+                </style>
 
                 <!-- Main Section -->
                 <div class="nav-section">
@@ -657,7 +715,7 @@
 
     <!-- ===== JAVASCRIPT FILES ===== -->
 
-    <script src="checkin-checkout.js"></script>
+    <script src="checkin-checkout.js?v=v10.2.1-CacheFix"></script>
     <script src="transfer-location-module.js?v=v8.8.2_return"></script>
     <script src="relocate-wizard-module.js"></script>
     <script src="location-move.js?v=v8.8.2_return"></script>
@@ -666,7 +724,7 @@
     <script src="location-manager.js"></script>
 
     <!-- App Data -->
-    <script src="data-manager.js?v=9.4.3"></script> <!-- Will be created -->
+    <script src="data-manager.js?v=v10.2.1-CacheFix"></script> <!-- Will be created -->
 
     <!-- View Switcher -->
     <script src="view-manager.js"></script>
@@ -680,8 +738,8 @@
 
     <script src="app.js?v=9.4.6-fixed"></script>
     <!-- UI Modules (v8.0.4) -->
-    <script src="results-card-renderer.js?v=9.1.15-fixed"></script>
-    <script src="results-table-renderer.js"></script>
+    <script src="results-card-renderer.js?v=v10.2.1-CacheFix"></script>
+    <script src="results-table-renderer.js?v=v10.2.1-CacheFix"></script>
 
     <script src="search-module.js?v=v8.8.2_swipe2"></script>
 
@@ -694,7 +752,7 @@
     <!-- Cấu trúc Auth Data -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
-    <script src="auth-module.js?v=9.1.15"></script>
+    <script src="auth-module.js?v=v10.2.1-CacheFix"></script>
     <!-- Store phải có trước tool -->
     <script src="device-photo-store.js?v=v8.4.3-8-4-fixed"></script>
     <script src="photo-upload.js?v=9.1.15"></script>
@@ -707,12 +765,12 @@
 
     <!-- Các module cần DOM, đặt cuối -->
     <script src="device-history-status.js?v=v8.3.1_sync"></script><!-- Module Detail Panel - Trộn chung Mold/Cutter -->
-    <script src="global-history-module.js"></script>
-    <script src="detail-panel.js?v=9.4.6-fixed"></script>
-    <script src="quick-update-module.js?v=9.1.18"></script>
+    <script src="global-history-module.js?v=v10.2.1-CacheFix"></script>
+    <script src="detail-panel.js?v=v10.2.1-CacheFix"></script>
+    <script src="quick-update-module.js?v=v10.2.1-CacheFix"></script>
 
     <!-- Teflon Processing -->
-    <script src="teflon-processing.js?v=9.0.4-1"></script>
+    <script src="teflon-processing.js?v=v10.2.1-CacheFix"></script>
 
     <!-- Plastic Management WMS -->
 
@@ -722,7 +780,7 @@
     <script src="print-export-module.js"></script>
     <script src="detail-print-module.js"></script>
     <link rel="stylesheet" href="extended-editor.css">
-    <script src="dp-extended-editor.js"></script>
+    <script src="dp-extended-editor.js?v=v10.2.1-CacheFix"></script>
 
     <script src="global-assistive-touch.js"></script>
     <script src="detail-panel-photos-tab.js"></script>

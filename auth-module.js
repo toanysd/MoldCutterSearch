@@ -1,4 +1,4 @@
-// v9.0.2
+// v10.0.0-PubSub
 (function (global) {
     'use strict';
 
@@ -39,9 +39,25 @@
     var authMenuLogoutBtn = document.getElementById('authMenuLogoutBtn');
     var authMenuUserEmail = document.getElementById('authMenuUserEmail');
 
+    var sidebarLoginItem = document.getElementById('sidebarLoginItem');
+    var sidebarAuthLoginBtn = document.getElementById('sidebarAuthLoginBtn');
+    var sidebarUserItem = document.getElementById('sidebarUserItem');
+    var sidebarAuthUserEmail = document.getElementById('sidebarAuthUserEmail');
+    var sidebarLogoutItem = document.getElementById('sidebarLogoutItem');
+    var sidebarAuthLogoutBtn = document.getElementById('sidebarAuthLogoutBtn');
+
     // Mở Modal Login
     if (topbarLoginBtn) {
         topbarLoginBtn.addEventListener('click', function () {
+            if (loginOverlay) loginOverlay.style.display = 'flex';
+            if (loginForm) loginForm.style.display = 'flex';
+            var authLoader = document.getElementById('auth-loading-ui');
+            if (authLoader) authLoader.style.display = 'none';
+        });
+    }
+    if (sidebarAuthLoginBtn) {
+        sidebarAuthLoginBtn.addEventListener('click', function (e) {
+            e.preventDefault();
             if (loginOverlay) loginOverlay.style.display = 'flex';
             if (loginForm) loginForm.style.display = 'flex';
             var authLoader = document.getElementById('auth-loading-ui');
@@ -89,6 +105,13 @@
             await supabaseClient.auth.signOut();
         });
     }
+    if (sidebarAuthLogoutBtn) {
+        sidebarAuthLogoutBtn.addEventListener('click', async function (e) {
+            e.preventDefault();
+            console.log('[Auth Guard - Mobile] Đang tiến hành Đăng Xuất...');
+            await supabaseClient.auth.signOut();
+        });
+    }
 
     function showAppAsLoggedIn(session) {
         if (loginOverlay) loginOverlay.style.display = 'none';
@@ -120,9 +143,24 @@
             }
         }
 
+        // Cập nhật mảng Mobile Sidebar
+        if (sidebarLoginItem) sidebarLoginItem.style.display = 'none';
+        if (sidebarUserItem) {
+            sidebarUserItem.style.display = 'block';
+            if (session && session.user && session.user.email) {
+                if (sidebarAuthUserEmail) sidebarAuthUserEmail.innerText = session.user.email;
+            }
+        }
+        if (sidebarLogoutItem) sidebarLogoutItem.style.display = 'block';
+
         // Kích hoạt Lưới Kỷ Luật: Cắt/Mở khóa giao diện dựa trên quyền
         if (typeof global.applyRBACRules === 'function' && global.currentUserRole) {
             global.applyRBACRules(global.currentUserRole);
+        }
+
+        // Bật Delta Sync V10 nền
+        if (global.DataManager && typeof global.DataManager.startBackgroundDeltaSync === 'function') {
+            global.DataManager.startBackgroundDeltaSync();
         }
     }
 
@@ -144,6 +182,11 @@
         if (topbarAvatarBtn) topbarAvatarBtn.style.display = 'none';
         if (topbarLoginBtn) topbarLoginBtn.style.display = 'flex';
         if (authMenuDropdown) authMenuDropdown.style.display = 'none';
+
+        // Cập nhật mảng Mobile Sidebar
+        if (sidebarLoginItem) sidebarLoginItem.style.display = 'block';
+        if (sidebarUserItem) sidebarUserItem.style.display = 'none';
+        if (sidebarLogoutItem) sidebarLogoutItem.style.display = 'none';
     }
 
     // 1. Phản ứng ngay khi thay đổi phiên mã xác thực (onAuthStateChange/INITIAL_SESSION)
@@ -155,11 +198,11 @@
                 // Đã Đăng Nhập
                 global.__MCS_JWT__ = session.access_token;
                 console.log('[Auth Guard] Đã đăng nhập vào User UUID:', session.user.id);
-                
+
                 // --------- THĂM DÒ ROLE (PROBE) ---------
                 console.log('========= BÁO CÁO NHẬN DIỆN ROLE =========');
                 console.dir(session.user); // Xem trọn gói object
-                
+
                 // Trích xuất Role triệt để từ Metadata
                 var finalRole = 'viewer'; // Giáng quyền tuyệt đối mặc định
                 if (session.user.app_metadata && session.user.app_metadata.role) {
@@ -169,19 +212,19 @@
                 } else if (session.user.role === 'admin') {
                     finalRole = 'admin'; // Phòng hờ Supabase core claim
                 }
-                
+
                 global.currentUserRole = finalRole;
                 console.log('-> app_metadata:', session.user.app_metadata);
                 console.log('-> user_metadata:', session.user.user_metadata);
                 console.log('-> QUYỀN HẠN CHÍNH THỨC:', finalRole);
                 console.log('============================================');
                 // ----------------------------------------
-                
+
                 // Nếu app chưa kéo DataManager thì tạm khóa màn hình login và show Ui Loading
                 if (global.DataManager && !global.DataManager.loaded && typeof global.DataManager.loadAllData === 'function') {
                     console.log('🚀 Auth Guard: Đang tiến hành kéo CSV máy chủ...');
 
-                    if (loginOverlay) loginOverlay.style.display = 'flex';
+                    if (loginOverlay) loginOverlay.style.display = 'none'; // SỬA LỖI: Luôn ẩn Overlay lúc đang tải, tránh Flash Login
                     if (loginForm) loginForm.style.display = 'none'; // Ẩn form nhập liệu
 
                     // Bật UI Loading xịn
@@ -272,7 +315,7 @@
     // 3. LƯỚI PHÂN QUYỀN (RBAC GUARD)
     // Thiết lập vùng cấm dành cho Viewer
     // ==========================================
-    global.applyRBACRules = function(role) {
+    global.applyRBACRules = function (role) {
         var styleId = 'rbac-style-enforcer';
         var styleEl = document.getElementById(styleId);
         if (styleEl) styleEl.remove();
@@ -280,7 +323,7 @@
         if (role !== 'admin') {
             styleEl = document.createElement('style');
             styleEl.id = styleId;
-            styleEl.innerHTML = 
+            styleEl.innerHTML =
                 '/* RBAC Ẩn Giao Diện Dành Cho Tài Khoản VIEWER */\n' +
                 '.admin-only, [data-rbac="admin"] { display: none !important; }\n' +
                 '/* Nút Chụp Ảnh, Upload Ảnh, Quick Update */\n' +

@@ -1,4 +1,4 @@
-// v9.0.2
+// v10.0.0-PubSub
 /* ============================================================================
    RESULTS CARD RENDERER v8.0.4-3
    Exact Copy from Mockup r8.1.0 Design
@@ -936,7 +936,7 @@ class ResultsCardRenderer {
                         <i class="fas fa-ruler-combined"></i>
                         ${dimensions}
                     </div>
-                    ${item.MoldWeightModified ? `<div style="font-size:12px; font-weight:700; color:#1e3a8a;"><i class="fas fa-weight-hanging" style="margin-right:2px;"></i> ${item.MoldWeightModified}kg</div>` : ''}
+                    ${item.MoldWeight ? `<div style="font-size:12px; font-weight:700; color:#1e3a8a;"><i class="fas fa-weight-hanging" style="margin-right:2px;"></i> ${item.MoldWeight}kg</div>` : (item.designInfo && item.designInfo.MoldDesignWeight ? `<div style="font-size:12px; font-weight:700; color:#64748b;" title="Khối lượng Thiết kế"><i class="fas fa-weight-hanging" style="margin-right:2px;"></i> ~${item.designInfo.MoldDesignWeight}kg</div>` : '')}
                 </div>
                 
                 <!-- Meta Info Group: 2 Rows Layout -->
@@ -1499,3 +1499,23 @@ class ResultsCardRenderer {
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = ResultsCardRenderer;
 }
+
+// Bắt sóng mcs-data-sync cập nhật nháy DOM (V10)
+document.addEventListener('mcs-data-sync', function (e) {
+    var d = e.detail;
+    if (!d || !d.idValue || !d.payload) return;
+    var card = document.querySelector('.mcs-card[data-id="' + d.idValue + '"]');
+    if (!card) return;
+
+    if (d.payload.Status) {
+        var badge = card.querySelector('.status-badge');
+        if (badge) {
+            badge.innerText = d.payload.Status === 'IN' ? '入庫 IN' : (d.payload.Status === 'OUT' ? '出庫 OUT' : '棚卸 AUDIT');
+            badge.className = 'status-badge status-' + d.payload.Status.toLowerCase();
+        }
+    }
+    if (d.payload.RackLayerID) {
+        var loc = card.querySelector('.location-link .text-content');
+        if (loc) loc.innerText = d.payload.RackLayerID;
+    }
+});

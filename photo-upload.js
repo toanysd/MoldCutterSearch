@@ -1261,9 +1261,9 @@
             TrayID: self._device.type === 'tray' ? self._device.id : null
           }, {
             onSuccess: function (fields) {
-              var w = fields.MoldWeightModified || fields.TrayWeight || '';
+              var w = fields.MoldWeight || fields.TrayWeight || '';
               if (w) {
-                var label = fields.MoldWeightModified ? "金型重量" : "トレイ重量";
+                var label = fields.MoldWeight ? "金型重量" : "トレイ重量";
                 var input = document.getElementById('puWeight');
                 if (input) input.value = label + " " + w + " kg";
               }

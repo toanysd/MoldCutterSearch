@@ -43,7 +43,9 @@ const supabaseServerClient = (SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY) ? creat
 
 // RAM Cache Proxy Data
 const proxyFileCache = new Map();
-let globalDataVersion = Date.now();
+let serverStartTime = Date.now();
+let globalDataVersion = serverStartTime;
+let _hasEvictedChanges = false;
 
 // =============== DELTA SYNC ENGINE ===============
 const recentChanges = [];
@@ -59,6 +61,7 @@ function pushDeltaEvent(filename, idField, idValue, payload) {
   });
   if (recentChanges.length > MAX_CHANGES) {
     recentChanges.shift();
+    _hasEvictedChanges = true;
   }
 }
 // =================================================
@@ -131,8 +134,8 @@ app.get('/api/sync/check-version', (req, res) => {
 app.get('/api/sync/delta', (req, res) => {
   try {
     const since = parseInt(req.query.since || '0', 10);
-    // Nếu since quá nhỏ hoặc = 0, cần fallback tải lại toàn bộ
-    if (!since || since === 0 || (recentChanges.length > 0 && since < recentChanges[0].version)) {
+    // Nếu since = 0, hoặc server mới restart, hoặc mảng bị tràn (mất bớt delta cũ)
+    if (!since || since === 0 || since < serverStartTime || (_hasEvictedChanges && recentChanges.length > 0 && since < recentChanges[0].version)) {
       return res.json({ fullReload: true, version: globalDataVersion, changes: [] });
     }
     const changes = recentChanges.filter(c => c.version > since);

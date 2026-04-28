@@ -1,4 +1,5 @@
 ShipID,CustomerID,ItemTypeID,ShipItemName,ShipDate,ToCompanyID,FromCompanyID,ShipItemType,ShipStatus,FromCompany,ToCompany,MoldID,CutterID,FrameID,OtherEquipID,WaterBaseID,ShipNotes,DateEntry,handler,EmployeeID,UpdatedAt,UpdatedBy
+SHIP590420,,,,2026-04-28,2,7,,,,,5695,,,,,Teflon,,,1,,
 SHIP519928,,,,2026-04-28,2,7,,,,,5695,,,,,Teflon,,,1,,
 SHIP144787,,,,2026-04-28,2,7,,,,,5695,,,,,Teflon,,,1,,
 SHIP946594,,,,2026-04-28,2,7,,,,,5695,,,,,Teflon,,,1,,

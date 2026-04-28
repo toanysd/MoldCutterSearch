@@ -1,4 +1,5 @@
 StatusLogID,MoldID,CutterID,ItemType,Status,Timestamp,EmployeeID,DestinationID,Notes,AuditDate,AuditType,SessionID,SessionName,SessionMode,AuditSessionID,UpdatedAt,UpdatedBy
+ST519928,5695,,mold,IN,2026-04-28T03:21:59.928Z,1,2,テフロン加工後受取,,,,,,,,
 ST144787,5695,,mold,IN,2026-04-28T02:59:04.787Z,1,2,テフロン加工後受取,,,,,,,,
 ST946594,5695,,mold,IN,2026-04-28T02:55:46.594Z,1,2,テフロン加工後受取,,,,,,,,
 WEB_SL_1777340828418_kiidd6tz5,3913,,,IN,2026-04-28T01:47:06.855Z,1,254,,,,,,,,2026-04-28T10:47:08.732Z,1

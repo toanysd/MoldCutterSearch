@@ -1503,19 +1503,33 @@ if (typeof module !== 'undefined' && module.exports) {
 // Bắt sóng mcs-data-sync cập nhật nháy DOM (V10)
 document.addEventListener('mcs-data-sync', function (e) {
     var d = e.detail;
-    if (!d || !d.idValue || !d.payload) return;
-    var card = document.querySelector('.mcs-card[data-id="' + d.idValue + '"]');
+    if (!d || !d.payload) return;
+
+    // Phép vá: Nếu bảng là log (statuslogs, teflonlog) thì idValue là StatusLogID, nhưng Card sử dụng MoldID
+    var targetMoldId = d.payload.MoldID || d.payload.CutterID || d.idValue;
+    if (!targetMoldId) return;
+
+    var card = document.querySelector('.result-card[data-id="' + targetMoldId + '"]');
     if (!card) return;
 
     if (d.payload.Status) {
         var badge = card.querySelector('.status-badge');
         if (badge) {
-            badge.innerText = d.payload.Status === 'IN' ? '入庫 IN' : (d.payload.Status === 'OUT' ? '出庫 OUT' : '棚卸 AUDIT');
-            badge.className = 'status-badge status-' + d.payload.Status.toLowerCase();
+            badge.innerText = d.payload.Status === 'IN' ? '入庫 IN' : (d.payload.Status === 'OUT' ? '出庫 OUT' : (d.payload.Status === 'RETURNED' ? '返却' : '棚卸 AUDIT'));
+            var statusClassRaw = String(d.payload.Status).toLowerCase();
+            var badgeClass = 'neutral';
+            if (statusClassRaw === 'in' || statusClassRaw === 'ok') badgeClass = 'active';
+            else if (statusClassRaw === 'out' || statusClassRaw === 'ng') badgeClass = 'error';
+            else if (statusClassRaw === 'returned' || statusClassRaw === 'warning') badgeClass = 'warning';
+            else if (statusClassRaw === 'audit') badgeClass = 'info';
+
+            // Clean các class active, error, warning... cũ và nạp class mới
+            badge.className = 'meta-item status status-badge ' + badgeClass;
+
+            // Effect nháy chớp nhoáng xịn
+            badge.style.transform = 'scale(1.2)';
+            badge.style.boxShadow = '0 0 12px rgba(16, 185, 129, 0.6)';
+            setTimeout(() => { badge.style.transform = 'scale(1)'; badge.style.boxShadow = ''; }, 300);
         }
-    }
-    if (d.payload.RackLayerID) {
-        var loc = card.querySelector('.location-link .text-content');
-        if (loc) loc.innerText = d.payload.RackLayerID;
     }
 });

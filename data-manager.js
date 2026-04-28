@@ -2378,7 +2378,12 @@
                 if (!state.allData[tb]) return false;
                 let arr = state.allData[tb];
                 let f = arr.find(x => String(x[idField]) === String(idValue));
-                if (f) Object.assign(f, payload);
+                if (f) {
+                    Object.assign(f, payload);
+                } else {
+                    // Nếu không tìm thấy (tức là lệnh Insert log mới), đẩy vào đầu mảng
+                    arr.unshift(payload);
+                }
 
                 if (tb === 'molds' && state.allData['webmolds']) {
                     let wf = state.allData['webmolds'].find(x => String(x[idField]) === String(idValue));
@@ -2390,6 +2395,8 @@
                 }
 
                 this.recompute();
+
+                // Phát thêm CustomEvent để nháy DOM tức thời nếu ui renderer hỗ trợ bắt mcs-data-sync
                 document.dispatchEvent(new CustomEvent('mcs-data-sync', { detail: { idValue, payload } }));
                 return true;
             } catch (e) { return false; }

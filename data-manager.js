@@ -888,7 +888,16 @@
                     var tx = LocalCache._db.transaction(CACHE_STORE, 'readonly');
                     var store = tx.objectStore(CACHE_STORE);
                     var req = store.get(key);
-                    req.onsuccess = function () { resolve(req.result); };
+                    req.onsuccess = function () {
+                        var res = req.result;
+                        if (res && res.text) {
+                            var age = Date.now() - (res.ts || 0);
+                            if (age < 5 * 60 * 1000) resolve(res.text); // <= 5 phút
+                            else resolve(null); // Đã hết hạn, force fetch lại
+                        } else {
+                            resolve(null); // Quét lại cache định dạng cũ (string)
+                        }
+                    };
                     req.onerror = function () { resolve(null); };
                 } catch (e) { resolve(null); }
             });
@@ -899,7 +908,7 @@
                 try {
                     var tx = LocalCache._db.transaction(CACHE_STORE, 'readwrite');
                     var store = tx.objectStore(CACHE_STORE);
-                    var req = store.put(value, key);
+                    var req = store.put({ text: value, ts: Date.now() }, key);
                     req.onsuccess = function () { resolve(); };
                     req.onerror = function () { resolve(); };
                 } catch (e) { resolve(); }
@@ -937,6 +946,21 @@
         } catch (e) {
             console.warn('⚠️ Could not fetch latest SHA from GitHub (timeout/error), falling back to main');
             currentGithubSha = 'main';
+        }
+    }
+
+
+    // === HELPER: R\u00fat ra base URL c\u1ee7a Backend (v\u00ed d\u1ee5: https://host/api) ===
+    // CIOCONFIG.apiUrl c\u00f3 d\u1ea1ng https://host/api/checklog => c\u1ea7n cat b\u1ecf /checklog
+    function _getDeltaBaseUrl() {
+        try {
+            var raw = (window.CIOCONFIG && window.CIOCONFIG.apiUrl) ? String(window.CIOCONFIG.apiUrl) : '';
+            if (!raw) raw = 'https://ysd-moldcutter-backend.onrender.com/api/checklog';
+            // B\u1ecf \u0111i /checklog ho\u1eb7c /\u0111u\u00f4i kh\u00f4ng ph\u1ea3i /sync
+            var base = raw.replace(/\/checklog\/?$/, '').replace(/\/locationlog\/?$/, '').replace(/\/add-log\/?$/, '');
+            return base; // => 'https://ysd-moldcutter-backend.onrender.com/api'
+        } catch (_e) {
+            return 'https://ysd-moldcutter-backend.onrender.com/api';
         }
     }
 
@@ -1007,6 +1031,22 @@
         if (window.App && window.App.triggerDataUpdate) {
             window.App.triggerDataUpdate();
         }
+
+        // === FIX: Gán globalDataVersion từ server sau khi load xong ===
+        // Cần để Delta Sync polling có điểm gốc đúng (version > 0 mới poll được)
+        try {
+            const baseUrl = _getDeltaBaseUrl();
+            if (baseUrl) {
+                const verResp = await fetch(baseUrl + '/sync/check-version');
+                if (verResp.ok) {
+                    const verJson = await verResp.json();
+                    if (verJson && verJson.version) {
+                        window.globalDataVersion = verJson.version;
+                        console.log('[DataManager] ✅ globalDataVersion synced:', window.globalDataVersion);
+                    }
+                }
+            }
+        } catch (_vErr) { /* Suppress - không block render */ }
     }
 
     /**
@@ -2370,6 +2410,7 @@
 
         recompute() {
             applyWebLatestMerge();
+            processDataRelationships();
             document.dispatchEvent(new CustomEvent('data-manager:updated'));
         },
 
@@ -2404,33 +2445,33 @@
 
         startBackgroundDeltaSync(fallbackUrl) {
             if (this._deltaInterval) return;
-            const POLL = 30000; // Tăng tính real-time (từ 60s rút ngắn còn 30s)
+            const POLL = 30000;
             this._deltaInterval = setInterval(() => {
                 const currentVer = window.globalDataVersion || 0;
-                // Tránh ping lấy delta khi chưa load data lần đầu thành công
+                // Tránh ping khi chưa có version gốc (chưa loadAllData xong)
                 if (!currentVer) return;
 
-                const baseUrl = (window.getCfg && typeof window.getCfg === 'function')
-                    ? (window.getCfg().apiUrl || fallbackUrl)
-                    : '/api';
+                // === FIX: Xây URL từ base server URL thay vì apiUrl của checklog ===
+                const baseUrl = _getDeltaBaseUrl();
+                if (!baseUrl) return;
                 const url = baseUrl + '/sync/delta?since=' + currentVer;
 
                 fetch(url)
                     .then(r => r.json())
                     .then(res => {
-                        if (res && res.version > currentVer) {
+                        if (!res) return;
+                        // Luôn cập nhật version nếu server trả về version mới
+                        if (res.version && res.version > currentVer) {
                             window.globalDataVersion = res.version;
 
-                            // Nếu Backend thông báo cần tải lại toàn bộ
                             if (res.fullReload === true) {
-                                console.warn('🔄 Background Sync: Quá nhiều thay đổi, fallback tải full loadAllData()');
+                                console.warn('🔄 Background Sync: fullReload - gọi loadAllData()');
                                 if (typeof loadAllData === 'function') loadAllData();
                                 return;
                             }
 
-                            // Cập nhật từng phần (Delta Patches) cho UI (Facebook-like)
-                            if (res.changes && Array.isArray(res.changes)) {
-                                console.log(`⚡ Background Sync: Áp dụng ${res.changes.length} Delta patches`);
+                            if (res.changes && Array.isArray(res.changes) && res.changes.length > 0) {
+                                console.log(`⚡ Delta Sync: Áp dụng ${res.changes.length} bản vá`);
                                 res.changes.forEach(change => {
                                     if (change.table && change.idField && change.idValue && change.payload) {
                                         this.syncRecordLocally(change.table, change.idField, change.idValue, change.payload);
@@ -2438,9 +2479,7 @@
                                 });
                             }
                         }
-                    }).catch(err => {
-                        // Suppress background errors
-                    });
+                    }).catch(() => { /* Suppress background errors */ });
             }, POLL);
         }
 

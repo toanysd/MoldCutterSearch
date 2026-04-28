@@ -43,6 +43,26 @@ const supabaseServerClient = (SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY) ? creat
 
 // RAM Cache Proxy Data
 const proxyFileCache = new Map();
+let globalDataVersion = Date.now();
+
+// =============== DELTA SYNC ENGINE ===============
+const recentChanges = [];
+const MAX_CHANGES = 1000;
+function pushDeltaEvent(filename, idField, idValue, payload) {
+  const table = String(filename || '').replace(/\.csv$/i, '');
+  recentChanges.push({
+    version: globalDataVersion,
+    table,
+    idField,
+    idValue,
+    payload
+  });
+  if (recentChanges.length > MAX_CHANGES) {
+    recentChanges.shift();
+  }
+}
+// =================================================
+
 function invalidateDataCache() { proxyFileCache.clear(); console.log('[Cache] Data Cache Invalidated'); }
 
 async function jwtAuthMiddleware(req, res, next) {
@@ -101,6 +121,26 @@ async function jwtAuthMiddleware(req, res, next) {
 
 // KHÓA TOÀN BỘ API 
 app.use('/api', jwtAuthMiddleware);
+
+// ENDPOINT: Background Sync Check
+app.get('/api/sync/check-version', (req, res) => {
+  return res.json({ version: globalDataVersion });
+});
+
+// ENDPOINT: Delta Sync API
+app.get('/api/sync/delta', (req, res) => {
+  try {
+    const since = parseInt(req.query.since || '0', 10);
+    // Nếu since quá nhỏ hoặc = 0, cần fallback tải lại toàn bộ
+    if (!since || since === 0 || (recentChanges.length > 0 && since < recentChanges[0].version)) {
+       return res.json({ fullReload: true, version: globalDataVersion, changes: [] });
+    }
+    const changes = recentChanges.filter(c => c.version > since);
+    return res.json({ fullReload: false, version: globalDataVersion, changes });
+  } catch(e) {
+    return res.json({ fullReload: true, version: globalDataVersion, changes: [] });
+  }
+});
 
 // ENDPOINT: Nấp (Proxy) GitHub Caching
 app.get('/api/csv/read/:filename', async (req, res) => {
@@ -172,7 +212,7 @@ const FILE_HEADERS = {
     'MoldID', 'MoldName', 'MoldCode', 'CustomerID', 'TrayID', 'MoldDesignID',
     'KeeperCompany', 'RackLayerID', 'ItemTypeID',
     'MoldLengthModified', 'MoldWidthModified', 'MoldHeightModified',
-    'MoldWeightModified', 'MoldNotes', 'MoldUsageStatus', 'MoldOnCheckList',
+    'MoldWeight', 'MoldNotes', 'MoldUsageStatus', 'MoldOnCheckList',
     'JobID', 'MoldReturning', 'MoldReturnedDate', 'MoldDisposing',
     'MoldDisposedDate', 'MoldEntry'
   ],
@@ -476,7 +516,13 @@ function parseCsvText(csvText) {
 
     const readableStream = stream.Readable.from(csvText);
     readableStream
-      .pipe(csvParser({ mapHeaders: ({ header }) => String(header || '').trim() }))
+      .pipe(csvParser({
+        mapHeaders: ({ header }) => {
+          let h = String(header || '').trim();
+          if (h === 'MoldWeightModified') return 'MoldWeight';
+          return h;
+        }
+      }))
       .on('data', (data) => results.push(data))
       .on('end', () => resolve(results))
       .on('error', (error) => reject(error));
@@ -573,6 +619,10 @@ async function getGitHubFile(filePath) {
 async function updateGitHubFile(filePath, content, sha, message) {
   try {
     console.log(`[SERVER] Updating: ${filePath}`);
+    const fn = filePath.replace('data/', '');
+    proxyFileCache.delete(fn);
+    console.log(`[SERVER] Removed Cache for: ${fn}`);
+
     await octokit.repos.createOrUpdateFileContents({
       owner,
       repo,
@@ -582,7 +632,8 @@ async function updateGitHubFile(filePath, content, sha, message) {
       sha,
       branch
     });
-    console.log(`[SERVER] ✅ Updated: ${filePath}`);
+    globalDataVersion = Date.now();
+    console.log(`[SERVER] ✅ Updated: ${filePath} (New GlobalVersion: ${globalDataVersion})`);
   } catch (error) {
     console.error(`[SERVER] Error updating file:`, error && error.message ? error.message : error);
     throw error;
@@ -990,6 +1041,10 @@ app.post('/api/csv/upsert', async (req, res) => {
     );
 
 
+    // TRỢ LỰC DELTA SYNC
+    if (opMode !== 'delete') {
+      pushDeltaEvent(fn, idF, idV, updates);
+    }
     res.json({ success: true, message: 'CSV upsert OK', filename: fn, attempt: result.attempt });
   } catch (error) {
     const st = getHttpStatus(error);
@@ -1407,7 +1462,8 @@ app.post('/api/update-item', async (req, res) => {
       { maxRetry: 4, requireExisting: true }
     );
 
-
+    // TRỢ LỰC DELTA SYNC
+    pushDeltaEvent(safeTargetFilename, itemIdField, itemIdValue, updates);
 
     res.json({ success: true, message: `Item updated in ${filename}` });
   } catch (error) {

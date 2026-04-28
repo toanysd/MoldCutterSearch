@@ -133,11 +133,11 @@ app.get('/api/sync/delta', (req, res) => {
     const since = parseInt(req.query.since || '0', 10);
     // Nếu since quá nhỏ hoặc = 0, cần fallback tải lại toàn bộ
     if (!since || since === 0 || (recentChanges.length > 0 && since < recentChanges[0].version)) {
-       return res.json({ fullReload: true, version: globalDataVersion, changes: [] });
+      return res.json({ fullReload: true, version: globalDataVersion, changes: [] });
     }
     const changes = recentChanges.filter(c => c.version > since);
     return res.json({ fullReload: false, version: globalDataVersion, changes });
-  } catch(e) {
+  } catch (e) {
     return res.json({ fullReload: true, version: globalDataVersion, changes: [] });
   }
 });
@@ -1344,6 +1344,14 @@ app.post('/api/process-scrap', async (req, res) => {
       }, { maxRetry: 4, requireExisting: false });
     }
 
+    // TRỢ LỰC DELTA SYNC
+    if (action === 'delete') {
+      pushDeltaEvent('scraplog.csv', 'ScrapLogID', scrapId, { _delete: true });
+    } else {
+      pushDeltaEvent('scraplog.csv', 'ScrapLogID', scrapId, normalizedEntry);
+    }
+    pushDeltaEvent(mainCsv, idField, itemId, { _refresh: true }); // Mồi báo refresh vì logic scrap khá phức tạp
+
     res.json({ success: true, message: action === 'delete' ? 'Scrap workflow deleted' : 'Scrap processed correctly' });
   } catch (error) {
     console.error(`[SERVER] Error in process-scrap:`, error);
@@ -1387,6 +1395,9 @@ app.post('/api/add-log', async (req, res) => {
       },
       { maxRetry: 4 }
     );
+
+    // TRỢ LỰC DELTA SYNC
+    pushDeltaEvent(targetFilename, idField, incomingId, normalizedEntry);
 
     res.json({ success: true, message: `Log entry added to ${filename}` });
   } catch (error) {
@@ -1506,6 +1517,8 @@ app.post('/api/add-comment', async (req, res) => {
       { maxRetry: 4, requireExisting: true }
     );
 
+    // TRỢ LỰC DELTA SYNC
+    pushDeltaEvent(filename, 'UserCommentID', newId, normalizedComment);
 
     res.json({ success: true, message: 'Comment added', commentId: newId });
   } catch (error) {
@@ -1754,6 +1767,10 @@ app.post('/api/add-shiplog', async (req, res) => {
       }
     }
 
+    // TRỢ LỰC DELTA SYNC
+    pushDeltaEvent('shiplog.csv', 'ShipID', newId, normalizedEntry);
+    pushDeltaEvent(targetFile, idField, dchId, { KeeperCompany: ToCompanyID, UpdatedAt: getJSTTimestamp(), UpdatedBy: EmployeeID });
+
     res.json({ success: true, message: 'Shipment recorded successfully', ShipID: newId, FromCompanyID: oldKeeper });
   } catch (error) {
     console.error(`[SERVER] Error in add-shiplog:`, error);
@@ -1835,6 +1852,9 @@ app.post('/api/checklog', async (req, res) => {
           if ((headers || []).includes('UpdatedBy') && (!row.UpdatedBy || !String(row.UpdatedBy).trim())) row.UpdatedBy = String(EmployeeID || '');
 
           records.unshift(row);
+
+          // TRỢ LỰC DELTA SYNC CHO BẢNG STATUSLOGS
+          pushDeltaEvent(filename, 'StatusLogID', newId, row);
         }
 
         return { records };
@@ -1943,6 +1963,12 @@ app.post('/api/locationlog', async (req, res) => {
     );
 
     await updateRackLayerTargetWithRetry(targetMeta, newRack, actorId);
+
+    // TRỢ LỰC DELTA SYNC
+    pushDeltaEvent('locationlog.csv', 'LocationLogID', locId, locEntry);
+    if (targetMeta && targetMeta.filename) {
+      pushDeltaEvent(targetMeta.filename, targetMeta.idField, targetMeta.idValue, { RackLayerID: newRack, UpdatedAt: nowTs, UpdatedBy: actorId });
+    }
 
     try {
       await appendLocationHistoryEntry(
@@ -2236,6 +2262,11 @@ app.delete('/api/locationlog/:id', async (req, res) => {
       { maxRetry: 4, requireExisting: true }
     );
 
+    // TRỢ LỰC DELTA SYNC
+    if (idParam) {
+      pushDeltaEvent('locationlog.csv', 'LocationLogID', idParam, { _delete: true });
+    }
+
     res.json({ success: true, message: 'Location log deleted' });
   } catch (error) {
     const st = getHttpStatus(error);
@@ -2274,6 +2305,8 @@ app.post('/api/delete-log', async (req, res) => {
       { maxRetry: 4, requireExisting: true }
     );
 
+    // TRỢ LỰC DELTA SYNC
+    pushDeltaEvent(targetFilename, idField, delId, { _delete: true });
 
     res.json({ success: true, message: `Log entry deleted from ${filename}`, deletedId: delId });
   } catch (error) {

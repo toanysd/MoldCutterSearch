@@ -1,4 +1,5 @@
 DataChangeID,TableName,RecordID,RecordIDField,FieldName,OldValue,NewValue,ChangedAt,ChangedBy,BaseValueAtEdit,BaseCommitID,BaseCommitAt,ChangeSource,ChangeNote,IsConflict,ResolvedValue,ResolvedAt,ResolvedBy
+DCH1777512797770_wfbr2mfyb,molds,5788,MoldID,RackLayerID,,233,2026-04-30T10:33:17.770Z,1,,,,api/locationlog,Location change via /api/locationlog log=WEBLOC1777512790894_863sc5ldr,FALSE,,,
 DCH1777512764632kh9hu,teflonlog,TL764632,TeflonLogID,TeflonStatus,,Requested,2026-04-30T01:32:44.632Z,3,,,,teflon_wizard,Wizard Update,FALSE,,,
 DCH1777509191083_4rtm71h14,molds,5695,MoldID,RackLayerID,,95,2026-04-30T09:33:11.083Z,1,,,,api/locationlog,Location change via /api/locationlog log=WEBLOC1777509186353_ucdntfl17,FALSE,,,
 DCH1777505357455qhibj,molds,5794,MoldID,MoldWeight,,12.5,2026-04-29T23:29:14.247Z,1,,,,quick_update_v4,Wizard Update v4,FALSE,,,

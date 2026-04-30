@@ -1,4 +1,5 @@
 ShipID,CustomerID,ItemTypeID,ShipItemName,ShipDate,ToCompanyID,FromCompanyID,ShipItemType,ShipStatus,FromCompany,ToCompany,MoldID,CutterID,FrameID,OtherEquipID,WaterBaseID,ShipNotes,DateEntry,handler,EmployeeID,UpdatedAt,UpdatedBy
+WEB_SHIP_1777537279183_zedys18xy,,,,2026-04-30,1,,,Vận chuyển,,,5792,,,,,金型・プラグ・圧空ベース　Zタイプ,2026-04-30T08:21:19.183Z,,1,,
 SHIP590420,,,,2026-04-28,2,7,,,,,5695,,,,,Teflon,,,1,,
 SHIP519928,,,,2026-04-28,2,7,,,,,5695,,,,,Teflon,,,1,,
 SHIP144787,,,,2026-04-28,2,7,,,,,5695,,,,,Teflon,,,1,,

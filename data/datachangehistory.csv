@@ -1,4 +1,5 @@
 DataChangeID,TableName,RecordID,RecordIDField,FieldName,OldValue,NewValue,ChangedAt,ChangedBy,BaseValueAtEdit,BaseCommitID,BaseCommitAt,ChangeSource,ChangeNote,IsConflict,ResolvedValue,ResolvedAt,ResolvedBy
+DCH1777537423791_l6pgsmhjm,Molds,5795,MoldID,KeeperCompany,,1,2026-04-30,1,,,,api/add-shiplog,金型・プラグ・圧空ベース　Ｚタイプ,FALSE,,,
 DCH1777537283999_gavnjn2lj,shiplog.csv,WEB_SHIP_1777537279183_zedys18xy,ShipID,ShipID,,WEB_SHIP_1777537279183_zedys18xy,2026-04-30,1,,,,api/add-shiplog,New shipment,FALSE,,,
 DCH1777537282072_wkmj6nkoq,Molds,5792,MoldID,KeeperCompany,,1,2026-04-30,1,,,,api/add-shiplog,金型・プラグ・圧空ベース　Zタイプ,FALSE,,,
 DCH1777512797770_wfbr2mfyb,molds,5788,MoldID,RackLayerID,,233,2026-04-30T10:33:17.770Z,1,,,,api/locationlog,Location change via /api/locationlog log=WEBLOC1777512790894_863sc5ldr,FALSE,,,

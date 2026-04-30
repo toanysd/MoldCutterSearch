@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SACT Audit Module — MoldCutterSearch Mockup</title>
+<style>
+/* ===== MCS COLOR SYSTEM ===== */
+:root {
+  --mcs-bg: #f5f6f8;
+  --mcs-surface: #ffffff;
+  --mcs-surface-2: #f8f9fa;
+  --mcs-surface-3: #eef0f3;
+  --mcs-surface-hover: #e8f4f4;
+  --mcs-border: #dde1e7;
+  --mcs-text: #1a1a2e;
+  --mcs-text-secondary: #4a5568;
+  --mcs-text-muted: #718096;
+  --mcs-primary: #0d7a7a;
+  --mcs-primary-hover: #0a6262;
+  --mcs-primary-light: #e6f4f4;
+  --mcs-success: #27ae60;
+  --mcs-warning: #f39c12;
+  --mcs-error: #e74c3c;
+  --mcs-info: #2980b9;
+  --mcs-neutral: #95a5a6;
+  --mcs-shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --mcs-shadow-md: 0 4px 12px rgba(0,0,0,0.10);
+  --mcs-radius-sm: 4px;
+  --mcs-radius-md: 8px;
+  --mcs-radius-lg: 12px;
+  --mcs-transition: 150ms ease;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #1a1a2e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.phone-frame {
+  width: 375px;
+  height: 812px;
+  background: var(--mcs-bg);
+  border-radius: 36px;
+  border: 3px solid #333;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+  position: relative;
+}
+
+.phone-notch {
+  background: #111;
+  height: 28px;
+  border-radius: 0 0 18px 18px;
+  width: 130px;
+  margin: 0 auto;
+  margin-top: -2px;
+}
+
+.sact-overlay {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--mcs-bg);
+}
+
+.sact-header {
+  background: var(--mcs-primary);
+  color: white;
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  flex-shrink: 0;
+}
+.sact-header-title { font-size: 16px; font-weight: 700; letter-spacing: 0.3px; }
+.sact-header-sub { font-size: 11px; opacity: 0.75; margin-top: 2px; }
+.sact-close-btn {
+  background: rgba(255,255,255,0.15);
+  border: none;
+  color: white;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.sact-offline-banner {
+  background: #b71c1c;
+  color: white;
+  text-align: center;
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.sact-progress-header {
+  background: var(--mcs-surface);
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--mcs-border);
+  flex-shrink: 0;
+}
+.sact-campaign-name { font-size: 13px; font-weight: 700; color: var(--mcs-text); }
+.sact-deadline { font-size: 11px; color: var(--mcs-text-muted); margin-top: 2px; }
+.progress-bar-wrap { margin-top: 10px; }
+.progress-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--mcs-text-secondary); margin-bottom: 5px; }
+.progress-bar-bg {
+  height: 8px;
+  background: var(--mcs-surface-3);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, var(--mcs-primary), #27ae60);
+  transition: width 0.5s ease;
+}
+
+.sact-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.target-card {
+  background: var(--mcs-surface);
+  border-radius: var(--mcs-radius-lg);
+  padding: 14px;
+  box-shadow: var(--mcs-shadow-sm);
+  border-left: 4px solid var(--mcs-neutral);
+  position: relative;
+  transition: var(--mcs-transition);
+}
+.target-card.pending  { border-left-color: var(--mcs-warning); }
+.target-card.missing  { border-left-color: var(--mcs-error); opacity: 0.7; }
+.target-card.inprog   { border-left-color: var(--mcs-info); }
+.target-card.done     { border-left-color: var(--mcs-success); }
+
+.target-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
+.target-ysd  { font-size: 20px; font-weight: 800; color: var(--mcs-text); letter-spacing: 0.5px; }
+.target-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 99px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.badge-pending  { background: #fff3cd; color: #b45309; }
+.badge-missing  { background: #fee2e2; color: #b91c1c; }
+.badge-inprog   { background: #dbeafe; color: #1d4ed8; }
+.badge-done     { background: #dcfce7; color: #166534; }
+
+.target-meta { font-size: 11px; color: var(--mcs-text-muted); margin-bottom: 12px; }
+
+.target-btns { display: flex; gap: 8px; }
+.target-btn {
+  flex: 1;
+  padding: 10px 8px;
+  border: none;
+  border-radius: var(--mcs-radius-md);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 5px;
+  min-height: 44px;
+}
+.btn-scan    { background: var(--mcs-success); color: white; }
+.btn-missing { background: var(--mcs-error); color: white; }
+.btn-confirm { background: #3f51b5; color: white; flex: 1; padding: 14px; font-size: 14px; border-radius: var(--mcs-radius-md); min-height: 48px; box-shadow: 0 4px 12px rgba(63,81,181,0.35); }
+
+.bridge-panel {
+  background: var(--mcs-surface);
+  border-radius: var(--mcs-radius-lg);
+  padding: 14px;
+  box-shadow: var(--mcs-shadow-md);
+}
+.bridge-title { font-size: 13px; font-weight: 700; color: var(--mcs-text); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+
+.instruction-box {
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+  border-radius: var(--mcs-radius-md);
+  padding: 12px;
+  margin-bottom: 10px;
+}
+.instr-jp { font-size: 13px; font-weight: 700; color: #333; margin-bottom: 6px; line-height: 1.5; }
+.instr-vi { font-size: 12px; color: #555; line-height: 1.5; }
+
+.gps-check-box {
+  background: #e0f2fe;
+  border: 1px solid #7dd3fc;
+  border-radius: var(--mcs-radius-md);
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.gps-check-box input { width: 20px; height: 20px; accent-color: var(--mcs-info); flex-shrink: 0; }
+.gps-check-box label { font-size: 12px; font-weight: 600; color: #1e40af; }
+
+.btn-open-pana {
+  width: 100%;
+  padding: 16px;
+  background: var(--mcs-info);
+  color: white;
+  border: none;
+  border-radius: var(--mcs-radius-md);
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 56px;
+  box-shadow: 0 4px 14px rgba(41,128,185,0.4);
+}
+
+.completion-panel {
+  background: var(--mcs-surface);
+  border-radius: var(--mcs-radius-lg);
+  padding: 18px 14px;
+  text-align: center;
+  box-shadow: var(--mcs-shadow-md);
+}
+.completion-icon { font-size: 48px; margin-bottom: 10px; }
+.completion-title { font-size: 16px; font-weight: 700; color: var(--mcs-text); margin-bottom: 6px; }
+.completion-sub { font-size: 12px; color: var(--mcs-text-muted); margin-bottom: 18px; line-height: 1.5; }
+.btn-lock-done {
+  width: 100%;
+  padding: 16px;
+  background: #3f51b5;
+  color: white;
+  border: none;
+  border-radius: var(--mcs-radius-md);
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 56px;
+  box-shadow: 0 4px 14px rgba(63,81,181,0.4);
+}
+
+.campaign-card {
+  background: var(--mcs-surface);
+  border-radius: var(--mcs-radius-lg);
+  padding: 14px;
+  box-shadow: var(--mcs-shadow-sm);
+  border: 1.5px solid var(--mcs-border);
+  cursor: pointer;
+}
+.campaign-card-name { font-size: 15px; font-weight: 700; color: var(--mcs-text); }
+.campaign-card-meta { font-size: 11px; color: var(--mcs-text-muted); margin-top: 4px; }
+.deadline-badge {
+  display: inline-block;
+  font-size: 10px; font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 99px;
+  background: #fee2e2; color: #b91c1c;
+}
+.deadline-ok { background: #dcfce7; color: #166534; }
+
+.section-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--mcs-text-muted);
+  padding: 0 2px;
+}
+
+.screen-label {
+  color: #aaa;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 8px;
+}
+
+.history-row {
+  background: var(--mcs-surface);
+  border-radius: var(--mcs-radius-md);
+  padding: 10px 12px;
+  box-shadow: var(--mcs-shadow-sm);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.history-ysd { font-size: 13px; font-weight: 700; color: var(--mcs-text); }
+.history-info { font-size: 11px; color: var(--mcs-text-secondary); }
+.history-time { font-size: 10px; color: var(--mcs-text-muted); }
+</style>
+</head>
+<body>
+
+<!-- PHONE 0: CAMPAIGN SELECTION -->
+<div>
+  <div class="screen-label">Màn hình 0 — Chọn Chiến dịch</div>
+  <div class="phone-frame">
+    <div class="phone-notch"></div>
+    <div class="sact-overlay">
+      <div class="sact-header">
+        <div>
+          <div class="sact-header-title">SACT 有高確認</div>
+          <div class="sact-header-sub">Điểm danh Khuôn Panasonic</div>
+        </div>
+        <button class="sact-close-btn">✕</button>
+      </div>
+      <div class="sact-body">
+        <div class="section-label">Chọn Chiến dịch SACT</div>
+        <div class="campaign-card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div>
+              <div class="campaign-card-name">SACT FY2026 — Q2</div>
+              <div class="campaign-card-meta">📅 Deadline: 30/06/2026</div>
+            </div>
+            <span class="deadline-badge">残 61日</span>
+          </div>
+          <div style="margin-top:10px">
+            <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:40%"></div></div>
+            <div style="font-size:10px;color:var(--mcs-text-muted);margin-top:4px">6 / 15 Khuôn hoàn thành</div>
+          </div>
+        </div>
+        <div class="campaign-card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div>
+              <div class="campaign-card-name">SACT FY2026 — Q1</div>
+              <div class="campaign-card-meta">📅 Deadline: 31/03/2026</div>
+            </div>
+            <span class="deadline-badge deadline-ok">完了</span>
+          </div>
+          <div style="margin-top:10px">
+            <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:100%"></div></div>
+            <div style="font-size:10px;color:var(--mcs-success);margin-top:4px;font-weight:700">✅ 12 / 12 Hoàn thành</div>
+          </div>
+        </div>
+        <div style="margin-top:4px">
+          <div class="section-label" style="margin-bottom:8px">Khởi tạo Chiến dịch Mới</div>
+          <button style="width:100%;padding:14px;background:var(--mcs-primary);color:white;border:none;border-radius:var(--mcs-radius-md);font-size:14px;font-weight:700;cursor:pointer;min-height:48px">＋ 新規キャンペーン / Tạo Chiến dịch</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PHONE 1: STEP 1 TARGET LIST -->
+<div>
+  <div class="screen-label">Bước 1 — Dò tìm Khuôn</div>
+  <div class="phone-frame">
+    <div class="phone-notch"></div>
+    <div class="sact-overlay">
+      <div class="sact-header">
+        <div>
+          <div class="sact-header-title">SACT FY2026 — Q2</div>
+          <div class="sact-header-sub">Điểm danh Khuôn Panasonic</div>
+        </div>
+        <button class="sact-close-btn">✕</button>
+      </div>
+      <div class="sact-progress-header">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div class="sact-campaign-name">SACT FY2026 — Q2</div>
+          <div style="font-size:10px;color:var(--mcs-error);font-weight:700">残 61日</div>
+        </div>
+        <div class="sact-deadline">Deadline: 30/06/2026</div>
+        <div class="progress-bar-wrap">
+          <div class="progress-label"><span>進捗 / Tiến độ</span><span>6 / 15 完了</span></div>
+          <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:40%"></div></div>
+        </div>
+      </div>
+      <div class="sact-body">
+        <div class="section-label">Danh sách Khuôn cần Điểm danh</div>
+        <div class="target-card pending">
+          <div class="target-head"><div class="target-ysd">YSD-20241</div><span class="target-badge badge-pending">⏳ Pending</span></div>
+          <div class="target-meta"><span>金型No: KNG-0048</span> <span>資産: PA-2041</span></div>
+          <div class="target-btns">
+            <button class="target-btn btn-scan">✅ Khuôn Trong Xưởng</button>
+            <button class="target-btn btn-missing">⚠️ Không Thấy</button>
+          </div>
+        </div>
+        <div class="target-card inprog">
+          <div class="target-head"><div class="target-ysd">YSD-20238</div><span class="target-badge badge-inprog">🔵 Đang Thực Hiện</span></div>
+          <div class="target-meta"><span>金型No: KNG-0031</span> <span>資産: PA-2038</span></div>
+          <div class="target-btns">
+            <button class="target-btn btn-confirm">🔒 Xác Nhận Đã Xong SACT</button>
+          </div>
+        </div>
+        <div class="target-card done">
+          <div class="target-head"><div class="target-ysd">YSD-20190</div><span class="target-badge badge-done">✅ Hoàn thành</span></div>
+          <div class="target-meta"><span>金型No: KNG-0019</span> <span>完了: 28/04/2026 14:22</span></div>
+        </div>
+        <div class="target-card missing">
+          <div class="target-head"><div class="target-ysd">YSD-20155</div><span class="target-badge badge-missing">🔴 Không Tìm Thấy</span></div>
+          <div class="target-meta"><span>金型No: KNG-0012</span> <span>Báo cáo: 29/04/2026</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PHONE 2: STEP 2 BRIDGE VIEW -->
+<div>
+  <div class="screen-label">Bước 2 — Cổng SACT</div>
+  <div class="phone-frame">
+    <div class="phone-notch"></div>
+    <div class="sact-overlay">
+      <div class="sact-header">
+        <div>
+          <div class="sact-header-title">📋 Hướng dẫn SACT</div>
+          <div class="sact-header-sub">YSD-20241 / KNG-0048</div>
+        </div>
+        <button class="sact-close-btn">←</button>
+      </div>
+      <div class="sact-body">
+        <div class="target-card pending" style="margin-bottom:0">
+          <div class="target-head" style="margin-bottom:2px"><div class="target-ysd">YSD-20241</div><span class="target-badge badge-pending">⏳ Pending</span></div>
+          <div class="target-meta" style="margin-bottom:0"><span>金型No: KNG-0048</span> <span>資産: PA-2041</span></div>
+        </div>
+        <div class="bridge-panel">
+          <div class="bridge-title">📄 有高確認 手順 / Hướng dẫn</div>
+          <div class="instruction-box">
+            <div class="instr-jp">① 金型の実物を確認し、現物の設置場所で作業してください。<br>② SACTシステムにログインし、金型番号を入力します。<br>③ 写真を撮影し、GPS位置情報をONにしてから送信してください。</div>
+            <hr style="border:none;border-top:1px solid #fcd34d;margin:10px 0">
+            <div class="instr-vi">① Xác nhận khuôn tại vị trí đang đặt trong xưởng.<br>② Đăng nhập SACT, nhập mã số khuôn chính xác.<br>③ Chụp ảnh khuôn, bật GPS rồi mới gửi xác nhận.</div>
+          </div>
+          <div class="gps-check-box">
+            <input type="checkbox" id="gps-ok">
+            <label for="gps-ok">✅ Tôi xác nhận đã bật GPS trên điện thoại</label>
+          </div>
+          <button class="btn-open-pana">🚀 MỞ TRANG SACT PANASONIC</button>
+          <div style="font-size:10px;color:var(--mcs-text-muted);text-align:center;margin-top:8px">App sẽ chờ sẵn khi bạn quay lại</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PHONE 3: STEP 3 COMPLETION -->
+<div>
+  <div class="screen-label">Bước 3 — Chốt Hoàn Thành</div>
+  <div class="phone-frame">
+    <div class="phone-notch"></div>
+    <div class="sact-overlay">
+      <div class="sact-header">
+        <div>
+          <div class="sact-header-title">🔒 Xác nhận Hoàn thành</div>
+          <div class="sact-header-sub">YSD-20241 / KNG-0048</div>
+        </div>
+        <button class="sact-close-btn">←</button>
+      </div>
+      <div class="sact-offline-banner">⚠️ 1 bản ghi mạng bị ngắt — đang chờ đồng bộ...</div>
+      <div class="sact-body">
+        <div class="completion-panel">
+          <div class="completion-icon">📱→🌐→✅</div>
+          <div class="completion-title">Bạn vừa quay lại từ SACT Panasonic</div>
+          <div class="completion-sub">Nếu bạn đã hoàn tất chụp ảnh và GPS xác nhận trên trang SACT,<br>hãy bấm nút bên dưới để đóng khuôn này.</div>
+          <button class="btn-lock-done">🔒 XÁC NHẬN ĐÃ LÀM XONG SACT</button>
+          <div style="margin-top:10px">
+            <button style="background:none;border:none;color:var(--mcs-text-muted);font-size:12px;cursor:pointer;text-decoration:underline">↩ Chưa xong, quay lại trang Panasonic</button>
+          </div>
+        </div>
+        <div class="bridge-panel">
+          <div class="bridge-title">📊 Chiến dịch FY2026 Q2</div>
+          <div class="progress-bar-bg" style="margin-bottom:6px"><div class="progress-bar-fill" style="width:47%"></div></div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--mcs-text-muted)">
+            <span>7 / 15 Hoàn thành (sau khi chốt)</span>
+            <span style="color:var(--mcs-success);font-weight:700">+1 ✅</span>
+          </div>
+        </div>
+        <div style="background:var(--mcs-surface);border-radius:var(--mcs-radius-md);padding:12px;box-shadow:var(--mcs-shadow-sm)">
+          <div class="section-label" style="margin-bottom:8px">Ghi log SACT History</div>
+          <div class="history-row">
+            <div>
+              <div class="history-ysd">YSD-20241</div>
+              <div class="history-info">Người thực hiện: nguyen.van.a</div>
+              <div class="history-time">30/04/2026 12:15 • iPhone SE • GPS: ✅</div>
+            </div>
+            <span class="target-badge badge-inprog">Pending sync</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

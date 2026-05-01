@@ -101,18 +101,31 @@
                 // save original state
                 this.originalSearchWrapDisplay = searchWrap.style.display;
                 this.originalSearchWrapHTML = searchWrap.innerHTML;
+                searchWrap.style.setProperty('display', 'flex', 'important');
+                searchWrap.style.setProperty('flex', '1', 'important');
+                
+                const topbarModule = document.querySelector('.topbar-module');
+                if (topbarModule) {
+                    this.originalLogoDisplay = topbarModule.style.display;
+                    if (window.innerWidth < 768) topbarModule.style.setProperty('display', 'none', 'important');
+                }
                 
                 // inject SACT title inline with back button
                 searchWrap.innerHTML = `
-                    <div style="display:flex; align-items:center; gap:12px; padding-left:8px;">
-                        <button id="sact-back-btn" style="background:none; border:none; cursor:pointer; color:var(--mcs-text-muted); font-size:18px; padding:4px;" title="Quay lại">
-                            <i class="fas fa-arrow-left"></i>
-                        </button>
-                        <i class="fas fa-clipboard-check" style="color:var(--mcs-primary); font-size:18px;"></i>
-                        <div style="display:flex; flex-direction:column; line-height:1.2;">
-                            <span style="font-size:15px; font-weight:700; color:var(--mcs-text);">SACT モニター</span>
-                            <span style="font-size:11px; color:var(--mcs-text-muted);">MoldCutterSearch — Panasonic Hub</span>
+                    <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
+                        <div style="display:flex; align-items:center; gap:12px; padding-left:8px;">
+                            <button id="sact-back-btn" style="background:none; border:none; cursor:pointer; color:var(--mcs-text-muted); font-size:18px; padding:4px;" title="Quay lại">
+                                <i class="fas fa-arrow-left"></i>
+                            </button>
+                            <i class="fas fa-clipboard-check" style="color:var(--mcs-primary); font-size:18px;"></i>
+                            <div style="display:flex; flex-direction:column; line-height:1.2;">
+                                <span style="font-size:15px; font-weight:700; color:var(--mcs-text);">SACT モニター</span>
+                                <span style="font-size:11px; color:var(--mcs-text-muted);">MoldCutterSearch</span>
+                            </div>
                         </div>
+                        <button onclick="window.SACTModule.showHelpDialog()" style="background:none; border:none; cursor:pointer; color:var(--mcs-info); font-size:20px; padding:4px 12px;" title="Hướng dẫn SACT">
+                            <i class="fas fa-question-circle"></i>
+                        </button>
                     </div>
                 `;
                 
@@ -145,6 +158,14 @@
             if (searchWrap && this.originalSearchWrapHTML !== undefined) {
                 searchWrap.innerHTML = this.originalSearchWrapHTML;
                 searchWrap.style.display = this.originalSearchWrapDisplay || '';
+                if (!this.originalSearchWrapDisplay) searchWrap.style.removeProperty('display');
+                searchWrap.style.removeProperty('flex');
+            }
+
+            const topbarModule = document.querySelector('.topbar-module');
+            if (topbarModule && this.originalLogoDisplay !== undefined) {
+                topbarModule.style.display = this.originalLogoDisplay || '';
+                if (!this.originalLogoDisplay) topbarModule.style.removeProperty('display');
             }
 
             const badge = document.getElementById('sact-deadline-badge');
@@ -363,18 +384,18 @@
 
             // --- 5. KPI STRIP ---
             const kpiStripHtml = `
-                <div style="display:flex; gap:8px; margin-bottom:16px; overflow-x:auto; padding-bottom:4px;">
-                    <div onclick="window.SACTModule.switchTab('management')" style="cursor:pointer; flex:1; min-width:100px; display:flex; align-items:center; justify-content:center; gap:6px; background:var(--mcs-surface); border:1px solid var(--mcs-border); padding:8px; border-radius:8px; font-size:13px; font-weight:600;">
-                        <span style="font-size:16px;">📁</span> <span style="color:var(--mcs-primary); font-size:15px;">${openCount}</span> <span style="color:var(--mcs-text-muted);">開催中</span>
+                <div style="display:flex; gap:6px; margin-bottom:16px; overflow-x:visible; padding-bottom:4px; flex-wrap:nowrap;">
+                    <div onclick="window.SACTModule.switchTab('management')" style="cursor:pointer; flex:1 1 0; min-width:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; background:var(--mcs-surface); border:1px solid var(--mcs-border); padding:6px 2px; border-radius:8px; font-size:10px; font-weight:600; text-align:center;">
+                        <span style="font-size:14px;">📁</span> <span style="color:var(--mcs-primary); font-size:13px;">${openCount}</span> <span style="color:var(--mcs-text-muted); white-space:nowrap; overflow:visible;">開催中</span>
                     </div>
-                    <div onclick="window.SACTModule.switchTab('management')" style="cursor:pointer; flex:1; min-width:100px; display:flex; align-items:center; justify-content:center; gap:6px; background:var(--mcs-surface); border:1px solid var(--mcs-border); padding:8px; border-radius:8px; font-size:13px; font-weight:600;">
-                        <span style="font-size:16px;">⏳</span> <span style="color:var(--mcs-warning); font-size:15px;">${kpiPending}</span> <span style="color:var(--mcs-text-muted);">未実施</span>
+                    <div onclick="window.SACTModule.switchTab('management')" style="cursor:pointer; flex:1 1 0; min-width:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; background:var(--mcs-surface); border:1px solid var(--mcs-border); padding:6px 2px; border-radius:8px; font-size:10px; font-weight:600; text-align:center;">
+                        <span style="font-size:14px;">⏳</span> <span style="color:var(--mcs-warning); font-size:13px;">${kpiPending}</span> <span style="color:var(--mcs-text-muted); white-space:nowrap; overflow:visible;">未実施</span>
                     </div>
-                    <div onclick="window.SACTModule.switchTab('management')" style="cursor:pointer; flex:1; min-width:100px; display:flex; align-items:center; justify-content:center; gap:6px; background:var(--mcs-surface); border:1px solid var(--mcs-border); padding:8px; border-radius:8px; font-size:13px; font-weight:600;">
-                        <span style="font-size:16px;">✅</span> <span style="color:var(--mcs-success); font-size:15px;">${kpiCompleted}</span> <span style="color:var(--mcs-text-muted);">完了</span>
+                    <div onclick="window.SACTModule.switchTab('management')" style="cursor:pointer; flex:1 1 0; min-width:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; background:var(--mcs-surface); border:1px solid var(--mcs-border); padding:6px 2px; border-radius:8px; font-size:10px; font-weight:600; text-align:center;">
+                        <span style="font-size:14px;">✅</span> <span style="color:var(--mcs-success); font-size:13px;">${kpiCompleted}</span> <span style="color:var(--mcs-text-muted); white-space:nowrap; overflow:visible;">完了</span>
                     </div>
-                    <div onclick="window.SACTModule.switchTab('management')" style="cursor:pointer; flex:1; min-width:100px; display:flex; align-items:center; justify-content:center; gap:6px; background:var(--mcs-surface); border:1px solid var(--mcs-border); padding:8px; border-radius:8px; font-size:13px; font-weight:600;">
-                        <span style="font-size:16px;">⚠️</span> <span style="color:var(--mcs-error); font-size:15px;">${kpiMissing}</span> <span style="color:var(--mcs-text-muted);">紛失</span>
+                    <div onclick="window.SACTModule.switchTab('management')" style="cursor:pointer; flex:1 1 0; min-width:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; background:var(--mcs-surface); border:1px solid var(--mcs-border); padding:6px 2px; border-radius:8px; font-size:10px; font-weight:600; text-align:center;">
+                        <span style="font-size:14px;">⚠️</span> <span style="color:var(--mcs-error); font-size:13px;">${kpiMissing}</span> <span style="color:var(--mcs-text-muted); white-space:nowrap; overflow:visible;">紛失</span>
                     </div>
                 </div>
             `;
@@ -414,16 +435,19 @@
 
                     campaignListHtml += `
                     <div style="border:1px solid var(--mcs-border); border-radius:var(--mcs-radius-md); padding:12px; background:var(--mcs-surface);">
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <div style="font-weight:700; font-size:14px; display:flex; align-items:center; gap:8px;">
-                                <i class="fas fa-bolt" style="color:var(--mcs-warning);"></i> ${cmp.name}
-                                <span style="font-size:10px; padding:2px 6px; border-radius:10px; background:#ccfbf1; color:#0f766e;">Active</span>
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+                            <div style="font-weight:700; font-size:14px; display:flex; align-items:flex-start; gap:8px; flex:1; min-width:0;">
+                                <i class="fas fa-bolt" style="color:var(--mcs-warning); margin-top:2px;"></i>
+                                <span style="word-break:break-word; line-height:1.4;">${cmp.name}</span>
                             </div>
-                            <div style="font-size:12px; color:var(--mcs-text-muted);">期限: ${c_deadlineText}</div>
+                            <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px; flex-shrink:0;">
+                                <span style="font-size:10px; padding:2px 6px; border-radius:10px; background:#ccfbf1; color:#0f766e; font-weight:600;">Active</span>
+                                <div style="font-size:11px; color:var(--mcs-text-muted);">期限: ${c_deadlineText}</div>
+                            </div>
                         </div>
                         ${c_progress}
                         <div style="margin-top:10px; display:flex; justify-content:flex-end; gap:8px;">
-                            <button onclick="window.SACTModule.switchTab('management')" style="background:var(--mcs-surface-2); color:var(--mcs-text); border:1px solid var(--mcs-border); padding:4px 12px; border-radius:4px; font-size:12px; cursor:pointer;">Mở chiến dịch</button>
+                            <button onclick="window.SACTModule.switchTab('management'); window.SACTModule.selectCampaign('${cmp.id}');" style="background:var(--mcs-surface-2); color:var(--mcs-text); border:1px solid var(--mcs-border); padding:4px 12px; border-radius:4px; font-size:12px; cursor:pointer;">Mở chiến dịch</button>
                             <button onclick="window.open('https://sact.panasonic.com', '_blank')" style="background:var(--mcs-primary); color:white; border:none; padding:4px 12px; border-radius:4px; font-size:12px; cursor:pointer;"><i class="fas fa-rocket"></i> SACT</button>
                         </div>
                     </div>`;
@@ -593,6 +617,11 @@
 
 
 
+        backToManagementList() {
+            this.state.activeCampaign = null;
+            this.renderManagementHome();
+        },
+
         async selectCampaign(id) {
             this.state.activeCampaign = this.state.campaigns.find(x => x.id === id);
             
@@ -646,7 +675,7 @@
 
             let html = `
                 <div class="section-head">
-                    <button class="btn-new" onclick="window.SACTModule.renderManagementHome()" style="background:var(--mcs-neutral); margin-right:10px;">
+                    <button class="btn-new" onclick="window.SACTModule.backToManagementList()" style="background:var(--mcs-neutral); margin-right:10px; ${isDesktop ? 'display:none;' : ''}">
                         <i class="fas fa-arrow-left"></i> Quay lại
                     </button>
                     <div class="section-head-title" style="flex:1;">Chi tiết đợt SACT</div>
@@ -767,7 +796,7 @@
             // Tìm tương ứng
             const found = this.state.targets.find(t => this.normalizeCode(t.ysd_code) === cleanScanned);
             if (found) {
-                if (found.status === 'Pending') {
+                if (found.status === 'Pending' || found.status === 'In_Progress') {
                     this.startStep2(found.id);
                 } else {
                     alert(`Khuôn ${found.ysd_code} đang ở trạng thái: ${found.status}`);
@@ -1048,7 +1077,7 @@
                     <div class="sact-form-card" style="width:100%; max-width:640px; background:var(--mcs-surface); border:1px solid var(--mcs-border); border-radius:var(--mcs-radius-lg); padding:20px;">
                         
                         <div class="section-head" style="margin-bottom:16px;">
-                            <button class="btn-new" onclick="window.SACTModule.renderManagementHome()" style="background:var(--mcs-neutral); margin-right:10px;">
+                            <button class="btn-new" onclick="window.SACTModule.backToManagementList()" style="background:var(--mcs-neutral); margin-right:10px;">
                                 <i class="fas fa-arrow-left"></i> Quay lại
                             </button>
                             <div class="section-head-title" style="flex:1;">SACT新規作成 (Tạo Chiến Dịch)</div>
@@ -1376,7 +1405,7 @@
                     <div class="sact-form-card" style="width:100%; max-width:640px; background:var(--mcs-surface); border:1px solid var(--mcs-border); border-radius:var(--mcs-radius-lg); padding:20px;">
                         
                         <div class="section-head" style="margin-bottom:16px;">
-                            <button class="btn-new" onclick="window.SACTModule.renderManagementHome()" style="background:var(--mcs-neutral); margin-right:10px;">
+                            <button class="btn-new" onclick="window.SACTModule.backToManagementList()" style="background:var(--mcs-neutral); margin-right:10px;">
                                 <i class="fas fa-arrow-left"></i> Quay lại
                             </button>
                             <div class="section-head-title" style="flex:1;">SACT編集 (Sửa Chiến Dịch)</div>
@@ -1480,8 +1509,8 @@
                     <div class="filter-chip" onclick="window.SACTModule.setHistoryFilter('Pending', this)">🕐 処理中 (Pending)</div>
                 </div>
                 <div style="padding: 0 14px 10px; display:flex; gap:8px;">
-                    <input type="text" id="sact-hist-year" value="${this.state.historyFilterYear}" placeholder="年/Năm (vd: 2026)" style="flex:1; padding:8px 12px; border:1px solid var(--mcs-border); border-radius:var(--mcs-radius-sm); font-size:12px; background:var(--mcs-surface);">
-                    <input type="text" id="sact-hist-code" value="${this.state.historyFilterCode}" placeholder="YSDコード検索..." style="flex:2; padding:8px 12px; border:1px solid var(--mcs-border); border-radius:var(--mcs-radius-sm); font-size:12px; background:var(--mcs-surface);">
+                    <input type="text" id="sact-hist-year" value="${this.state.historyFilterYear}" onkeydown="if(event.key==='Enter') window.SACTModule.fetchAndRenderHistory()" placeholder="年/Năm (vd: 2026)" style="flex:1; padding:8px 12px; border:1px solid var(--mcs-border); border-radius:var(--mcs-radius-sm); font-size:12px; background:var(--mcs-surface);">
+                    <input type="text" id="sact-hist-code" value="${this.state.historyFilterCode}" onkeydown="if(event.key==='Enter') window.SACTModule.fetchAndRenderHistory()" placeholder="YSDコード検索..." style="flex:2; padding:8px 12px; border:1px solid var(--mcs-border); border-radius:var(--mcs-radius-sm); font-size:12px; background:var(--mcs-surface);">
                     <button class="scan-btn" onclick="window.SACTModule.fetchAndRenderHistory()" style="padding:0 14px; font-size:12px; background:var(--mcs-info);"><i class="fas fa-search"></i></button>
                 </div>
                 <div id="sact-hist-list">

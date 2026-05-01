@@ -122,16 +122,16 @@
                 <div class="sact-tabbar" id="sact-tabbar">
                     <button class="sact-tab sact-tab-btn active" data-tab="dashboard">
                         <i class="fas fa-chart-pie tab-icon"></i>
-                        <span>ダッシュボード</span>
+                        <span class="tab-label">ダッシュボード</span>
                     </button>
                     <button class="sact-tab sact-tab-btn" data-tab="management" style="position:relative">
                         <div class="tab-notify" style="display:none;" id="sact-management-notify"></div>
                         <i class="fas fa-tasks tab-icon"></i>
-                        <span>SACT管理</span>
+                        <span class="tab-label">SACT管理</span>
                     </button>
                     <button class="sact-tab sact-tab-btn" data-tab="history">
                         <i class="fas fa-history tab-icon"></i>
-                        <span>履歴</span>
+                        <span class="tab-label">履歴</span>
                     </button>
                 </div>
 
@@ -300,29 +300,19 @@
                 }
 
                 campaignStripHtml = `
-                <div class="campaign-strip">
-                    <div class="campaign-strip-header">
-                        <div class="campaign-strip-name">⚡ [SACT] ${activeCmp.name}</div>
-                        <div class="campaign-strip-link" onclick="window.SACTModule.switchTab('management')">≡ すべて見る (Tất cả)</div>
+                <div class="sact-campaign-banner" onclick="window.SACTModule.switchTab('management')" style="cursor:pointer;">
+                    <div class="sact-cb-left">
+                        <span class="sact-cb-icon">⚡</span>
+                        <div>
+                            <div class="sact-cb-name">${activeCmp.name} — <span class="sact-cb-status">Active</span></div>
+                            <div class="sact-cb-meta">期限: ${deadlineText} · Panasonic Hub</div>
+                        </div>
                     </div>
-                    
-                    <div class="campaign-strip-meta">
-                        <span>稼働中 (Active)</span>
-                        <span class="deadline-chip ${deadlineClass}">期限 (Deadline): ${deadlineText}</span>
-                    </div>
-
-                    <div class="progress-track">
-                        <div class="progress-fill ${progressPct < 100 ? 'in-progress' : ''}" style="width:${progressPct}%"></div>
-                    </div>
-                    
-                    <div class="campaign-strip-meta">
-                        <span>${kpiCompleted} / ${totalTargets} 金型 (Khuôn)</span>
-                        <span>${progressPct}% 完了 (Hoàn thành)</span>
-                    </div>
-
-                    <div class="strip-actions">
-                        <div class="strip-btn strip-btn-ghost" onclick="window.SACTModule.switchTab('history')">● 履歴 (Lịch sử)</div>
-                        <div class="strip-btn strip-btn-solid" onclick="window.SACTModule.switchTab('management')">▶ SACT開始 (Bắt đầu →)</div>
+                    <div class="sact-cb-right">
+                        <div class="sact-cb-progress-bar">
+                            <div class="sact-cb-fill" style="width:${progressPct}%"></div>
+                        </div>
+                        <div class="sact-cb-pct">${kpiCompleted} / ${totalTargets} · ${progressPct}%</div>
                     </div>
                 </div>`;
             }
@@ -371,30 +361,26 @@
             panel.innerHTML = `
                 ${campaignStripHtml}
 
-                <div class="kpi-row">
-                    <div class="kpi-card tinted-primary">
-                        <div class="kpi-card-icon"><i class="fas fa-folder-open"></i></div>
-                        <div class="kpi-value primary">${openCount}</div>
-                        <div class="kpi-label">開催中 (ĐANG MỞ)</div>
-                        <div class="kpi-trend" onclick="window.SACTModule.switchTab('management')">→ Xem chiến dịch</div>
+                <div class="sact-kpi-grid">
+                    <div class="sact-kpi-card" onclick="window.SACTModule.switchTab('management')" style="cursor:pointer;">
+                        <div class="sact-kpi-icon">📁</div>
+                        <div class="sact-kpi-val">${openCount}</div>
+                        <div class="sact-kpi-label">開催中<br>ĐANG MỞ</div>
                     </div>
-                    <div class="kpi-card tinted-warning">
-                        <div class="kpi-card-icon"><i class="fas fa-clock"></i></div>
-                        <div class="kpi-value warning">${kpiPending}</div>
-                        <div class="kpi-label">未実施 (CHỜ KIỂM KÊ)</div>
-                        <div class="kpi-trend">⏳ Đang pending</div>
+                    <div class="sact-kpi-card" onclick="window.SACTModule.switchTab('management')" style="cursor:pointer;">
+                        <div class="sact-kpi-icon">⏳</div>
+                        <div class="sact-kpi-val warn">${kpiPending}</div>
+                        <div class="sact-kpi-label">未実施<br>CHỜ KIỂM KÊ</div>
                     </div>
-                    <div class="kpi-card tinted-success">
-                        <div class="kpi-card-icon"><i class="fas fa-check-circle"></i></div>
-                        <div class="kpi-value success">${kpiCompleted}</div>
-                        <div class="kpi-label">完了 (HOÀN THÀNH)</div>
-                        <div class="kpi-trend">↑ Tốt</div>
+                    <div class="sact-kpi-card" onclick="window.SACTModule.switchTab('management')" style="cursor:pointer;">
+                        <div class="sact-kpi-icon">✅</div>
+                        <div class="sact-kpi-val ok">${kpiCompleted}</div>
+                        <div class="sact-kpi-label">完了<br>HOÀN THÀNH</div>
                     </div>
-                    <div class="kpi-card tinted-error">
-                        <div class="kpi-card-icon"><i class="fas fa-exclamation-triangle"></i></div>
-                        <div class="kpi-value error">${kpiMissing}</div>
-                        <div class="kpi-label">紛失 (THẤT LẠC)</div>
-                        <div class="kpi-trend">⚠️ Cần xử lý</div>
+                    <div class="sact-kpi-card" onclick="window.SACTModule.switchTab('management')" style="cursor:pointer;">
+                        <div class="sact-kpi-icon">⚠️</div>
+                        <div class="sact-kpi-val err">${kpiMissing}</div>
+                        <div class="sact-kpi-label">紛失<br>THẤT LẠC</div>
                     </div>
                 </div>
 
@@ -449,7 +435,10 @@
                         <div class="campaign-card ${isActive}" id="camp-card-${c.id}" onclick="window.SACTModule.selectCampaign('${c.id}')" style="cursor:pointer; display:flex; flex-direction:column;">
                             <div class="campaign-card-head" style="justify-content:space-between; align-items:center;">
                                 <div class="campaign-card-name" style="font-size:14px;">${c.name}</div>
-                                <i class="fas fa-chevron-right" style="color:var(--mcs-text-muted); font-size:12px;"></i>
+                                <div style="display:flex; gap:8px; align-items:center;">
+                                    ${window.currentUserRole === 'admin' ? `<button onclick="event.stopPropagation(); window.SACTModule.showEditCampaign('${c.id}')" style="background:none; border:none; cursor:pointer; color:var(--mcs-text-muted); font-size:14px;" title="Sửa chiến dịch"><i class="fas fa-edit"></i></button>` : ''}
+                                    <i class="fas fa-chevron-right" style="color:var(--mcs-text-muted); font-size:12px;"></i>
+                                </div>
                             </div>
                             <div class="campaign-meta-row" style="margin-top:6px; font-size:11px;">
                                 <div class="meta-chip"><i class="fas fa-calendar"></i> ${c.deadline}</div>
@@ -1009,37 +998,43 @@
             const ymd = `${yearStr}-${monthStr}-28`;
 
             body.innerHTML = `
-                <div class="section-head">
-                    <button class="btn-new" onclick="window.SACTModule.renderManagementHome()" style="background:var(--mcs-neutral); margin-right:10px;">
-                        <i class="fas fa-arrow-left"></i> Quay lại
-                    </button>
-                    <div class="section-head-title" style="flex:1;">SACT新規作成 (Tạo Chiến Dịch)</div>
-                </div>
-                <div style="padding:0 15px 15px; position:relative;">
-                    <div style="margin-top:15px;">
-                        <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:14px;">SACT キャンペーン名 (Tên chiến dịch):</label>
-                        <input type="text" id="sact-new-name" value="${defaultName}" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px; box-sizing:border-box;">
-                    </div>
-                    <div style="margin-top:15px;">
-                        <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:14px;">SACT 期限 (Hạn chót):</label>
-                        <input type="date" id="sact-new-deadline" value="${ymd}" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px; box-sizing:border-box;">
-                    </div>
-                    
-                    <div style="margin-top:20px; border-top:2px solid var(--mcs-primary); padding-top:15px;">
-                        <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:14px; color:#c62828;">金型の追加 (Thêm khuôn mục tiêu bằng mã):</label>
-                        <input type="text" id="sact-mold-search" oninput="window.SACTModule.onSearchMold(this.value)" onkeydown="window.SACTModule.onSearchMoldKeydown(event)" placeholder="🔍 Gõ mã khuôn để tìm (Ví dụ: JAE)..." style="width:100%; padding:10px; border:2px solid var(--mcs-primary); border-radius:4px; font-weight:bold; font-size:15px; box-sizing:border-box;">
-                        <div id="sact-search-results" style="max-height:180px; overflow-y:auto; background:#fff; border:1px solid #ccc; border-radius:4px; margin-top:5px; display:none; box-shadow:0 4px 6px rgba(0,0,0,0.1);"></div>
-                    </div>
-
-                    <div style="margin-top:20px;">
-                        <strong style="font-size:14px;">選択済みリスト (Đã chọn) - <span id="sact-mold-count" style="color:red; font-size:16px;">0</span>:</strong>
-                        <div id="sact-selected-molds" style="border:1px solid #ddd; border-radius:4px; min-height:100px; max-height:250px; overflow-y:auto; padding:10px; background:#f5faff; margin-top:5px;">
-                            <div style="color:#aaa; font-style:italic;" id="sact-selected-empty">Chưa có khuôn nào. Dùng ô trên để tìm và thêm.</div>
+                <div class="sact-form-wrapper" style="padding:16px; display:flex; justify-content:center;">
+                    <div class="sact-form-card" style="width:100%; max-width:640px; background:var(--mcs-surface); border:1px solid var(--mcs-border); border-radius:var(--mcs-radius-lg); padding:20px;">
+                        
+                        <div class="section-head" style="margin-bottom:16px;">
+                            <button class="btn-new" onclick="window.SACTModule.renderManagementHome()" style="background:var(--mcs-neutral); margin-right:10px;">
+                                <i class="fas fa-arrow-left"></i> Quay lại
+                            </button>
+                            <div class="section-head-title" style="flex:1;">SACT新規作成 (Tạo Chiến Dịch)</div>
                         </div>
-                    </div>
+                        
+                        <div style="position:relative;">
+                            <div style="margin-top:15px;">
+                                <label style="display:block; font-weight:600; margin-bottom:6px; font-size:13px; color:var(--mcs-text-secondary);">SACT キャンペーン名 (Tên chiến dịch):</label>
+                                <input type="text" id="sact-new-name" value="${defaultName}" style="width:100%; height:44px; padding:0 12px; border:1px solid var(--mcs-border); border-radius:var(--mcs-radius-sm); font-size:14px; box-sizing:border-box;">
+                            </div>
+                            <div style="margin-top:15px;">
+                                <label style="display:block; font-weight:600; margin-bottom:6px; font-size:13px; color:var(--mcs-text-secondary);">SACT 期限 (Hạn chót):</label>
+                                <input type="date" id="sact-new-deadline" value="${ymd}" style="width:100%; height:44px; padding:0 12px; border:1px solid var(--mcs-border); border-radius:var(--mcs-radius-sm); font-size:14px; box-sizing:border-box;">
+                            </div>
+                            
+                            <div style="margin-top:20px; border-top:2px solid var(--mcs-primary); padding-top:15px;">
+                                <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:14px; color:var(--mcs-error);">金型の追加 (Thêm khuôn mục tiêu bằng mã):</label>
+                                <input type="text" id="sact-mold-search" oninput="window.SACTModule.onSearchMold(this.value)" onkeydown="window.SACTModule.onSearchMoldKeydown(event)" placeholder="🔍 Gõ mã khuôn để tìm (Ví dụ: JAE)..." style="width:100%; padding:10px; border:2px solid var(--mcs-primary); border-radius:var(--mcs-radius-sm); font-weight:bold; font-size:15px; box-sizing:border-box;">
+                                <div id="sact-search-results" style="max-height:180px; overflow-y:auto; background:#fff; border:1px solid var(--mcs-border); border-radius:var(--mcs-radius-sm); margin-top:5px; display:none; box-shadow:var(--mcs-shadow-md);"></div>
+                            </div>
 
-                    <div style="margin-top: 25px; text-align:center;">
-                        <button class="sact-btn" style="background:#28a745; width:100%; padding:15px; font-size:16px; font-weight:bold; box-shadow:0 4px 6px rgba(0,0,0,0.2);" onclick="window.SACTModule.saveNewCampaign()">💾 保存 (Lưu Danh Sách SACT)</button>
+                            <div style="margin-top:20px;">
+                                <strong style="font-size:14px;">選択済みリスト (Đã chọn) - <span id="sact-mold-count" style="color:var(--mcs-error); font-size:16px;">0</span>:</strong>
+                                <div id="sact-selected-molds" style="border:1px solid var(--mcs-border); border-radius:var(--mcs-radius-sm); min-height:100px; max-height:250px; overflow-y:auto; padding:10px; background:var(--mcs-surface-2); margin-top:5px;">
+                                    <div style="color:var(--mcs-text-muted); font-style:italic;" id="sact-selected-empty">Chưa có khuôn nào. Dùng ô trên để tìm và thêm.</div>
+                                </div>
+                            </div>
+
+                            <div style="margin-top: 25px; text-align:center;">
+                                <button class="sact-btn" style="background:var(--mcs-success); width:100%; padding:15px; font-size:16px; font-weight:bold; box-shadow:0 4px 6px rgba(0,0,0,0.1); border-radius:var(--mcs-radius-md);" onclick="window.SACTModule.saveNewCampaign()">💾 保存 (Lưu Danh Sách SACT)</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             `;
@@ -1262,6 +1257,127 @@
             } catch (e) {
                 console.error("Lỗi tạo SACT", e);
                 alert("Quá trình kết nối bị từ chối: " + e.message + "\n(Vui lòng kiểm tra quyền Admin rls)");
+                this.renderManagementHome();
+            }
+        },
+
+        // --- EDIT CAMPAIGN MAKER ---
+        async showEditCampaign(campaignId) {
+            const body = this.getPanelEl('management');
+            if(!body) return;
+
+            const c = this.state.campaigns.find(x => x.id === campaignId);
+            if (!c) return;
+
+            // Load targets
+            body.innerHTML = `<div class="sact-loading-state" style="margin:14px; text-align:center;">Đang tải danh sách mục tiêu...</div>`;
+            try {
+                const { data, error } = await this.state.supabaseClient
+                    .from('sact_targets')
+                    .select('*')
+                    .eq('campaign_id', campaignId);
+                if (error) throw error;
+                this.state.newCampaignTargets = data ? data.map(t => t.ysd_code) : [];
+            } catch (err) {
+                console.error("Targets Load Error", err);
+                this.state.newCampaignTargets = [];
+            }
+
+            body.innerHTML = `
+                <div class="sact-form-wrapper" style="padding:16px; display:flex; justify-content:center;">
+                    <div class="sact-form-card" style="width:100%; max-width:640px; background:var(--mcs-surface); border:1px solid var(--mcs-border); border-radius:var(--mcs-radius-lg); padding:20px;">
+                        
+                        <div class="section-head" style="margin-bottom:16px;">
+                            <button class="btn-new" onclick="window.SACTModule.renderManagementHome()" style="background:var(--mcs-neutral); margin-right:10px;">
+                                <i class="fas fa-arrow-left"></i> Quay lại
+                            </button>
+                            <div class="section-head-title" style="flex:1;">SACT編集 (Sửa Chiến Dịch)</div>
+                        </div>
+                        
+                        <div style="position:relative;">
+                            <div style="margin-top:15px;">
+                                <label style="display:block; font-weight:600; margin-bottom:6px; font-size:13px; color:var(--mcs-text-secondary);">SACT キャンペーン名 (Tên chiến dịch):</label>
+                                <input type="text" id="sact-new-name" value="${c.name}" style="width:100%; height:44px; padding:0 12px; border:1px solid var(--mcs-border); border-radius:var(--mcs-radius-sm); font-size:14px; box-sizing:border-box;">
+                            </div>
+                            <div style="margin-top:15px;">
+                                <label style="display:block; font-weight:600; margin-bottom:6px; font-size:13px; color:var(--mcs-text-secondary);">SACT 期限 (Hạn chót):</label>
+                                <input type="date" id="sact-new-deadline" value="${c.deadline || ''}" style="width:100%; height:44px; padding:0 12px; border:1px solid var(--mcs-border); border-radius:var(--mcs-radius-sm); font-size:14px; box-sizing:border-box;">
+                            </div>
+                            
+                            <div style="margin-top:20px; border-top:2px solid var(--mcs-primary); padding-top:15px;">
+                                <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:14px; color:var(--mcs-error);">金型の追加 (Thêm khuôn mục tiêu bằng mã):</label>
+                                <input type="text" id="sact-mold-search" oninput="window.SACTModule.onSearchMold(this.value)" onkeydown="window.SACTModule.onSearchMoldKeydown(event)" placeholder="🔍 Gõ mã khuôn để tìm (Ví dụ: JAE)..." style="width:100%; padding:10px; border:2px solid var(--mcs-primary); border-radius:var(--mcs-radius-sm); font-weight:bold; font-size:15px; box-sizing:border-box;">
+                                <div id="sact-search-results" style="max-height:180px; overflow-y:auto; background:#fff; border:1px solid var(--mcs-border); border-radius:var(--mcs-radius-sm); margin-top:5px; display:none; box-shadow:var(--mcs-shadow-md);"></div>
+                            </div>
+
+                            <div style="margin-top:20px;">
+                                <strong style="font-size:14px;">選択済みリスト (Đã chọn) - <span id="sact-mold-count" style="color:var(--mcs-error); font-size:16px;">0</span>:</strong>
+                                <div id="sact-selected-molds" style="border:1px solid var(--mcs-border); border-radius:var(--mcs-radius-sm); min-height:100px; max-height:250px; overflow-y:auto; padding:10px; background:var(--mcs-surface-2); margin-top:5px;">
+                                    <div style="color:var(--mcs-text-muted); font-style:italic;" id="sact-selected-empty">Chưa có khuôn nào. Dùng ô trên để tìm và thêm.</div>
+                                </div>
+                            </div>
+
+                            <div style="margin-top: 25px; text-align:center;">
+                                <button class="sact-btn" style="background:var(--mcs-info); width:100%; padding:15px; font-size:16px; font-weight:bold; box-shadow:0 4px 6px rgba(0,0,0,0.1); border-radius:var(--mcs-radius-md);" onclick="window.SACTModule.saveEditCampaign('${campaignId}')">💾 更新 (Cập Nhật SACT)</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            this.renderSelectedMolds();
+
+            setTimeout(() => {
+                const inp = document.getElementById('sact-mold-search');
+                if (inp) inp.focus();
+            }, 100);
+        },
+
+        async saveEditCampaign(campaignId) {
+            const name = document.getElementById('sact-new-name').value.trim();
+            const deadline = document.getElementById('sact-new-deadline').value;
+
+            if (!name || !deadline) {
+                alert("Vui lòng nhập Tên chiến dịch và Hạn chót.");
+                return;
+            }
+            if (this.state.newCampaignTargets.length === 0) {
+                alert("Vui lòng chọn ít nhất 1 khuôn để bắt đầu chiến dịch.");
+                return;
+            }
+
+            try {
+                // 1. Cập nhật Campaign
+                const c_payload = { name, deadline };
+                const { error: cErr } = await this.state.supabaseClient.from('sact_campaigns').update(c_payload).eq('id', campaignId);
+                if (cErr) throw cErr;
+
+                // 2. Cập nhật Targets (Cách dễ nhất: xóa cũ, tạo mới, HOẶC chỉ thêm những cái mới chưa có. Ở đây để an toàn nếu edit thì chỉ thêm những target chưa tồn tại)
+                const { data: existingTargets } = await this.state.supabaseClient.from('sact_targets').select('ysd_code').eq('campaign_id', campaignId);
+                const existingCodes = existingTargets ? existingTargets.map(t => t.ysd_code) : [];
+                
+                const targetsToAdd = this.state.newCampaignTargets.filter(code => !existingCodes.includes(code));
+                
+                if (targetsToAdd.length > 0) {
+                    const t_payloads = targetsToAdd.map(code => {
+                        return {
+                            campaign_id: campaignId,
+                            ysd_code: code,
+                            status: 'Pending'
+                        };
+                    });
+                    const { error: tErr } = await this.state.supabaseClient.from('sact_targets').insert(t_payloads);
+                    if (tErr) throw tErr;
+                }
+
+                setTimeout(async () => {
+                    alert('Thành công! Chiến dịch SACT đã được cập nhật.');
+                    await this.loadCampaigns(); // Refresh to index
+                }, 500);
+
+            } catch (e) {
+                console.error("Lỗi cập nhật SACT", e);
+                alert("Lỗi cập nhật: " + e.message);
                 this.renderManagementHome();
             }
         },

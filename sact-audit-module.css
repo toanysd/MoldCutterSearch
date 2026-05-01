@@ -52,23 +52,18 @@
 
 /* ─── HEADER ─── */
 .sact-header {
-  height: var(--header-h);
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 16px; min-height: 48px;
   background: var(--mcs-primary);
-  display: flex; align-items: center;
-  padding: 0 16px;
-  gap: 10px;
-  flex-shrink: 0;
-  position: relative;
+  border-bottom: 1px solid var(--mcs-border);
+  flex-shrink: 0; position: relative;
 }
 .sact-header-icon { color: rgba(255,255,255,.75); font-size: 16px; }
-.sact-header-title { color: #fff; font-size: 15px; font-weight: 700; flex: 1; letter-spacing: .01em; }
-.sact-header-sub { color: rgba(255,255,255,.65); font-size: 10px; font-weight: 500; }
+.sact-header-title { color: #fff; font-size: 0.9rem; font-weight: 600; white-space: nowrap; flex: 1; }
+.sact-header-sub { color: rgba(255,255,255,.65); font-size: 0.75rem; }
 .deadline-chip {
-  background: rgba(255,255,255,.15);
-  border: 1px solid rgba(255,255,255,.25);
-  color: #fff; font-size: 10px;
-  padding: 3px 8px; border-radius: 99px;
-  display: flex; align-items: center; gap: 4px;
+  margin-left: auto; font-size: 0.7rem; padding: 3px 8px; border-radius: 12px;
+  background: var(--mcs-warning); color: white; white-space: nowrap;
 }
 
 /* ─── QUEUE ALERT ─── */
@@ -83,36 +78,24 @@
 
 /* ─── TAB BAR ─── */
 .sact-tabbar {
-  height: var(--tab-h);
-  background: var(--mcs-surface);
-  border-bottom: 2px solid var(--mcs-border);
-  display: flex;
-  flex-shrink: 0;
-  z-index: 10;
+  display: flex; position: sticky; top: 0; z-index: 100;
+  background: var(--mcs-surface); border-bottom: 2px solid var(--mcs-border);
+  padding: 0; height: 48px;
 }
 .sact-tab-btn {
-  flex: 1;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 2px;
-  font-size: 10px; font-weight: 600;
-  color: var(--mcs-text-muted);
-  cursor: pointer;
-  border: none;
-  background: transparent;
-  border-bottom: 3px solid transparent;
-  transition: all var(--mcs-transition);
-  position: relative;
-  min-height: 48px;
-  padding: 0;
+  flex: 1; height: 48px;
+  font-size: 0.8rem; font-weight: 500;
+  border: none; background: none; color: var(--mcs-text-muted);
+  cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 2px; border-bottom: 2px solid transparent; margin-bottom: -2px;
+  transition: all 150ms ease;
 }
-.sact-tab-btn .tab-icon { font-size: 15px; margin-bottom:2px; }
-.sact-tab-btn.active { color: var(--mcs-primary); border-bottom-color: var(--mcs-primary); background: transparent; }
+.sact-tab-btn.active { color: var(--mcs-primary); border-bottom-color: var(--mcs-primary); font-weight: 600; }
+.sact-tab-btn .tab-icon { font-size: 1rem; }
+.sact-tab-btn .tab-label { font-size: 0.7rem; }
 .tab-notify {
-  position: absolute; top: 6px; right: 18%;
-  width: 8px; height: 8px;
-  background: var(--mcs-error);
-  border-radius: 50%;
-  border: 2px solid var(--mcs-surface);
+  position: absolute; top: 6px; right: calc(50% - 20px);
+  width: 6px; height: 6px; border-radius: 50%; background: var(--mcs-error);
 }
 
 /* ─── BODY / PANELS ─── */
@@ -160,45 +143,49 @@
 .kpi-value.success { color: var(--mcs-success); }
 .kpi-value.error   { color: var(--mcs-error); }
 
-/* ─── CAMPAIGN SUMMARY CARD (V2 STRIP) ─── */
-.campaign-strip {
-  margin: 8px 14px 16px;
-  background: var(--mcs-primary);
+/* ─── CAMPAIGN BANNER COMPACT ─── */
+.sact-campaign-banner {
+  margin: 12px;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, var(--mcs-primary) 0%, var(--mcs-primary-hover) 100%);
   border-radius: var(--mcs-radius-md);
-  padding: 16px;
-  color: #fff;
-  box-shadow: var(--mcs-shadow-md);
-  display: flex; flex-direction: column; gap: 12px;
+  color: white;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
 }
-.campaign-strip-header { display: flex; justify-content: space-between; align-items: center; }
-.campaign-strip-name { font-size: 14px; font-weight: 800; }
-.campaign-strip-link { font-size: 11px; color: rgba(255,255,255,0.8); cursor: pointer; text-decoration: underline; }
-.campaign-strip-meta { display: flex; align-items: center; justify-content: space-between; font-size: 11px; }
-.deadline-chip { background: rgba(0,0,0,0.2); padding: 3px 8px; border-radius: 99px; }
-.deadline-urgent { animation: pulse-red 1.5s ease-in-out infinite; }
-@keyframes pulse-red { 0%,100% { background:rgba(231,76,60,.15); } 50% { background:rgba(231,76,60,.45); } }
-.progress-track {
-  background: rgba(0,0,0,0.2);
-  border-radius: 99px; height: 8px; overflow: hidden;
-  margin: 4px 0;
+.sact-cb-left { flex: 1; display: flex; gap: 8px; }
+.sact-cb-icon { font-size: 20px; }
+.sact-cb-name { font-size: 14px; font-weight: 700; }
+.sact-cb-status { font-size: 12px; opacity: 0.85; }
+.sact-cb-meta { font-size: 11px; opacity: 0.8; margin-top: 2px; }
+.sact-cb-right { width: 80px; text-align: right; }
+.sact-cb-progress-bar {
+  height: 4px; background: rgba(255,255,255,0.3); border-radius: 2px; overflow: hidden; margin-top: 6px;
 }
-.progress-fill {
-  background: var(--mcs-success);
-  height: 100%; border-radius: 99px;
-  transition: width .5s ease;
+.sact-cb-fill { height: 100%; background: white; border-radius: 2px; transition: width 600ms ease; }
+.sact-cb-pct { font-size: 10px; margin-top: 4px; }
+
+/* ─── KPI GRID 2x2 ─── */
+.sact-kpi-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 0 12px 12px;
 }
-.progress-fill.in-progress {
-  background: var(--mcs-warning);
+.sact-kpi-card {
+  background: var(--mcs-surface);
+  border: 1px solid var(--mcs-border);
+  border-radius: var(--mcs-radius-md);
+  padding: 14px 12px;
+  text-align: center;
 }
-.strip-actions { display: flex; gap: 8px; margin-top: 4px; }
-.strip-btn {
-  flex: 1; padding: 10px;
-  border-radius: var(--mcs-radius-sm);
-  font-size: 12px; font-weight: 700;
-  cursor: pointer; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px;
-}
-.strip-btn-ghost { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.3); }
-.strip-btn-solid { background: #fff; color: var(--mcs-primary); border: none; }
+.sact-kpi-icon { font-size: 20px; margin-bottom: 4px; }
+.sact-kpi-val { font-size: 24px; font-weight: 700; line-height: 1; color: var(--mcs-text); }
+.sact-kpi-val.warn { color: var(--mcs-warning); }
+.sact-kpi-val.ok   { color: var(--mcs-success); }
+.sact-kpi-val.err  { color: var(--mcs-error); }
+.sact-kpi-label { font-size: 10px; color: var(--mcs-text-muted); margin-top: 4px; line-height: 1.4; }
 
 /* ─── ACTIVITY FEED ─── */
 .activity-list { padding: 0 14px; display: flex; flex-direction: column; gap: 6px; }
@@ -319,13 +306,17 @@
   padding: 3px 8px; border-radius: 99px;
   display: flex; align-items: center; gap: 4px;
 }
-.mold-list { border-top: 1px solid var(--mcs-border); }
-.mold-row {
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--mcs-surface-3);
-  display: flex; align-items: center; gap: 10px;
+.mold-list {
+  display: flex; flex-direction: column; gap: 6px; padding: 12px;
+  border-top: 1px solid var(--mcs-border); background: var(--mcs-surface-2);
 }
-.mold-row:last-child { border-bottom: none; }
+.mold-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px; background: var(--mcs-surface);
+  border: 1px solid var(--mcs-border); border-radius: var(--mcs-radius-md);
+  min-height: 60px;
+}
+.mold-row:last-child { margin-bottom: 0; }
 .mold-status-dot {
   width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
 }
@@ -674,16 +665,13 @@
     border-left-color: var(--mcs-primary);
     border-color: rgba(13,122,122,.2);
   }
-  .mold-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border-top: 1px solid var(--mcs-border); background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); overflow: hidden; }
-  .mold-row { border-right: 1px solid var(--mcs-surface-3); border-bottom: 1px solid var(--mcs-surface-3); padding: 16px; margin: 0; }
-  .mold-row:nth-child(3n) { border-right: none; }
   
   /* Split view for Management Tab */
   .sact-split-view {
     display: flex; gap: 24px; align-items: flex-start;
   }
   .sact-split-master {
-    width: 380px; flex-shrink: 0;
+    width: 300px; flex-shrink: 0;
     display: flex; flex-direction: column; gap: 16px;
   }
   .sact-split-detail {

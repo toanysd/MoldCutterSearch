@@ -6,7 +6,7 @@
   --mcs-surface:        #ffffff;
   --mcs-surface-2:      #f8f9fa;
   --mcs-surface-3:      #eef0f3;
-  --mcs-surface-hover:  #e8f4f4;
+  --mcs-surface-hover:  var(--mcs-primary-light);
   --mcs-border:         #dde1e7;
   --mcs-text:           #1a1a2e;
   --mcs-text-secondary: #4a5568;
@@ -330,8 +330,8 @@
   width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
 }
 .mold-info { flex: 1; min-width: 0; }
-.mold-code { font-size: 13px; font-weight: 700; color: var(--mcs-primary); text-decoration: underline; cursor: pointer; }
-.mold-name { font-size: 10px; color: var(--mcs-text-muted); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mold-code { font-size: 18px; font-weight: 800; color: var(--mcs-primary); text-decoration: underline; cursor: pointer; }
+.mold-name { font-size: 12px; color: var(--mcs-text-muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .scan-btn {
   background: var(--mcs-primary); color: #fff;
   border: none; border-radius: var(--mcs-radius-sm);
@@ -553,6 +553,20 @@
   font-size: 12px; color: var(--mcs-text-muted); font-weight: 600; cursor: pointer;
 }
 
+  .sact-split-view { display: block; }
+  .sact-split-master { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+  .sact-split-detail { display: none; } /* On mobile, detail is managed by JS swapping or modal, or we just stack them */
+  .sact-split-detail.active { display: block; }
+  
+  /* Campaign Card progress and badges */
+  .camp-prog-bar { height: 4px; background: var(--mcs-surface-3); border-radius: 99px; margin-top: 10px; overflow: hidden; }
+  .camp-prog-fill { height: 100%; background: var(--mcs-success); }
+  .camp-quick-stats { display: flex; gap: 6px; margin-top: 8px; font-size: 10px; font-weight: 700; }
+  .camp-stat-badge { padding: 2px 6px; border-radius: 4px; }
+  .cs-pending { background: var(--mcs-warning-light); color: var(--mcs-warning-text); }
+  .cs-done { background: var(--mcs-success-light); color: var(--mcs-success-text); }
+  .cs-missing { background: var(--mcs-error-light); color: var(--mcs-error-text); }
+
 /* ─── DESKTOP OPTIMIZATION ─── */
 @media (min-width: 768px) {
   .sact-overlay {
@@ -584,22 +598,26 @@
   .sact-tabbar {
     justify-content: flex-start;
     padding: 0 32px;
-    background: #fff;
+    background: var(--mcs-surface);
     border-bottom: 1px solid var(--mcs-border);
     box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    position: sticky; top: 0; z-index: 10;
   }
   .sact-tab-btn {
     flex: none;
-    padding: 18px 24px;
+    padding: 16px 24px;
     font-size: 14px;
-    border-bottom: 3px solid transparent;
+    border-bottom: 2px solid transparent;
     color: var(--mcs-text-secondary);
     gap: 8px; flex-direction: row;
+    border-radius: 6px 6px 0 0;
   }
+  .sact-tab-btn:hover { background: var(--mcs-surface-3); }
   .sact-tab-btn.active {
     border-bottom-color: var(--mcs-primary);
-    background: transparent;
+    background: var(--mcs-primary-light);
     color: var(--mcs-primary);
+    font-weight: 700;
   }
   .sact-body {
     padding: 24px 32px;
@@ -608,8 +626,25 @@
 
   /* Dash layout */
   .dash-section-title { padding: 0 0 12px 0; font-size: 15px; font-weight: 800; }
-  .kpi-row { padding: 0; margin-bottom: 24px; gap: 16px; display: grid; grid-template-columns: repeat(4, 1fr); }
-  .kpi-card { padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+  .kpi-row { 
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0; margin-bottom: 24px; background: var(--mcs-surface); 
+    border: 1px solid var(--mcs-border); border-radius: var(--mcs-radius-md); 
+    height: 72px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .kpi-card { 
+    flex: 1; display: flex; align-items: center; gap: 12px;
+    padding: 0 24px; border: none; box-shadow: none; border-radius: 0; background: transparent !important;
+    position: relative;
+  }
+  .kpi-card:not(:last-child)::after {
+    content: ''; position: absolute; right: 0; top: 16px; bottom: 16px; width: 1px; background: var(--mcs-border);
+  }
+  .kpi-card-icon { margin-bottom: 0; font-size: 24px; }
+  .kpi-value { font-size: 24px; }
+  .kpi-label { margin-top: 0; font-size: 13px; }
+  .kpi-trend { display: none; } /* Hide trend on compact row to save space */
+  .kpi-card.tinted-primary, .kpi-card.tinted-warning, .kpi-card.tinted-success, .kpi-card.tinted-error { border-color: transparent; }
   .campaign-strip { margin: 8px 0 24px; padding: 24px 32px; border-radius: 12px; box-shadow: 0 4px 12px rgba(13,122,122,0.15); flex-direction: row; align-items: center; gap: 24px; }
   .campaign-strip-header { flex-direction: column; align-items: flex-start; gap: 8px; width: 30%; border-right: 1px solid rgba(255,255,255,0.2); padding-right: 24px; }
   .campaign-strip-meta { flex: 1; flex-direction: column; align-items: flex-start; gap: 8px; }
@@ -625,8 +660,38 @@
   .history-item { margin: 0 0 12px 0; border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.04); padding: 16px; }
   
   .section-head { padding: 0 0 16px 0; }
-  .campaign-card { margin: 0 0 24px 0; border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.04); padding: 16px; }
+  .campaign-card { 
+    margin: 0; border: 1px solid var(--mcs-border); box-shadow: 0 2px 8px rgba(0,0,0,0.04); 
+    padding: 16px; border-radius: 12px; transition: all 0.2s; position: relative;
+    border-left: 3px solid transparent;
+  }
+  .campaign-card:hover {
+    background: var(--mcs-surface-hover);
+    border-left-color: var(--mcs-primary);
+  }
+  .campaign-card.active {
+    background: var(--mcs-primary-light);
+    border-left-color: var(--mcs-primary);
+    border-color: rgba(13,122,122,.2);
+  }
   .mold-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border-top: 1px solid var(--mcs-border); background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); overflow: hidden; }
   .mold-row { border-right: 1px solid var(--mcs-surface-3); border-bottom: 1px solid var(--mcs-surface-3); padding: 16px; margin: 0; }
   .mold-row:nth-child(3n) { border-right: none; }
+  
+  /* Split view for Management Tab */
+  .sact-split-view {
+    display: flex; gap: 24px; align-items: flex-start;
+  }
+  .sact-split-master {
+    width: 380px; flex-shrink: 0;
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .sact-split-detail {
+    flex: 1; min-width: 0;
+    background: #fff; border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    border: 1px solid var(--mcs-border);
+    min-height: 500px;
+    padding: 24px;
+  }
 }

@@ -153,7 +153,7 @@
                 <div id="sact-help-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:13000; align-items:center; justify-content:center;">
                     <div style="background:white; border-radius:8px; padding:20px; width:90%; max-width:500px; box-shadow:0 4px 15px rgba(0,0,0,0.2); max-height:80vh; overflow-y:auto; position:relative;">
                         <button onclick="window.SACTModule.closeHelpDialog()" style="position:absolute; top:10px; right:15px; background:none; border:none; font-size:24px; color:#666; cursor:pointer;">&times;</button>
-                        <h3 style="margin-top:0; border-bottom:2px solid #0056b3; padding-bottom:10px; color:#0056b3; font-size:16px;">
+                        <h3 style="margin-top:0; border-bottom:2px solid var(--mcs-primary); padding-bottom:10px; color:var(--mcs-primary); font-size:16px;">
                             <i class="fas fa-book"></i> SACT運用の案内 (Hướng Dẫn SACT)
                         </h3>
                         <div style="font-size:13px; line-height:1.6; color:#333;">
@@ -170,7 +170,7 @@
                             <span style="color:#888; font-size:12px;">* Hỗ trợ đồng bộ Offline Queue khi mất mạng xưởng.</span>
                         </div>
                         <div style="margin-top:20px; text-align:center;">
-                            <button onclick="window.SACTModule.closeHelpDialog()" style="background:#0056b3; color:white; border:none; padding:10px 20px; border-radius:4px; font-weight:bold; cursor:pointer;">閉じる (Đóng)</button>
+                            <button onclick="window.SACTModule.closeHelpDialog()" style="background:var(--mcs-primary); color:white; border:none; padding:10px 20px; border-radius:4px; font-weight:bold; cursor:pointer;">閉じる (Đóng)</button>
                         </div>
                     </div>
                 </div>
@@ -423,8 +423,12 @@
             const panel = this.getPanelEl('management');
             if (!panel) return;
 
-            let html = '<div class="section-head">';
-            html += '<div class="section-head-title">Danh sách chiến dịch SACT</div>';
+            let html = '<div class="sact-split-view">';
+            
+            // MASTER COLUMN
+            html += '<div class="sact-split-master">';
+            html += '<div class="section-head">';
+            html += '<div class="section-head-title">Danh sách chiến dịch</div>';
             
             if (window.currentUserRole === 'admin') {
                 html += `
@@ -438,30 +442,47 @@
             if (this.state.campaigns.length === 0) {
                 html += `<div class="sact-empty-card">Chưa có chiến dịch SACT hiện hành.</div>`;
             } else {
-                html += `<div id="sact-management-container">`;
-
+                html += `<div id="sact-management-list">`;
                 this.state.campaigns.forEach(c => {
+                    const isActive = this.state.activeCampaign && this.state.activeCampaign.id === c.id ? 'active' : '';
                     html += `
-                        <div class="campaign-card" onclick="window.SACTModule.selectCampaign('${c.id}')">
-                            <div class="campaign-card-head">
-                                <div class="campaign-card-name">${c.name}</div>
-                                <div class="campaign-status-chip chip-active">● Active</div>
+                        <div class="campaign-card ${isActive}" id="camp-card-${c.id}" onclick="window.SACTModule.selectCampaign('${c.id}')" style="cursor:pointer; display:flex; flex-direction:column;">
+                            <div class="campaign-card-head" style="justify-content:space-between; align-items:center;">
+                                <div class="campaign-card-name" style="font-size:14px;">${c.name}</div>
+                                <i class="fas fa-chevron-right" style="color:var(--mcs-text-muted); font-size:12px;"></i>
                             </div>
-                            <div class="campaign-card-body">
-                                <div class="campaign-meta-row">
-                                    <div class="meta-chip"><i class="fas fa-calendar" style="font-size:9px"></i> ${c.deadline}</div>
-                                    <div class="meta-chip"><i class="fas fa-building" style="font-size:9px"></i> Panasonic Hub</div>
-                                </div>
+                            <div class="campaign-meta-row" style="margin-top:6px; font-size:11px;">
+                                <div class="meta-chip"><i class="fas fa-calendar"></i> ${c.deadline}</div>
+                            </div>
+                            <!-- Mock progress data -->
+                            <div class="camp-prog-bar"><div class="camp-prog-fill" style="width:30%"></div></div>
+                            <div class="camp-quick-stats">
+                                <div class="camp-stat-badge cs-done">3 Done</div>
+                                <div class="camp-stat-badge cs-pending">7 Pending</div>
+                                <div class="camp-stat-badge cs-missing">0 Miss</div>
                             </div>
                         </div>
                     `;
                 });
-
                 html += `</div>`;
             }
+            html += '</div>'; // End master column
+
+            // DETAIL COLUMN
+            html += '<div class="sact-split-detail" id="sact-management-detail" style="display:none;"></div>';
+            
+            html += '</div>'; // End split view
 
             panel.innerHTML = html;
             this.state.initializedTabs.management = true;
+            
+            // Auto-select first if desktop
+            if (window.innerWidth >= 768 && this.state.campaigns.length > 0 && !this.state.activeCampaign) {
+                this.selectCampaign(this.state.campaigns[0].id);
+            } else if (this.state.activeCampaign) {
+                // re-render detail if already active
+                this.renderTargetList();
+            }
         },
 
         renderHistoryHome() {
@@ -539,8 +560,28 @@
 
         async selectCampaign(id) {
             this.state.activeCampaign = this.state.campaigns.find(x => x.id === id);
-            const panel = this.getPanelEl('management');
-            if (panel) panel.innerHTML = `<div class="sact-loading-state" style="margin:14px; text-align:center;">Đang tải danh sách mục tiêu...</div>`;
+            
+            // Update active state in master list
+            document.querySelectorAll('.campaign-card').forEach(el => el.classList.remove('active'));
+            const activeCard = document.getElementById(`camp-card-${id}`);
+            if (activeCard) activeCard.classList.add('active');
+
+            const isDesktop = window.innerWidth >= 768;
+            let targetContainer = null;
+            
+            if (isDesktop) {
+                targetContainer = document.getElementById('sact-management-detail');
+                if (targetContainer) {
+                    targetContainer.style.display = 'block';
+                    targetContainer.classList.add('active');
+                }
+            } else {
+                targetContainer = this.getPanelEl('management');
+            }
+
+            if (targetContainer) {
+                targetContainer.innerHTML = `<div class="sact-loading-state" style="margin:14px; text-align:center;">Đang tải danh sách mục tiêu...</div>`;
+            }
 
             try {
                 const { data, error } = await this.state.supabaseClient
@@ -552,13 +593,19 @@
                 this.renderTargetList();
             } catch (err) {
                 console.error("Targets Load Error", err);
-                if (panel) panel.innerHTML = `<div class="sact-empty-card" style="color:var(--mcs-error)">Lỗi tải danh sách: ${err.message}</div>`;
+                if (targetContainer) targetContainer.innerHTML = `<div class="sact-empty-card" style="color:var(--mcs-error)">Lỗi tải danh sách: ${err.message}</div>`;
             }
         },
 
         renderTargetList() {
-            const panel = this.getPanelEl('management');
-            if (!panel) return;
+            const isDesktop = window.innerWidth >= 768;
+            let container = null;
+            if (isDesktop) {
+                container = document.getElementById('sact-management-detail');
+            } else {
+                container = this.getPanelEl('management');
+            }
+            if (!container) return;
 
             const c = this.state.activeCampaign;
 
@@ -583,8 +630,8 @@
                     </div>
                 
                     <div style="padding:10px 14px; background:var(--mcs-surface-hover); border-top:1px solid var(--mcs-border); border-bottom:1px solid var(--mcs-border); display:flex; gap:10px;">
-                        <input type="text" id="sact-quick-scan" placeholder="[Nhập Mã YSD / Enter]" style="flex:1; padding:8px 12px; border-radius:var(--mcs-radius-sm); border:1px solid var(--mcs-border); font-size:13px; font-weight:600;">
-                        <button class="scan-btn" style="min-height:36px; padding:0 14px; font-size:14px;" onclick="window.SACTModule.openCameraScanner()">📷</button>
+                        <input type="text" id="sact-quick-scan" placeholder="[Nhập Mã YSD / Enter]" style="flex:1; padding:12px; border-radius:var(--mcs-radius-sm); border:1px solid var(--mcs-border); font-size:18px; font-weight:700;">
+                        <button class="scan-btn" style="min-height:36px; padding:0 18px; font-size:18px;" onclick="window.SACTModule.openCameraScanner()">📷</button>
                     </div>
 
                     <div class="mold-list">
@@ -623,7 +670,7 @@
                 </div>
             `;
 
-            panel.innerHTML = html;
+            container.innerHTML = html;
 
             const inp = document.getElementById('sact-quick-scan');
             if (inp) {
@@ -715,10 +762,13 @@
             if (!t) return;
             const c = this.state.activeCampaign;
 
-            const panel = this.getPanelEl('management');
-            if(!panel) return;
+            let container = null;
+            if (window.innerWidth >= 768) container = document.getElementById('sact-management-detail');
+            else container = this.getPanelEl('management');
+            
+            if(!container) return;
 
-            panel.innerHTML = `
+            container.innerHTML = `
                 <div class="step-divider">
                     <div class="step-num">2</div>
                     <div class="step-title">SACTページを開く / Mở trang SACT</div>
@@ -729,7 +779,7 @@
                         <span class="icon">📖</span>
                         <div>
                             <div class="title">作業手順 / Hướng dẫn thao tác</div>
-                            <div class="subtitle">${t.ysd_code} - PNA: ${t.panasonic_kanagata_no || 'N/A'}</div>
+                            <div class="subtitle" style="font-size:16px; font-weight:800;">${t.ysd_code} - PNA: ${t.panasonic_kanagata_no || 'N/A'}</div>
                         </div>
                     </div>
 
@@ -782,10 +832,13 @@
             const t = this.state.targets.find(x => x.id === targetId);
             if (!t) return;
 
-            const panel = this.getPanelEl('management');
-            if(!panel) return;
+            let container = null;
+            if (window.innerWidth >= 768) container = document.getElementById('sact-management-detail');
+            else container = this.getPanelEl('management');
+            
+            if(!container) return;
 
-            panel.innerHTML = `
+            container.innerHTML = `
                 <div class="step-divider">
                     <div class="step-num">3</div>
                     <div class="step-title">棚卸完了を記録 (Đóng Khuôn)</div>
@@ -972,9 +1025,9 @@
                         <input type="date" id="sact-new-deadline" value="${ymd}" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px; box-sizing:border-box;">
                     </div>
                     
-                    <div style="margin-top:20px; border-top:2px solid #0056b3; padding-top:15px;">
+                    <div style="margin-top:20px; border-top:2px solid var(--mcs-primary); padding-top:15px;">
                         <label style="display:block; font-weight:bold; margin-bottom:5px; font-size:14px; color:#c62828;">金型の追加 (Thêm khuôn mục tiêu bằng mã):</label>
-                        <input type="text" id="sact-mold-search" oninput="window.SACTModule.onSearchMold(this.value)" onkeydown="window.SACTModule.onSearchMoldKeydown(event)" placeholder="🔍 Gõ mã khuôn để tìm (Ví dụ: JAE)..." style="width:100%; padding:10px; border:2px solid #0056b3; border-radius:4px; font-weight:bold; font-size:15px; box-sizing:border-box;">
+                        <input type="text" id="sact-mold-search" oninput="window.SACTModule.onSearchMold(this.value)" onkeydown="window.SACTModule.onSearchMoldKeydown(event)" placeholder="🔍 Gõ mã khuôn để tìm (Ví dụ: JAE)..." style="width:100%; padding:10px; border:2px solid var(--mcs-primary); border-radius:4px; font-weight:bold; font-size:15px; box-sizing:border-box;">
                         <div id="sact-search-results" style="max-height:180px; overflow-y:auto; background:#fff; border:1px solid #ccc; border-radius:4px; margin-top:5px; display:none; box-shadow:0 4px 6px rgba(0,0,0,0.1);"></div>
                     </div>
 
@@ -1051,10 +1104,10 @@
                     const c = m.MoldName || m.displayName || m.MoldCode || 'Unknown';
                     const c_disp = c.replace(/'/g, "\\'");
                     const bg = idx === bestIndex ? '#e3f2fd' : 'white';
-                    const borderLeft = idx === bestIndex ? '4px solid #0056b3' : '4px solid transparent';
+                    const borderLeft = idx === bestIndex ? '4px solid var(--mcs-primary)' : '4px solid transparent';
 
                     h += `<div id="sact-item-${idx}" style="padding:12px 10px; border-bottom:1px solid #eee; cursor:pointer; background:${bg}; border-left:${borderLeft};" onmousedown="window.SACTModule.addMoldTarget('${c_disp}')" onmouseout="if(window.SACTModule.state.searchIndex !== ${idx}) { this.style.background='white'; this.style.borderLeft='4px solid transparent'; }" onmouseover="window.SACTModule.setSearchIndex(${idx})">
-                        <strong style="color:#0056b3;">${c}</strong> <span style="font-size:12px; color:#666;">(${m.CustomerName || m.displayCustomer || m.Customer || ''})</span>
+                        <strong style="color:var(--mcs-primary);">${c}</strong> <span style="font-size:12px; color:#666;">(${m.CustomerName || m.displayCustomer || m.Customer || ''})</span>
                     </div>`;
                 });
                 resDiv.innerHTML = h;
@@ -1084,7 +1137,7 @@
                 if (el) {
                     if (idx === this.state.searchIndex) {
                         el.style.background = '#e3f2fd';
-                        el.style.borderLeft = '4px solid #0056b3';
+                        el.style.borderLeft = '4px solid var(--mcs-primary)';
                     } else {
                         el.style.background = 'white';
                         el.style.borderLeft = '4px solid transparent';
@@ -1176,7 +1229,7 @@
             const body = this.getPanelEl('management');
             if (body) {
                 body.innerHTML = `<div style="padding:40px 20px; text-align:center;">
-                    <i class="fas fa-spinner fa-spin" style="font-size:30px; color:#0056b3; margin-bottom:15px;"></i>
+                    <i class="fas fa-spinner fa-spin" style="font-size:30px; color:var(--mcs-primary); margin-bottom:15px;"></i>
                     <br>Đang khởi tạo Database và nạp khuôn...
                 </div>`;
             }
@@ -1294,7 +1347,16 @@
             }
 
             if (filtered.length === 0) {
-                histList.innerHTML = `<div class="sact-empty-card">条件に一致する履歴がありません。 (Không có lịch sử SACT nào theo điều kiện lọc.)</div>`;
+                histList.innerHTML = `
+                    <div style="text-align:center; padding: 48px 24px; color:var(--mcs-text-secondary);">
+                        <i class="fas fa-inbox" style="font-size:48px; color:var(--mcs-surface-3); margin-bottom:16px;"></i>
+                        <h3 style="margin:0 0 8px 0; color:var(--mcs-text); font-size:16px;">Chưa có lịch sử SACT</h3>
+                        <p style="margin:0 0 24px 0; font-size:13px;">Bắt đầu kiểm kê để xem kết quả tại đây</p>
+                        <button class="btn-new" onclick="window.SACTModule.switchTab('management')">
+                            <i class="fas fa-arrow-right"></i> Mở SACT管理
+                        </button>
+                    </div>
+                `;
                 return;
             }
 

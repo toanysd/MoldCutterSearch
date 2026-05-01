@@ -37,30 +37,15 @@
 }
 
 .sact-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
     background: var(--mcs-bg);
-    z-index: 9900;
     display: flex;
     flex-direction: column;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     overflow: hidden;
+    height: 100%;
 }
 
-/* ─── HEADER ─── */
-.sact-header {
-  display: flex; align-items: center; gap: 8px;
-  padding: 10px 16px; min-height: 48px;
-  background: var(--mcs-primary);
-  border-bottom: 1px solid var(--mcs-border);
-  flex-shrink: 0; position: relative;
-}
-.sact-header-icon { color: rgba(255,255,255,.75); font-size: 16px; }
-.sact-header-title { color: #fff; font-size: 0.9rem; font-weight: 600; white-space: nowrap; flex: 1; }
-.sact-header-sub { color: rgba(255,255,255,.65); font-size: 0.75rem; }
+
 .deadline-chip {
   margin-left: auto; font-size: 0.7rem; padding: 3px 8px; border-radius: 12px;
   background: var(--mcs-warning); color: white; white-space: nowrap;
@@ -78,24 +63,43 @@
 
 /* ─── TAB BAR ─── */
 .sact-tabbar {
-  display: flex; position: sticky; top: 0; z-index: 100;
-  background: var(--mcs-surface); border-bottom: 2px solid var(--mcs-border);
-  padding: 0; height: 48px;
+  display: flex; position: sticky; top: 0; z-index: 200;
+  background: var(--mcs-surface); border-bottom: 1px solid var(--mcs-border);
+  padding: 0; gap: 0;
 }
 .sact-tab-btn {
-  flex: 1; height: 48px;
-  font-size: 0.8rem; font-weight: 500;
-  border: none; background: none; color: var(--mcs-text-muted);
-  cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 2px; border-bottom: 2px solid transparent; margin-bottom: -2px;
-  transition: all 150ms ease;
+  flex: 1; min-height: 48px;
+  font-size: 11px; color: var(--mcs-text-secondary);
+  border: none; background: none; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  border-bottom: 2px solid transparent; padding: 10px 8px;
+  transition: color var(--mcs-transition), border-color var(--mcs-transition);
 }
-.sact-tab-btn.active { color: var(--mcs-primary); border-bottom-color: var(--mcs-primary); font-weight: 600; }
-.sact-tab-btn .tab-icon { font-size: 1rem; }
-.sact-tab-btn .tab-label { font-size: 0.7rem; }
+.sact-tab-btn.active { 
+  color: var(--mcs-primary); 
+  border-bottom: 2px solid var(--mcs-primary); 
+  font-weight: 600; 
+}
+.sact-tab-btn:hover:not(.active) {
+  color: var(--mcs-text);
+  background: var(--mcs-surface-hover);
+}
+.sact-tab-btn .tab-icon { font-size: 15px; }
+.sact-tab-btn .tab-label { font-size: 11px; }
 .tab-notify {
-  position: absolute; top: 6px; right: calc(50% - 20px);
+  position: absolute; top: 6px; right: calc(50% - 24px);
   width: 6px; height: 6px; border-radius: 50%; background: var(--mcs-error);
+}
+
+.sact-deadline-badge {
+  background: var(--mcs-warning);
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: var(--mcs-radius-sm);
+  letter-spacing: 0.5px;
+  display: flex; align-items: center; gap: 4px;
 }
 
 /* ─── BODY / PANELS ─── */

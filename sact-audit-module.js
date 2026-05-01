@@ -77,6 +77,8 @@
         close() {
             this.state.isOpen = false;
             const root = document.getElementById('sact-module-root');
+            this.restoreSactHeader();
+            
             if (root) root.remove();
             if (this.state.html5QrcodeScanner) {
                 try { this.state.html5QrcodeScanner.clear(); } catch (e) { }
@@ -93,27 +95,78 @@
             }
         },
 
+        injectSactHeader() {
+            const searchWrap = document.getElementById('globalSearchWrap');
+            if (searchWrap) {
+                // save original state
+                this.originalSearchWrapDisplay = searchWrap.style.display;
+                this.originalSearchWrapHTML = searchWrap.innerHTML;
+                
+                // inject SACT title inline with back button
+                searchWrap.innerHTML = `
+                    <div style="display:flex; align-items:center; gap:12px; padding-left:8px;">
+                        <button id="sact-back-btn" style="background:none; border:none; cursor:pointer; color:var(--mcs-text-muted); font-size:18px; padding:4px;" title="Quay lại">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <i class="fas fa-clipboard-check" style="color:var(--mcs-primary); font-size:18px;"></i>
+                        <div style="display:flex; flex-direction:column; line-height:1.2;">
+                            <span style="font-size:15px; font-weight:700; color:var(--mcs-text);">SACT Monitor</span>
+                            <span style="font-size:11px; color:var(--mcs-text-muted);">MoldCutterSearch — Panasonic Hub</span>
+                        </div>
+                    </div>
+                `;
+                
+                setTimeout(() => {
+                    const backBtn = document.getElementById('sact-back-btn');
+                    if (backBtn) backBtn.addEventListener('click', () => this.close());
+                }, 0);
+            }
+
+            const topbarActions = document.querySelector('.topbar-actions');
+            if (topbarActions) {
+                const badge = document.createElement('div');
+                badge.id = 'sact-deadline-badge';
+                badge.className = 'sact-deadline-badge';
+                badge.innerHTML = `<i class="fas fa-clock" style="font-size:10px"></i> <span id="sact-deadline-text"></span>`;
+                badge.style.display = 'none'; // hidden by default, shown by active campaign
+                topbarActions.prepend(badge);
+            }
+            
+            // hide filter detail btn
+            const filterBtn = document.getElementById('filterDetailBtn');
+            if (filterBtn) {
+                this.originalFilterBtnDisplay = filterBtn.style.display;
+                filterBtn.style.display = 'none';
+            }
+        },
+
+        restoreSactHeader() {
+            const searchWrap = document.getElementById('globalSearchWrap');
+            if (searchWrap && this.originalSearchWrapHTML !== undefined) {
+                searchWrap.innerHTML = this.originalSearchWrapHTML;
+                searchWrap.style.display = this.originalSearchWrapDisplay || '';
+            }
+
+            const badge = document.getElementById('sact-deadline-badge');
+            if (badge) badge.remove();
+
+            const filterBtn = document.getElementById('filterDetailBtn');
+            if (filterBtn && this.originalFilterBtnDisplay !== undefined) {
+                filterBtn.style.display = this.originalFilterBtnDisplay;
+            }
+        },
+
         renderLayout() {
             let root = document.getElementById('sact-module-root');
-            if (root) root.remove();
+            if (root) return; // already rendered
+
+            this.injectSactHeader();
 
             root = document.createElement('div');
             root.id = 'sact-module-root';
             root.className = 'sact-overlay';
 
             root.innerHTML = `
-                <div class="sact-header">
-                    <i class="fas fa-clipboard-check sact-header-icon"></i>
-                    <div style="flex:1">
-                        <div class="sact-header-title">SACT Monitor</div>
-                        <div class="sact-header-sub">MoldCutterSearch — Panasonic Hub</div>
-                    </div>
-                    <div class="deadline-chip" id="sact-deadline-badge" style="display:none;">
-                        <i class="fas fa-clock" style="font-size:9px"></i> <span id="sact-deadline-text"></span>
-                    </div>
-                    <button class="sact-close-btn" aria-label="Đóng SACT" style="background:none; border:none; color:white; font-size:24px; cursor:pointer; margin-left:10px;">&times;</button>
-                </div>
-
                 <div class="queue-alert ${this.state.offlineQueue.length > 0 ? 'visible' : ''}">
                     <i class="fas fa-exclamation-triangle"></i>
                     <span>Đang có ${this.state.offlineQueue.length} bản ghi lỗi mạng chờ đồng bộ!</span>
@@ -188,7 +241,6 @@
                 document.body.appendChild(root);
             }
 
-            root.querySelector('.sact-close-btn').addEventListener('click', () => this.close());
             root.querySelectorAll('.sact-tab-btn').forEach(btn => {
                 btn.addEventListener('click', () => this.switchTab(btn.dataset.tab));
             });

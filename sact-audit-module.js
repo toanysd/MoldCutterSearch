@@ -317,62 +317,20 @@
             }
 
             // --- 1. CAMPAIGN STRIP & 2. KPI CARDS ---
-            let campaignStripHtml = `
-                <div class="empty-state-box" style="margin: 8px 14px 16px;">
-                    <div class="empty-state-icon"><i class="fas fa-folder-open"></i></div>
-                    <div class="empty-state-text">進行中のキャンペーンはありません<br>Chưa có chiến dịch nào đang diễn ra</div>
-                </div>
-            `;
             let kpiPending = 0;
             let kpiCompleted = 0;
             let kpiMissing = 0;
 
             if (openCount > 0) {
-                const activeCmp = this.state.campaigns[0]; 
-                
                 const activeTargets = this.state.targets || [];
-                const totalTargets = activeTargets.length;
                 activeTargets.forEach(t => {
                     if (t.status === 'Completed') kpiCompleted++;
                     else if (t.status === 'Missing') kpiMissing++;
                     else kpiPending++;
                 });
-
-                const progressPct = totalTargets > 0 ? Math.round((kpiCompleted / totalTargets) * 100) : 0;
-                
-                let deadlineClass = '';
-                let deadlineText = activeCmp.deadline || 'N/A';
-                if (activeCmp.deadline) {
-                    const dldt = new Date(activeCmp.deadline);
-                    const diffDays = Math.ceil((dldt - new Date()) / (1000 * 60 * 60 * 24));
-                    if (diffDays <= 3 && diffDays >= 0) {
-                        deadlineClass = 'deadline-urgent';
-                        deadlineText = `${activeCmp.deadline} 🔴 ${diffDays}d`;
-                    }
-                }
-
-                campaignStripHtml = `
-                <div class="sact-campaign-banner" style="cursor:pointer;">
-                    <div class="sact-cb-left" onclick="window.SACTModule.switchTab('management')">
-                        <span class="sact-cb-icon">⚡</span>
-                        <div>
-                            <div class="sact-cb-name" style="display:flex; align-items:center; flex-wrap:wrap; gap:8px;">
-                                ${activeCmp.name} — <span class="sact-cb-status" style="color: var(--mcs-success); font-weight: 700;">Active</span>
-                                <button onclick="event.stopPropagation(); window.open('https://sact.panasonic.com', '_blank')" style="background:var(--mcs-primary); color:white; border:none; padding:4px 8px; border-radius:4px; font-size:11px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;"><i class="fas fa-external-link-alt"></i> Mở SACT</button>
-                            </div>
-                            <div class="sact-cb-meta">期限: ${deadlineText} · Panasonic Hub</div>
-                        </div>
-                    </div>
-                    <div class="sact-cb-right" onclick="window.SACTModule.switchTab('management')">
-                        <div class="sact-cb-progress-bar">
-                            <div class="sact-cb-fill" style="width:${progressPct}%"></div>
-                        </div>
-                        <div class="sact-cb-pct">${kpiCompleted} / ${totalTargets} · ${progressPct}%</div>
-                    </div>
-                </div>`;
             }
 
-            // --- 4. RIGHT COLUMN (GUIDE + CONTACT) ---
+            // --- 4. RIGHT COLUMN (GUIDE + CONTACT + WARNINGS) ---
             const rightColHtml = `
                 <div class="guide-card">
                     <div class="guide-header">
@@ -394,36 +352,94 @@
                         <div class="empty-state-text">新しいお知らせはありません<br>Chưa có thông báo mới</div>
                     </div>
                 </div>
-            `;
 
-            panel.innerHTML = `
-                ${campaignStripHtml}
-
-                <div class="sact-kpi-grid">
-                    <div class="sact-kpi-card" onclick="window.SACTModule.switchTab('management')" style="cursor:pointer;">
-                        <div class="sact-kpi-icon">📁</div>
-                        <div class="sact-kpi-val">${openCount}</div>
-                        <div class="sact-kpi-label"><span class="sact-kpi-label-jp">開催中</span>ĐANG MỞ</div>
-                    </div>
-                    <div class="sact-kpi-card" onclick="window.SACTModule.switchTab('management')" style="cursor:pointer;">
-                        <div class="sact-kpi-icon">⏳</div>
-                        <div class="sact-kpi-val warn">${kpiPending}</div>
-                        <div class="sact-kpi-label"><span class="sact-kpi-label-jp">未実施</span>CHỜ KIỂM KÊ</div>
-                    </div>
-                    <div class="sact-kpi-card" onclick="window.SACTModule.switchTab('management')" style="cursor:pointer;">
-                        <div class="sact-kpi-icon">✅</div>
-                        <div class="sact-kpi-val ${kpiCompleted > 0 ? 'ok' : ''}">${kpiCompleted}</div>
-                        <div class="sact-kpi-label"><span class="sact-kpi-label-jp">完了</span>HOÀN THÀNH</div>
-                    </div>
-                    <div class="sact-kpi-card" onclick="window.SACTModule.switchTab('management')" style="cursor:pointer;">
-                        <div class="sact-kpi-icon">⚠️</div>
-                        <div class="sact-kpi-val ${kpiMissing > 0 ? 'err' : 'ok'}">${kpiMissing}</div>
-                        <div class="sact-kpi-label"><span class="sact-kpi-label-jp">紛失</span>THẤT LẠC</div>
+                <div class="contact-card" style="margin-top:16px;">
+                    <div class="contact-card-head" style="background:#fef2f2; color:#b91c1c; border-bottom:1px solid #fee2e2;">⚠️ KHUÔN CẦN CHÚ Ý (要確認金型)</div>
+                    <div class="empty-state-box" style="padding: 16px; border: none; background: transparent;">
+                        <div class="empty-state-text" style="color:#7f1d1d; font-size:13px;">>2年未使用の金型はありません<br>Chưa có khuôn nào không hoạt động >2 năm</div>
                     </div>
                 </div>
+            `;
 
+            // --- 5. KPI STRIP ---
+            const kpiStripHtml = `
+                <div style="display:flex; gap:8px; margin-bottom:16px; overflow-x:auto; padding-bottom:4px;">
+                    <div onclick="window.SACTModule.switchTab('management')" style="cursor:pointer; flex:1; min-width:100px; display:flex; align-items:center; justify-content:center; gap:6px; background:var(--mcs-surface); border:1px solid var(--mcs-border); padding:8px; border-radius:8px; font-size:13px; font-weight:600;">
+                        <span style="font-size:16px;">📁</span> <span style="color:var(--mcs-primary); font-size:15px;">${openCount}</span> <span style="color:var(--mcs-text-muted);">開催中</span>
+                    </div>
+                    <div onclick="window.SACTModule.switchTab('management')" style="cursor:pointer; flex:1; min-width:100px; display:flex; align-items:center; justify-content:center; gap:6px; background:var(--mcs-surface); border:1px solid var(--mcs-border); padding:8px; border-radius:8px; font-size:13px; font-weight:600;">
+                        <span style="font-size:16px;">⏳</span> <span style="color:var(--mcs-warning); font-size:15px;">${kpiPending}</span> <span style="color:var(--mcs-text-muted);">未実施</span>
+                    </div>
+                    <div onclick="window.SACTModule.switchTab('management')" style="cursor:pointer; flex:1; min-width:100px; display:flex; align-items:center; justify-content:center; gap:6px; background:var(--mcs-surface); border:1px solid var(--mcs-border); padding:8px; border-radius:8px; font-size:13px; font-weight:600;">
+                        <span style="font-size:16px;">✅</span> <span style="color:var(--mcs-success); font-size:15px;">${kpiCompleted}</span> <span style="color:var(--mcs-text-muted);">完了</span>
+                    </div>
+                    <div onclick="window.SACTModule.switchTab('management')" style="cursor:pointer; flex:1; min-width:100px; display:flex; align-items:center; justify-content:center; gap:6px; background:var(--mcs-surface); border:1px solid var(--mcs-border); padding:8px; border-radius:8px; font-size:13px; font-weight:600;">
+                        <span style="font-size:16px;">⚠️</span> <span style="color:var(--mcs-error); font-size:15px;">${kpiMissing}</span> <span style="color:var(--mcs-text-muted);">紛失</span>
+                    </div>
+                </div>
+            `;
+
+            // --- 6. CAMPAIGN LIST ---
+            let campaignListHtml = '';
+            if (openCount === 0) {
+                campaignListHtml = `
+                    <div class="empty-state-box" style="margin-bottom: 16px;">
+                        <div class="empty-state-icon"><i class="fas fa-folder-open"></i></div>
+                        <div class="empty-state-text">進行中のキャンペーンはありません<br>Chưa có chiến dịch nào đang diễn ra</div>
+                    </div>`;
+            } else {
+                campaignListHtml = '<div style="display:flex; flex-direction:column; gap:12px; margin-bottom:16px;">';
+                this.state.campaigns.forEach(cmp => {
+                    let c_deadlineText = cmp.deadline || 'N/A';
+                    if (cmp.deadline) {
+                        const dldt = new Date(cmp.deadline);
+                        const diffDays = Math.ceil((dldt - new Date()) / (1000 * 60 * 60 * 24));
+                        if (diffDays <= 3 && diffDays >= 0) {
+                            c_deadlineText = `${cmp.deadline} 🔴 ${diffDays}d`;
+                        }
+                    }
+
+                    let c_progress = '';
+                    if (this.state.activeCampaign && this.state.activeCampaign.id === cmp.id) {
+                        const totalT = this.state.targets ? this.state.targets.length : 0;
+                        const c_pct = totalT > 0 ? Math.round((kpiCompleted/totalT)*100) : 0;
+                        c_progress = `
+                        <div style="font-size:12px; margin-top:8px; display:flex; align-items:center; gap:8px;">
+                            <div style="flex:1; height:6px; background:var(--mcs-surface-3); border-radius:3px; overflow:hidden;">
+                                <div style="height:100%; width:${c_pct}%; background:var(--mcs-primary);"></div>
+                            </div>
+                            <span>${kpiCompleted}/${totalT} 完了 (${c_pct}%)</span>
+                        </div>`;
+                    }
+
+                    campaignListHtml += `
+                    <div style="border:1px solid var(--mcs-border); border-radius:var(--mcs-radius-md); padding:12px; background:var(--mcs-surface);">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <div style="font-weight:700; font-size:14px; display:flex; align-items:center; gap:8px;">
+                                <i class="fas fa-bolt" style="color:var(--mcs-warning);"></i> ${cmp.name}
+                                <span style="font-size:10px; padding:2px 6px; border-radius:10px; background:#ccfbf1; color:#0f766e;">Active</span>
+                            </div>
+                            <div style="font-size:12px; color:var(--mcs-text-muted);">期限: ${c_deadlineText}</div>
+                        </div>
+                        ${c_progress}
+                        <div style="margin-top:10px; display:flex; justify-content:flex-end; gap:8px;">
+                            <button onclick="window.SACTModule.switchTab('management')" style="background:var(--mcs-surface-2); color:var(--mcs-text); border:1px solid var(--mcs-border); padding:4px 12px; border-radius:4px; font-size:12px; cursor:pointer;">Mở chiến dịch</button>
+                            <button onclick="window.open('https://sact.panasonic.com', '_blank')" style="background:var(--mcs-primary); color:white; border:none; padding:4px 12px; border-radius:4px; font-size:12px; cursor:pointer;"><i class="fas fa-rocket"></i> SACT</button>
+                        </div>
+                    </div>`;
+                });
+                campaignListHtml += '</div>';
+            }
+
+            panel.innerHTML = `
                 <div class="dash-two-col">
                     <div class="dash-col-left">
+                        ${kpiStripHtml}
+                        <div class="dash-section-title" style="margin-bottom:12px;">
+                            <span>📋 DANH SÁCH CHIẾN DỊCH SACT</span>
+                        </div>
+                        ${campaignListHtml}
+
                         <div class="dash-section-title" style="display:flex; justify-content:space-between; align-items:center;">
                             <span>🕐 最近の活動 (Hoạt động)</span>
                             <span style="font-size:11px; font-weight:normal; color:var(--mcs-primary); cursor:pointer;" onclick="window.SACTModule.switchTab('history')">Xem tất cả →</span>

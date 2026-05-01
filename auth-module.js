@@ -120,7 +120,7 @@
         var es = document.getElementById('app-empty-state-banner');
         if (es) es.style.display = 'none';
 
-        if (event !== 'TOKEN_REFRESHED') {
+        if (!window.__MCS_ALREADY_LOGGED_IN__) {
             if (window.ViewManager && typeof window.ViewManager.switchView === 'function') {
                 window.ViewManager.switchView(window.ViewManager.currentView || 'mold');
             } else {
@@ -131,6 +131,7 @@
             if (window.app && window.app.currentView && typeof window.app.switchView === 'function') {
                 window.app.switchView(window.app.currentView);
             }
+            window.__MCS_ALREADY_LOGGED_IN__ = true;
         }
 
         // Cập nhật Topbar
@@ -167,6 +168,7 @@
     }
 
     function showAppAsEmptyState() {
+        window.__MCS_ALREADY_LOGGED_IN__ = false;
         if (loginOverlay) loginOverlay.style.display = 'none';
         if (appContainer) appContainer.style.display = 'flex';
         if (loginForm) loginForm.style.display = 'flex';

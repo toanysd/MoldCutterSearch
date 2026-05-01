@@ -110,7 +110,7 @@
                         </button>
                         <i class="fas fa-clipboard-check" style="color:var(--mcs-primary); font-size:18px;"></i>
                         <div style="display:flex; flex-direction:column; line-height:1.2;">
-                            <span style="font-size:15px; font-weight:700; color:var(--mcs-text);">SACT Monitor</span>
+                            <span style="font-size:15px; font-weight:700; color:var(--mcs-text);">SACT モニター</span>
                             <span style="font-size:11px; color:var(--mcs-text-muted);">MoldCutterSearch — Panasonic Hub</span>
                         </div>
                     </div>
@@ -352,15 +352,18 @@
                 }
 
                 campaignStripHtml = `
-                <div class="sact-campaign-banner" onclick="window.SACTModule.switchTab('management')" style="cursor:pointer;">
-                    <div class="sact-cb-left">
+                <div class="sact-campaign-banner" style="cursor:pointer;">
+                    <div class="sact-cb-left" onclick="window.SACTModule.switchTab('management')">
                         <span class="sact-cb-icon">⚡</span>
                         <div>
-                            <div class="sact-cb-name">${activeCmp.name} — <span class="sact-cb-status">Active</span></div>
+                            <div class="sact-cb-name" style="display:flex; align-items:center; flex-wrap:wrap; gap:8px;">
+                                ${activeCmp.name} — <span class="sact-cb-status" style="color: var(--mcs-success); font-weight: 700;">Active</span>
+                                <button onclick="event.stopPropagation(); window.open('https://sact.panasonic.com', '_blank')" style="background:var(--mcs-primary); color:white; border:none; padding:4px 8px; border-radius:4px; font-size:11px; cursor:pointer; display:inline-flex; align-items:center; gap:4px;"><i class="fas fa-external-link-alt"></i> Mở SACT</button>
+                            </div>
                             <div class="sact-cb-meta">期限: ${deadlineText} · Panasonic Hub</div>
                         </div>
                     </div>
-                    <div class="sact-cb-right">
+                    <div class="sact-cb-right" onclick="window.SACTModule.switchTab('management')">
                         <div class="sact-cb-progress-bar">
                             <div class="sact-cb-fill" style="width:${progressPct}%"></div>
                         </div>
@@ -387,26 +390,9 @@
                 
                 <div class="contact-card">
                     <div class="contact-card-head">💬 CẬP NHẬT LIÊN LẠC (連絡更新)</div>
-                    <div class="contact-item">
-                        <div class="contact-item-date">2026-04-28: Shimizu-san</div>
-                        <div>"Khuôn Panasonic sẽ được gia hạn thêm 3 ngày do lỗi hệ thống Molds."</div>
+                    <div class="empty-state-box" style="padding: 16px; border: none; background: transparent;">
+                        <div class="empty-state-text">新しいお知らせはありません<br>Chưa có thông báo mới</div>
                     </div>
-                    <div class="contact-item">
-                        <div class="contact-item-date">2026-04-25: Tanaka-san</div>
-                        <div>"Hoàn tất kiểm kê lô 1, vui lòng chuyển qua lô 2."</div>
-                    </div>
-                </div>
-            `;
-
-            // --- 5. STATS BAR (Desktop only) ---
-            const statsBarHtml = `
-                <div class="stats-bar">
-                    <strong>Thống kê theo KH (顧客別統計):</strong>
-                    <div class="stats-bar-item">Panasonic: 12✓ 2⏳</div>
-                    <span class="stats-bar-sep">|</span>
-                    <div class="stats-bar-item">Shimizu: 5✓ 3⏳</div>
-                    <span class="stats-bar-sep">|</span>
-                    <div class="stats-bar-item">Tokuyama: 0✓ 1⏳</div>
                 </div>
             `;
 
@@ -417,22 +403,22 @@
                     <div class="sact-kpi-card" onclick="window.SACTModule.switchTab('management')" style="cursor:pointer;">
                         <div class="sact-kpi-icon">📁</div>
                         <div class="sact-kpi-val">${openCount}</div>
-                        <div class="sact-kpi-label">開催中<br>ĐANG MỞ</div>
+                        <div class="sact-kpi-label"><span class="sact-kpi-label-jp">開催中</span>ĐANG MỞ</div>
                     </div>
                     <div class="sact-kpi-card" onclick="window.SACTModule.switchTab('management')" style="cursor:pointer;">
                         <div class="sact-kpi-icon">⏳</div>
                         <div class="sact-kpi-val warn">${kpiPending}</div>
-                        <div class="sact-kpi-label">未実施<br>CHỜ KIỂM KÊ</div>
+                        <div class="sact-kpi-label"><span class="sact-kpi-label-jp">未実施</span>CHỜ KIỂM KÊ</div>
                     </div>
                     <div class="sact-kpi-card" onclick="window.SACTModule.switchTab('management')" style="cursor:pointer;">
                         <div class="sact-kpi-icon">✅</div>
-                        <div class="sact-kpi-val ok">${kpiCompleted}</div>
-                        <div class="sact-kpi-label">完了<br>HOÀN THÀNH</div>
+                        <div class="sact-kpi-val ${kpiCompleted > 0 ? 'ok' : ''}">${kpiCompleted}</div>
+                        <div class="sact-kpi-label"><span class="sact-kpi-label-jp">完了</span>HOÀN THÀNH</div>
                     </div>
                     <div class="sact-kpi-card" onclick="window.SACTModule.switchTab('management')" style="cursor:pointer;">
                         <div class="sact-kpi-icon">⚠️</div>
-                        <div class="sact-kpi-val err">${kpiMissing}</div>
-                        <div class="sact-kpi-label">紛失<br>THẤT LẠC</div>
+                        <div class="sact-kpi-val ${kpiMissing > 0 ? 'err' : 'ok'}">${kpiMissing}</div>
+                        <div class="sact-kpi-label"><span class="sact-kpi-label-jp">紛失</span>THẤT LẠC</div>
                     </div>
                 </div>
 
@@ -448,8 +434,6 @@
                         ${rightColHtml}
                     </div>
                 </div>
-                
-                ${statsBarHtml}
                 <div style="height:16px"></div>
             `;
 
@@ -488,20 +472,14 @@
                             <div class="campaign-card-head" style="justify-content:space-between; align-items:center;">
                                 <div class="campaign-card-name" style="font-size:14px;">${c.name}</div>
                                 <div style="display:flex; gap:8px; align-items:center;">
-                                    ${window.currentUserRole === 'admin' ? `<button onclick="event.stopPropagation(); window.SACTModule.showEditCampaign('${c.id}')" style="background:none; border:none; cursor:pointer; color:var(--mcs-text-muted); font-size:14px;" title="Sửa chiến dịch"><i class="fas fa-edit"></i></button>` : ''}
+                                    ${window.currentUserRole === 'admin' ? `<button onclick="event.stopPropagation(); window.SACTModule.showEditCampaign('${c.id}')" style="background:none; border:none; cursor:pointer; color:var(--mcs-text-muted); font-size:14px;" title="Sửa chiến dịch"><i class="fas fa-edit"></i></button><button onclick="event.stopPropagation(); window.SACTModule.deleteCampaign('${c.id}', '${c.name}')" style="background:none; border:none; cursor:pointer; color:var(--mcs-error); font-size:14px; margin-left:8px;" title="Xóa chiến dịch và dữ liệu"><i class="fas fa-trash"></i></button>` : ''}
                                     <i class="fas fa-chevron-right" style="color:var(--mcs-text-muted); font-size:12px;"></i>
                                 </div>
                             </div>
                             <div class="campaign-meta-row" style="margin-top:6px; font-size:11px;">
                                 <div class="meta-chip"><i class="fas fa-calendar"></i> ${c.deadline}</div>
                             </div>
-                            <!-- Mock progress data -->
-                            <div class="camp-prog-bar"><div class="camp-prog-fill" style="width:30%"></div></div>
-                            <div class="camp-quick-stats">
-                                <div class="camp-stat-badge cs-done">3 Done</div>
-                                <div class="camp-stat-badge cs-pending">7 Pending</div>
-                                <div class="camp-stat-badge cs-missing">0 Miss</div>
-                            </div>
+
                         </div>
                     `;
                 });
@@ -1077,7 +1055,10 @@
                             </div>
 
                             <div style="margin-top:20px;">
-                                <strong style="font-size:14px;">選択済みリスト (Đã chọn) - <span id="sact-mold-count" style="color:var(--mcs-error); font-size:16px;">0</span>:</strong>
+                                <strong style="font-size:14px; display:flex; justify-content:space-between; align-items:center;">
+                                    <span>選択済みリスト (Đã chọn) - <span id="sact-mold-count" style="color:var(--mcs-error); font-size:16px;">0</span>:</span>
+                                    <button onclick="window.SACTModule.clearNewCampaignTargets()" style="background:none; border:none; color:var(--mcs-error); cursor:pointer; font-size:12px; text-decoration:underline; font-weight:600;"><i class="fas fa-trash-alt"></i> Xóa danh sách</button>
+                                </strong>
                                 <div id="sact-selected-molds" style="border:1px solid var(--mcs-border); border-radius:var(--mcs-radius-sm); min-height:100px; max-height:250px; overflow-y:auto; padding:10px; background:var(--mcs-surface-2); margin-top:5px;">
                                     <div style="color:var(--mcs-text-muted); font-style:italic;" id="sact-selected-empty">Chưa có khuôn nào. Dùng ô trên để tìm và thêm.</div>
                                 </div>
@@ -1240,6 +1221,12 @@
             this.renderSelectedMolds();
         },
 
+        clearNewCampaignTargets() {
+            if (!confirm('⚠️ Bạn có chắc chắn muốn xóa toàn bộ danh sách khuôn đã chọn?')) return;
+            this.state.newCampaignTargets = [];
+            this.renderSelectedMolds();
+        },
+
         renderSelectedMolds() {
             const list = document.getElementById('sact-selected-molds');
             const count = document.getElementById('sact-mold-count');
@@ -1289,7 +1276,7 @@
 
                 const newCampaignId = cData[0].id;
 
-                // 2. Tạo Targets (Chia đợt Bulk insert nếu cần, nhưng Supabase handle tốt list 100-200 dòng)
+                // 2. Tạo Targets
                 const t_payloads = this.state.newCampaignTargets.map(code => {
                     return {
                         campaign_id: newCampaignId,
@@ -1309,6 +1296,39 @@
             } catch (e) {
                 console.error("Lỗi tạo SACT", e);
                 alert("Quá trình kết nối bị từ chối: " + e.message + "\n(Vui lòng kiểm tra quyền Admin rls)");
+                this.renderManagementHome();
+            }
+        },
+
+        async deleteCampaign(id, name) {
+            if (!confirm(`🛑 CẢNH BÁO NGUY HIỂM 🛑\n\nBạn đang yêu cầu XÓA TOÀN BỘ chiến dịch "${name}" và toàn bộ danh sách khuôn bên trong chiến dịch này.\n\nHành động này KHÔNG THỂ HOÀN TÁC. Bạn có chắc chắn muốn xóa dữ liệu?`)) return;
+
+            const body = this.getPanelEl('management');
+            if (body) {
+                body.innerHTML = `<div style="padding:40px 20px; text-align:center;">
+                    <i class="fas fa-spinner fa-spin" style="font-size:30px; color:var(--mcs-error); margin-bottom:15px;"></i>
+                    <br>Đang xóa chiến dịch và dữ liệu liên quan...
+                </div>`;
+            }
+
+            try {
+                // Delete targets first
+                await this.state.supabaseClient.from('sact_targets').delete().eq('campaign_id', id);
+                
+                // Then delete campaign
+                const { error } = await this.state.supabaseClient.from('sact_campaigns').delete().eq('id', id);
+                if (error) throw error;
+                
+                alert('Thành công! Đã xóa chiến dịch và danh sách mục tiêu.');
+                
+                if (this.state.activeCampaign && this.state.activeCampaign.id === id) {
+                    this.state.activeCampaign = null;
+                }
+                
+                await this.loadCampaigns();
+            } catch (err) {
+                console.error("Delete campaign error", err);
+                alert('Lỗi khi xóa: ' + err.message);
                 this.renderManagementHome();
             }
         },

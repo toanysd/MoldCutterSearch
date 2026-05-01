@@ -79,6 +79,7 @@
   color: var(--mcs-primary); 
   border-bottom: 2px solid var(--mcs-primary); 
   font-weight: 600; 
+  background: rgba(13, 122, 122, 0.06);
 }
 .sact-tab-btn:hover:not(.active) {
   color: var(--mcs-text);
@@ -189,7 +190,9 @@
 .sact-kpi-val.warn { color: var(--mcs-warning); }
 .sact-kpi-val.ok   { color: var(--mcs-success); }
 .sact-kpi-val.err  { color: var(--mcs-error); }
-.sact-kpi-label { font-size: 10px; color: var(--mcs-text-muted); margin-top: 4px; line-height: 1.4; }
+.sact-kpi-label { font-size: 11px; color: var(--mcs-text-muted); margin-top: 4px; line-height: 1.4; }
+.sact-kpi-label-jp { font-size: 14px; font-weight: 600; color: var(--mcs-text); display: block; margin-bottom: 2px; }
+
 
 /* ─── ACTIVITY FEED ─── */
 .activity-list { padding: 0 14px; display: flex; flex-direction: column; gap: 6px; }

@@ -113,22 +113,24 @@
         });
     }
 
-    function showAppAsLoggedIn(session) {
+    function showAppAsLoggedIn(session, event) {
         if (loginOverlay) loginOverlay.style.display = 'none';
         if (appContainer) appContainer.style.display = 'flex';
 
         var es = document.getElementById('app-empty-state-banner');
         if (es) es.style.display = 'none';
 
-        if (window.ViewManager && typeof window.ViewManager.switchView === 'function') {
-            window.ViewManager.switchView(window.ViewManager.currentView || 'mold');
-        } else {
-            var moldView = document.getElementById('mcs-view-mold');
-            if (moldView) moldView.style.display = 'flex';
-        }
+        if (event !== 'TOKEN_REFRESHED') {
+            if (window.ViewManager && typeof window.ViewManager.switchView === 'function') {
+                window.ViewManager.switchView(window.ViewManager.currentView || 'mold');
+            } else {
+                var moldView = document.getElementById('mcs-view-mold');
+                if (moldView) moldView.style.display = 'flex';
+            }
 
-        if (window.app && window.app.currentView && typeof window.app.switchView === 'function') {
-            window.app.switchView(window.app.currentView);
+            if (window.app && window.app.currentView && typeof window.app.switchView === 'function') {
+                window.app.switchView(window.app.currentView);
+            }
         }
 
         // Cập nhật Topbar
@@ -232,13 +234,13 @@
                     if (authLoader) authLoader.style.display = 'flex';
 
                     global.DataManager.loadAllData().then(function () {
-                        showAppAsLoggedIn(session);
+                        showAppAsLoggedIn(session, event);
                     }).catch(function (e) {
                         console.error('❌ Lỗi DataManager rớt mạng hoặc 404:', e);
-                        showAppAsLoggedIn(session); // Vẫn cho phép vào để user thấy grid trắng
+                        showAppAsLoggedIn(session, event); // Vẫn cho phép vào để user thấy grid trắng
                     });
                 } else {
-                    showAppAsLoggedIn(session);
+                    showAppAsLoggedIn(session, event);
                 }
 
             } else {

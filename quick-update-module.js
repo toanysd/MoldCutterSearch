@@ -1,4 +1,4 @@
-// v9.0.2-4
+// v10.0.0-PubSub
 /* ============================================================================
    quick-update-module-v8.5.3-5.js
    Module cập nhật nhanh (Wizard Flow) - Version 5
@@ -37,7 +37,7 @@
         WEIGHT: {
             jp: '重量更新', vi: 'Cập nhật Khối lượng', icon: 'fas fa-weight-hanging', color: '#f59e0b',
             fields: [
-                { key: 'MoldWeightModified', labelJp: '金型重量', labelVi: 'Khối lượng khuôn', type: 'text', table: 'molds' },
+                { key: 'MoldWeight', labelJp: '金型重量', labelVi: 'Khối lượng khuôn', type: 'text', table: 'molds' },
                 { key: 'TrayWeight', labelJp: 'トレイ重量', labelVi: 'Khối lượng khay', type: 'text', table: 'trays' }
             ]
         },
@@ -234,7 +234,7 @@
                 container.innerHTML = `
                     <div class="qu-label"><span class="qu-label-jp">対象を選択してください</span><span class="qu-label-vi">Chọn đối tượng thiết bị cập nhật Khối lượng</span></div>
                     <div class="qu-selection-grid" style="grid-template-columns: 1fr; gap:16px;">
-                        <div class="qu-selection-item" style="padding:24px; text-align:center" onclick="QuickUpdateModule.wizardState.weightTarget = 'MoldWeightModified'; QuickUpdateModule.nextStep()">
+                        <div class="qu-selection-item" style="padding:24px; text-align:center" onclick="QuickUpdateModule.wizardState.weightTarget = 'MoldWeight'; QuickUpdateModule.nextStep()">
                             <i class="fas fa-cube" style="font-size:32px; color:#f59e0b; margin-bottom:12px; display:block"></i>
                             <span class="qu-title-jp" style="font-size:15px; font-weight:700">金型重量</span><br/>
                             <span class="qu-sel-name" style="font-size:16px; color:#475569">Khối lượng Khuôn</span>
@@ -272,7 +272,13 @@
             else if (step === 3 && this.currentMode === 'WEIGHT') {
                 var targetKey = this.wizardState.weightTarget;
                 var val = this.wizardState.fields[targetKey] || '';
-                var targetName = targetKey === 'MoldWeightModified' ? '金型重量 / Khối lượng Khuôn' : 'トレイ重量 / Khối lượng Khay';
+
+                if (!val && targetKey === 'MoldWeight' && this.currentItem && this.currentItem.designInfo && this.currentItem.designInfo.MoldDesignWeight) {
+                    val = String(this.currentItem.designInfo.MoldDesignWeight);
+                    this.wizardState.fields[targetKey] = val;
+                }
+
+                var targetName = targetKey === 'MoldWeight' ? '金型重量 / Khối lượng Khuôn' : 'トレイ重量 / Khối lượng Khay';
 
                 if (!document.getElementById('qu-numpad-style')) {
                     var s = document.createElement('style');
@@ -542,17 +548,17 @@
 
                 this.notify('Đã lưu thành công!', 'success');
 
-                // Tối ưu hóa băng thông (In-Memory Mutation)
-                // Cập nhật ngầm vào object cục bộ thay vì Reload toàn bộ CSV (bỏ qua độ trễ 5p của Github cache)
-                if (global.DataManager && global.DataManager.data) {
+                // Tối ưu hóa băng thông (In-Memory Mutation PubSub V10)
+                if (global.DataManager && typeof global.DataManager.syncRecordLocally === 'function') {
                     for (var fieldKey in this.wizardState.fields) {
                         var newVal = this.wizardState.fields[fieldKey];
                         if (newVal !== this.wizardState.originalFields[fieldKey]) {
                             var f = m.fields.find(field => field.key === fieldKey);
                             var tInfo = this.resolveRecordKey(f.table, this.currentItem);
                             if (tInfo) {
-                                var rowData = this.getTableData(tInfo.actualTable, tInfo.idField, tInfo.idValue);
-                                if (rowData) { rowData[fieldKey] = newVal; }
+                                let payload = {};
+                                payload[fieldKey] = newVal;
+                                global.DataManager.syncRecordLocally(tInfo.actualTable, tInfo.idField, tInfo.idValue, payload);
                             }
                         }
                     }
@@ -560,26 +566,6 @@
 
                 if (typeof this.wizardState.options.onSuccess === 'function') {
                     this.wizardState.options.onSuccess(this.wizardState.fields);
-                }
-
-                if (global.DetailPanel && typeof global.DetailPanel.open === 'function') {
-                    var type = this.currentItemType || (this.currentItem && (this.currentItem.type || this.currentItem.itemType)) || 'mold';
-                    var idField = type === 'cutter' ? 'CutterID' : 'MoldID';
-                    var idValue = this.currentItem && this.currentItem[idField];
-                    var table = type === 'cutter' ? 'cutters' : 'molds';
-                    var refreshedItem = this.currentItem;
-
-                    if (idValue && global.DataManager && global.DataManager.data && global.DataManager.data[table]) {
-                        var list = global.DataManager.data[table];
-                        for (var i = 0; i < list.length; i++) {
-                            if (String(list[i][idField]) === String(idValue)) {
-                                refreshedItem = list[i];
-                                break;
-                            }
-                        }
-                    }
-                    this.currentItem = refreshedItem;
-                    global.DetailPanel.open(refreshedItem, type, { skipHistory: true, restoreTab: global.DetailPanel.currentTab });
                 }
 
             } catch (err) {

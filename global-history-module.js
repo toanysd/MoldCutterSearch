@@ -1,4 +1,4 @@
-// v9.0.2
+// v10.0.0-PubSub
 /* global-history-module.js */
 
 (function () {
@@ -456,10 +456,15 @@
                 }
 
                 // Stop trying after ~20 seconds
-
                 if (pollAttempts > 40) clearInterval(dataPoll);
-
             }, 500);
+
+            // Bổ sung lắng nghe Data Sync ngầm (V10 PubSub)
+            document.addEventListener('mcs-data-sync', () => {
+                if (window.DataManager && window.DataManager.data && Object.keys(window.DataManager.data).length > 0) {
+                    this.buildGlobalHistory(window.DataManager.data);
+                }
+            });
 
         },
 

@@ -26,7 +26,7 @@ class PrintExportModule {
 
     // V8.5 Lọc ra danh sách item đầy đủ: Sử dụng mảng global từ App để không bị sót khi user filter nhiều lần
     const baseItems = (window.app && window.app.allItems && window.app.allItems.length > 0) ? window.app.allItems : allItems;
-    
+
     this.selectedItems = baseItems.filter(item => {
       const id = item.type === 'mold' ? item.MoldID : item.CutterID;
       const uid = (item.type === 'mold' ? 'M_' : 'C_') + id;
@@ -66,7 +66,7 @@ class PrintExportModule {
         </div>
       </div>
     `;
-    
+
     overlay.innerHTML = html;
     document.body.appendChild(overlay);
 
@@ -111,23 +111,23 @@ class PrintExportModule {
     }
     const idField = item.type === 'mold' ? 'MoldID' : 'CutterID';
     const itemId = item.type === 'mold' ? item.MoldID : item.CutterID;
-    
+
     const logs = window.DataManager.data.statuslogs.filter(log => String(log[idField] || '').trim() === String(itemId).trim());
     if (!logs || logs.length === 0) return { status: '', date: '' };
 
     logs.sort((a, b) => new Date(b.Timestamp || 0) - new Date(a.Timestamp || 0));
-    
+
     const latest = logs[0];
     let stText = latest.Status || '';
     const map = {
       'IN': '入庫', 'OUT': '出庫', 'AUDIT': '棚卸', 'DISPOSED': '廃棄', 'RETURNED': '返却'
     };
     if (map[String(stText).toUpperCase()]) stText = map[String(stText).toUpperCase()];
-    
+
     let dateStr = '';
     if (latest.Timestamp) {
       const d = new Date(latest.Timestamp);
-      if(!isNaN(d)) {
+      if (!isNaN(d)) {
         dateStr = `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`;
       }
     }
@@ -138,7 +138,7 @@ class PrintExportModule {
 
   getMoldWeight(item) {
     if (item.type !== 'mold') return '-';
-    const w = item.MoldWeightModified || item.MoldWeight;
+    const w = item.MoldWeight;
     if (w) return w + ' kg';
     return '-';
   }
@@ -287,7 +287,7 @@ class PrintExportModule {
       };
       cell.font = { name: 'Meiryo UI', size: 9, bold: true };
       cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-      
+
       if (colNumber === 1 || colNumber === 9) {
         cell.font = { name: 'Meiryo UI', size: 8, bold: true };
       }
@@ -328,8 +328,8 @@ class PrintExportModule {
     const buffer = await workbook.xlsx.writeBuffer();
     const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     const url = URL.createObjectURL(blob);
-    
-    const dStr = new Date().toISOString().slice(0,10).replace(/-/g, '');
+
+    const dStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
     const fileName = `ExportList_${dStr}.xlsx`;
 
     const a = document.createElement('a');

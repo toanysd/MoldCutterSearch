@@ -1000,6 +1000,19 @@ class App {
 
 
 
+    // Nhận tín hiệu Data mới gián tiếp ở Nền (Auto-Sync)
+    document.addEventListener('data-manager:updated', () => {
+      console.log('🔄 App: Phát hiện Background Sync lấy Data mới, tự động render lại...');
+      this.loadData().then(() => {
+        // Render đè không giật trang
+        if (!this.searchQuery && this.selectedCategory === 'all') {
+          this.switchView(this.currentView);
+        } else {
+          this.applyFilters();
+        }
+      });
+    });
+
     // Giữ tương thích nếu có code cũ bắn 'table:filtered'
 
     document.addEventListener('table:filtered', _handleTableFiltered);

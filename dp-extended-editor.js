@@ -1,4 +1,4 @@
-// v9.0.2
+// v10.0.0-PubSub
 (function (global) {
   'use strict';
 
@@ -72,9 +72,9 @@
   };
 
   var FIELD_PREF = {
-    molds: ['MoldID', 'MoldCode', 'MoldName', 'CustomerID', 'TrayID', 'MoldDesignID', 'KeeperCompany', 'RackLayerID', 'LocationNotes', 'MoldLengthModified', 'MoldWidthModified', 'MoldHeightModified', 'MoldWeightModified', 'MoldNotes', 'MoldUsageStatus', 'MoldOnCheckList', 'JobID', 'TeflonFinish', 'TeflonCoating', 'TeflonSentDate', 'TeflonExpectedDate', 'TeflonReceivedDate', 'MoldReturning', 'MoldReturnedDate', 'MoldDisposing', 'MoldDisposedDate', 'MoldEntry'],
+    molds: ['MoldID', 'MoldCode', 'MoldName', 'CustomerID', 'TrayID', 'MoldDesignID', 'KeeperCompany', 'RackLayerID', 'LocationNotes', 'MoldLengthModified', 'MoldWidthModified', 'MoldHeightModified', 'MoldWeight', 'MoldNotes', 'MoldUsageStatus', 'MoldOnCheckList', 'JobID', 'TeflonFinish', 'TeflonCoating', 'TeflonSentDate', 'TeflonExpectedDate', 'TeflonReceivedDate', 'MoldReturning', 'MoldReturnedDate', 'MoldDisposing', 'MoldDisposedDate', 'MoldEntry'],
     cutters: ['CutterID', 'CutterNo', 'CutterName', 'CustomerID', 'MoldDesignID', 'KeeperCompany', 'RackLayerID', 'CutterCode', 'MainBladeStatus', 'OtherStatus', 'Length', 'Width', 'notes', 'ProductCode', 'CurrentCompanyID', 'CutterDesignID', 'CurrentUserID'],
-    molddesign: ['MoldDesignID', 'MoldDesignCode', 'DrawingNumber', 'DrawingNo', 'MoldDesignLength', 'MoldDesignWidth', 'MoldDesignHeight', 'MoldDesignDim', 'CutlineX', 'CutlineY', 'TrayID', 'PlasticType', 'TrayInfoForMoldDesign', 'Serial', 'CAV', 'Notes'],
+    molddesign: ['MoldDesignID', 'MoldDesignCode', 'DrawingNumber', 'DrawingNo', 'MoldDesignLength', 'MoldDesignWidth', 'MoldDesignHeight', 'MoldDesignDim', 'CutlineX', 'CutlineY', 'TrayID', 'PlasticType', 'TrayInfoForMoldDesign', 'Serial', 'MoldDesignWeight', 'CAV', 'Notes'],
     customers: ['CustomerID', 'CustomerCode', 'CustomerShortName', 'CustomerName', 'CompanyID', 'Address', 'Phone', 'Notes'],
     companies: ['CompanyID', 'CompanyCode', 'CompanyShortName', 'CompanyName', 'Address', 'Phone', 'Notes'],
     trays: ['TrayID', 'TrayCode', 'TrayName', 'CustomerTrayName', 'CustomerDrawingNo', 'CustomerEquipmentNo', 'TrayWeight', 'TrayCapacity', 'Notes'],
@@ -271,7 +271,7 @@
       CustomerName: ['顧客名', 'Tên khách hàng'], CustomerShortName: ['略称', 'Tên ngắn'], CompanyName: ['会社名', 'Tên công ty'], CompanyShortName: ['会社略称', 'Tên ngắn công ty'],
       TrayName: ['トレイ名', 'Tên khay'], TrayCode: ['トレイコード', 'Mã khay'], TrayCapacity: ['容量', 'Sức chứa'], EmployeeName: ['担当者名', 'Tên nhân viên'], Name: ['名称', 'Tên'],
       JobName: ['ジョブ名', 'Tên job'], OrderNumber: ['注文番号', 'Mã đơn hàng'], JobNumber: ['ジョブ番号', 'Mã job'], DeliveryDeadline: ['納期', 'Hạn giao'], DueDate: ['期限', 'Hạn'],
-      MoldDesignLength: ['長さ', 'Dài'], MoldDesignWidth: ['幅', 'Rộng'], MoldDesignHeight: ['高さ', 'Cao'], MoldDesignDim: ['寸法', 'Kích thước'],
+      MoldDesignLength: ['長さ', 'Dài'], MoldDesignWidth: ['幅', 'Rộng'], MoldDesignHeight: ['高さ', 'Cao'], MoldDesignDim: ['寸法', 'Kích thước'], MoldDesignWeight: ['設計重量', 'Trọng lượng Thiết kế'], MoldWeight: ['金型重量', 'Trọng lượng Khuôn'], MoldWeightModified: ['金型重量', 'Trọng lượng Khuôn'],
       CutlineX: ['刃長X', 'Cutline X'], CutlineY: ['刃長Y', 'Cutline Y'], WorkLogID: ['作業ログID', 'Worklog ID'], ProcessingDeadlineID: ['期限ID', 'Deadline ID'], MoldCutterID: ['連携ID', 'ID liên kết'],
       CustomerTrayName: ['客先トレイ名称', 'Tên SP (KH)'], CustomerDrawingNo: ['客先図面番号', 'Bản vẽ (KH)'], CustomerEquipmentNo: ['客先設備番号', 'Thiết bị (KH)'], TrayWeight: ['トレイ重量', 'Trọng lượng khay']
     };
@@ -1012,23 +1012,18 @@
       state.editor = null;
 
       try {
-        if (global.DataManager && typeof global.DataManager.loadAllData === 'function') {
-          await global.DataManager.loadAllData();
-        } else if (global.DataManager && typeof global.DataManager.recompute === 'function') {
-          global.DataManager.recompute();
+        if (global.DataManager && typeof global.DataManager.syncRecordLocally === 'function') {
+          okDrafts.forEach(function (d) {
+            var payload = {};
+            var df = d.fields || {};
+            for (var k in df) { payload[k] = df[k]; }
+            global.DataManager.syncRecordLocally(d.table, d.idfield, d.key, payload);
+          });
         }
       } catch (e2) { }
 
       state.isSaving = false;
-      try {
-        if (global.DetailPanel && typeof global.DetailPanel.open === 'function') {
-          global.DetailPanel.open(state.ctx.dp.currentItem, state.ctx.dp.currentItemType, { skipHistory: true, restoreTab: 'extended' });
-        } else {
-          render(state.ctx.dp, root, state);
-        }
-      } catch (e3) {
-        render(state.ctx.dp, root, state);
-      }
+      render(state.ctx.dp, root, state);
 
       if (!mainFail.length && !historyFail.length) {
         notify('Đã cập nhật thành công ' + okDrafts.length + ' thay đổi và đã ghi log.', 'success');

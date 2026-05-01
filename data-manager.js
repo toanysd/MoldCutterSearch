@@ -1,4 +1,4 @@
-// v9.0.2
+// v10.0.0-PubSub-1
 /* ============================================================================
 
    DATA MANAGER v8.1.0
@@ -888,7 +888,16 @@
                     var tx = LocalCache._db.transaction(CACHE_STORE, 'readonly');
                     var store = tx.objectStore(CACHE_STORE);
                     var req = store.get(key);
-                    req.onsuccess = function () { resolve(req.result); };
+                    req.onsuccess = function () {
+                        var res = req.result;
+                        if (res && res.text) {
+                            var age = Date.now() - (res.ts || 0);
+                            if (age < 5 * 60 * 1000) resolve(res.text); // <= 5 phút
+                            else resolve(null); // Đã hết hạn, force fetch lại
+                        } else {
+                            resolve(null); // Quét lại cache định dạng cũ (string)
+                        }
+                    };
                     req.onerror = function () { resolve(null); };
                 } catch (e) { resolve(null); }
             });
@@ -899,7 +908,7 @@
                 try {
                     var tx = LocalCache._db.transaction(CACHE_STORE, 'readwrite');
                     var store = tx.objectStore(CACHE_STORE);
-                    var req = store.put(value, key);
+                    var req = store.put({ text: value, ts: Date.now() }, key);
                     req.onsuccess = function () { resolve(); };
                     req.onerror = function () { resolve(); };
                 } catch (e) { resolve(); }
@@ -937,6 +946,21 @@
         } catch (e) {
             console.warn('⚠️ Could not fetch latest SHA from GitHub (timeout/error), falling back to main');
             currentGithubSha = 'main';
+        }
+    }
+
+
+    // === HELPER: R\u00fat ra base URL c\u1ee7a Backend (v\u00ed d\u1ee5: https://host/api) ===
+    // CIOCONFIG.apiUrl c\u00f3 d\u1ea1ng https://host/api/checklog => c\u1ea7n cat b\u1ecf /checklog
+    function _getDeltaBaseUrl() {
+        try {
+            var raw = (window.CIOCONFIG && window.CIOCONFIG.apiUrl) ? String(window.CIOCONFIG.apiUrl) : '';
+            if (!raw) raw = 'https://ysd-moldcutter-backend.onrender.com/api/checklog';
+            // B\u1ecf \u0111i /checklog ho\u1eb7c /\u0111u\u00f4i kh\u00f4ng ph\u1ea3i /sync
+            var base = raw.replace(/\/checklog\/?$/, '').replace(/\/locationlog\/?$/, '').replace(/\/add-log\/?$/, '');
+            return base; // => 'https://ysd-moldcutter-backend.onrender.com/api'
+        } catch (_e) {
+            return 'https://ysd-moldcutter-backend.onrender.com/api';
         }
     }
 
@@ -1007,6 +1031,22 @@
         if (window.App && window.App.triggerDataUpdate) {
             window.App.triggerDataUpdate();
         }
+
+        // === FIX: Gán globalDataVersion từ server sau khi load xong ===
+        // Cần để Delta Sync polling có điểm gốc đúng (version > 0 mới poll được)
+        try {
+            const baseUrl = _getDeltaBaseUrl();
+            if (baseUrl) {
+                const verResp = await fetch(baseUrl + '/sync/check-version');
+                if (verResp.ok) {
+                    const verJson = await verResp.json();
+                    if (verJson && verJson.version) {
+                        window.globalDataVersion = verJson.version;
+                        console.log('[DataManager] ✅ globalDataVersion synced:', window.globalDataVersion);
+                    }
+                }
+            }
+        } catch (_vErr) { /* Suppress - không block render */ }
     }
 
     /**
@@ -1080,7 +1120,7 @@
                 console.log(`📥 Loaded from GitHub: ${filename}`);
 
                 const text = await res.text();
-                
+
                 if (text.trim().toLowerCase().startsWith('<!doctype html>') || text.toLowerCase().includes('<html')) {
                     throw new Error(`GitHub backend returned HTML instead of CSV for ${filename} (Auth/Routing Error)`);
                 }
@@ -1132,7 +1172,7 @@
                 console.log(`📥 Loaded from local: ${filename}`);
 
                 const textLocal = await resLocal.text();
-                
+
                 if (textLocal.trim().toLowerCase().startsWith('<!doctype html>') || textLocal.toLowerCase().includes('<html')) {
                     throw new Error(`Local fetch returned HTML instead of CSV for ${filename} (SPA Fallback Trap)`);
                 }
@@ -1205,7 +1245,11 @@
 
 
 
-        const headers = splitCSVLine(lines[0]).map(h => stripQuotes(h.trim()));
+        const headers = splitCSVLine(lines[0]).map(h => {
+            let hv = stripQuotes(h.trim());
+            if (hv === 'MoldWeightModified') hv = 'MoldWeight';
+            return hv;
+        });
 
         const rows = [];
 
@@ -1376,6 +1420,12 @@
 
 
             var fieldName = normHistoryValue(row.FieldName)
+            // Fix legacy FieldName map from datachangehistory.csv
+            if (fieldName === 'MoldWeightModified') fieldName = 'MoldWeight';
+
+            // [V10 Patch] Không cho phép DataChangeHistory ảo ghi đè lên các trường Vị trí & Destination
+            // Nguyên nhân: Wizard ghi trực tiếp thông số xịn vào Molds.csv thông qua Delta Sync. Nếu không block, lịch sử cũ của Extended Editor sẽ đè nát số liệu mới.
+            if (fieldName === 'RackLayerID' || fieldName === 'KeeperCompany') return;
 
             var changedAt = normHistoryValue(row.ChangedAt)
 
@@ -1492,6 +1542,8 @@
         d.customers = overlayRowByHistory(d.customers, 'customers', 'CustomerID');
 
         d.companies = overlayRowByHistory(d.companies, 'companies', 'CompanyID');
+
+        d.teflonlog = overlayRowByHistory(d.teflonlog, 'teflonlog', 'TeflonLogID');
 
 
 
@@ -2361,12 +2413,81 @@
 
 
         recompute() {
-
-            applyWebLatestMerge();
-
-            document.dispatchEvent(new CustomEvent('data-manager:updated'));
-
+            if (this._recomputeTimer) clearTimeout(this._recomputeTimer);
+            this._recomputeTimer = setTimeout(() => {
+                applyWebLatestMerge();
+                document.dispatchEvent(new CustomEvent('data-manager:updated'));
+            }, 300); // 300ms để kịp cho mcs-data-sync chạy xong animation scale(1.2) trên results-card
         },
+
+        syncRecordLocally(tb, idField, idValue, payload) {
+            try {
+                if (!state.allData[tb]) return false;
+                let arr = state.allData[tb];
+                let f = arr.find(x => String(x[idField]) === String(idValue));
+                if (f) {
+                    Object.assign(f, payload);
+                } else {
+                    // Nếu không tìm thấy (tức là lệnh Insert log mới), đẩy vào đầu mảng
+                    arr.unshift(payload);
+                }
+
+                if (tb === 'molds' && state.allData['webmolds']) {
+                    let wf = state.allData['webmolds'].find(x => String(x[idField]) === String(idValue));
+                    if (wf) Object.assign(wf, payload);
+                }
+                if (tb === 'cutters' && state.allData['webcutters']) {
+                    let wfc = state.allData['webcutters'].find(x => String(x[idField]) === String(idValue));
+                    if (wfc) Object.assign(wfc, payload);
+                }
+
+                this.recompute();
+
+                // Phát thêm CustomEvent để nháy DOM tức thời nếu ui renderer hỗ trợ bắt mcs-data-sync
+                document.dispatchEvent(new CustomEvent('mcs-data-sync', { detail: { idValue, payload } }));
+                return true;
+            } catch (e) { return false; }
+        },
+
+        startBackgroundDeltaSync(fallbackUrl) {
+            if (this._deltaInterval) return;
+            const POLL = 30000;
+            this._deltaInterval = setInterval(() => {
+                const currentVer = window.globalDataVersion || 0;
+                // Tránh ping khi chưa có version gốc (chưa loadAllData xong)
+                if (!currentVer) return;
+
+                // === FIX: Xây URL từ base server URL thay vì apiUrl của checklog ===
+                const baseUrl = _getDeltaBaseUrl();
+                if (!baseUrl) return;
+                const url = baseUrl + '/sync/delta?since=' + currentVer;
+
+                fetch(url)
+                    .then(r => r.json())
+                    .then(res => {
+                        if (!res) return;
+                        // Luôn cập nhật version nếu server trả về version mới
+                        if (res.version && res.version > currentVer) {
+                            window.globalDataVersion = res.version;
+
+                            if (res.fullReload === true) {
+                                console.warn('🔄 Background Sync: fullReload - gọi loadAllData()');
+                                if (typeof loadAllData === 'function') loadAllData();
+                                return;
+                            }
+
+                            if (res.changes && Array.isArray(res.changes) && res.changes.length > 0) {
+                                console.log(`⚡ Delta Sync: Áp dụng ${res.changes.length} bản vá`);
+                                res.changes.forEach(change => {
+                                    if (change.table && change.idField && change.idValue && change.payload) {
+                                        this.syncRecordLocally(change.table, change.idField, change.idValue, change.payload);
+                                    }
+                                });
+                            }
+                        }
+                    }).catch(() => { /* Suppress background errors */ });
+            }, POLL);
+        }
 
 
 
@@ -2402,6 +2523,13 @@
         autoInit();
     }
 
+    // Khởi động Background Auto-Sync (Kiểm tra version ngầm 30s một lần, cực nhẹ)
+    setTimeout(() => {
+        if (typeof DataManager.startBackgroundDeltaSync === 'function') {
+            console.log('🔄 Data Manager: Auto-Sync nền đã được kích hoạt');
+            DataManager.startBackgroundDeltaSync();
+        }
+    }, 5000);
 
 
     console.log('✅ Data Manager v8.0.3-1 loaded and ready');

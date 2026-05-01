@@ -1,4 +1,4 @@
-// v9.1.5-3
+// v10.0.0-PubSub
 /* ============================================================================
 
 
@@ -3433,17 +3433,32 @@ Created: 2026-02-04
 
 
       document.addEventListener('data-manager-updated', () => {
+        this.loadDataReferences();
+        if (this.panel.classList.contains('open') && this.currentItem) this.refreshCurrentTab();
+      });
 
+      // Vá lỗi event name lệch pha với data-manager.js
+      document.addEventListener('data-manager:updated', () => {
+        this.loadDataReferences();
+        if (this.panel.classList.contains('open') && this.currentItem) this.refreshCurrentTab();
+      });
 
+      document.addEventListener('mcs-data-sync', (e) => {
+        if (!this.panel.classList.contains('open') || !this.currentItem) return;
+        var detail = e.detail;
+        if (!detail || !detail.idValue) return;
+        var myId = this.currentItem.MoldID || this.currentItem.CutterID;
+        if (String(myId) !== String(detail.idValue)) return;
+
+        var inner = this.panel.querySelector('.detail-panel-inner');
+        if (inner) {
+          var oldBg = inner.style.background || '';
+          inner.style.background = '#e0f2fe';
+          setTimeout(() => { if (inner) inner.style.background = oldBg; }, 400);
+        }
 
         this.loadDataReferences();
-
-
-
-        if (this.panel.classList.contains('open') && this.currentItem) this.refreshCurrentTab();
-
-
-
+        this.refreshCurrentTab();
       });
 
 
@@ -14700,7 +14715,7 @@ Created: 2026-02-04
 
 
 
-        const weightRaw = item.MoldWeightModified ?? item.MoldWeight ?? this.pick(design, ['MoldDesignWeight']) ?? design?.DesignWeight ?? item.Weight;
+        const weightRaw = item.MoldWeight ?? this.pick(design, ['MoldDesignWeight']) ?? design?.DesignWeight ?? item.Weight;
 
 
 
@@ -15610,7 +15625,7 @@ Created: 2026-02-04
 
 
 
-      const weightRaw = mold?.MoldWeightModified ?? mold?.MoldWeight ?? this.pick(design, ['MoldDesignWeight']) ?? design?.DesignWeight ?? mold?.Weight;
+      const weightRaw = mold?.MoldWeight ?? this.pick(design, ['MoldDesignWeight']) ?? design?.DesignWeight ?? mold?.Weight;
 
 
 
@@ -16170,7 +16185,7 @@ Created: 2026-02-04
 
 
 
-      const weightRaw = mold?.MoldWeightModified ?? mold?.MoldWeight ?? design?.MoldDesignWeight ?? design?.DesignWeight ?? mold?.Weight;
+      const weightRaw = mold?.MoldWeight ?? design?.MoldDesignWeight ?? design?.DesignWeight ?? mold?.Weight;
 
 
 
@@ -17466,7 +17481,7 @@ Created: 2026-02-04
 
 
 
-      const weightRaw = mold?.MoldWeightModified ?? mold?.MoldWeight ?? this.pick(design, ['MoldDesignWeight']) ?? design?.DesignWeight ?? mold?.Weight;
+      const weightRaw = mold?.MoldWeight ?? this.pick(design, ['MoldDesignWeight']) ?? design?.DesignWeight ?? mold?.Weight;
 
 
 
@@ -18026,7 +18041,7 @@ Created: 2026-02-04
 
 
 
-      const weightRaw = mold?.MoldWeightModified ?? mold?.MoldWeight ?? design?.MoldDesignWeight ?? design?.DesignWeight ?? mold?.Weight;
+      const weightRaw = mold?.MoldWeight ?? design?.MoldDesignWeight ?? design?.DesignWeight ?? mold?.Weight;
 
 
 

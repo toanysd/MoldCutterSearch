@@ -1,4 +1,4 @@
-// v9.0.2
+// v10.0.0-PubSub
 /* ============================================================================
    RESULTS TABLE RENDERER v8.2.1
    Mobile-first fixes + Resizable columns + Bilingual header 2 lines
@@ -1409,3 +1409,23 @@ class ResultsTableRenderer {
 
 // Export to window
 window.ResultsTableRenderer = ResultsTableRenderer;
+
+// Bắt sóng mcs-data-sync cập nhật nháy DOM (V10)
+document.addEventListener('mcs-data-sync', function (e) {
+  var d = e.detail;
+  if (!d || !d.idValue || !d.payload) return;
+  var row = document.querySelector('.results-table tbody tr[data-id="' + d.idValue + '"]');
+  if (!row) return;
+
+  if (d.payload.Status) {
+    var badge = row.querySelector('.status-badge');
+    if (badge) {
+      badge.innerText = d.payload.Status === 'IN' ? '入庫 IN' : (d.payload.Status === 'OUT' ? '出庫 OUT' : '棚卸 AUDIT');
+      badge.className = 'status-badge status-' + d.payload.Status.toLowerCase();
+    }
+  }
+  if (d.payload.RackLayerID) {
+    var tdLoc = row.querySelector('td.col-location');
+    if (tdLoc) tdLoc.innerHTML = d.payload.RackLayerID;
+  }
+});

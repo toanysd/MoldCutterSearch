@@ -1,4 +1,4 @@
-// v9.0.2
+// v10.0.0-PubSub
 /* ============================================================================
 checkin-checkout-v8.4.6.js
 MoldCutterSearch - Check-in / Check-out (flow kiểu máy chấm công)
@@ -1380,6 +1380,8 @@ Ghi chú:
         });
       try {
         document.dispatchEvent(new CustomEvent('data-manager-updated', { detail: { source: 'checkinout', table: 'statuslogs' } }));
+        if (currentItem && currentItem.MoldID) document.dispatchEvent(new CustomEvent('mcs-data-sync', { detail: { idValue: currentItem.MoldID, payload: { Status: 'IN' } } }));
+        if (currentItem && currentItem.CutterID) document.dispatchEvent(new CustomEvent('mcs-data-sync', { detail: { idValue: currentItem.CutterID, payload: { Status: 'IN' } } }));
       } catch (e0) { }
 
     }, function () {
@@ -1426,6 +1428,8 @@ Ghi chú:
         });
       try {
         document.dispatchEvent(new CustomEvent('data-manager-updated', { detail: { source: 'checkinout', table: 'statuslogs' } }));
+        if (currentItem && currentItem.MoldID) document.dispatchEvent(new CustomEvent('mcs-data-sync', { detail: { idValue: currentItem.MoldID, payload: { Status: 'OUT' } } }));
+        if (currentItem && currentItem.CutterID) document.dispatchEvent(new CustomEvent('mcs-data-sync', { detail: { idValue: currentItem.CutterID, payload: { Status: 'OUT' } } }));
       } catch (e0) { }
 
     }, function () {
@@ -1471,6 +1475,8 @@ Ghi chú:
         });
       try {
         document.dispatchEvent(new CustomEvent('data-manager-updated', { detail: { source: 'checkinout', table: 'statuslogs' } }));
+        if (currentItem && currentItem.MoldID) document.dispatchEvent(new CustomEvent('mcs-data-sync', { detail: { idValue: currentItem.MoldID, payload: { Status: 'AUDIT' } } }));
+        if (currentItem && currentItem.CutterID) document.dispatchEvent(new CustomEvent('mcs-data-sync', { detail: { idValue: currentItem.CutterID, payload: { Status: 'AUDIT' } } }));
       } catch (e0) { }
 
     }, function () {
@@ -1862,6 +1868,7 @@ Ghi chú:
           document.dispatchEvent(new CustomEvent('data-manager-updated', {
             detail: { source: 'checkinout-relocate', table: 'locationlog', pending: false }
           }));
+          if (key && key.id) document.dispatchEvent(new CustomEvent('mcs-data-sync', { detail: { idValue: key.id, payload: Object.assign({ RackLayerID: cleanTargetLayer }, doCheckin ? { Status: 'IN' } : {}) } }));
         } catch (e1) { }
 
         showToast('success', '', doCheckin

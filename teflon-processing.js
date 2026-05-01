@@ -1,4 +1,4 @@
-// v9.0.4-1
+// v10.0.0-PubSub
 /**
 
  * teflon-processing.js - V2
@@ -651,11 +651,18 @@
                         }
                     });
 
+                    if (window.DataManager && typeof window.DataManager.recompute === 'function') window.DataManager.recompute();
+                    if (self.currentMold) {
+                        let cid = self.currentMold.MoldID || self.currentMold.CutterID;
+                        document.dispatchEvent(new CustomEvent('mcs-data-sync', { detail: { idValue: cid, payload: {} } }));
+                    }
+
                     self.closeModal();
                     setTimeout(function () { self.openModal(self.currentMold); }, 300);
 
-                    var dp = window.detailPanel || window.DetailPanel || (window.App && window.App.detailPanel);
-                    if (dp && dp.refreshCurrentTab) dp.refreshCurrentTab();
+                    // Tránh cứng DetailPanel refresh đè nếu PubSub đã kích hoạt ở ngoài
+                    // var dp = window.detailPanel || window.DetailPanel || (window.App && window.App.detailPanel);
+                    // if (dp && dp.refreshCurrentTab) dp.refreshCurrentTab();
                 },
                 errCallback: function () {
                     btn.disabled = false;
@@ -1550,6 +1557,17 @@
             if (Object.keys(mEntry).length > 0) {
 
                 batch.push({ filename: 'molds.csv', idField: 'MoldID', idValue: self.currentMold.MoldID, updates: mEntry, mode: 'update' });
+
+                if (mEntry.KeeperCompany) {
+                    var dchMold = {
+                        DataChangeID: 'DCH' + Date.now().toString() + Math.random().toString(36).substr(2, 5),
+                        TableName: 'molds',
+                        RecordID: self.currentMold.MoldID, RecordIDField: 'MoldID', FieldName: 'KeeperCompany',
+                        OldValue: String(self.currentMold.KeeperCompany || ''), NewValue: String(mEntry.KeeperCompany),
+                        ChangedAt: new Date().toISOString(), ChangedBy: String(employee), ChangeSource: 'teflon_wizard', ChangeNote: 'Keeper Update', IsConflict: 'FALSE'
+                    };
+                    batch.push({ filename: 'datachangehistory.csv', idField: 'DataChangeID', idValue: dchMold.DataChangeID, updates: dchMold, mode: 'insert' });
+                }
 
             }
 

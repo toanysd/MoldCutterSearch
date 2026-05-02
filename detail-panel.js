@@ -1,4 +1,4 @@
-// v10.2.5-CutterLayoutFix
+// v10.2.6-CutterOrangeTheme
 /* ============================================================================
 
 
@@ -2649,7 +2649,7 @@ Created: 2026-02-04
 
 
 
-              this.notify('Chưa có ảnh để xóa', 'info');
+              this.notify('削除する写真がありません (Chưa có ảnh để xóa)', 'info');
 
 
 
@@ -3670,6 +3670,7 @@ Created: 2026-02-04
 
 
       this.currentItemType = this.normalizeItemType(item, itemType);
+        if (this.panel) this.panel.classList.toggle('is-cutter', this.currentItemType === 'cutter');
 
 
 
@@ -3769,6 +3770,7 @@ Created: 2026-02-04
 
 
 
+      document.body.classList.toggle('dp-cutter-active', this.currentItemType === 'cutter');
       document.body.style.overflow = 'hidden';
 
 
@@ -3823,6 +3825,7 @@ Created: 2026-02-04
 
 
 
+      document.body.classList.remove('dp-cutter-active');
       document.body.style.overflow = '';
 
 
@@ -4407,6 +4410,7 @@ Created: 2026-02-04
 
 
         this._preview = { open: true, item: full, itemType: t, centerMold };
+        
 
 
 
@@ -4687,11 +4691,17 @@ Created: 2026-02-04
         if (t === 'cutter' && centerMoldForCutter) {
             html += `
                  <div class="dp-d2-card">
-                    <div class="dp-d2-card-head color-amber"><i class="fas fa-cube"></i> Khuôn trung tâm (Chỉ tham khảo)</div>
-                    <div class="dp-d2-card-body dp-d2-card-body--pad" style="font-size:13px; line-height:1.5;">
-                       Dao cắt có thể dùng chung; khuôn trung tâm hiện tại đang liên kết: <b style="color:#0f172a;">${this.safeText(centerMoldForCutter.MoldCode || centerMoldForCutter.MoldID)}</b>
+                    <div class="dp-d2-card-head color-amber"><i class="fas fa-cube"></i> 中心金型 (Khuôn trung tâm - Chỉ tham khảo)</div>
+                    <div class="dp-d2-card-body dp-d2-card-body--pad" style="font-size:13px; line-height:1.5; color:#334155;">
+                       <p style="margin:0 0 8px 0;">
+                         <strong>【JP】</strong> 中心金型は初期設計のベースとなった金型です。抜型はこの金型に合わせて設計されているため、共用金型の場合は参考情報として参照できます。実際の仕様は使用する金型により異なる場合があります。<br/>
+                         <strong style="color:#64748b;">【VN】</strong> <span style="color:#64748b;">Khuôn trung tâm là khuôn thiết kế ban đầu, dao cắt được thiết kế theo khuôn này nên đối với các khuôn dùng chung khác có thể lấy thông tin để tham khảo. Thực tế sẽ có thay đổi tùy theo khuôn sử dụng.</span>
+                       </p>
+                       <p style="margin:0; padding: 8px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;">
+                         現在リンクされている中心金型 (Khuôn trung tâm hiện đang liên kết): <b style="color:#0f172a; font-size:14px; margin-left:4px;">${this.safeText(centerMoldForCutter.MoldCode || centerMoldForCutter.MoldID)}</b>
+                       </p>
                        <div style="margin-top: 12px;">
-                           <button class="btn-action" type="button" data-preview-action="open-full-mold"><i class="fas fa-external-link-alt"></i> Mở xem Khuôn này</button>
+                           <button class="btn-action" type="button" data-preview-action="open-full-mold"><i class="fas fa-external-link-alt"></i> この金型を開く (Mở xem Khuôn này)</button>
                        </div>
                     </div>
                  </div>
@@ -4995,6 +5005,7 @@ Created: 2026-02-04
 
 
         modal.classList.toggle('dp-preview-drawer', !isInfoTab);
+          modal.classList.toggle('is-cutter', this._preview.itemType === 'cutter');
 
 
 
@@ -11359,7 +11370,7 @@ Created: 2026-02-04
 
 
 
-                            Chưa có ảnh cho thiết bị này, hãy bấm vào đây để upload ảnh.
+                            写真なし。クリックして撮影/アップロード (Chưa có ảnh. Bấm vào đây để tải/chụp ảnh)
 
 
 
@@ -15211,36 +15222,73 @@ Created: 2026-02-04
 
 
           <div class="dp-overview-rows">
+            ${(() => {
+              let rowsHtml = '';
+              if (isCutter) {
+                const cutlineXY = `${this.safeText(item.CutlineLength || item.CutLength)} × ${this.safeText(item.CutlineWidth || item.CutWidth)}`;
+                const postCutXY = `${this.safeText(item.PostCutLength)} × ${this.safeText(item.PostCutWidth)}`;
+                const cutterLWH = `${this.safeText(item.CutterLength)} × ${this.safeText(item.CutterWidth)} × ${this.safeText(item.CutterHeight)}`;
+                
+                const cutterRow2 = [
+                  { label: this.biLabel('抜型種類', 'Kiểu dao cắt'), rawValue: this.safeText(item.CutterType) },
+                  { label: this.biLabel('製造日', 'Ngày sản xuất'), rawValue: formatToJPDate(item.CutterManufactureDate) }
+                ];
+                const cutterRow3 = [
+                  { label: this.biLabel('抜刃数', 'Số lưỡi dao'), rawValue: this.safeText(item.BladeCount) },
+                  { label: this.biLabel('ピッチ (mm)', 'Bước dập'), rawValue: this.safeText(item.Pitch) }
+                ];
+                const cutterRow4 = [
+                  { label: this.biLabel('対応樹脂', 'Chuyên cắt nhựa'), rawValue: this.safeText(item.PlasticCutType || item.PlasticType) },
+                  { label: this.biLabel('PPクッション', 'Dùng PP đệm'), rawValue: this.safeText(item.PPcushionUse) }
+                ];
+                const cutterRow5 = [
+                  { label: this.biLabel('カットライン (mm)', 'Kích thước cắt (Cutline)'), rawValue: cutlineXY },
+                  { label: this.biLabel('製品仕上り (mm)', 'Kích thước SP sau cắt'), rawValue: postCutXY }
+                ];
+                const cutterRow6 = [
+                  { label: this.biLabel('抜型寸法 (L×W×H)', 'Kích thước dao (mm)'), rawValue: cutterLWH },
+                  { label: this.biLabel('厚み (mm)', 'Độ dày (Thickness)'), rawValue: this.safeText(item.CutterThickness) }
+                ];
+                const cutterRow7 = [
+                  { label: this.biLabel('角R', 'Bo góc (R)'), rawValue: this.safeText(item.CutterCorner) },
+                  { label: this.biLabel('C面取り', 'Vát cạnh (C)'), rawValue: this.safeText(item.CutterChamfer) }
+                ];
+                const cutterRow8 = [
+                  { label: this.biLabel('使用状態', 'Trạng thái sử dụng'), rawValue: this.safeText(item.UsageStatus) },
+                  { label: this.biLabel('刃の入り', 'Cutter Entry'), rawValue: this.safeText(item.CutterEntry) }
+                ];
+                const cutterRow9 = [
+                  { label: this.biLabel('抜型詳細', 'Chi tiết dao cắt'), rawValue: this.safeText(item.CutterDetail) }
+                ];
+                const cutterRow10 = [
+                  { label: this.biLabel('備考', 'Ghi chú dao'), rawValue: this.safeText(item.CutterNote) }
+                ];
+                const cutterRow11 = [
+                  { label: this.biLabel('最終更新', 'Cập nhật lần cuối'), rawValue: `${formatToJPDate(item.UpdatedAt)} bởi ${this.safeText(item.UpdatedBy)}` }
+                ];
 
-
-
-            ${renderGrid(row1, 'row-1col')}
-
-
-
-            ${renderGrid(row3, 'row-1col')}
-
-
-
-            ${renderGrid(row4, 'row-1col')}
-
-
-
-            ${renderGrid(row5, 'row-2col')}
-
-
-
-            ${renderGrid(row6, 'row-2col')}
-
-
-
-            ${renderGrid(row7, 'row-2col')}
-
-
-
-            ${renderGrid(row8, 'row-2col')}
-
-
+                rowsHtml += renderGrid(row1, 'row-1col');
+                rowsHtml += renderGrid(cutterRow2, 'row-2col');
+                rowsHtml += renderGrid(cutterRow3, 'row-2col');
+                rowsHtml += renderGrid(cutterRow4, 'row-2col');
+                rowsHtml += renderGrid(cutterRow5, 'row-2col');
+                rowsHtml += renderGrid(cutterRow6, 'row-2col');
+                rowsHtml += renderGrid(cutterRow7, 'row-2col');
+                rowsHtml += renderGrid(cutterRow8, 'row-2col');
+                if (item.CutterDetail) rowsHtml += renderGrid(cutterRow9, 'row-1col');
+                if (item.CutterNote) rowsHtml += renderGrid(cutterRow10, 'row-1col');
+                if (item.UpdatedAt || item.UpdatedBy) rowsHtml += renderGrid(cutterRow11, 'row-1col');
+              } else {
+                rowsHtml += renderGrid(row1, 'row-1col');
+                rowsHtml += renderGrid(row3, 'row-1col');
+                rowsHtml += renderGrid(row4, 'row-1col');
+                rowsHtml += renderGrid(row5, 'row-2col');
+                rowsHtml += renderGrid(row6, 'row-2col');
+                rowsHtml += renderGrid(row7, 'row-2col');
+                rowsHtml += renderGrid(row8, 'row-2col');
+              }
+              return rowsHtml;
+            })()}
 
           </div>
 
@@ -21946,7 +21994,7 @@ Created: 2026-02-04
 
 
 
-            <p class="no-data">Không xác định được khuôn trung tâm để hiển thị.</p>
+            <p class="no-data">表示する中心金型が特定できません。 (Không xác định được khuôn trung tâm để hiển thị.)</p>
 
 
 
@@ -22718,7 +22766,7 @@ Created: 2026-02-04
 
 
 
-        rows = `<p class="no-data">Không có dữ liệu vận chuyển</p>`;
+        rows = `<p class="no-data">輸送データなし (Không có dữ liệu vận chuyển)</p>`;
 
 
 

@@ -1,4 +1,4 @@
-/* v9.0.2 */
+﻿/* v9.0.2 */
 /*
 
 DETAIL PANEL v8.4.3-6.css
@@ -7667,4 +7667,36 @@ detailPanel .detail-panel-back:disabled {
   border-color: #e2e8f0 !important;
   font-weight: 600 !important;
   box-shadow: none !important;
+}
+
+/* =====================================================================
+   v10.2.6: CUTTER ORANGE THEME
+===================================================================== */
+
+
+.dp-preview-modal.is-cutter .dp-preview-header {
+  background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%) !important;
+}
+
+.dp-d2-card-head.color-cutter-orange {
+  background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%) !important;
+  color: white !important;
+  border-bottom: 1px solid #9a3412 !important;
+}
+
+/* =====================================================================
+   v10.2.8: Muted Cutter Orange Theme (Soft & Professional)
+===================================================================== */
+:is(#detailPanel, .tm-detail-view).is-cutter .detail-panel-header {
+  background: linear-gradient(135deg, #c2410c 0%, #9a3412 100%) !important;
+}
+
+.dp-preview-modal.is-cutter .dp-preview-header {
+  background: linear-gradient(135deg, #c2410c 0%, #9a3412 100%) !important;
+}
+
+/* Sync Sidebar Header with Detail Panel Cutter Theme */
+body.dp-cutter-active .sidebar-header {
+  background: linear-gradient(135deg, #c2410c 0%, #9a3412 100%) !important;
+  transition: background 0.3s ease;
 }

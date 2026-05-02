@@ -1,4 +1,4 @@
-// v10.0.0-PubSub
+// v10.2.5-CutterLayoutFix
 /* ============================================================================
 
 
@@ -4651,149 +4651,65 @@ Created: 2026-02-04
 
 
     buildPreviewCenterHtml(item, itemType, centerMoldForCutter) {
-
-
-
       try {
-
-
-
         if (!item) return '<p class="no-data">No preview item</p>';
-
-
-
-
-
-
-
         const t = String(itemType || '').toLowerCase();
-
-
-
-        let html = '';
-
-
-
-
-
-
-
-        // Full giống cột giữa
-
-
-
-        html += this.renderPreviewHero(item, t);
-
-
-
-        html += this.renderBasicInfoSection(item, t);
-
-
-
-        html += this.renderProductInfoSection(item, t);
-
-
-
-        html += this.renderTechnicalInfoSection(item, t);
-
-
-
-        html += this.renderStatusNotesSection(item, t);
-
-
-
-        html += this.renderAdditionalDataSection(item, t);
-
-
-
-
-
-
+        
+        let html = `
+          <div class="dp-dash2-layout" style="padding-top: 8px;">
+            <div class="dp-dash2-masonry">
+              <!-- Cột 1: Ảnh + Lưu trữ -->
+              <div class="dp-d2-col">
+                 <div class="dp-d2-card pt-0">
+                    <div class="dp-d2-card-body">
+                       ${this.renderDesktopPhotoPreview(item)}
+                    </div>
+                 </div>
+                 <div class="dp-d2-card dp-card-storage-cutter">
+                    <div class="dp-d2-card-head color-teal"><i class="fas fa-map-marker-alt"></i> 保管・ステータス (Lưu trữ & Trạng thái)</div>
+                    <div class="dp-d2-card-body">
+                       ${this.renderLocationSection(item, t)}
+                       ${this.renderStatusNotesSection(item, t)}
+                    </div>
+                 </div>
+              </div>
+              
+              <!-- Cột 2: Tổng quan -->
+              <div class="dp-d2-col">
+                 <div class="dp-d2-card">
+                    <div class="dp-d2-card-head color-indigo"><i class="fas fa-clipboard-list"></i> 概要 (Tổng quan)</div>
+                    <div class="dp-d2-card-body">
+                       ${this.renderOverviewSection(item, t)}
+                    </div>
+                 </div>
+        `;
 
         if (t === 'cutter' && centerMoldForCutter) {
-
-
-
-          html += `
-
-
-
-            <div class="modal-section">
-
-
-
-              <div class="section-header">
-
-
-
-                <i class="fas fa-cube"></i>
-
-
-
-                <span>Khuôn trung tâm</span>
-
-
-
-              </div>
-
-
-
-              <div class="info-message">
-
-
-
-                Dao cắt có thể dùng chung; khuôn trung tâm chỉ tham khảo: <b>${this.safeText(centerMoldForCutter.MoldCode || centerMoldForCutter.MoldID)}</b>
-
-
-
-                <button class="btn-action" style="margin-left:8px" type="button" data-preview-action="open-full-mold">Mở khuôn</button>
-
-
-
-              </div>
-
-
-
-            </div>
-
-
-
-          `;
-
-
-
+            html += `
+                 <div class="dp-d2-card">
+                    <div class="dp-d2-card-head color-amber"><i class="fas fa-cube"></i> Khuôn trung tâm (Chỉ tham khảo)</div>
+                    <div class="dp-d2-card-body dp-d2-card-body--pad" style="font-size:13px; line-height:1.5;">
+                       Dao cắt có thể dùng chung; khuôn trung tâm hiện tại đang liên kết: <b style="color:#0f172a;">${this.safeText(centerMoldForCutter.MoldCode || centerMoldForCutter.MoldID)}</b>
+                       <div style="margin-top: 12px;">
+                           <button class="btn-action" type="button" data-preview-action="open-full-mold"><i class="fas fa-external-link-alt"></i> Mở xem Khuôn này</button>
+                       </div>
+                    </div>
+                 </div>
+            `;
         }
 
-
-
-
-
-
+        html += `
+              </div>
+            </div>
+          </div>
+        `;
 
         return html;
 
-
-
       } catch (e) {
-
-
-
         return '<p class="no-data">Preview render error</p>';
-
-
-
       }
-
-
-
     }
-
-
-
-
-
-
-
     renderPreviewOverlay() {
 
 
@@ -14143,11 +14059,11 @@ Created: 2026-02-04
 
 
 
-        const moldId = this.normId(item?.MoldID ?? item?.moldId ?? item?.MoldCode);
+        const moldId = this.normId(item?.MoldID ?? item?.moldId ?? item?.MoldCode) || 
+                       this.normId(item?.CutterID ?? item?.CutterNo ?? item?.CutterCode) || 
+                       this.normId(item?.TrayID ?? item?.TrayCode);
 
-
-
-        if (!moldId) return { class: 'status-unknown', icon: 'fas fa-bug', textShort: 'ERR: ' + e.message, lastConfirmDateText: 'ERR', isExpired: false };
+        if (!moldId) return { class: 'status-unknown', icon: 'fas fa-question-circle', textShort: 'ID Missing', lastConfirmDateText: '-', isExpired: false };
 
 
 
@@ -14405,13 +14321,9 @@ Created: 2026-02-04
 
 
       const isMold = (type === 'mold');
-
-
-
+      const isTray = (type === 'tray');
+      const isCutter = (type === 'cutter' || type === 'blade');
       const e = (v) => this.escapeHtml(v);
-
-
-
       const safeText = (v) => (!v || String(v).trim() === '') ? '-' : String(v).trim();
 
 

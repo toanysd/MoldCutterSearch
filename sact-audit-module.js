@@ -190,7 +190,7 @@
             root.innerHTML = `
                 <div class="queue-alert ${this.state.offlineQueue.length > 0 ? 'visible' : ''}">
                     <i class="fas fa-exclamation-triangle"></i>
-                    <span>Đang có ${this.state.offlineQueue.length} bản ghi lỗi mạng chờ đồng bộ!</span>
+                    <span>未同期データが ${this.state.offlineQueue.length} 件あります (Đang có ${this.state.offlineQueue.length} bản ghi lỗi mạng chờ đồng bộ!)</span>
                 </div>
 
                 <div class="sact-tabbar" id="sact-tabbar">
@@ -211,15 +211,15 @@
 
                 <div class="sact-body sact-tab-panels" id="sact-body">
                     <section class="tab-panel sact-tab-panel active" id="sact-panel-dashboard">
-                        <div class="sact-loading-state" style="margin:14px; text-align:center;">Đang tải dashboard...</div>
+                        <div class="sact-loading-state" style="margin:14px; text-align:center;">ダッシュボードを読み込み中... (Đang tải dashboard...)</div>
                     </section>
 
                     <section class="tab-panel sact-tab-panel" id="sact-panel-management">
-                        <div class="sact-loading-state" style="margin:14px; text-align:center;">Đang tải quản lý SACT...</div>
+                        <div class="sact-loading-state" style="margin:14px; text-align:center;">SACT管理を読み込み中... (Đang tải quản lý SACT...)</div>
                     </section>
 
                     <section class="tab-panel sact-tab-panel" id="sact-panel-history">
-                        <div class="sact-loading-state" style="margin:14px; text-align:center;">Đang tải lịch sử...</div>
+                        <div class="sact-loading-state" style="margin:14px; text-align:center;">履歴を読み込み中... (Đang tải lịch sử...)</div>
                     </section>
                 </div>
 
@@ -447,7 +447,7 @@
                         </div>
                         ${c_progress}
                         <div style="margin-top:10px; display:flex; justify-content:flex-end; gap:8px;">
-                            <button onclick="window.SACTModule.switchTab('management'); window.SACTModule.selectCampaign('${cmp.id}');" style="background:var(--mcs-surface-2); color:var(--mcs-text); border:1px solid var(--mcs-border); padding:4px 12px; border-radius:4px; font-size:12px; cursor:pointer;">Mở chiến dịch</button>
+                            <button onclick="window.SACTModule.switchTab('management'); window.SACTModule.selectCampaign('${cmp.id}');" style="background:var(--mcs-surface-2); color:var(--mcs-text); border:1px solid var(--mcs-border); padding:4px 12px; border-radius:4px; font-size:12px; cursor:pointer;">キャンペーンを開く (Mở)</button>
                             <button onclick="window.open('https://sact.panasonic.com', '_blank')" style="background:var(--mcs-primary); color:white; border:none; padding:4px 12px; border-radius:4px; font-size:12px; cursor:pointer;"><i class="fas fa-rocket"></i> SACT</button>
                         </div>
                     </div>`;
@@ -502,7 +502,7 @@
             html += '</div>';
 
             if (this.state.campaigns.length === 0) {
-                html += `<div class="sact-empty-card">Chưa có chiến dịch SACT hiện hành.</div>`;
+                html += `<div class="sact-empty-card">現在、進行中のSACTキャンペーンはありません (Chưa có chiến dịch SACT hiện hành.)</div>`;
             } else {
                 html += `<div id="sact-management-list">`;
                 this.state.campaigns.forEach(c => {
@@ -676,9 +676,9 @@
             let html = `
                 <div class="section-head">
                     <button class="btn-new" onclick="window.SACTModule.backToManagementList()" style="background:var(--mcs-neutral); margin-right:10px; ${isDesktop ? 'display:none;' : ''}">
-                        <i class="fas fa-arrow-left"></i> Quay lại
+                        <i class="fas fa-arrow-left"></i> 戻る (Quay lại)
                     </button>
-                    <div class="section-head-title" style="flex:1;">Chi tiết đợt SACT</div>
+                    <div class="section-head-title" style="flex:1;">SACT詳細 (Chi tiết đợt SACT)</div>
                 </div>
 
                 <div class="campaign-card" style="cursor:default;">
@@ -694,7 +694,7 @@
                     </div>
                 
                     <div style="padding:10px 14px; background:var(--mcs-surface-hover); border-top:1px solid var(--mcs-border); border-bottom:1px solid var(--mcs-border); display:flex; gap:10px;">
-                        <input type="text" id="sact-quick-scan" placeholder="[Nhập Mã YSD / Enter]" style="flex:1; padding:12px; border-radius:var(--mcs-radius-sm); border:1px solid var(--mcs-border); font-size:18px; font-weight:700;">
+                        <input type="text" id="sact-quick-scan" placeholder="[YSDコードを入力 / Nhập mã YSD]" style="flex:1; padding:12px; border-radius:var(--mcs-radius-sm); border:1px solid var(--mcs-border); font-size:18px; font-weight:700;">
                         <button class="scan-btn" style="min-height:36px; padding:0 18px; font-size:18px;" onclick="window.SACTModule.openCameraScanner()">📷</button>
                     </div>
 
@@ -703,18 +703,18 @@
 
             this.state.targets.forEach(t => {
                 let statusColor = 'var(--mcs-warning)';
-                let btnHtml = `<button class="scan-btn" onclick="window.SACTModule.startStep2('${t.id}')"><i class="fas fa-qrcode"></i> Quét</button>`;
+                let btnHtml = `<button class="scan-btn" onclick="window.SACTModule.startStep2('${t.id}')"><i class="fas fa-qrcode"></i> QRスキャン</button>`;
                 let badgeHtml = '';
 
                 if (t.status === 'Completed') {
                     statusColor = 'var(--mcs-success)';
-                    btnHtml = `<div class="scan-btn done"><i class="fas fa-check"></i> Done</div>`;
+                    btnHtml = `<div class="scan-btn done"><i class="fas fa-check"></i> 完了</div>`;
                 } else if (t.status === 'Missing') {
                     statusColor = 'var(--mcs-error)';
-                    btnHtml = `<div class="scan-btn miss"><i class="fas fa-exclamation-triangle"></i> Miss</div>`;
+                    btnHtml = `<div class="scan-btn miss"><i class="fas fa-exclamation-triangle"></i> 紛失</div>`;
                 } else if (t.status === 'In_Progress') {
                     statusColor = 'var(--mcs-info)';
-                    btnHtml = `<button class="scan-btn" style="background:var(--mcs-info)" onclick="window.SACTModule.startStep2('${t.id}')">Tiếp tục</button>`;
+                    btnHtml = `<button class="scan-btn" style="background:var(--mcs-info)" onclick="window.SACTModule.startStep2('${t.id}')">続ける (Tiếp tục)</button>`;
                 }
 
                 html += `
@@ -849,7 +849,7 @@
 
                     <div class="instruction-block">
                         <div class="instr-jp">${c.instruction_text_jp || '1. 下記ボタンを押してPanasonic SACTを開く<br>2. GPS位置情報を必ず有効にすること<br>3. 写真撮影・棚卸完了後、必ずアプリへ戻ること'}</div>
-                        <div class="instr-vi">${c.instruction_text_vi || '1. Nhấn nút bên dưới để mở trang SACT Panasonic<br>2. Bắt buộc bật GPS trước khi chụp ảnh<br>3. Sau khi hoàn thành trên SACT, quay lại app để xác nhận'}</div>
+                        <div class="instr-vi">${c.instruction_text_vi || '1. 下のボタンを押してパナソニックSACTを開く (Nhấn nút bên dưới để mở SACT Panasonic)<br>2. 写真を撮る前にGPSをオンにする (Bắt buộc bật GPS trước khi chụp ảnh)<br>3. SACTで完了後、アプリに戻って確認する (Sau khi hoàn thành trên SACT, quay lại app để xác nhận)'}</div>
                     </div>
 
                     <div class="gps-check">
@@ -860,7 +860,7 @@
 
                     <div class="bridge-cta">
                         <button class="btn-open-sact" onclick="window.SACTModule.launchSact('${t.id}')">
-                            🚀 MỞ TRANG SACT PANASONIC
+                            🚀 パナソニックSACTを開く (Mở trang SACT)
                             <span class="btn-open-sact-panasonic-badge">外部ブラウザ</span>
                         </button>
                     </div>
@@ -868,7 +868,7 @@
                 
                 <div style="text-align:center; margin-top:14px;">
                     <button onclick="window.SACTModule.renderTargetList()" style="background:none; border:none; color:var(--mcs-text-muted); font-size:12px; font-weight:600; cursor:pointer;">
-                        ← Quay lại danh sách
+                        ← リストに戻る (Quay lại danh sách)
                     </button>
                 </div>
             `;
@@ -920,7 +920,7 @@
                     <div class="completion-status">
                         <div class="status-row">
                             <span class="label">📍 GPSステータス (Trạng thái GPS)</span>
-                            <span class="value" style="color:var(--mcs-success); font-weight:800;">✅ システム起動済 (Đã mở hệ thống)</span>
+                            <span style="color:var(--mcs-success); font-weight:800;">✅ システム起動済 (Đã mở hệ thống)</span>
                         </div>
                     </div>
 
@@ -932,7 +932,7 @@
                         🔒 SACT完了を確認 (XÁC NHẬN ĐÃ LÀM XONG SACT)
                     </button>
                     <div class="btn-back-link" onclick="window.SACTModule.cancelCompletion()">
-                        ← キャンセル (Quay lại)
+                        ← キャンセル (Hủy / Quay lại)
                     </div>
                 </div>
             `;
@@ -1026,7 +1026,7 @@
             const qq = document.querySelector('.sact-offline-queue');
             if (qq) {
                 qq.classList.add('visible');
-                qq.textContent = `Đang có ${this.state.offlineQueue.length} bản ghi lỗi mạng chờ đồng bộ!`;
+                qq.textContent = `未同期データが ${this.state.offlineQueue.length} 件あります (Đang có ${this.state.offlineQueue.length} bản ghi lỗi mạng chờ đồng bộ!)`;
             }
         },
 
@@ -1055,7 +1055,7 @@
                 if (failed.length === 0) {
                     qq.classList.remove('visible');
                 } else {
-                    qq.textContent = `Vẫn còn ${failed.length} bản ghi kẹt mạng chờ đồng bộ...`;
+                    qq.textContent = `未同期データが ${failed.length} 件あります (Vẫn còn ${failed.length} bản ghi kẹt mạng chờ đồng bộ...)`;
                 }
             }
         },
@@ -1078,7 +1078,7 @@
                         
                         <div class="section-head" style="margin-bottom:16px;">
                             <button class="btn-new" onclick="window.SACTModule.backToManagementList()" style="background:var(--mcs-neutral); margin-right:10px;">
-                                <i class="fas fa-arrow-left"></i> Quay lại
+                                <i class="fas fa-arrow-left"></i> 戻る (Quay lại)
                             </button>
                             <div class="section-head-title" style="flex:1;">SACT新規作成 (Tạo Chiến Dịch)</div>
                         </div>
@@ -1387,7 +1387,7 @@
             if (!c) return;
 
             // Load targets
-            body.innerHTML = `<div class="sact-loading-state" style="margin:14px; text-align:center;">Đang tải danh sách mục tiêu...</div>`;
+            body.innerHTML = `<div class="sact-loading-state" style="margin:14px; text-align:center;">ターゲットリストを読み込み中... (Đang tải danh sách mục tiêu...)</div>`;
             try {
                 const { data, error } = await this.state.supabaseClient
                     .from('sact_targets')
@@ -1406,7 +1406,7 @@
                         
                         <div class="section-head" style="margin-bottom:16px;">
                             <button class="btn-new" onclick="window.SACTModule.backToManagementList()" style="background:var(--mcs-neutral); margin-right:10px;">
-                                <i class="fas fa-arrow-left"></i> Quay lại
+                                <i class="fas fa-arrow-left"></i> 戻る (Quay lại)
                             </button>
                             <div class="section-head-title" style="flex:1;">SACT編集 (Sửa Chiến Dịch)</div>
                         </div>
@@ -1430,7 +1430,7 @@
                             <div style="margin-top:20px;">
                                 <strong style="font-size:14px;">選択済みリスト (Đã chọn) - <span id="sact-mold-count" style="color:var(--mcs-error); font-size:16px;">0</span>:</strong>
                                 <div id="sact-selected-molds" style="border:1px solid var(--mcs-border); border-radius:var(--mcs-radius-sm); min-height:100px; max-height:250px; overflow-y:auto; padding:10px; background:var(--mcs-surface-2); margin-top:5px;">
-                                    <div style="color:var(--mcs-text-muted); font-style:italic;" id="sact-selected-empty">Chưa có khuôn nào. Dùng ô trên để tìm và thêm.</div>
+                                    <div style="color:var(--mcs-text-muted); font-style:italic;" id="sact-selected-empty">金型がありません。上の検索ボックスを使って追加してください。 (Chưa có khuôn nào. Dùng ô trên để tìm và thêm.)</div>
                                 </div>
                             </div>
 
@@ -1455,11 +1455,11 @@
             const deadline = document.getElementById('sact-new-deadline').value;
 
             if (!name || !deadline) {
-                alert("Vui lòng nhập Tên chiến dịch và Hạn chót.");
+                alert("キャンペーン名と期限を入力してください。 (Vui lòng nhập Tên chiến dịch và Hạn chót.)");
                 return;
             }
             if (this.state.newCampaignTargets.length === 0) {
-                alert("Vui lòng chọn ít nhất 1 khuôn để bắt đầu chiến dịch.");
+                alert("キャンペーンを開始するには、少なくとも1つの金型を選択してください。 (Vui lòng chọn ít nhất 1 khuôn để bắt đầu chiến dịch.)");
                 return;
             }
 
@@ -1488,13 +1488,13 @@
                 }
 
                 setTimeout(async () => {
-                    alert('Thành công! Chiến dịch SACT đã được cập nhật.');
+                    alert('成功しました！SACTキャンペーンが更新されました。 (Thành công! Chiến dịch SACT đã được cập nhật.)');
                     await this.loadCampaigns(); // Refresh to index
                 }, 500);
 
             } catch (e) {
                 console.error("Lỗi cập nhật SACT", e);
-                alert("Lỗi cập nhật: " + e.message);
+                alert("更新エラー (Lỗi cập nhật): " + e.message);
                 this.renderManagementHome();
             }
         },
@@ -1509,9 +1509,9 @@
                     <div class="filter-chip" onclick="window.SACTModule.setHistoryFilter('Pending', this)">🕐 処理中 (Pending)</div>
                 </div>
                 <div style="padding: 0 14px 10px; display:flex; gap:8px;">
-                    <input type="text" id="sact-hist-year" value="${this.state.historyFilterYear}" onkeydown="if(event.key==='Enter') window.SACTModule.fetchAndRenderHistory()" placeholder="年/Năm (vd: 2026)" style="flex:1; padding:8px 12px; border:1px solid var(--mcs-border); border-radius:var(--mcs-radius-sm); font-size:12px; background:var(--mcs-surface);">
-                    <input type="text" id="sact-hist-code" value="${this.state.historyFilterCode}" onkeydown="if(event.key==='Enter') window.SACTModule.fetchAndRenderHistory()" placeholder="YSDコード検索..." style="flex:2; padding:8px 12px; border:1px solid var(--mcs-border); border-radius:var(--mcs-radius-sm); font-size:12px; background:var(--mcs-surface);">
-                    <button class="scan-btn" onclick="window.SACTModule.fetchAndRenderHistory()" style="padding:0 14px; font-size:12px; background:var(--mcs-info);"><i class="fas fa-search"></i></button>
+                    <input type="text" id="sact-hist-year" value="${this.state.historyFilterYear}" onkeydown="if(event.key==='Enter') window.SACTModule.fetchAndRenderHistory()" placeholder="年/Năm (vd: 2026)" style="flex:1 1 0; min-width:0; padding:8px 12px; border:1px solid var(--mcs-border); border-radius:var(--mcs-radius-sm); font-size:12px; background:var(--mcs-surface);">
+                    <input type="text" id="sact-hist-code" value="${this.state.historyFilterCode}" onkeydown="if(event.key==='Enter') window.SACTModule.fetchAndRenderHistory()" placeholder="YSDコード検索..." style="flex:2 1 0; min-width:0; padding:8px 12px; border:1px solid var(--mcs-border); border-radius:var(--mcs-radius-sm); font-size:12px; background:var(--mcs-surface);">
+                    <button class="scan-btn" onclick="window.SACTModule.fetchAndRenderHistory()" style="padding:0 14px; font-size:12px; background:var(--mcs-info); flex-shrink:0;"><i class="fas fa-search"></i></button>
                 </div>
                 <div id="sact-hist-list">
                     <div class="sact-empty-card">データを読み込んでいます... (Đang tải dữ liệu...)</div>
@@ -1560,7 +1560,7 @@
 
             } catch (e) {
                 console.error("Lọc lỗi", e);
-                histList.innerHTML = `<div style="color:red; padding:10px;">❌ Lỗi truy vấn Database: ${e.message}</div>`;
+                histList.innerHTML = `<div style="color:red; padding:10px;">❌ データベースクエリエラー (Lỗi truy vấn Database): ${e.message}</div>`;
             }
         },
 
@@ -1583,10 +1583,10 @@
                 histList.innerHTML = `
                     <div style="text-align:center; padding: 48px 24px; color:var(--mcs-text-secondary);">
                         <i class="fas fa-inbox" style="font-size:48px; color:var(--mcs-surface-3); margin-bottom:16px;"></i>
-                        <h3 style="margin:0 0 8px 0; color:var(--mcs-text); font-size:16px;">Chưa có lịch sử SACT</h3>
-                        <p style="margin:0 0 24px 0; font-size:13px;">Bắt đầu kiểm kê để xem kết quả tại đây</p>
+                        <h3 style="margin:0 0 8px 0; color:var(--mcs-text); font-size:16px;">SACTの履歴がありません</h3>
+                        <p style="margin:0 0 24px 0; font-size:13px;">Chưa có lịch sử SACT<br><span style="font-size:11px">監査を開始して結果をここに表示します<br>(Bắt đầu kiểm kê để xem kết quả tại đây)</span></p>
                         <button class="btn-new" onclick="window.SACTModule.switchTab('management')">
-                            <i class="fas fa-arrow-right"></i> Mở SACT管理
+                            <i class="fas fa-arrow-right"></i> SACT管理を開く (Mở SACT quản lý)
                         </button>
                     </div>
                 `;

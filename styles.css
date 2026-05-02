@@ -270,6 +270,7 @@ body {
   top: 0;
 
   height: 100vh;
+  height: 100dvh; /* Fix cho mobile Safari/Chrome viewport */
 
   z-index: 1000;
 
@@ -554,6 +555,7 @@ body {
   overflow-y: auto;
 
   padding: var(--spacing-sm);
+  padding-bottom: 40px; /* Thêm khoảng trống ở đáy để cuộn dễ hơn trên mobile */
 
 }
 
@@ -600,21 +602,24 @@ body {
 
 
 .sidebar.collapsed .nav-section-title {
-
   justify-content: center;
-
+  padding: 12px 0;
+  height: 12px;
+  margin: 0;
 }
 
-
-
+.sidebar.collapsed .nav-section-title i,
 .sidebar.collapsed .nav-section-title span {
+  display: none;
+}
 
-  max-width: 0;
-
-  opacity: 0;
-
-  overflow: hidden;
-
+.sidebar.collapsed .nav-section-title::after {
+  content: "";
+  display: block;
+  width: 20px;
+  height: 2px;
+  background-color: var(--border-color);
+  border-radius: 2px;
 }
 
 

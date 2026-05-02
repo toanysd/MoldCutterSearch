@@ -118,7 +118,9 @@
         if (appContainer) appContainer.style.display = 'flex';
 
         var es = document.getElementById('app-empty-state-banner');
+        var ls = document.getElementById('app-loading-state-banner');
         if (es) es.style.display = 'none';
+        if (ls) ls.style.display = 'none';
 
         if (!window.__MCS_ALREADY_LOGGED_IN__) {
             if (window.ViewManager && typeof window.ViewManager.switchView === 'function') {
@@ -231,9 +233,15 @@
                     if (loginOverlay) loginOverlay.style.display = 'none'; // SỬA LỖI: Luôn ẩn Overlay lúc đang tải, tránh Flash Login
                     if (loginForm) loginForm.style.display = 'none'; // Ẩn form nhập liệu
 
-                    // Bật UI Loading xịn
+                    // Bật UI Loading xịn (nếu có overlay cũ)
                     var authLoader = document.getElementById('auth-loading-ui');
                     if (authLoader) authLoader.style.display = 'flex';
+
+                    // Ẩn Empty Banner, Bật Loading Banner để tránh hiểu nhầm phải đăng nhập lại
+                    var es = document.getElementById('app-empty-state-banner');
+                    var ls = document.getElementById('app-loading-state-banner');
+                    if (es) es.style.display = 'none';
+                    if (ls) ls.style.display = 'flex';
 
                     global.DataManager.loadAllData().then(function () {
                         showAppAsLoggedIn(session, event);
@@ -306,6 +314,12 @@
                 console.log('[Auth Guard] Login Passed!');
                 emailInput.value = '';
                 passInput.value = '';
+
+                // Đổi ngay sang Loading Banner để tránh giật giao diện
+                var es = document.getElementById('app-empty-state-banner');
+                var ls = document.getElementById('app-loading-state-banner');
+                if (es) es.style.display = 'none';
+                if (ls) ls.style.display = 'flex';
             }
         });
     }

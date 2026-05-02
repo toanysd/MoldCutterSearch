@@ -476,7 +476,7 @@
     if (overlay) {
       if (window.SwipeHistoryTrap) {
         window.SwipeHistoryTrap.push('puOverlay', () => this.close());
-        window.SwipeHistoryTrap.bindSwipe(overlay, () => this.close());
+        window.SwipeHistoryTrap.bindSwipe(overlay, () => this.close(), { followFinger: true });
       }
       overlay.classList.remove('pu-hidden'); requestAnimationFrame(function () { overlay.classList.add('pu-show'); });
     }
@@ -1525,7 +1525,7 @@
     if (overlay) {
       if (window.SwipeHistoryTrap) {
         window.SwipeHistoryTrap.push('puEditorOverlay', () => this._closeEditor());
-        window.SwipeHistoryTrap.bindSwipe(overlay, () => this._closeEditor());
+        window.SwipeHistoryTrap.bindSwipe(overlay, () => this._closeEditor(), { followFinger: true });
       }
       overlay.classList.remove('pu-hidden'); requestAnimationFrame(function () { overlay.classList.add('pu-show'); });
     }
@@ -1913,7 +1913,7 @@
         video.srcObject = stream;
         if (window.SwipeHistoryTrap) {
           window.SwipeHistoryTrap.push('puCameraOverlay', () => self._stopCamera());
-          window.SwipeHistoryTrap.bindSwipe(overlay, () => self._stopCamera());
+          window.SwipeHistoryTrap.bindSwipe(overlay, () => self._stopCamera(), { followFinger: true });
         }
         overlay.classList.remove('pu-hidden');
         requestAnimationFrame(function () { overlay.classList.add('pu-show'); });

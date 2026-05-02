@@ -123,86 +123,117 @@ window.SwipeHistoryTrap = (function () {
 
     },
 
-    bindSwipe: function (element, closeCallback) {
-
+    bindSwipe: function (element, closeCallback, options) {
       if (!element) return;
-
+      options = options || {};
+      var followFinger = options.followFinger || false;
       var startX = 0, startY = 0;
+      var currentX = 0;
+      var isSwiping = false;
 
       element.addEventListener('touchstart', function (e) {
+        if (e.touches.length > 0) {
+          startX = e.touches[0].clientX;
+          startY = e.touches[0].clientY;
+          currentX = startX;
 
-        startX = e.changedTouches[0].screenX;
-
-        startY = e.changedTouches[0].screenY;
-
+          if (followFinger) {
+            // Chỉ bắt đầu swipe nếu chạm vào lề trái (nhỏ hơn 50px) để mở drawer, và không đụng vào bảng
+            var isTable = e.target.closest('table, .table-scroll-container, .table-wrapper, .dp-tab-bar, .dp-actions-grid, .scroll-x');
+            if (!isTable && startX < 50) {
+              isSwiping = true;
+              element.style.transition = 'none';
+            }
+          }
+        }
       }, { passive: true });
 
-      element.addEventListener('touchend', function (e) {
+      if (followFinger) {
+        element.addEventListener('touchmove', function (e) {
+          if (!isSwiping || e.touches.length !== 1) return;
+          if (window._modalClosingSwipe || window._isGlobalModalSwipe) {
+            isSwiping = false;
+            return;
+          }
+          currentX = e.touches[0].clientX;
+          var dy = e.touches[0].clientY - startY;
+          var dx = currentX - startX;
 
-        if (startX < 35) return; // System Back Dead zone
-
-        var endX = e.changedTouches[0].screenX;
-
-        var endY = e.changedTouches[0].screenY;
-
-        var deltaX = endX - startX;
-
-        var deltaY = Math.abs(endY - startY);
-
-        if (deltaX > 60 && deltaY < 60) {
-
-          // Do not interfere with horizontally scrollable elements
-
-          var isTable = e.target.closest('.table-scroll-container, table, .scroll-x, .zoomed-image-wrapper');
-
-          if (isTable) return;
-
-          e.stopPropagation(); // Ngăn chặn sự kiện swipe truyền xuống panel/layer bên dưới
-
-
-
-          if (!element.classList.contains('detail-panel')) {
-
-            element.style.transition = 'transform 0.25s ease-out, opacity 0.25s ease-out';
-
-            element.style.transform = 'translateX(100vw)';
-
-            element.style.opacity = '0';
-
-            setTimeout(function () {
-
-              if (typeof closeCallback === 'function') closeCallback();
-
-              // Chỉ loại bỏ transform sau khi panel đã kịp ẩn đi hoàn toàn (tránh bị giật quay lại giữa hình)
-
-              setTimeout(function () {
-
-                if (element) {
-
-                  element.style.transition = '';
-
-                  element.style.transform = '';
-
-                  element.style.opacity = '';
-
-                }
-
-              }, 400);
-
-            }, 250);
-
-          } else {
-
-            if (typeof closeCallback === 'function') closeCallback();
-
+          // Hủy vuốt nếu vuốt dọc nhiều hơn ngang
+          if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 15) {
+            isSwiping = false;
+            element.style.transform = '';
+            element.style.transition = '';
+            return;
           }
 
+          if (dx > 0) {
+            window._panelClosingSwipe = true;
+            element.style.transform = 'translateX(' + dx + 'px)';
+          }
+        }, { passive: true });
+      }
+
+      element.addEventListener('touchend', function (e) {
+        if (e.changedTouches.length === 0) return;
+        var endX = e.changedTouches[0].clientX;
+        var endY = e.changedTouches[0].clientY;
+        var deltaX = endX - startX;
+        var deltaY = Math.abs(endY - startY);
+
+        if (followFinger && isSwiping) {
+          isSwiping = false;
+          setTimeout(function () { window._panelClosingSwipe = false; }, 100);
+          if (deltaX > 80) {
+            element.style.transition = 'transform 0.25s ease-out, opacity 0.25s ease-out';
+            element.style.transform = 'translateX(100vw)';
+            element.style.opacity = '0';
+            setTimeout(function () {
+              if (typeof closeCallback === 'function') closeCallback();
+              setTimeout(function () {
+                if (element) {
+                  element.style.transition = '';
+                  element.style.transform = '';
+                  element.style.opacity = '';
+                }
+              }, 400);
+            }, 250);
+          } else {
+            // Kéo chưa đủ xa, snap về vị trí cũ
+            element.style.transition = 'transform 0.25s ease-out';
+            element.style.transform = '';
+            setTimeout(function () {
+              if (element) element.style.transition = '';
+            }, 250);
+          }
+        } else if (!followFinger) {
+          // Logic vuốt cơ bản cũ (không bắt touchmove)
+          var oldStartX = e.changedTouches[0].screenX - deltaX; // Khôi phục screenX nếu cần
+          if (oldStartX < 35 && startX < 35) return; // System Back Dead zone
+          if (deltaX > 60 && deltaY < 60) {
+            var isTable = e.target.closest('.table-scroll-container, table, .scroll-x, .zoomed-image-wrapper');
+            if (isTable) return;
+            e.stopPropagation();
+            window._panelClosingSwipe = true;
+            setTimeout(function () { window._panelClosingSwipe = false; }, 100);
+
+            element.style.transition = 'transform 0.25s ease-out, opacity 0.25s ease-out';
+            element.style.transform = 'translateX(100vw)';
+            element.style.opacity = '0';
+            setTimeout(function () {
+              if (typeof closeCallback === 'function') closeCallback();
+              setTimeout(function () {
+                if (element) {
+                  element.style.transition = '';
+                  element.style.transform = '';
+                  element.style.opacity = '';
+                }
+              }, 400);
+            }, 250);
+          }
         }
-
       }, { passive: true });
-
     }
-
   };
 
 })();

@@ -413,7 +413,8 @@
       this.auditTable = 'photo_audits';
 
       // Khi list ảnh: chỉ đi Storage để lấy size nếu thiếu file_size
-      this.persistFileSize = true;
+      // Tắt persistFileSize để tránh lỗi 400 Bad Request nếu DB chưa tạo cột file_size
+      this.persistFileSize = false;
 
       log(VERSION + ' created');
     }

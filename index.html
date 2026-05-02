@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-    <title>金型・抜型検索システム / Mold Cutter System v9.1.19</title>
+    <title>金型・抜型検索システム / Mold Cutter System v9.1.25</title>
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="favicon.png">
@@ -138,6 +138,26 @@
         </div>
     </div>
 
+    <!-- ===== CUSTOM REFRESH CONFIRM MODAL ===== -->
+    <div id="data-refresh-modal"
+        style="display:none; position:fixed; inset:0; z-index:100000; background:rgba(15,23,42,0.6); backdrop-filter:blur(4px); flex-direction:column; align-items:center; justify-content:center; padding:20px;">
+        <div style="background:var(--bg-white); border-radius:12px; max-width:400px; width:100%; box-shadow:0 25px 50px -12px rgba(0,0,0,0.3); overflow:hidden;">
+            <div style="padding:24px; text-align:center;">
+                <i class="fas fa-sync-alt" style="font-size:40px; color:var(--mcs-primary); margin-bottom:16px;"></i>
+                <h3 style="margin:0 0 8px; font-size:18px; color:var(--mcs-text);">最新データを強制取得しますか？</h3>
+                <p style="margin:0 0 16px; font-size:15px; color:var(--mcs-text-secondary); font-weight:500;">Cập nhật toàn bộ dữ liệu mới nhất từ máy chủ?</p>
+                <div style="background:var(--warning-light); padding:12px; border-radius:8px; border-left:4px solid var(--warning-color); text-align:left;">
+                    <div style="font-size:13px; color:var(--warning-dark); font-weight:700; margin-bottom:4px;"><i class="fas fa-exclamation-triangle"></i> 注意 / Lưu ý:</div>
+                    <div style="font-size:12px; color:var(--warning-dark);">データが更新されたばかりの場合、クラウド同期が完了するまで3〜5分かかることがあります。<br><i>(Nếu vừa cập nhật, hệ thống Cloud có thể cần 3-5 phút để đồng bộ hoàn toàn)</i></div>
+                </div>
+            </div>
+            <div style="display:flex; border-top:1px solid var(--border-color); background:var(--bg-surface);">
+                <button onclick="document.getElementById('data-refresh-modal').style.display='none';" style="flex:1; padding:16px; border:none; background:transparent; font-size:15px; font-weight:600; color:var(--mcs-text-secondary); cursor:pointer; border-right:1px solid var(--border-color);">キャンセル / Hủy</button>
+                <button onclick="document.getElementById('data-refresh-modal').style.display='none'; var breakCacheFn = function() { window.location.href = window.location.origin + window.location.pathname + '?v=' + new Date().getTime(); }; if(window.DataManager && window.DataManager.forceClearCacheAndReload) { window.DataManager.forceClearCacheAndReload().then(breakCacheFn).catch(breakCacheFn); } else { breakCacheFn(); }" style="flex:1; padding:16px; border:none; background:transparent; font-size:15px; font-weight:700; color:var(--mcs-primary); cursor:pointer;">取得 / Cập nhật</button>
+            </div>
+        </div>
+    </div>
+
     <!-- ===== QR DIRECT LINK LOADER ===== -->
     <div id="qr-direct-loader"
         style="display:none; position:fixed; inset:0; z-index:99999; background:var(--mcs-bg); flex-direction:column; align-items:center; justify-content:center;">
@@ -211,27 +231,21 @@
                                 </div>
                             </a>
                         </li>
-                        <!-- Thông tin User -->
-                        <li class="nav-item" id="sidebarUserItem" style="display:none;">
-                            <div class="nav-link" style="pointer-events:none;">
+                        <!-- Thông tin User + Nút Đăng xuất -->
+                        <li class="nav-item" id="sidebarUserItem" style="display:none; position:relative;">
+                            <div class="nav-link" style="pointer-events:none; padding-right:40px;">
                                 <i class="fas fa-check-circle" style="color:var(--mcs-primary);"></i>
-                                <div class="nav-link-text">
+                                <div class="nav-link-text" style="overflow:hidden;">
                                     <span class="ja" id="sidebarAuthUserEmail"
-                                        style="font-weight:700; color:var(--mcs-text);"></span>
+                                        style="font-weight:700; color:var(--mcs-text); font-size:11px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block;"></span>
                                     <span class="vi">Đã đăng nhập</span>
                                 </div>
                             </div>
-                        </li>
-                        <!-- Nút Đăng xuất -->
-                        <li class="nav-item" id="sidebarLogoutItem" style="display:none;">
-                            <a href="#" class="nav-link" id="sidebarAuthLogoutBtn">
-                                <i class="fas fa-sign-out-alt" style="color:#ef4444;"></i>
-                                <div class="nav-link-text">
-                                    <span class="ja" style="color:#ef4444;">ログアウト</span>
-                                    <span class="vi" style="color:#ef4444;">Đăng xuất</span>
-                                </div>
+                            <a href="#" id="sidebarAuthLogoutBtn" style="position:absolute; right:8px; top:50%; transform:translateY(-50%); padding:8px; border-radius:4px; background:var(--mcs-error-light);" title="Đăng xuất">
+                                <i class="fas fa-sign-out-alt" style="color:#ef4444; margin:0; font-size:14px;"></i>
                             </a>
                         </li>
+                        <li class="nav-item" id="sidebarLogoutItem" style="display:none;"><!-- Giữ ID này cho tương thích JS --></li>
                     </ul>
                 </div>
                 <style>
@@ -313,17 +327,8 @@
                             <a href="#" class="nav-link" id="sidebarLocationManagerBtn">
                                 <i class="fas fa-server"></i>
                                 <div class="nav-link-text">
-                                    <span class="ja">位置管理 (金型)</span>
-                                    <span class="vi">Vị trí (Khuôn)</span>
-                                </div>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link" id="sidebarLocationManagerTrayBtn">
-                                <i class="fas fa-boxes"></i>
-                                <div class="nav-link-text">
-                                    <span class="ja">位置管理 (トレイ)</span>
-                                    <span class="vi">Vị trí (Khay)</span>
+                                    <span class="ja">ラック管理</span>
+                                    <span class="vi">Quản lý Giá để khuôn</span>
                                 </div>
                             </a>
                         </li>
@@ -387,11 +392,11 @@
                         </li>
                         <li class="nav-item">
                             <a href="#" id="sidebarRefreshDataBtn" class="nav-link"
-                                onclick="if(confirm('最新データを強制取得しますか？\nCập nhật toàn bộ dữ liệu mới nhất từ máy chủ?\n(Lưu ý: Nếu vừa sửa dữ liệu, hệ thống lưu trữ Cloud có thể cần ~3-5 phút để đồng bộ hoàn toàn)')) { var breakCacheFn = function() { window.location.href = window.location.origin + window.location.pathname + '?v=' + new Date().getTime(); }; if(window.DataManager && window.DataManager.forceClearCacheAndReload) { window.DataManager.forceClearCacheAndReload().then(breakCacheFn).catch(breakCacheFn); } else { breakCacheFn(); } }">
+                                onclick="document.getElementById('data-refresh-modal').style.display='flex';">
                                 <i class="fas fa-sync-alt" style="color:#ef4444;"></i>
                                 <div class="nav-link-text">
                                     <span class="ja">最新データ取得</span>
-                                    <span class="vi">Cập nhật chờ 5p</span>
+                                    <span class="vi">Làm mới dữ liệu (Chờ 5p)</span>
                                 </div>
                             </a>
                         </li>
@@ -490,6 +495,15 @@
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <!-- Loading State Banner (Chỉ hiện khi đang tải data ban đầu) -->
+            <div id="app-loading-state-banner" class="content-area"
+                style="display:none; flex-direction:column; align-items:center; justify-content:center; padding:60px 20px; text-align:center; height:100%; background:var(--mcs-bg);">
+                <i class="fas fa-circle-notch fa-spin"
+                    style="font-size:56px; color:var(--mcs-primary); margin-bottom:24px;"></i>
+                <h2 style="font-size:24px; font-weight:700; color:var(--mcs-text); margin:0 0 12px;">データ同期中...</h2>
+                <h3 style="font-size:18px; font-weight:500; color:var(--mcs-text-secondary); margin:0 0 24px;">Đang tải dữ liệu hệ thống, vui lòng chờ...</h3>
             </div>
 
             <!-- Empty State Banner (Chỉ hiện khi chưa đăng nhập) -->
@@ -726,7 +740,7 @@
 
     <!-- ===== JAVASCRIPT FILES ===== -->
 
-    <script src="checkin-checkout.js?v=v10.2.1-CacheFix"></script>
+    <script src="checkin-checkout.js?v=v10.2.3-SwipeOptimized"></script>
     <script src="transfer-location-module.js?v=v8.8.2_return"></script>
     <script src="relocate-wizard-module.js"></script>
     <script src="location-move.js?v=v8.8.2_return"></script>
@@ -750,7 +764,7 @@
     <script src="app.js?v=9.4.6-fixed"></script>
     <!-- UI Modules (v8.0.4) -->
     <script src="results-card-renderer.js?v=v10.2.2-DeltaPatch"></script>
-    <script src="results-table-renderer.js?v=v10.2.1-CacheFix"></script>
+    <script src="results-table-renderer.js?v=v10.2.3-SwipeOptimized"></script>
 
     <script src="search-module.js?v=v8.8.2_swipe2"></script>
 
@@ -763,7 +777,7 @@
     <!-- Cấu trúc Auth Data -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
-    <script src="auth-module.js?v=v10.2.1-CacheFix"></script>
+    <script src="auth-module.js?v=v10.2.3-SwipeOptimized"></script>
     <!-- Store phải có trước tool -->
     <script src="device-photo-store.js?v=v8.4.3-8-4-fixed"></script>
     <script src="photo-upload.js?v=9.1.15"></script>
@@ -776,12 +790,12 @@
 
     <!-- Các module cần DOM, đặt cuối -->
     <script src="device-history-status.js?v=v8.3.1_sync"></script><!-- Module Detail Panel - Trộn chung Mold/Cutter -->
-    <script src="global-history-module.js?v=v10.2.1-CacheFix"></script>
-    <script src="detail-panel.js?v=v10.2.1-CacheFix"></script>
-    <script src="quick-update-module.js?v=v10.2.1-CacheFix"></script>
+    <script src="global-history-module.js?v=v10.2.3-SwipeOptimized"></script>
+    <script src="detail-panel.js?v=v10.2.3-SwipeOptimized"></script>
+    <script src="quick-update-module.js?v=v10.2.3-SwipeOptimized"></script>
 
     <!-- Teflon Processing -->
-    <script src="teflon-processing.js?v=v10.2.1-CacheFix"></script>
+    <script src="teflon-processing.js?v=v10.2.3-SwipeOptimized"></script>
 
     <!-- Plastic Management WMS -->
 
@@ -791,7 +805,7 @@
     <script src="print-export-module.js"></script>
     <script src="detail-print-module.js"></script>
     <link rel="stylesheet" href="extended-editor.css">
-    <script src="dp-extended-editor.js?v=v10.2.1-CacheFix"></script>
+    <script src="dp-extended-editor.js?v=v10.2.3-SwipeOptimized"></script>
 
     <script src="global-assistive-touch.js"></script>
     <script src="detail-panel-photos-tab.js"></script>

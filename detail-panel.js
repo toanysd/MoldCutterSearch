@@ -696,10 +696,14 @@ Created: 2026-02-04
 
 
 
-        window.SwipeHistoryTrap.bindSwipe(this.panel, () => this.close());
-
-
-
+        // [v9.1.19] Sử dụng global SwipeHistoryTrap với tính năng followFinger mới
+        window.SwipeHistoryTrap.bindSwipe(this.panel, () => {
+          if (this.isPreviewOpen && this.isPreviewOpen()) {
+            this.closePreview();
+          } else {
+            this.close();
+          }
+        }, { followFinger: true });
       }
 
 
@@ -1659,185 +1663,6 @@ Created: 2026-02-04
 
 
     bindEvents() {
-
-
-
-      // Mobile Swipe-to-Close Gesture (Tối ưu mượt mà và chống giật)
-
-      let dpTouchStartX = 0;
-
-      let dpTouchStartY = 0;
-
-      let dpCurrentX = 0;
-
-      let isSwipingPanel = false;
-
-
-
-      this.panel.addEventListener('touchstart', (e) => {
-
-        // Hủy thao tác vuốt Panel nếu đang mở Modal đè lên (Global Modal Swipe)
-
-        if (window._modalClosingSwipe || window._isGlobalModalSwipe || e.target.closest('.app-modal, .modal, .mcs-qv-backdrop, .lightgallery')) return;
-
-
-
-        if (e.touches.length === 1) {
-
-          dpTouchStartX = e.touches[0].clientX;
-
-          dpTouchStartY = e.touches[0].clientY;
-
-          dpCurrentX = dpTouchStartX;
-
-
-
-          // Kiểm tra xem User có chạm nhầm vào bảng scroll ngang không
-
-          const isScrollable = e.target.closest('table, .table-scroll-container, .table-wrapper, .dp-tab-bar, .dp-actions-grid');
-
-          const isPreview = this.isPreviewOpen && this.isPreviewOpen();
-
-
-
-          // Tránh việc vuốt chéo. Chỉ bắt đầu vuốt từ cạnh trái (< 50px của Panel)
-
-          if (!isScrollable && (dpTouchStartX < 50 || isPreview)) {
-
-            isSwipingPanel = true;
-
-            // Tắt transition tự động để trượt Panel bám theo ngón tay một cách mượt mà
-
-            this.panel.style.transition = 'none';
-
-          }
-
-        }
-
-      }, { passive: true });
-
-
-
-      this.panel.addEventListener('touchmove', (e) => {
-
-        if (!isSwipingPanel || !dpTouchStartX || !dpTouchStartY || e.touches.length !== 1) return;
-
-        if (window._modalClosingSwipe || window._isGlobalModalSwipe) {
-
-          isSwipingPanel = false;
-
-          return;
-
-        }
-
-
-
-        dpCurrentX = e.touches[0].clientX;
-
-        const currentY = e.touches[0].clientY;
-
-        const dx = dpCurrentX - dpTouchStartX;
-
-        const dy = currentY - dpTouchStartY;
-
-
-
-        // Hủy thao tác vuốt đóng nếu vuốt chéo/dọc
-
-        if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 15) {
-
-          isSwipingPanel = false;
-
-          this.panel.style.transform = '';
-
-          this.panel.style.transition = '';
-
-          return;
-
-        }
-
-
-
-        // Vuốt sang phải (dx > 0)
-
-        if (dx > 0) {
-
-          // Báo hiệu khóa chức năng vuốt sidebar
-
-          window._panelClosingSwipe = true;
-
-
-
-          // Cập nhật vị trí transform chạy theo tay người dùng
-
-          const targetEl = (this.isPreviewOpen && this.isPreviewOpen()) ? document.getElementById('dpPreviewModal') : this.panel;
-
-          if (targetEl) {
-
-            targetEl.style.transform = `translateX(${dx}px)`;
-
-          }
-
-        }
-
-      }, { passive: true });
-
-
-
-      this.panel.addEventListener('touchend', (e) => {
-
-        if (!isSwipingPanel) return;
-
-        isSwipingPanel = false;
-
-
-
-        setTimeout(() => { window._panelClosingSwipe = false; }, 100);
-
-
-
-        const targetEl = (this.isPreviewOpen && this.isPreviewOpen()) ? document.getElementById('dpPreviewModal') : this.panel;
-
-        if (!targetEl) return;
-
-
-
-        targetEl.style.transition = ''; // Bật lại hệ thống Transition tự động CSS
-
-        targetEl.style.transform = '';  // Trả về CSS quản lý Class
-
-
-
-        const dx = dpCurrentX - dpTouchStartX;
-
-
-
-        // Nếu kéo đủ sâu (ví dụ > 80px) thì chốt gọi hàm đóng
-
-        if (dx > 80) {
-
-          if (this.isPreviewOpen && this.isPreviewOpen()) {
-
-            this.closePreview();
-
-          } else {
-
-            this.close();
-
-          }
-
-        }
-
-        dpTouchStartX = 0;
-
-      }, { passive: true });
-
-
-
-
-
-
-
       this.panel.addEventListener('click', (e) => {
 
 

@@ -1,4 +1,4 @@
-// v9.0.2
+// v9.0.3
 /**
 
  * Bàn phím Ảo (Virtual Keyboard Module)
@@ -885,7 +885,13 @@
 
 
 
-        if (query.length === 0) return;
+        if (query.length === 0) {
+
+            if (this.layout !== 'alpha') this._switchLayout('alpha');
+
+            return;
+
+        }
 
 
 
@@ -917,7 +923,55 @@
 
 
 
-        var list = Array.from(prefixes).slice(0, 5); // limit 5
+        var prefixArray = Array.from(prefixes);
+
+
+
+        // --- Logic Thông minh: Tự động chuyển layout ---
+
+        if (prefixArray.length > 0) {
+
+            var hasExactMatch = prefixArray.indexOf(query) !== -1;
+
+            var hasLongerMatch = prefixArray.some(function (p) {
+
+                return p.length > query.length && p.indexOf(query) === 0;
+
+            });
+
+
+
+            if (hasExactMatch && !hasLongerMatch) {
+
+                // Khớp hoàn toàn duy nhất -> Chuyển sang số
+
+                if (this.layout !== 'numeric') this._switchLayout('numeric');
+
+            } else if (!hasExactMatch && hasLongerMatch) {
+
+                // Đang gõ dở chữ -> Chuyển về chữ
+
+                if (this.layout !== 'alpha' && !/\d/.test(query)) this._switchLayout('alpha');
+
+            }
+
+        }
+
+
+
+        // Ưu tiên hiện số nếu query có chứa số
+
+        if (/\d/.test(query) && this.layout !== 'numeric') {
+
+            this._switchLayout('numeric');
+
+        }
+
+        // ------------------------------------------------
+
+
+
+        var list = prefixArray.slice(0, 5); // limit 5
 
         if (list.length === 0) {
 
@@ -994,6 +1048,10 @@
             inputEl.blur();          
             this._updateDisplay();
         }
+
+        // Mặc định bàn phím hiển thị dạng ABC
+        this._switchLayout('alpha');
+
         // Gợi ý wizard
         this._updateWizard();
         this.isOpen = true;

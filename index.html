@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-    <title>金型・抜型検索システム / Mold Cutter System v9.1.25</title>
+    <title>金型・抜型検索システム / Mold Cutter System v9.1.26</title>
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="favicon.png">
@@ -964,6 +964,7 @@
             display: flex;
             flex-direction: column;
             align-items: flex-end;
+            pointer-events: none; /* Ngăn container block click trên UI */
         }
 
         .assistive-fab {
@@ -981,6 +982,7 @@
             justify-content: center;
             transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s;
             outline: none;
+            pointer-events: auto; /* Phục hồi click cho riêng nút FAB */
         }
 
         .assistive-fab:hover {
@@ -1171,7 +1173,7 @@
         })();
     </script>
     <!-- Virtual Keyboard Module -->
-    <script src="virtual-keyboard-module.js?v=v8.8.2_vkfix3"></script>
+    <script src="virtual-keyboard-module.js?v=v9.0.3"></script>
 </body>
 
 </html>

@@ -928,6 +928,10 @@
                         ⚠️ 必ずPanasonic SACTで完了してから確認ボタンを押してください。<br>(Chỉ bấm xác nhận SAU KHI đã hoàn tất thao tác trên trang SACT của Panasonic.)
                     </div>
 
+                    <button class="btn-finalize" style="background:#3b82f6; margin-bottom:8px; display:flex; align-items:center; justify-content:center; gap:8px;" onclick="window.sactGpsContext={active:true, source:'customer_sact', campaignId:'${c.id}', targetId:'${targetId}'}; if(window.PhotoUploadModule) window.PhotoUploadModule.open({type:'mold', code:'${t.ysd_code}'});">
+                        <i class="fas fa-camera"></i> 内部証拠写真を撮影 (Chụp ảnh minh chứng có GPS)
+                    </button>
+
                     <button class="btn-finalize" onclick="window.SACTModule.finishTarget('${targetId}')">
                         🔒 SACT完了を確認 (XÁC NHẬN ĐÃ LÀM XONG SACT)
                     </button>
@@ -940,11 +944,13 @@
 
         cancelCompletion() {
             this.state.awaitingCompletionTarget = null;
+            window.sactGpsContext = null;
             this.renderTargetList();
         },
 
         async finishTarget(targetId) {
             this.state.awaitingCompletionTarget = null;
+            window.sactGpsContext = null;
             await this.updateStatus(targetId, 'Completed');
             await this.pushHistoryLog(targetId, 'Completed');
             this.renderTargetList();

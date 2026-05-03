@@ -1032,6 +1032,12 @@
           thumb_height: thumbH,
           thumb_bytes: thumbBytes,
 
+          // NEW: GPS SACT fields
+          gps_latitude: opts.gpsLatitude !== undefined ? opts.gpsLatitude : null,
+          gps_longitude: opts.gpsLongitude !== undefined ? opts.gpsLongitude : null,
+          gps_accuracy: opts.gpsAccuracy !== undefined ? opts.gpsAccuracy : null,
+          gps_mode: opts.gpsMode || 'standard',
+
           // manual
           manual_code: opts.manualcode || null,
           manual_name: opts.manualname || null,

@@ -97,9 +97,15 @@
     '  </div>',
     '  <div class="pu-section-body">',
     /* Photo Target Type Selector */
-    '    <div class="pu-field-inline" id="puTargetTypeRow">',
-    '      <span class="pu-il-label">種類 / Loại</span>',
-    '      <select class="pu-input" id="puTargetTypeSelect" style="flex:1;">',
+    '    <div class="pu-field-inline" id="puTargetTypeRow" style="flex-direction:column; align-items:flex-start;">',
+    '      <span class="pu-il-label" style="margin-bottom:6px;">種類 / Loại thiết bị</span>',
+    '      <div class="pu-type-buttons" id="puTypeButtonGroup" style="display:flex; width:100%; gap:6px; flex-wrap:wrap;">',
+    '        <button type="button" class="pu-type-btn active" data-val="device">金型・刃物<br><small>Khuôn & Dao</small></button>',
+    '        <button type="button" class="pu-type-btn" data-val="rack">ラック<br><small>Giá & Vị trí</small></button>',
+    '        <button type="button" class="pu-type-btn" data-val="tray">トレイ<br><small>Khay</small></button>',
+    '        <button type="button" class="pu-type-btn" data-val="other">その他<br><small>Khác</small></button>',
+    '      </div>',
+    '      <select id="puTargetTypeSelect" style="display:none;">',
     '        <option value="other">その他 / Khác</option>',
     '        <option value="device">金型・刃物 / Khuôn & Dao cắt</option>',
     '        <option value="rack">ラック / Giá & Vị trí</option>',
@@ -155,9 +161,10 @@
     '      </div>',
     '    </div>',
     /* Weight */
-    '    <div class="pu-field-inline" id="puWeightRow" style="flex-wrap: wrap;">',
+    '    <div class="pu-field-inline pu-hidden" id="puWeightRow" style="flex-wrap: wrap;">',
     '      <span class="pu-il-label">重量 /<br>Khối lượng</span>',
-    '      <button class="pu-btn" id="puQuickWeightUpdateBtn" type="button" style="flex:1; padding: 10px 12px; font-size: 13px; margin-left: 0px; background: #fef3c7; color: #b45309; border: 1.5px dashed #f59e0b; border-radius: 8px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s;"><i class="fas fa-edit"></i> 重量入力フォームを開く / Mở Form Nhập Khối Lượng</button>',
+    '      <input type="text" class="pu-input" id="puMoldWeight" readonly placeholder="未登録 / Chưa có" style="flex:1;">',
+    '      <span class="pu-ibadge pu-ibadge-auto pu-hidden" id="puWeightBadge" title="自動"><i class="fas fa-link"></i></span>',
     '    </div>',
     /* Notes */
     '    <div class="pu-field-inline">',
@@ -205,12 +212,19 @@
     '    <div class="pu-field-inline">',
     '      <details style="width:100%; border:1px solid #e2e8f0; border-radius:8px; padding:8px; background:#f8fafc;">',
     '        <summary style="cursor:pointer; font-weight:700; color:#475569; font-size:13px; outline:none;"><i class="fas fa-shield-check"></i> システム確認 / Xác nhận của hệ thống</summary>',
-    '        <div style="margin-top:10px; padding-left:20px;">',
+    '        <div style="margin-top:10px; padding-left:20px; display:flex; flex-direction:column; gap:8px;">',
     '          <label class="pu-keep-label" style="flex:1">',
     '            <input type="checkbox" id="puSecurityConfirmCheck" checked>',
     '            <span class="pu-keep-text">',
     '              <span class="pu-keep-ja">確認写真を含める</span>',
     '              <span class="pu-keep-vi">Đính kèm ảnh xác nhận</span>',
+    '            </span>',
+    '          </label>',
+    '          <label class="pu-keep-label" style="flex:1">',
+    '            <input type="checkbox" id="puGpsCheck" checked>',
+    '            <span class="pu-keep-text">',
+    '              <span class="pu-keep-ja">GPS位置情報を含める</span>',
+    '              <span class="pu-keep-vi">Đính kèm vị trí GPS</span>',
     '            </span>',
     '          </label>',
     '        </div>',
@@ -276,14 +290,18 @@
     '      .pu-action-sheet-wrapper { max-width: 420px; border-radius: 16px; padding-bottom: 16px; margin: auto; }',
     '      #puActionSheetOverlay { align-items: center !important; padding: 16px !important; }',
     '    }',
+    '    .pu-type-btn { flex:1; min-width:60px; background:#fff; border:1px solid #cbd5e1; border-radius:8px; padding:6px 2px; font-size:12px; font-weight:700; color:#475569; cursor:pointer; text-align:center; transition:all 0.2s; line-height:1.2; }',
+    '    .pu-type-btn:hover { border-color:#94a3b8; background:#f8fafc; }',
+    '    .pu-type-btn.active { background:#e0f2fe; border-color:#3b82f6; color:#1d4ed8; box-shadow:0 1px 3px rgba(0,0,0,0.1); }',
+    '    .pu-type-btn small { display:block; font-size:10.5px; font-weight:500; opacity:0.85; margin-top:3px; }',
     '  </style>',
 
     '  <div class="pu-confirm-overlay pu-hidden" id="puActionSheetOverlay" style="align-items:flex-end; padding:0; background:rgba(0,0,0,0.5);">',
     '    <div class="pu-action-sheet pu-action-sheet-wrapper">',
     '      <div style="background:#fff; border-radius:12px; overflow:hidden; margin-bottom:8px;">',
     '        <button class="pu-as-btn" id="puAsTakePhoto" style="border-bottom:1px solid rgba(0,0,0,0.06); color:#3b82f6;"><i class="fas fa-camera"></i> カメラで撮影 / Chụp ảnh</button>',
-    '        <button class="pu-as-btn" id="puAsLibrary" style="display:none !important; border-bottom:1px solid rgba(0,0,0,0.06); color:#3b82f6;"><i class="fas fa-images"></i> 写真ライブラリ / Thư viện ảnh</button>',
-    '        <button class="pu-as-btn" id="puAsFiles" style="display:none !important; color:#3b82f6;"><i class="fas fa-folder"></i> ファイルを選択 / Chọn tệp</button>',
+    '        <button class="pu-as-btn" id="puAsLibrary" style="border-bottom:1px solid rgba(0,0,0,0.06); color:#3b82f6;"><i class="fas fa-images"></i> 写真ライブラリ / Thư viện ảnh</button>',
+    '        <button class="pu-as-btn" id="puAsFiles" style="color:#3b82f6;"><i class="fas fa-folder"></i> ファイルを選択 / Chọn tệp</button>',
     '      </div>',
     '      <div style="background:#fff; border-radius:12px; overflow:hidden;">',
     '        <button class="pu-as-btn" id="puAsCancel" style="color:#ef4444; font-weight:900;">キャンセル / Huỷ</button>',
@@ -395,7 +413,6 @@
     '<div class="pu-camera-overlay pu-hidden" id="puCameraOverlay">',
     '  <div class="pu-camera-video-wrap">',
     '    <video class="pu-camera-video" id="puCameraVideo" autoplay playsinline muted></video>',
-    '    <div class="pu-camera-guide"></div>',
     '  </div>',
     '  <div class="pu-camera-toolbar">',
     '    <button class="pu-camera-side-btn" id="puCameraCancelBtn" title="キャンセル / Hủy"><i class="fas fa-times"></i></button>',
@@ -572,7 +589,12 @@
     // Load saved target type
     var savedType = localStorage.getItem('pu_saved_target_type') || 'other';
     var typeSel = document.getElementById('puTargetTypeSelect');
-    if (typeSel) typeSel.value = savedType;
+    if (typeSel) {
+      typeSel.value = savedType;
+      var evt = document.createEvent('HTMLEvents');
+      evt.initEvent('change', false, true);
+      typeSel.dispatchEvent(evt);
+    }
 
     // Clear CC chips
     var wrap = document.getElementById('puEmailChipsWrap');
@@ -814,7 +836,12 @@
 
       var savedType2 = localStorage.getItem('pu_saved_target_type') || 'device';
       var typeSel2 = document.getElementById('puTargetTypeSelect');
-      if (typeSel2) typeSel2.value = savedType2;
+      if (typeSel2) {
+        typeSel2.value = savedType2;
+        var evt2 = document.createEvent('HTMLEvents');
+        evt2.initEvent('change', false, true);
+        typeSel2.dispatchEvent(evt2);
+      }
 
       this._showDeviceSearch();
       this._focusDeviceSearch(true);
@@ -888,6 +915,9 @@
         else if (d.type === 'rack') sel.value = 'rack';
         else if (d.type === 'tray') sel.value = 'tray';
         else sel.value = 'other';
+        var ev = document.createEvent('HTMLEvents');
+        ev.initEvent('change', false, true);
+        sel.dispatchEvent(ev);
       }
     }
     /* KHÔNG ẨN searchBlock. Để ngỏ để người tiếp tục xem mã và có thể nhập lại / Xoá Liền kết */
@@ -903,16 +933,29 @@
     }
     this._showFieldBadge('puCodeBadge', 'puCodeBadgeM', !!(d.isAuto && d.code), !!(!d.isAuto && d.code));
 
-    /* Dimensions – tra cứu từ DataManager (molddesign.csv) */
+    /* Dimensions & Weight – tra cứu từ DataManager */
     var dimInput = document.getElementById('puDimensions');
+    var weightInput = document.getElementById('puMoldWeight');
+    var weightRow = document.getElementById('puWeightRow');
     var dimsFromDM = '';
+    var weightFromDM = '';
+    
+    this._missingWeightItem = null;
+
     if (d.id && global.DataManager && typeof global.DataManager.getAllItems === 'function') {
       var _allItems = global.DataManager.getAllItems() || [];
       for (var _i = 0; _i < _allItems.length; _i++) {
         var _it = _allItems[_i];
         var _m = (d.type === 'mold' && String(_it.MoldID) === String(d.id))
           || (d.type === 'cutter' && String(_it.CutterID) === String(d.id));
-        if (_m) { dimsFromDM = _it.displayDimensions || _it.dimensions || ''; break; }
+        if (_m) { 
+          dimsFromDM = _it.displayDimensions || _it.dimensions || ''; 
+          if (d.type === 'mold') {
+            weightFromDM = _it.MoldWeight || (_it.designInfo ? _it.designInfo.MoldDesignWeight : '') || '';
+            if (!weightFromDM) this._missingWeightItem = _it;
+          }
+          break; 
+        }
       }
     }
     var finalDims = dimsFromDM || d.dims || '';
@@ -923,6 +966,17 @@
     }
     var dimIsAuto = d.isAuto && !!finalDims;
     this._showFieldBadge('puDimBadge', 'puDimBadgeM', dimIsAuto, !!(!dimIsAuto && !!finalDims));
+
+    if (weightRow && weightInput) {
+      if (d.type === 'mold') {
+        weightRow.classList.remove('pu-hidden');
+        weightInput.value = weightFromDM ? weightFromDM + ' kg' : '';
+        weightInput.classList.toggle('pu-input-auto', !!weightFromDM);
+        this._showFieldBadge('puWeightBadge', null, !!weightFromDM, false);
+      } else {
+        weightRow.classList.add('pu-hidden');
+      }
+    }
   };
 
   /* ── _focusDeviceSearch ──────────────────────────────────── */
@@ -990,6 +1044,29 @@
       });
     });
 
+    /* Target Type segmented control */
+    var typeBtns = document.querySelectorAll('.pu-type-btn');
+    var targetTypeSel = document.getElementById('puTargetTypeSelect');
+    if (typeBtns.length && targetTypeSel) {
+      typeBtns.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          typeBtns.forEach(function(b) { b.classList.remove('active'); });
+          this.classList.add('active');
+          targetTypeSel.value = this.dataset.val;
+          var event = document.createEvent('HTMLEvents');
+          event.initEvent('change', false, true);
+          targetTypeSel.dispatchEvent(event);
+        });
+      });
+      // Update buttons when select value changes programmatically
+      targetTypeSel.addEventListener('change', function() {
+        var val = this.value;
+        typeBtns.forEach(function(b) {
+          b.classList.toggle('active', b.dataset.val === val);
+        });
+      });
+    }
+
     var fileInputCamera = document.getElementById('puFileInputCamera');
     var fileInputGeneric = document.getElementById('puFileInputGeneric');
     if (fileInputGeneric) fileInputGeneric.addEventListener('change', function (e) { self._addFiles(Array.from(e.target.files)); fileInputGeneric.value = ''; });
@@ -1025,17 +1102,27 @@
     var secAcceptBtn = document.getElementById('puSecOverlayAccept');
     var secCancelBtn = document.getElementById('puSecOverlayCancel');
 
+    var triggerLibraryUpload = function() {
+      if (asOv) asOv.classList.add('pu-hidden');
+      var secCheck = document.getElementById('puSecurityConfirmCheck');
+      
+      if (secCheck && secCheck.checked) {
+        var msgJa = "設備の保管場所を証明するため、カメラでの撮影を推奨します。ライブラリからアップロードする場合、GPS位置情報・セキュリティ確認は認証されません。\n\n続行しますか？";
+        var msgVi = "Để xác thực vị trí thiết bị, hệ thống khuyến nghị chụp ảnh trực tiếp bằng Camera. Nếu tải ảnh lên từ thư viện, thông tin GPS & Bảo mật sẽ KHÔNG được xác thực.\n\nBạn có muốn tiếp tục không?";
+        if (!confirm(msgJa + "\n\n" + msgVi)) {
+          return;
+        }
+        secCheck.checked = false;
+      }
+      
+      if (fileInputGeneric) fileInputGeneric.click();
+    };
+
     if (document.getElementById('puAsLibrary')) {
-      document.getElementById('puAsLibrary').addEventListener('click', function () {
-        if (asOv) asOv.classList.add('pu-hidden');
-        if (fileInputGeneric) fileInputGeneric.click();
-      });
+      document.getElementById('puAsLibrary').addEventListener('click', triggerLibraryUpload);
     }
     if (document.getElementById('puAsFiles')) {
-      document.getElementById('puAsFiles').addEventListener('click', function () {
-        if (asOv) asOv.classList.add('pu-hidden');
-        if (fileInputGeneric) fileInputGeneric.click();
-      });
+      document.getElementById('puAsFiles').addEventListener('click', triggerLibraryUpload);
     }
     if (asCancel) asCancel.addEventListener('click', function () { if (asOv) asOv.classList.add('pu-hidden'); });
 
@@ -1242,42 +1329,7 @@
       });
     }
 
-    /* Weight Update Button */
-    var weightBtn = document.getElementById('puQuickWeightUpdateBtn');
-    if (weightBtn) {
-      weightBtn.addEventListener('click', function () {
-        if (!self._device || !self._device.id) {
-          self._toast('warning', 'Vui lòng chọn khuôn/khay trước khi cập nhật khối lượng.');
-          return;
-        }
-        if (window.QuickUpdateModule) {
-          /* ── Tạm ẩn Photo Upload overlay để tránh xung đột stacking context ── */
-          var puOv = document.getElementById('puOverlay');
-          if (puOv) puOv.style.display = 'none';
 
-          window.QuickUpdateModule.openModal('WEIGHT', {
-            MoldID: self._device.type === 'mold' ? self._device.id : null,
-            CutterID: self._device.type === 'cutter' ? self._device.id : null,
-            TrayID: self._device.type === 'tray' ? self._device.id : null
-          }, {
-            onSuccess: function (fields) {
-              var w = fields.MoldWeight || fields.TrayWeight || '';
-              if (w) {
-                var label = fields.MoldWeight ? "金型重量" : "トレイ重量";
-                var input = document.getElementById('puWeight');
-                if (input) input.value = label + " " + w + " kg";
-              }
-              /* ── Khôi phục Photo Upload overlay ── */
-              if (puOv) puOv.style.display = '';
-            },
-            onClose: function () {
-              /* ── Khôi phục Photo Upload overlay khi đóng (kể cả khi hủy) ── */
-              if (puOv) puOv.style.display = '';
-            }
-          });
-        }
-      });
-    }
 
     /* Sender select */
     var senderSel = document.getElementById('puSenderSelect');
@@ -2190,6 +2242,48 @@
       });
       return;
     }
+
+    var gpsCtx = window.sactGpsContext;
+    var isGpsManualCheck = document.getElementById('puGpsCheck') && document.getElementById('puGpsCheck').checked;
+    
+    if (isGpsManualCheck || (gpsCtx && gpsCtx.active)) {
+      this._setProgress(0, 'GPSを取得中... / Đang lấy GPS...');
+      var pw = document.getElementById('puProgressWrap');
+      if (pw) pw.classList.remove('pu-hidden');
+      ['puSendNewBtn', 'puSendCloseBtn'].forEach(function (i) {
+        var b = document.getElementById(i);
+        if (b) { b.disabled = true; b.classList.add('pu-sending'); }
+      });
+      
+      var determinedSource = (gpsCtx && gpsCtx.active) ? (gpsCtx.source || 'customer_sact') : 'standard';
+
+      navigator.geolocation.getCurrentPosition(
+        function(pos) {
+          var gpsData = {
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude,
+            acc: pos.coords.accuracy,
+            mode: determinedSource
+          };
+          if (pos.coords.accuracy > 100) {
+            self._toast('warning', 'Tín hiệu GPS yếu (Độ lệch ±' + Math.round(pos.coords.accuracy) + 'm). Dữ liệu vẫn được ghi nhận.', 'GPS Audit');
+          }
+          self._executeSubmit(sendMail, closeAfter, gpsData);
+        },
+        function(err) {
+          self._toast('warning', 'Không lấy được GPS. Bỏ qua và gửi với trạng thái no_gps.', 'GPS Audit');
+          self._executeSubmit(sendMail, closeAfter, { mode: 'no_gps' });
+        },
+        { enableHighAccuracy: true, timeout: 8000, maximumAge: 30000 }
+      );
+      return;
+    }
+
+    this._executeSubmit(sendMail, closeAfter, null);
+  };
+
+  PhotoUploadModule.prototype._executeSubmit = function (sendMail, closeAfter, gpsData) {
+    var self = this;
     this._sendMailMode = !!sendMail;
 
     var code = (document.getElementById('puDeviceCode') || {}).value || '';
@@ -2278,7 +2372,7 @@
       /* processImage trước khi upload */
       self._processImage(p.workingBlob, {}, self._resizeMode)
         .then(function (processedBlob) {
-          return self._uploadOnePhoto(DevPS, processedBlob, {
+          var uplOpts = {
             deviceType: deviceType,
             deviceId: deviceId,
             originalFilename: p.name,
@@ -2289,7 +2383,14 @@
             senderId: senderId,
             senderName: senderName,
             setAsThumbnail: shouldThumb
-          });
+          };
+          if (gpsData) {
+             uplOpts.gpsLatitude = gpsData.lat;
+             uplOpts.gpsLongitude = gpsData.lng;
+             uplOpts.gpsAccuracy = gpsData.acc;
+             uplOpts.gpsMode = gpsData.mode;
+          }
+          return self._uploadOnePhoto(DevPS, processedBlob, uplOpts);
         })
         .then(function (res) {
           done++;
@@ -2444,7 +2545,20 @@
       } else {
         this._showResult(true, msg);
         this._toast('success', msg, '成功 / Thành công');
+        
+        var missingItem = this._missingWeightItem;
         this._resetAfterSuccess();
+
+        if (missingItem && window.QuickUpdateModule) {
+          setTimeout(function() {
+            if (confirm("金型の重量データがありません。重量を更新しますか？\n\nKhuôn này chưa có dữ liệu khối lượng. Bạn có muốn cập nhật khối lượng khuôn không?")) {
+              window.QuickUpdateModule.openModal('WEIGHT', {
+                MoldID: missingItem.MoldID || missingItem.id || '',
+                code: missingItem.MoldCode || missingItem.YSD_Code || missingItem.displayCode || missingItem.code || ''
+              });
+            }
+          }, 300);
+        }
       }
     } else {
       if (errors.length) this._toast('error', 'Lỗi: ' + errors.length + ' thao tác thất bại.', 'Photo Upload');
@@ -2576,7 +2690,9 @@
       state: hasDevice ? 'active' : 'inbox', manualcode: opts.manualCode || null,
       manualname: opts.manualName || null, manualdimensions: opts.manualDimensions || null,
       manualnotes: opts.notes || null, employeeid: opts.senderId || null,
-      employeename: opts.senderName || null, markAsThumbnail: !!opts.setAsThumbnail
+      employeename: opts.senderName || null, markAsThumbnail: !!opts.setAsThumbnail,
+      gpsLatitude: opts.gpsLatitude, gpsLongitude: opts.gpsLongitude, 
+      gpsAccuracy: opts.gpsAccuracy, gpsMode: opts.gpsMode
     }).then(function (r) {
       var row = r && r.photos && r.photos[0] ? r.photos[0] : null;
       if (!row) throw new Error('[PhotoUpload] uploadPhotos không trả về row.');

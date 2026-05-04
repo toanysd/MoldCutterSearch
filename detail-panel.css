@@ -1,4 +1,4 @@
-﻿/* v9.0.2 */
+/* v9.0.2 */
 /*
 
 DETAIL PANEL v8.4.3-6.css
@@ -2466,7 +2466,7 @@ detailPanel .detail-panel-back:disabled {
 
 
 
-:is(#detailPanel, .tm-detail-view) .no-data {
+:is(#detailPanel, .dp-preview-modal, .tm-detail-view) .no-data {
 
   text-align: center;
 
@@ -6716,14 +6716,15 @@ detailPanel .detail-panel-back:disabled {
 
 
 
-:is(#detailPanel, .dp-preview-modal, .tm-detail-view) .dp-d2-card-body .dp-storage-top {
-
+:is(#detailPanel, .tm-detail-view) .dp-d2-card-body .dp-storage-top {
   display: grid !important;
-
   grid-template-columns: repeat(2, 1fr) !important;
-
   gap: 0 !important;
-
+}
+.dp-preview-modal .dp-d2-card-body .dp-storage-top {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0 !important;
 }
 
 

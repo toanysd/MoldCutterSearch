@@ -737,7 +737,7 @@
 
             var row = await global.DevicePhotoStore.getThumbnailForDevice(dt, did);
 
-            var url = row ? String(row.thumbnailurl || row.thumbnailUrl || row.thumbnailpublicurl || row.thumbpublicurl || row.publicurl || row.publicUrl || '').trim() : '';
+            var url = row ? String(row.thumb_public_url || row.public_url || row.thumbnailurl || row.thumbnailUrl || row.thumbnailpublicurl || row.thumbpublicurl || row.publicurl || row.publicUrl || '').trim() : '';
 
             thumbUrlCache.set(key, url);
 
@@ -1277,7 +1277,7 @@
 
           var row = await global.DevicePhotoStore.getThumbnailForDevice(dt, did);
 
-          var full = row ? String(row.publicurl || row.publicUrl || '').trim() : '';
+          var full = row ? String(row.public_url || row.publicurl || row.publicUrl || '').trim() : '';
 
           if (full) return full;
 
@@ -1295,7 +1295,7 @@
 
           var row2 = await global.DevicePhotoStore.getLatestActivePhotoForDevice(dt, did);
 
-          var full2 = row2 ? String(row2.publicurl || row2.publicUrl || '').trim() : '';
+          var full2 = row2 ? String(row2.public_url || row2.publicurl || row2.publicUrl || '').trim() : '';
 
           if (full2) return full2;
 

@@ -4988,7 +4988,72 @@ Created: 2026-02-04
 
 
 
-          modal.addEventListener('click', (e) => e.stopPropagation());
+          modal.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            const btnUpload = e.target.closest('[data-dp-photo-upload="1"]');
+            if (btnUpload) {
+                e.preventDefault();
+                const dtype = btnUpload.dataset.dpDeviceType;
+                const did = btnUpload.dataset.dpDeviceId;
+                if (!window.PhotoUpload || typeof window.PhotoUpload.open !== 'function') return this.notify('Chưa load module upload ảnh', 'error');
+                window.PhotoUpload.open({
+                    mode: 'device',
+                    deviceType: dtype,
+                    deviceId: did,
+                    deviceCode: did,
+                    deviceDims: '',
+                    onDone: () => { try { this.hydrateDesktopPhotoPreviewFromSupabase(); } catch (e) { } }
+                });
+                return;
+            }
+            const btnDownload = e.target.closest('[data-dp-photo-download="1"]');
+            if (btnDownload) {
+                e.preventDefault();
+                const img = modal.querySelector('img[data-dp-thumb-img="1"]');
+                let fullUrl = img ? img.dataset.dpFullUrl : '';
+                if (!fullUrl && window.DevicePhotoStore) {
+                    const dtype = img ? img.dataset.dpDeviceType : '';
+                    const did = img ? img.dataset.dpDeviceId : '';
+                    if (dtype && did) {
+                        const row = await window.DevicePhotoStore.getLatestActivePhotoForDevice(dtype, did);
+                        if (row) fullUrl = row.publicurl || row.publicUrl || row.public_url || '';
+                    }
+                }
+                if (!fullUrl) return this.notify('Không tìm thấy ảnh gốc để tải', 'warning');
+                const a = document.createElement('a');
+                a.href = fullUrl;
+                a.download = 'Photo.jpg';
+                a.target = '_blank';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                return;
+            }
+            const btnTrash = e.target.closest('[data-dp-photo-trash="1"]');
+            if (btnTrash) {
+                e.preventDefault();
+                const img = modal.querySelector('img[data-dp-thumb-img="1"]');
+                let photoId = img ? img.dataset.dpPhotoId : '';
+                if (!photoId && window.DevicePhotoStore) {
+                    const dtype = img ? img.dataset.dpDeviceType : '';
+                    const did = img ? img.dataset.dpDeviceId : '';
+                    if (dtype && did) {
+                        const row = await window.DevicePhotoStore.getLatestActivePhotoForDevice(dtype, did);
+                        if (row) photoId = row.id;
+                    }
+                }
+                if (!photoId) return this.notify('Không thể xác định ID ảnh để xóa', 'error');
+                if (!confirm('Bạn có chắc chắn muốn đưa ảnh này vào thùng rác?')) return;
+                try {
+                    await window.DevicePhotoStore.moveToTrash(photoId);
+                    this.notify('Đã xóa ảnh (chuyển vào thùng rác)', 'success');
+                    this.hydrateDesktopPhotoPreviewFromSupabase();
+                } catch (err) {
+                    this.notify('Lỗi khi xóa ảnh: ' + err.message, 'error');
+                }
+                return;
+            }
+          });
 
 
 
@@ -5349,103 +5414,111 @@ Created: 2026-02-04
 
 
 
-          const heroThumb = modal.querySelector('img[data-dp-preview-hero-thumb="1"]');
+          const heroThumbs = modal.querySelectorAll('img[data-dp-preview-hero-thumb="1"]');
 
 
 
-          if (heroThumb) heroThumb.dataset.dpHeroThumbState = "loading";
+          for (const heroThumb of heroThumbs) {
 
 
 
-          if (heroThumb && window.DevicePhotoStore && typeof window.DevicePhotoStore.getThumbnailUrl === 'function') {
+            heroThumb.dataset.dpHeroThumbState = "loading";
 
 
 
-            const dtype = String(heroThumb.dataset.dpDeviceType || '').toLowerCase();
+            if (window.DevicePhotoStore && typeof window.DevicePhotoStore.getThumbnailUrl === 'function') {
 
 
 
-            const did = String(heroThumb.dataset.dpDeviceId || '').trim();
+              const dtype = String(heroThumb.dataset.dpDeviceType || '').toLowerCase();
 
 
 
+              const did = String(heroThumb.dataset.dpDeviceId || '').trim();
 
 
 
 
-            // Placeholder trong lúc chờ load (tránh icon vỡ)
 
 
 
-            heroThumb.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+              // Placeholder trong lúc chờ load (tránh icon vỡ)
 
 
 
+              heroThumb.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
 
 
 
 
-            // Nếu store có ensureReady thì gọi
 
 
 
-            try { if (typeof window.DevicePhotoStore.ensureReady === 'function') window.DevicePhotoStore.ensureReady(); } catch (e) { }
+              // Nếu store có ensureReady thì gọi
 
 
 
+              try { if (typeof window.DevicePhotoStore.ensureReady === 'function') window.DevicePhotoStore.ensureReady(); } catch (e) { }
 
 
 
 
-            if (dtype && did) {
 
 
 
-              window.DevicePhotoStore.getThumbnailUrl(dtype, did)
+              if (dtype && did) {
 
 
 
-                .then(url => {
+                window.DevicePhotoStore.getThumbnailUrl(dtype, did)
 
 
 
-                  if (url) {
+                  .then(url => {
 
 
 
-                    heroThumb.src = url;
+                    if (url) {
 
 
 
-                    heroThumb.dataset.dpHeroThumbState = "ready";
+                      heroThumb.src = url;
 
 
 
-                  } else {
+                      heroThumb.dataset.dpHeroThumbState = "ready";
 
 
 
-                    heroThumb.dataset.dpHeroThumbState = "empty";
+                    } else {
 
 
 
-                  }
+                      heroThumb.dataset.dpHeroThumbState = "empty";
 
 
 
-                })
+                    }
 
 
 
-                .catch(() => {
+                  })
 
 
 
-                  try { heroThumb.dataset.dpHeroThumbState = "empty"; } catch (e) { }
+                  .catch(() => {
 
 
 
-                });
+                    try { heroThumb.dataset.dpHeroThumbState = "empty"; } catch (e) { }
+
+
+
+                  });
+
+
+
+              }
 
 
 
@@ -5483,7 +5556,7 @@ Created: 2026-02-04
 
         }
 
-
+        setTimeout(() => { try { this.hydrateDesktopPhotoPreviewFromSupabase(); } catch(e) {} }, 50);
 
       } catch (e) {
 
@@ -7868,6 +7941,10 @@ Created: 2026-02-04
 
 
 
+
+
+
+
         for (const d of directIds) directSet.add(d);
 
 
@@ -8654,11 +8731,17 @@ Created: 2026-02-04
 
           } else {
 
+
+
             console.warn('DetailPrintModule không tồn tại, sẽ call quick-action generic event.');
 
           }
 
+
+
         } catch (e) {
+
+
 
           console.error("DetailPrintModule Lỗi", e);
 
@@ -11064,11 +11147,19 @@ Created: 2026-02-04
 
             <div class="dp-action-btn-texts">
 
+
+
               <span class="dp-action-label-ja">移動・返却</span>
+
+
 
               <span class="sub dp-action-label-vi">Di chuyển / Trả</span>
 
+
+
             </div>
+
+
 
           </button>
 
@@ -11080,11 +11171,19 @@ Created: 2026-02-04
 
             <div class="dp-action-btn-texts">
 
+
+
               <span class="dp-action-label-ja">重量</span>
+
+
 
               <span class="sub dp-action-label-vi">Khối lượng</span>
 
+
+
             </div>
+
+
 
           </button>
 
@@ -11096,15 +11195,27 @@ Created: 2026-02-04
 
             <div class="dp-action-btn-texts">
 
+
+
               <span class="dp-action-label-ja">廃棄</span>
+
+
 
               <span class="sub dp-action-label-vi">Hủy khuôn</span>
 
+
+
             </div>
+
+
 
           </button>
 
+
+
           </div>
+
+
 
           <div style="margin-top: 16px;">
             <div style="font-size:11.5px; font-weight:700; color:#475569; margin-bottom:8px; text-transform:uppercase; display:flex; align-items:center; gap:6px;">
@@ -11181,7 +11292,7 @@ Created: 2026-02-04
 
 
 
-        if (this.currentTab !== 'info') return
+        if (this.currentTab !== 'info' && (!this._preview || !this._preview.open)) return;
 
 
 
@@ -11221,7 +11332,7 @@ Created: 2026-02-04
 
 
 
-        // (A) Hydrate thumb chính (khung ảnh lớn bên trái)
+        // (A) Hydrate tất cả các khung ảnh lớn (Main Detail Panel + Preview Modal)
 
 
 
@@ -11229,27 +11340,55 @@ Created: 2026-02-04
 
 
 
-          if (this.currentItem) {
+          const imgs = document.querySelectorAll('img[data-dp-thumb-img="1"]');
 
 
 
-            const img = this.panel.querySelector('img[data-dp-thumb-img="1"]');
+          for (let i = 0; i < imgs.length; i++) {
 
 
 
-            const placeholder = this.panel.querySelector('[data-dp-thumb-placeholder="1"]');
+            const img = imgs[i];
 
 
 
+            // Lấy container để ẩn/hiện placeholder tương ứng
 
 
 
-
-            if (img) {
-
+            const container = img.closest('.modal-section') || img.parentElement;
 
 
-              const deviceId = (this.currentItemType === 'mold')
+
+            const placeholder = container ? container.querySelector('[data-dp-thumb-placeholder="1"]') : null;
+
+
+
+            // Lấy ID từ dataset của chính thẻ img (đã được ghi bởi renderDesktopPhotoPreview)
+
+
+
+            let dtype = img.dataset.dpDeviceType || '';
+
+
+
+            let deviceId = img.dataset.dpDeviceId || '';
+
+
+
+            // Fallback nếu không có dataset (trường hợp cũ)
+
+
+
+            if (!deviceId && this.currentItem) {
+
+
+
+              dtype = this.currentItemType || 'mold';
+
+
+
+              deviceId = (dtype === 'mold')
 
 
 
@@ -11257,124 +11396,127 @@ Created: 2026-02-04
 
 
 
-                : (this.currentItem.CutterID || this.currentItem.CutterNo)
+                : (this.currentItem.CutterID || this.currentItem.CutterNo);
 
 
 
+            }
 
 
 
 
-              if (deviceId) {
 
 
 
-                let picked = null;
+            if (deviceId && dtype) {
 
 
 
-                // IMPORTANT: Only fetch the original high-res photo for fullUrl, NEVER use the thumbnail record
-                if (typeof window.DevicePhotoStore.getLatestActivePhotoForDevice === 'function') {
+              let picked = null;
 
-                  picked = await window.DevicePhotoStore.getLatestActivePhotoForDevice(this.currentItemType, String(deviceId));
 
-                }
 
+              // IMPORTANT: Only fetch the original high-res photo for fullUrl, NEVER use the thumbnail record
 
 
 
+              if (typeof window.DevicePhotoStore.getLatestActivePhotoForDevice === 'function') {
 
 
 
-                const thumbUrl = await window.DevicePhotoStore.getThumbnailUrl(this.currentItemType, String(deviceId));
+                picked = await window.DevicePhotoStore.getLatestActivePhotoForDevice(dtype, String(deviceId));
 
 
 
+              }
 
 
 
 
-                const fullUrl = picked ? String(picked.publicurl || picked.publicUrl || picked.public_url || '') : '';
 
 
 
-                const photoId = picked ? String(picked.id || '') : '';
+              const thumbUrl = await window.DevicePhotoStore.getThumbnailUrl(dtype, String(deviceId));
 
 
 
+              const fullUrl = picked ? String(picked.publicurl || picked.publicUrl || picked.public_url || '') : '';
 
 
 
+              const photoId = picked ? String(picked.id || '') : '';
 
-                img.dataset.dpFullUrl = fullUrl;
 
 
 
-                img.dataset.dpPhotoId = photoId;
 
 
 
-                img.dataset.dpDeviceType = String(this.currentItemType || '');
+              img.dataset.dpFullUrl = fullUrl;
 
 
 
-                img.dataset.dpDeviceId = String(deviceId || '');
+              img.dataset.dpPhotoId = photoId;
 
 
 
+              img.dataset.dpDeviceType = String(dtype || '');
 
 
 
+              img.dataset.dpDeviceId = String(deviceId || '');
 
-                if (!thumbUrl) {
 
 
 
-                  try { img.removeAttribute('src'); } catch (e) { }
 
 
 
-                  img.style.opacity = '0';
+              if (!thumbUrl) {
 
 
 
-                  if (placeholder) {
+                try { img.removeAttribute('src'); } catch (e) { }
 
 
 
-                    placeholder.style.display = 'flex';
+                img.style.opacity = '0';
 
 
 
-                    placeholder.innerHTML = `
+                if (placeholder) {
 
 
 
-                      <div data-dp-photo-upload="1" style="display:flex;gap:10px;align-items:center">
+                  placeholder.style.display = 'flex';
 
 
 
-                        <i class="fas fa-cloud-upload-alt" style="opacity:.65"></i>
+                  placeholder.innerHTML = `
 
 
 
-                        <div>
+                    <div data-dp-photo-upload="1" data-dp-device-type="${this.escapeHtml(dtype)}" data-dp-device-id="${this.escapeHtml(deviceId || '')}" style="display:flex;gap:10px;align-items:center">
 
 
 
-                          <div>この設備には写真がありません。ここをクリックしてアップロードしてください。</div>
+                      <i class="fas fa-cloud-upload-alt" style="opacity:.65"></i>
 
 
 
-                          <div style="font-size:12px;opacity:.90;font-weight:800">
+                      <div>
 
 
 
-                            写真なし。クリックして撮影/アップロード (Chưa có ảnh. Bấm vào đây để tải/chụp ảnh)
+                        <div>この設備には写真がありません。ここをクリックしてアップロードしてください。</div>
 
 
 
-                          </div>
+                        <div style="font-size:12px;opacity:.90;font-weight:800">
+
+
+
+                          写真なし。クリックして撮影/アップロード (Chưa có ảnh. Bấm vào đây để tải/chụp ảnh)
 
 
 
@@ -11386,51 +11528,58 @@ Created: 2026-02-04
 
 
 
-                    `;
+                    </div>
 
 
 
-                  }
-
-
-
-                } else {
-
-
-
-                  img.style.opacity = '0';
-
-
-
-                  if (placeholder) placeholder.style.display = 'flex';
-
-
-
-
-
-
-
-                  img.onload = function () {
-
-
-
-                    img.style.opacity = '1';
-
-
-
-                    if (placeholder) placeholder.style.display = 'none';
-
-
-
-                  };
-
-
-
-                  img.src = thumbUrl;
+                  `;
 
 
 
                 }
+
+
+
+              } else {
+
+
+
+                img.style.opacity = '0';
+
+
+
+                if (placeholder) placeholder.style.display = 'flex';
+
+
+
+
+
+
+
+                img.onload = function () {
+
+
+
+                  img.style.opacity = '1';
+
+
+
+                  if (placeholder) placeholder.style.display = 'none';
+
+
+
+                };
+
+
+
+                const url = this.findFirstPhotoUrl(this.currentItem);
+
+
+
+                const code = (dtype === 'cutter') ? this.safeText(this.currentItem.CutterNo || this.currentItem.CutterID) : this.safeText(this.currentItem.MoldCode || this.currentItem.MoldID);
+
+
+                img.src = thumbUrl;
 
 
 
@@ -11631,17 +11780,7 @@ Created: 2026-02-04
 
 
     findFirstPhotoUrl(item) {
-
-
-
       if (!item) return '';
-
-
-
-
-
-
-
       const candidates = [
 
 
@@ -11895,41 +12034,12 @@ Created: 2026-02-04
 
 
     renderDesktopPhotoPreview(item) {
-
-
-
       const isCutter = !!(item && (item.CutterID || item.CutterNo || item.CutterName || item.CutterDesignCode));
-
-
-
       const title = isCutter ? '抜型写真 / Ảnh dao cắt' : '金型写真 / Ảnh khuôn';
-
-
-
-
-
-
-
       const url = this.findFirstPhotoUrl(item);
-
-
-
-      const code = isCutter
-
-
-
-        ? this.safeText(item.CutterNo || item.CutterID)
-
-
-
-        : this.safeText(item.MoldCode || item.MoldID);
-
-
-
-
-
-
-
+      const code = isCutter ? this.safeText(item.CutterNo || item.CutterID) : this.safeText(item.MoldCode || item.MoldID);
+      const dtype = isCutter ? 'cutter' : 'mold';
+      const did = isCutter ? (item.CutterID || item.CutterNo) : (item.MoldID || item.MoldCode);
       const hasCsvUrl = !!(url && String(url).trim());
 
 
@@ -11971,13 +12081,9 @@ Created: 2026-02-04
 
 
             <img data-dp-thumb-img="1"
-
-
-
+                data-dp-device-type="${this.escapeHtml(dtype)}"
+                data-dp-device-id="${this.escapeHtml(did || '')}"
                 src=""
-
-
-
                 alt=""
 
 
@@ -12058,7 +12164,7 @@ Created: 2026-02-04
 
 
 
-              <div data-dp-photo-upload="1" style="display:flex;gap:10px;align-items:center;max-width:360px">
+              <div data-dp-photo-upload="1" data-dp-device-type="${this.escapeHtml(dtype)}" data-dp-device-id="${this.escapeHtml(did || '')}" style="display:flex;gap:10px;align-items:center;max-width:360px">
 
 
 

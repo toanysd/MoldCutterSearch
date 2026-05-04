@@ -350,13 +350,12 @@ class SearchModule {
     const query = this.searchInput ? this.searchInput.value.trim() : '';
     this.currentQuery = query;
 
-    console.log('[SearchModule] Performing search:', query, '| addToHistory:', addToHistory, '| currentView:', window.ViewManager ? window.ViewManager.currentView : 'unknown');
+    console.log('[SearchModule] Performing search:', query);
 
     // [Tối ưu View State] Khi người dùng ấn Enter (hoặc bấm Search trên VirtualKeyboard) -> addToHistory = true
     // Ép giao diện lập tức trở về trang Molds (main search page) dù đang ở TrayManager hay GlobalHistory
     if (addToHistory && window.ViewManager && typeof window.ViewManager.switchView === 'function') {
       if (window.ViewManager.currentView !== 'mold') {
-        console.log('[SearchModule] Forcing switchView to mold from:', window.ViewManager.currentView);
         window.ViewManager.switchView('mold');
         
         // Reset category về 'all' để đảm bảo kết quả hiển thị đúng

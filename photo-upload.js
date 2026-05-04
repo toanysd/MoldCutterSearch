@@ -1,4 +1,4 @@
-// v9.0.2-2
+// v9.1.16
 /* ============================================================
    PHOTO UPLOAD v8.5.9
    Module chụp / upload / chỉnh sửa ảnh khuôn–dao cắt & vị trí

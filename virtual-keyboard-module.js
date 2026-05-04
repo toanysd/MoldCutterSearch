@@ -1018,13 +1018,11 @@
 
 
     VirtualKeyboard.prototype._submit = function () {
-        console.log('[VirtualKeyboard] _submit() started. currentText:', this.currentText, 'targetInput ID:', this.targetInput ? this.targetInput.id : 'none');
         this.close();
 
         var mainSearchInput = document.getElementById('searchInput');
 
         // Bất kể đang ở module nào (Tray, History), khi bấm Search -> ép về giao diện chính
-        console.log('[VirtualKeyboard] Calling ViewManager.switchView("mold")');
         if (window.ViewManager && typeof window.ViewManager.switchView === 'function') {
             window.ViewManager.switchView('mold');
             
@@ -1061,14 +1059,12 @@
             }
 
             // Gọi trực tiếp search module với addToHistory=true (explicit submit)
-            console.log('[VirtualKeyboard] Triggering app.searchModule.performSearch(true)');
             if (window.app && window.app.searchModule && typeof window.app.searchModule.performSearch === 'function') {
                 window.app.searchModule.performSearch(true);
             } else {
                 document.dispatchEvent(new CustomEvent('searchPerformed', { detail: { query: this.currentText, timestamp: Date.now() } }));
             }
         } else if (this.targetInput) {
-            console.log('[VirtualKeyboard] Triggering fallback performSearch(true)');
             if (window.app && window.app.searchModule && typeof window.app.searchModule.performSearch === 'function') {
                 window.app.searchModule.performSearch(true);
             } else {

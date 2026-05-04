@@ -1,4 +1,4 @@
-// v9.0.3
+// v9.0.5
 /**
 
  * Bàn phím Ảo (Virtual Keyboard Module)
@@ -1018,23 +1018,63 @@
 
 
     VirtualKeyboard.prototype._submit = function () {
-
+        console.log('[VirtualKeyboard] _submit() started. currentText:', this.currentText, 'targetInput ID:', this.targetInput ? this.targetInput.id : 'none');
         this.close();
 
-        if (this.targetInput) {
+        var mainSearchInput = document.getElementById('searchInput');
 
-            // Trigger Enter ảo
-
-            var evt = new KeyboardEvent('keydown', { key: 'Enter', keyCode: 13, bubbles: true });
-
-            this.targetInput.dispatchEvent(evt);
-
-            // Focus để Search module nhận biết? Gây bung bàn phím?
-
-            // Tốt nhất hệ thống hiện tại đang filter on input change tự động rồi.
-
+        // Bất kể đang ở module nào (Tray, History), khi bấm Search -> ép về giao diện chính
+        console.log('[VirtualKeyboard] Calling ViewManager.switchView("mold")');
+        if (window.ViewManager && typeof window.ViewManager.switchView === 'function') {
+            window.ViewManager.switchView('mold');
+            
+            // Cập nhật giao diện Mobile Nav
+            var navBtns = document.querySelectorAll('.mobile-nav-btn');
+            if (navBtns) navBtns.forEach(btn => btn.classList.remove('active'));
+            var moldBtn = document.getElementById('mobileNavMoldsBtn');
+            if (moldBtn) moldBtn.classList.add('active');
         }
 
+        // Đảm bảo Filter category là 'all' hoặc 'mold' thay vì bị kẹt ở 'tray'
+        if (window.app) {
+            if (window.app.selectedCategory === 'tray' || window.app.selectedCategory === 'history') {
+                window.app.selectedCategory = 'all';
+                var catDropdown = document.getElementById('categoryDropdown');
+                if (catDropdown) catDropdown.value = 'all';
+            }
+        }
+
+        if (mainSearchInput) {
+            mainSearchInput.value = this.currentText;
+
+            // Đóng tất cả các modal đang mở
+            if (window.PhotoUpload && typeof window.PhotoUpload.close === 'function') window.PhotoUpload.close();
+            if (window.SACTModule && typeof window.SACTModule.close === 'function') window.SACTModule.close();
+            if (window.LocationMoveModule && typeof window.LocationMoveModule.close === 'function') window.LocationMoveModule.close();
+            if (window.PhotoManagerModule && typeof window.PhotoManagerModule.close === 'function') window.PhotoManagerModule.close();
+
+            var detailPanel = document.getElementById('detailPanel');
+            if (detailPanel && detailPanel.classList.contains('open')) {
+                detailPanel.classList.remove('open', 'active');
+                var backdrop = document.getElementById('backdrop');
+                if (backdrop) backdrop.classList.remove('show');
+            }
+
+            // Gọi trực tiếp search module với addToHistory=true (explicit submit)
+            console.log('[VirtualKeyboard] Triggering app.searchModule.performSearch(true)');
+            if (window.app && window.app.searchModule && typeof window.app.searchModule.performSearch === 'function') {
+                window.app.searchModule.performSearch(true);
+            } else {
+                document.dispatchEvent(new CustomEvent('searchPerformed', { detail: { query: this.currentText, timestamp: Date.now() } }));
+            }
+        } else if (this.targetInput) {
+            console.log('[VirtualKeyboard] Triggering fallback performSearch(true)');
+            if (window.app && window.app.searchModule && typeof window.app.searchModule.performSearch === 'function') {
+                window.app.searchModule.performSearch(true);
+            } else {
+                document.dispatchEvent(new CustomEvent('searchPerformed', { detail: { query: this.currentText, timestamp: Date.now() } }));
+            }
+        }
     };
 
 

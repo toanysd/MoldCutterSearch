@@ -892,6 +892,26 @@ Created: 2026-02-04
 
 
 
+          <button class="detail-tab" data-tab="trayphotos" type="button">
+
+
+
+            <i class="fas fa-box"></i>
+
+
+
+            <span class="tab-label-ja">トレイ写真</span>
+
+
+
+            <span class="tab-label-vi">Ảnh khay</span>
+
+
+
+          </button>
+
+
+
           <button class="detail-tab" data-tab="comments" type="button">
 
 
@@ -1095,6 +1115,10 @@ Created: 2026-02-04
 
 
           <div class="detail-tab-content" data-tab-content="photos"></div>
+
+
+
+          <div class="detail-tab-content" data-tab-content="trayphotos"></div>
 
 
 
@@ -1595,21 +1619,13 @@ Created: 2026-02-04
 
 
     getTabModule(tabKey) {
-
-
-
       this.initModules();
-
-
-
       const k = String(tabKey || '').toLowerCase();
-
-
-
-      return (this._modules && this._modules[k]) ? this._modules[k] : null;
-
-
-
+      if (!this._modules) this._modules = {};
+      if (!this._modules[k] && window.DetailPanelTabModules && window.DetailPanelTabModules[k]) {
+        this._modules[k] = window.DetailPanelTabModules[k];
+      }
+      return this._modules[k] ? this._modules[k] : null;
     }
 
 
@@ -3961,9 +3977,26 @@ Created: 2026-02-04
 
 
 
+      // Cập nhật nhãn Tab Ảnh theo thiết bị (Mold / Cutter / Tray)
+      const photoTabBtn = this.panel.querySelector('.detail-tab[data-tab="photos"]');
+      if (photoTabBtn) {
+        const jaLabel = photoTabBtn.querySelector('.tab-label-ja');
+        const viLabel = photoTabBtn.querySelector('.tab-label-vi');
+        if (jaLabel && viLabel) {
+          if (this.currentItemType === 'cutter') {
+            jaLabel.textContent = '刃具写真';
+            viLabel.textContent = 'Ảnh dao';
+          } else if (this.currentItemType === 'tray') {
+            jaLabel.textContent = '本体写真'; // Ảnh chính của khay
+            viLabel.textContent = 'Ảnh thiết bị';
+          } else {
+            jaLabel.textContent = '金型写真';
+            viLabel.textContent = 'Ảnh khuôn';
+          }
+        }
+      }
+
       this.updateBackButtonState();
-
-
 
     }
 
@@ -3997,9 +4030,26 @@ Created: 2026-02-04
 
 
 
+      // Cập nhật nhãn Tab Ảnh theo thiết bị (Mold / Cutter / Tray)
+      const photoTabBtn = this.panel.querySelector('.detail-tab[data-tab="photos"]');
+      if (photoTabBtn) {
+        const jaLabel = photoTabBtn.querySelector('.tab-label-ja');
+        const viLabel = photoTabBtn.querySelector('.tab-label-vi');
+        if (jaLabel && viLabel) {
+          if (this.currentItemType === 'cutter') {
+            jaLabel.textContent = '刃具写真';
+            viLabel.textContent = 'Ảnh dao';
+          } else if (this.currentItemType === 'tray') {
+            jaLabel.textContent = '本体写真'; // Ảnh chính của khay
+            viLabel.textContent = 'Ảnh thiết bị';
+          } else {
+            jaLabel.textContent = '金型写真';
+            viLabel.textContent = 'Ảnh khuôn';
+          }
+        }
+      }
+
       this.updateBackButtonState();
-
-
 
     }
 
@@ -5767,6 +5817,7 @@ Created: 2026-02-04
 
 
         case 'photos': html = this.renderPhotosTab(); break;
+        case 'trayphotos': html = this.renderTrayPhotosTab(); break;
 
 
 
@@ -5999,6 +6050,8 @@ Created: 2026-02-04
 
 
         this.bindPhotosTab(container);
+      } else if (tabName === 'trayphotos') {
+        this.bindTrayPhotosTab(container);
 
 
 
@@ -11332,6 +11385,27 @@ Created: 2026-02-04
 
 
 
+        // (0) Hydrate Tray Thumbnail trong tab Thông tin chính
+        try {
+          const trayPlaceholders = document.querySelectorAll('[data-dp-tray-thumb-placeholder]');
+          for (let i = 0; i < trayPlaceholders.length; i++) {
+            const ph = trayPlaceholders[i];
+            const tId = ph.getAttribute('data-dp-tray-thumb-placeholder');
+            if (!tId) continue;
+            // Xóa attribute để không hydrate lại nhiều lần
+            ph.removeAttribute('data-dp-tray-thumb-placeholder');
+            
+            // Gọi lấy thumbnail
+            if (typeof window.DevicePhotoStore.getThumbnailUrl === 'function') {
+              window.DevicePhotoStore.getThumbnailUrl('tray', tId).then(tUrl => {
+                if (tUrl) {
+                  ph.innerHTML = `<img src="${tUrl}" style="width:100%;height:100%;object-fit:cover;" loading="lazy">`;
+                }
+              }).catch(e => { /* ignore */ });
+            }
+          }
+        } catch(e) {}
+
         // (A) Hydrate tất cả các khung ảnh lớn (Main Detail Panel + Preview Modal)
 
 
@@ -14863,7 +14937,23 @@ Created: 2026-02-04
 
 
 
-      const row3 = [{ label: this.biLabel('トレイ情報(指示書)', 'Thông tin khay (từ chỉ thị)'), rawValue: trayInfoInstruction }];
+            let trayIdForPhoto = '';
+      if (isTray) trayIdForPhoto = safeText(item.TrayID || item.ID);
+      else trayIdForPhoto = safeText(item.TrayID || item.TrayCode);
+
+      const trayPhotoHtml = (trayIdForPhoto && trayIdForPhoto !== '-' && trayIdForPhoto !== '---') ? `
+        <div style="display:flex;align-items:center;gap:12px;margin-top:6px;">
+          <div data-dp-tray-thumb-placeholder="${trayIdForPhoto}" style="width:48px;height:48px;border-radius:6px;background:var(--bg-sidebar,#f8fafc);border:1px solid var(--border-color,#e5e9f2);display:flex;align-items:center;justify-content:center;color:#94a3b8;flex-shrink:0;overflow:hidden;">
+            <i class="fas fa-box" style="font-size:20px;"></i>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:2px;">
+            <div style="font-weight:600;">${trayInfoInstruction}</div>
+            <div style="font-size:10px;color:var(--text-muted,#64748b);">ID: ${trayIdForPhoto}</div>
+          </div>
+        </div>
+      ` : trayInfoInstruction;
+
+      const row3 = [{ label: this.biLabel('トレイ情報(指示書)', 'Thông tin khay (từ chỉ thị)'), rawValue: trayPhotoHtml }];
 
 
 
@@ -21651,6 +21741,32 @@ Created: 2026-02-04
 
 
 
+
+    renderTrayPhotosTab() {
+      const mod = this.getTabModule('trayphotos');
+      if (mod && typeof mod.render === 'function') {
+        return mod.render(this);
+      }
+      return `
+        <div class="modal-section">
+          <div class="section-header">
+            <i class="fas fa-box"></i>
+            <span>Ảnh khay</span>
+          </div>
+          <div class="info-message">
+            Tab Ảnh khay đã được tách thành module riêng.
+          </div>
+        </div>
+      `;
+    }
+
+    bindTrayPhotosTab(container) {
+      const mod = this.getTabModule('trayphotos');
+      if (mod && typeof mod.bind === 'function') {
+        try { mod.bind(this, container); } catch (e) { /* ignore */ }
+        return;
+      }
+    }
 
     renderCommentsTab() {
 

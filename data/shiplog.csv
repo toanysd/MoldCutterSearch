@@ -1,4 +1,5 @@
 ShipID,CustomerID,ItemTypeID,ShipItemName,ShipDate,ToCompanyID,FromCompanyID,ShipItemType,ShipStatus,FromCompany,ToCompany,MoldID,CutterID,FrameID,OtherEquipID,WaterBaseID,ShipNotes,DateEntry,handler,EmployeeID,UpdatedAt,UpdatedBy
+SHIP314617,,,,2026-05-07,7,2,,,,,5781,,,,,Teflon,,,1,,
 WEB_SHIP_1777704653492_q23nuxcso,,,,2026-05-02,3,3,,Vận chuyển,,,5771,,,,,引取,2026-05-02T06:50:53.492Z,,1,,
 WEB_SHIP_1777539685189_7m62cm56n,,,,2026-04-30,2,2,,Vận chuyển,,,2300,,,,,丸大ー>ヨシダパッケージ,2026-04-30T09:01:25.189Z,,1,,
 WEB_SHIP_1777537420980_nemzekx8q,,,,2026-04-30,1,,,Vận chuyển,,,5795,,,,,金型・プラグ・圧空ベース　Ｚタイプ,2026-04-30T08:23:40.980Z,,1,,

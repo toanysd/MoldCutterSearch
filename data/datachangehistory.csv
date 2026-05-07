@@ -1,4 +1,5 @@
 DataChangeID,TableName,RecordID,RecordIDField,FieldName,OldValue,NewValue,ChangedAt,ChangedBy,BaseValueAtEdit,BaseCommitID,BaseCommitAt,ChangeSource,ChangeNote,IsConflict,ResolvedValue,ResolvedAt,ResolvedBy
+DCH1778138256720t0z6j,molds,810,MoldID,MoldWeight,,7.4,2026-05-07T07:17:33.510Z,1,,,,quick_update_v4,Wizard Update v4,FALSE,,,
 DCH1778138173263veyo3,molds,873,MoldID,MoldWeight,,10.5,2026-05-07T07:16:09.572Z,1,,,,quick_update_v4,Wizard Update v4,FALSE,,,
 DCH1777704658015_o66qtgbws,shiplog.csv,WEB_SHIP_1777704653492_q23nuxcso,ShipID,ShipID,,WEB_SHIP_1777704653492_q23nuxcso,2026-05-02,1,,,,api/add-shiplog,New shipment,FALSE,,,
 DCH1777704656243_4ow5tttpw,Molds,5771,MoldID,KeeperCompany,3,3,2026-05-02,1,,,,api/add-shiplog,引取,FALSE,,,

@@ -1,4 +1,5 @@
-﻿StatusLogID,MoldID,CutterID,ItemType,Status,Timestamp,EmployeeID,DestinationID,Notes,AuditDate,AuditType,SessionID,SessionName,SessionMode,AuditSessionID,UpdatedAt,UpdatedBy
+StatusLogID,MoldID,CutterID,ItemType,Status,Timestamp,EmployeeID,DestinationID,Notes,AuditDate,AuditType,SessionID,SessionName,SessionMode,AuditSessionID,UpdatedAt,UpdatedBy
+WEB_SL_1778281555062_s4kksjxnj,,3105,,IN,2026-05-08T23:05:54.636Z,1,AREA-MOLDROOM,,,,,,,,2026-05-09T08:05:55.323Z,1
 ,3192,,,,,1,13,台車,,,,,,,,
 ,5604,,,,,4,9,Viet,,,,,,,,
 ,3331,,,,,1,13,,,,,,,,,

@@ -1,4 +1,4 @@
-// v9.1.16
+// v9.1.23
 /* ============================================================
    PHOTO UPLOAD v8.5.9
    Module chụp / upload / chỉnh sửa ảnh khuôn–dao cắt & vị trí
@@ -754,6 +754,15 @@
     this._showFieldBadge('puCodeBadge', 'puCodeBadgeM', false, false);
     this._showFieldBadge('puDimBadge', 'puDimBadgeM', false, false);
 
+    var weightInput = document.getElementById('puMoldWeight');
+    var weightRow = document.getElementById('puWeightRow');
+    if (weightInput) {
+      weightInput.value = '';
+      weightInput.classList.remove('pu-input-auto');
+    }
+    if (weightRow) weightRow.classList.add('pu-hidden');
+    this._showFieldBadge('puWeightBadge', null, false, false);
+
     this._showDeviceSearch();
     var ds = document.getElementById('puDeviceSearch');
     if (ds) ds.value = '';
@@ -895,14 +904,70 @@
     if (!this._device) return;
     var d = this._device;
 
+    var dimsFromDM = '';
+    var weightFromDM = '';
+    var weightUnit = 'kg';
+    this._missingWeightItem = null;
+
+    if (d.type === 'tray' && d.id && global.DataManager && global.DataManager.data && global.DataManager.data.trays) {
+      var _tr = global.DataManager.data.trays.find(function(t) { return String(t.TrayID) === String(d.id) || String(t.TrayCode) === String(d.code); });
+      if (_tr) {
+         var trayName = _tr.MoldTrayName || _tr.TrayName || _tr.CustomerTrayName || _tr.TrayCode || _tr.TrayID || d.code;
+         if (d.isAuto && trayName) {
+            d.code = trayName;
+         }
+         weightFromDM = _tr.TrayWeight || _tr.ActualTrayWeight || '';
+         weightUnit = 'g';
+         var l = _tr.DimensionsLength || _tr.DimLength || _tr.Length || _tr.L || '';
+         var w = _tr.DimensionsWidth || _tr.DimWidth || _tr.Width || _tr.W || '';
+         var h = _tr.DimensionsDepth || _tr.DimDepth || _tr.Height || _tr.H || _tr.Depth || '';
+         var arr = [];
+         if (l) arr.push(l);
+         if (w) arr.push(w);
+         if (h) arr.push(h);
+         var _trDims = arr.join('x');
+         if (!_trDims) _trDims = _tr.displaySize || _tr.Size || _tr.Dimensions || '';
+         if (_trDims) dimsFromDM = _trDims;
+      }
+    } else if (d.id && global.DataManager && typeof global.DataManager.getAllItems === 'function') {
+      var _allItems = global.DataManager.getAllItems() || [];
+      for (var _i = 0; _i < _allItems.length; _i++) {
+        var _it = _allItems[_i];
+        var _m = (d.type === 'mold' && String(_it.MoldID) === String(d.id))
+          || (d.type === 'cutter' && String(_it.CutterID) === String(d.id));
+        if (_m) { 
+          dimsFromDM = _it.displayDimensions || _it.dimensions || ''; 
+          if (d.type === 'mold') {
+            weightFromDM = _it.MoldWeight || (_it.designInfo ? _it.designInfo.MoldDesignWeight : '') || '';
+            if (!weightFromDM) this._missingWeightItem = _it;
+          }
+          break; 
+        }
+      }
+    }
+
     /* Badge */
     var badge = document.getElementById('puDeviceBadge');
     if (badge) {
       var icon = '🔧 ';
       if (d.type === 'cutter') icon = '✂️ ';
       if (d.type === 'rack') icon = '📍 ';
+      if (d.type === 'tray') icon = '📦 ';
       badge.textContent = icon + d.code;
       badge.classList.remove('pu-hidden');
+
+      var self = this;
+      if (d.id && global.DevicePhotoStore && typeof global.DevicePhotoStore.getPhotos === 'function') {
+         global.DevicePhotoStore.getPhotos({ deviceType: d.type, deviceId: d.id })
+           .then(function(res) {
+              if (res && res.data && res.data.length > 0) {
+                 if (badge && self._device && d.id === self._device.id) {
+                    badge.textContent = icon + d.code + ' (' + res.data.length + ' ảnh)';
+                 }
+              }
+           })
+           .catch(function() {});
+      }
     }
 
     /* Cập nhật Dropdown Loại Thiết bị cho khớp, KHÔNG ẨN đi để giữ layout tự nhiên */
@@ -937,27 +1002,7 @@
     var dimInput = document.getElementById('puDimensions');
     var weightInput = document.getElementById('puMoldWeight');
     var weightRow = document.getElementById('puWeightRow');
-    var dimsFromDM = '';
-    var weightFromDM = '';
-    
-    this._missingWeightItem = null;
 
-    if (d.id && global.DataManager && typeof global.DataManager.getAllItems === 'function') {
-      var _allItems = global.DataManager.getAllItems() || [];
-      for (var _i = 0; _i < _allItems.length; _i++) {
-        var _it = _allItems[_i];
-        var _m = (d.type === 'mold' && String(_it.MoldID) === String(d.id))
-          || (d.type === 'cutter' && String(_it.CutterID) === String(d.id));
-        if (_m) { 
-          dimsFromDM = _it.displayDimensions || _it.dimensions || ''; 
-          if (d.type === 'mold') {
-            weightFromDM = _it.MoldWeight || (_it.designInfo ? _it.designInfo.MoldDesignWeight : '') || '';
-            if (!weightFromDM) this._missingWeightItem = _it;
-          }
-          break; 
-        }
-      }
-    }
     var finalDims = dimsFromDM || d.dims || '';
     if (dimInput) {
       dimInput.value = finalDims;
@@ -968,9 +1013,9 @@
     this._showFieldBadge('puDimBadge', 'puDimBadgeM', dimIsAuto, !!(!dimIsAuto && !!finalDims));
 
     if (weightRow && weightInput) {
-      if (d.type === 'mold') {
+      if (d.type === 'mold' || d.type === 'tray') {
         weightRow.classList.remove('pu-hidden');
-        weightInput.value = weightFromDM ? weightFromDM + ' kg' : '';
+        weightInput.value = weightFromDM ? weightFromDM + ' ' + weightUnit : '';
         weightInput.classList.toggle('pu-input-auto', !!weightFromDM);
         this._showFieldBadge('puWeightBadge', null, !!weightFromDM, false);
       } else {
@@ -1050,12 +1095,90 @@
     if (typeBtns.length && targetTypeSel) {
       typeBtns.forEach(function(btn) {
         btn.addEventListener('click', function() {
+          var newVal = this.dataset.val;
+          var currentLockedType = 'none';
+          if (self._device) {
+             if (self._device.type === 'mold' || self._device.type === 'cutter') currentLockedType = 'device';
+             else currentLockedType = self._device.type;
+          }
+          var needClear = (!self._device && targetTypeSel.value !== newVal) || (self._device && currentLockedType !== newVal);
+
           typeBtns.forEach(function(b) { b.classList.remove('active'); });
           this.classList.add('active');
-          targetTypeSel.value = this.dataset.val;
+          targetTypeSel.value = newVal;
           var event = document.createEvent('HTMLEvents');
           event.initEvent('change', false, true);
           targetTypeSel.dispatchEvent(event);
+
+          if (needClear) {
+             var autoTray = null;
+             if (newVal === 'tray' && self._openCtx && (self._openCtx.deviceType === 'mold' || self._openCtx.deviceType === 'cutter')) {
+                 var _allItems = (global.DataManager && typeof global.DataManager.getAllItems === 'function') ? global.DataManager.getAllItems() : [];
+                 for (var _i = 0; _i < _allItems.length; _i++) {
+                     var _it = _allItems[_i];
+                     if ((self._openCtx.deviceType === 'mold' && String(_it.MoldID) === String(self._openCtx.deviceId)) ||
+                         (self._openCtx.deviceType === 'cutter' && String(_it.CutterID) === String(self._openCtx.deviceId))) {
+                         var tId = _it.TrayID || _it.TrayCode || (_it.trayInfo ? (_it.trayInfo.TrayID || _it.trayInfo.TrayCode) : '') || (_it.designInfo ? (_it.designInfo.TrayID || _it.designInfo.TrayCode) : '') || '';
+                         if (tId) {
+                             autoTray = {
+                                 type: 'tray',
+                                 id: String(tId),
+                                 code: String(tId),
+                                 dims: '',
+                                 isAuto: true
+                             };
+                             if (global.DataManager && global.DataManager.data && global.DataManager.data.trays) {
+                                 var tr = global.DataManager.data.trays.find(function(t) { return String(t.TrayID) === String(tId) || String(t.TrayCode) === String(tId); });
+                                 if (tr) {
+                                     autoTray.id = tr.TrayID ? String(tr.TrayID) : String(tId);
+                                     autoTray.code = tr.TrayCode || tr.TrayID || String(tId);
+                                     var l = tr.DimensionsLength || tr.DimLength || tr.Length || tr.L || '';
+                                     var w = tr.DimensionsWidth || tr.DimWidth || tr.Width || tr.W || '';
+                                     var h = tr.DimensionsDepth || tr.DimDepth || tr.Height || tr.H || tr.Depth || '';
+                                     var arr = [];
+                                     if (l) arr.push(l);
+                                     if (w) arr.push(w);
+                                     if (h) arr.push(h);
+                                     var _trDims = arr.join('x');
+                                     if (!_trDims) _trDims = tr.displaySize || tr.Size || tr.Dimensions || '';
+                                     autoTray.dims = _trDims;
+                                 }
+                             }
+                         }
+                         break;
+                     }
+                 }
+             }
+
+             var originalMatch = null;
+             if (self._openCtx && self._openCtx.deviceId) {
+                 var mappedType = self._openCtx.deviceType === 'mold' || self._openCtx.deviceType === 'cutter' ? 'device' : self._openCtx.deviceType;
+                 if (newVal === mappedType) {
+                     originalMatch = {
+                         type: self._openCtx.deviceType,
+                         id: String(self._openCtx.deviceId),
+                         code: self._openCtx.deviceCode || '',
+                         dims: self._openCtx.deviceDims || '',
+                         isAuto: true
+                     };
+                 }
+             }
+
+             if (originalMatch) {
+                 self._selectDevice(originalMatch);
+             } else if (autoTray) {
+                 self._selectDevice(autoTray);
+             } else {
+                 self._clearDeviceLink();
+             }
+          }
+          if (newVal === 'other') {
+             if (!self._device || !self._device.code || !self._device.code.startsWith('unknown_')) {
+                 self._applyQuickName('other');
+             }
+             var searchBlock = document.getElementById('puDeviceSearchBlock');
+             if (searchBlock) searchBlock.classList.add('pu-hidden');
+          }
         });
       });
       // Update buttons when select value changes programmatically
@@ -1064,6 +1187,11 @@
         typeBtns.forEach(function(b) {
           b.classList.toggle('active', b.dataset.val === val);
         });
+        var searchBlock = document.getElementById('puDeviceSearchBlock');
+        if (searchBlock) {
+          if (val === 'other') searchBlock.classList.add('pu-hidden');
+          else searchBlock.classList.remove('pu-hidden');
+        }
       });
     }
 
@@ -2133,10 +2261,11 @@
     this._applyDeviceContext();
   };
 
-  PhotoUploadModule.prototype._applyQuickName = function () {
+  PhotoUploadModule.prototype._applyQuickName = function (explicitType) {
     var ts = Date.now();
     var code = 'unknown_' + ts;
-    this._device = { type: 'mold', id: '', code: code, dims: '', isAuto: false };
+    var tType = (typeof explicitType === 'string') ? explicitType : 'mold';
+    this._device = { type: tType, id: '', code: code, dims: '', isAuto: false };
     var codeInput = document.getElementById('puDeviceCode');
     if (codeInput) { codeInput.value = code; codeInput.readOnly = false; }
     this._showFieldBadge('puCodeBadge', 'puCodeBadgeM', false, true);
@@ -2307,12 +2436,21 @@
       deviceType = this._device.type;
     } else {
       var selType = document.getElementById('puTargetTypeSelect');
-      if (selType && selType.value === 'rack') {
-        deviceType = 'rack';
-        localStorage.setItem('pu_saved_target_type', 'rack');
-      } else if (selType) {
-        deviceType = 'mold';
-        localStorage.setItem('pu_saved_target_type', 'device');
+      if (selType && selType.value) {
+        var v = selType.value;
+        if (v === 'device') {
+          deviceType = 'mold';
+          localStorage.setItem('pu_saved_target_type', 'device');
+        } else if (v === 'rack') {
+          deviceType = 'rack';
+          localStorage.setItem('pu_saved_target_type', 'rack');
+        } else if (v === 'tray') {
+          deviceType = 'tray';
+          localStorage.setItem('pu_saved_target_type', 'tray');
+        } else if (v === 'other') {
+          deviceType = 'other';
+          localStorage.setItem('pu_saved_target_type', 'other');
+        }
       }
     }
 

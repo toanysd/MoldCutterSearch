@@ -1,4 +1,4 @@
-// v10.0.1
+// v10.0.2
 /**
  * qr-export.js
  * ===========================================================
@@ -345,23 +345,23 @@
         const dataUrl = this.generateLocalQR(payload, 300);
 
         let textHtml = '';
-        if (showCode) textHtml += \`<div class="lbl-code">\${item.code}</div>\`;
-        if (showName) textHtml += \`<div class="lbl-name">\${item.name}</div>\`;
+        if (showCode) textHtml += `<div class="lbl-code">${item.code}</div>`;
+        if (showName) textHtml += `<div class="lbl-name">${item.name}</div>`;
 
-        labelsHtml += \`
-          <div class="qr-label" style="width: \${sizeMm}mm;">
-            <img src="\${dataUrl}" alt="QR">
-            \${textHtml}
+        labelsHtml += `
+          <div class="qr-label" style="width: ${sizeMm}mm;">
+            <img src="${dataUrl}" alt="QR">
+            ${textHtml}
           </div>
-        \`;
+        `;
       });
 
-      const html = \`
+      const html = `
         <!DOCTYPE html>
         <html lang="ja">
         <head>
           <meta charset="UTF-8">
-          <title>一括印刷 / Mass Print QR (\${validItems.length})</title>
+          <title>一括印刷 / Mass Print QR (${validItems.length})</title>
           <style>
             @page {
               size: A4;
@@ -377,7 +377,7 @@
             }
             .grid-container {
               display: grid;
-              grid-template-columns: repeat(auto-fill, minmax(\${sizeMm}mm, 1fr));
+              grid-template-columns: repeat(auto-fill, minmax(${sizeMm}mm, 1fr));
               gap: 10mm 5mm;
               justify-content: center;
               padding: 10mm;
@@ -427,14 +427,14 @@
         </head>
         <body>
           <div class="grid-container">
-            \${labelsHtml}
+            ${labelsHtml}
           </div>
           <script>
             window.onload = () => { setTimeout(() => window.print(), 500); };
           </script>
         </body>
         </html>
-      \`;
+      `;
       win.document.open();
       win.document.write(html);
       win.document.close();
@@ -451,7 +451,7 @@
       if (document.getElementById('export-qr-v2-styles')) return;
       const style = document.createElement('style');
       style.id = 'export-qr-v2-styles';
-      style.textContent = \`
+      style.textContent = `
         .qre-modal-backdrop {
           position: fixed; inset: 0; z-index: 11000;
           display: flex; align-items: center; justify-content: center;
@@ -513,7 +513,7 @@
         .qre-config-grid { display: flex; flex-direction: column; gap: 16px; }
         .qre-config-item label { display: block; font-size: 13px; color: #64748b; margin-bottom: 6px; font-weight: 500; }
         .qre-config-item select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; }
-      \`;
+      `;
       document.head.appendChild(style);
     }
   }

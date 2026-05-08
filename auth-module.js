@@ -238,6 +238,9 @@
                     if (authLoader) authLoader.style.display = 'flex';
 
                     // Ẩn Empty Banner, Bật Loading Banner để tránh hiểu nhầm phải đăng nhập lại
+                    var areas = document.querySelectorAll('.content-area:not(#app-loading-state-banner)');
+                    areas.forEach(function (a) { a.style.display = 'none'; });
+
                     var es = document.getElementById('app-empty-state-banner');
                     var ls = document.getElementById('app-loading-state-banner');
                     if (es) es.style.display = 'none';
@@ -316,6 +319,9 @@
                 passInput.value = '';
 
                 // Đổi ngay sang Loading Banner để tránh giật giao diện
+                var areas = document.querySelectorAll('.content-area:not(#app-loading-state-banner)');
+                areas.forEach(function (a) { a.style.display = 'none'; });
+
                 var es = document.getElementById('app-empty-state-banner');
                 var ls = document.getElementById('app-loading-state-banner');
                 if (es) es.style.display = 'none';

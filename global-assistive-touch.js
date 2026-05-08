@@ -61,7 +61,7 @@ Updated: 2026-03-03
 
     icon_only: false,
 
-    enabled_actions: ['inout','move','inventory','qr','teflon','photo'],
+    enabled_actions: ['qu-weight','inout','move','inventory','qr','teflon','photo'],
 
     assistive_pos: { left: 14, top: null, right: null, bottom: null }
 
@@ -186,32 +186,33 @@ Updated: 2026-03-03
     st.textContent = `
 
       /* Settings + button visibility (fallback) */
-
-      #dpGlobalLayer .dp-at-settings-sheet{ position:fixed; z-index:2400; left:12px; right:12px; bottom:calc(12px + env(safe-area-inset-bottom)); max-height:70vh; overflow:auto; background:rgba(255,255,255,0.92); backdrop-filter:blur(14px) saturate(1.15); -webkit-backdrop-filter:blur(14px) saturate(1.15); border:1px solid rgba(2,6,23,0.14); border-radius:16px; box-shadow:0 18px 50px rgba(2,6,23,0.18); padding:10px; display:none; }
-
-      #dpGlobalLayer .dp-at-settings-title{ font-weight:950; font-size:13px; margin:2px 2px 10px; color:rgba(15,23,42,0.90); }
-
-      #dpGlobalLayer .dp-at-row{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 8px; border-radius:12px; border:1px solid rgba(2,6,23,0.10); background:rgba(255,255,255,0.88); margin-bottom:8px; }
-
-      #dpGlobalLayer .dp-at-row label{ font-weight:850; font-size:12px; color:rgba(15,23,42,0.86); }
-
-      #dpGlobalLayer .dp-at-row .hint{ font-size:11px; color:rgba(15,23,42,0.65); font-weight:650; }
-
-      #dpGlobalLayer .dp-at-actions-grid{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-
-      #dpGlobalLayer .dp-at-chip{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 10px; border-radius:14px; border:1px solid rgba(2,6,23,0.10); background:rgba(255,255,255,0.90); }
-
-      #dpGlobalLayer .dp-at-chip .left{ display:flex; align-items:center; gap:10px; min-width:0; }
-
-      #dpGlobalLayer .dp-at-chip i{ width:18px; text-align:center; color:rgba(15,23,42,0.75); }
-
-      #dpGlobalLayer .dp-at-chip .name{ font-weight:900; font-size:12px; color:rgba(15,23,42,0.92); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-
-      #dpGlobalLayer .dp-at-btns{ display:flex; gap:8px; margin-top:10px; }
-
-      #dpGlobalLayer .dp-at-btn{ flex:1 1 auto; height:42px; border-radius:14px; border:1px solid rgba(2,6,23,0.12); background:rgba(255,255,255,0.90); font-weight:950; cursor:pointer; }
-
-      #dpGlobalLayer .dp-at-btn.primary{ background:rgba(102,126,234,0.92); border-color:rgba(102,126,234,0.30); color:#fff; }
+      /* Modal Overlay */
+      #dpGlobalLayer .dp-at-modal{ position:fixed; z-index:4000; left:0; top:0; width:100%; height:100%; display:flex; align-items:flex-end; justify-content:center; background:rgba(0,0,0,0); pointer-events:none; transition:background 0.3s; }
+      #dpGlobalLayer .dp-at-modal.dp-show{ background:rgba(0,0,0,0.5); pointer-events:auto; }
+      #dpGlobalLayer .dp-at-settings-sheet{ width:100%; max-height:90vh; background:#fff; border-radius:20px 20px 0 0; padding:20px; padding-bottom:max(20px, env(safe-area-inset-bottom)); transform:translateY(100%); transition:transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1); overflow-y:auto; position:relative; box-shadow:0 -10px 40px rgba(0,0,0,0.15); display:block; }
+      #dpGlobalLayer .dp-at-modal.dp-show .dp-at-settings-sheet{ transform:translateY(0); }
+      #dpGlobalLayer .dp-at-drag-handle { width:36px; height:5px; background:rgba(0,0,0,0.15); border-radius:3px; margin:-10px auto 16px; }
+      #dpGlobalLayer .dp-at-settings-title{ font-weight:900; font-size:16px; margin:0 0 16px; color:#0f172a; text-align:center; letter-spacing:-0.3px; }
+      
+      #dpGlobalLayer .dp-at-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 14px; border-radius:14px; border:1px solid #e2e8f0; background:#f8fafc; margin-bottom:10px; }
+      #dpGlobalLayer .dp-at-row label{ font-weight:800; font-size:13px; color:#1e293b; }
+      #dpGlobalLayer .dp-at-row .hint{ font-size:11px; color:#64748b; font-weight:600; margin-top:2px; }
+      
+      #dpGlobalLayer .dp-at-actions-grid{ display:grid; grid-template-columns:1fr; gap:10px; }
+      @media(min-width: 480px){ #dpGlobalLayer .dp-at-actions-grid{ grid-template-columns:1fr 1fr; } }
+      
+      #dpGlobalLayer .dp-at-chip{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 14px; border-radius:14px; border:1px solid #e2e8f0; background:#fff; box-shadow:0 1px 2px rgba(0,0,0,0.02); transition:border-color 0.2s, background 0.2s; cursor:pointer; }
+      #dpGlobalLayer .dp-at-chip:active { background:#f8fafc; }
+      #dpGlobalLayer .dp-at-chip .left{ display:flex; align-items:center; gap:12px; min-width:0; flex:1; }
+      #dpGlobalLayer .dp-at-chip i{ width:26px; height:26px; border-radius:6px; background:#f1f5f9; display:flex; align-items:center; justify-content:center; color:#475569; font-size:13px; }
+      #dpGlobalLayer .dp-at-chip .name{ font-weight:800; font-size:13px; color:#1e293b; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+      #dpGlobalLayer .dp-at-chip .name span { opacity:0.7; font-weight:700; font-size:11px; margin-left:4px; color:#64748b; }
+      #dpGlobalLayer .dp-at-chip input[type="checkbox"] { width:20px; height:20px; accent-color:#2563eb; cursor:pointer; margin:0; }
+      
+      #dpGlobalLayer .dp-at-btns{ display:flex; gap:10px; margin-top:20px; }
+      #dpGlobalLayer .dp-at-btn{ flex:1; height:46px; border-radius:12px; border:none; background:#e2e8f0; color:#334155; font-weight:800; font-size:14px; cursor:pointer; transition:transform 0.1s, background 0.2s; }
+      #dpGlobalLayer .dp-at-btn:active { transform:scale(0.96); }
+      #dpGlobalLayer .dp-at-btn.primary{ background:#2563eb; color:#fff; box-shadow:0 4px 12px rgba(37,99,235,0.3); }
 
 
 
@@ -680,105 +681,73 @@ Updated: 2026-03-03
 
 
   function buildSettingsSheet(panelEl){
+    let modal = panelEl.querySelector('.dp-at-modal');
+    if(modal) return modal.querySelector('.dp-at-settings-sheet');
 
-    let sheet = panelEl.querySelector('.dp-at-settings-sheet');
-
-    if(sheet) return sheet;
-
-
-
-    sheet = document.createElement('div');
-
+    modal = document.createElement('div');
+    modal.className = 'dp-at-modal';
+    
+    let sheet = document.createElement('div');
     sheet.className = 'dp-at-settings-sheet';
-
     sheet.setAttribute('data-dp-at-settings','1');
 
-
-
     sheet.innerHTML = `
-
-      <div class="dp-at-settings-title">設定 | Thiết lập Action (Mobile)</div>
-
-
+      <div class="dp-at-drag-handle"></div>
+      <div class="dp-at-settings-title">Thiết lập Action (Mobile)</div>
 
       <div class="dp-at-row" data-dp-at-mode>
-
-        <div>
-
+        <div style="flex:1;">
           <label>Kiểu hiển thị</label>
-
           <div class="hint">Chỉ hiển thị ở tab Thông tin</div>
-
         </div>
-
-        <div style="display:flex;gap:10px;align-items:center;">
-
-          <label style="display:flex;gap:6px;align-items:center;font-weight:850;font-size:12px;cursor:pointer;">
-
-            <input type="radio" name="dp_at_mode" value="bar" />
-
+        <div style="display:flex;gap:12px;align-items:center;">
+          <label style="display:flex;gap:6px;align-items:center;font-weight:700;font-size:13px;cursor:pointer;">
+            <input type="radio" name="dp_at_mode" value="bar" style="accent-color:#2563eb;width:16px;height:16px;margin:0;" />
             Thanh đáy
-
           </label>
-
-          <label style="display:flex;gap:6px;align-items:center;font-weight:850;font-size:12px;cursor:pointer;">
-
-            <input type="radio" name="dp_at_mode" value="assistive" />
-
+          <label style="display:flex;gap:6px;align-items:center;font-weight:700;font-size:13px;cursor:pointer;">
+            <input type="radio" name="dp_at_mode" value="assistive" style="accent-color:#2563eb;width:16px;height:16px;margin:0;" />
             Assistive
-
           </label>
-
         </div>
-
       </div>
-
-
 
       <div class="dp-at-row" data-dp-at-icononly>
-
-        <div>
-
-          <label>Icon-only (siêu gọn)</label>
-
+        <div style="flex:1;">
+          <label>Giao diện siêu gọn</label>
           <div class="hint">Ẩn chữ, chỉ hiện icon</div>
-
         </div>
-
         <div>
-
-          <input type="checkbox" data-dp-at-icononly-toggle />
-
+          <input type="checkbox" data-dp-at-icononly-toggle style="accent-color:#2563eb;width:20px;height:20px;margin:0;cursor:pointer;" />
         </div>
-
       </div>
 
-
-
-      <div style="margin:10px 2px 8px; font-weight:950; font-size:12px; color:rgba(15,23,42,0.86);">Chọn nút hiển thị</div>
-
+      <div style="margin:16px 4px 8px; font-weight:800; font-size:13px; color:#475569;">Chọn nút hiển thị</div>
       <div class="dp-at-actions-grid" data-dp-at-actions></div>
 
-
-
       <div class="dp-at-btns">
-
         <button class="dp-at-btn" type="button" data-dp-at-close>Đóng</button>
-
-        <button class="dp-at-btn" type="button" data-dp-at-reset>Reset</button>
-
+        <button class="dp-at-btn" type="button" style="background:#fee2e2; color:#ef4444;" data-dp-at-reset>Reset</button>
         <button class="dp-at-btn primary" type="button" data-dp-at-apply>Áp dụng</button>
-
       </div>
-
     `;
 
+    modal.appendChild(sheet);
+    panelEl.appendChild(modal);
 
+    // Bind swipe to close
+    if(window.SwipeHistoryTrap){
+      window.SwipeHistoryTrap.bindSwipe(modal, () => {
+        closeSettingsSheet(sheet);
+      }, { followFinger: true });
+    }
 
-    panelEl.appendChild(sheet);
+    // Close on background click
+    modal.addEventListener('click', (e) => {
+      if(e.target === modal) closeSettingsSheet(sheet);
+    });
 
     return sheet;
-
   }
 
 
@@ -799,22 +768,14 @@ Updated: 2026-03-03
 
     ACTIONS.forEach(a=>{
 
-      const chip = document.createElement('div');
-
+      const chip = document.createElement('label');
       chip.className = 'dp-at-chip';
 
-
-
       const left = document.createElement('div');
-
       left.className = 'left';
-
-      left.innerHTML = `<i class="${escapeHtml(a.icon)}"></i><div class="name">${escapeHtml(a.jp)}<span style="opacity:.65;font-weight:800;"> | ${escapeHtml(a.vi)}</span></div>`;
-
-
+      left.innerHTML = `<i class="${escapeHtml(a.icon)}"></i><div class="name">${escapeHtml(a.jp)}<span> | ${escapeHtml(a.vi)}</span></div>`;
 
       const right = document.createElement('div');
-
       right.innerHTML = `<input type="checkbox" data-dp-at-action="${escapeHtml(a.key)}" ${enabledSet.has(a.key)?'checked':''} />`;
 
 
@@ -831,9 +792,24 @@ Updated: 2026-03-03
 
 
 
-  function openSettingsSheet(sheet){ showEl(sheet, 'block'); }
+  function openSettingsSheet(sheet){
+    if(!sheet) return;
+    const modal = sheet.closest('.dp-at-modal');
+    if(modal){
+        modal.style.display = 'flex';
+        void modal.offsetWidth; // force reflow
+        modal.classList.add('dp-show');
+    }
+  }
 
-  function closeSettingsSheet(sheet){ hideEl(sheet); }
+  function closeSettingsSheet(sheet){
+    if(!sheet) return;
+    const modal = sheet.closest('.dp-at-modal');
+    if(modal){
+        modal.classList.remove('dp-show');
+        setTimeout(()=>{ if(!modal.classList.contains('dp-show')) modal.style.display = 'none'; }, 300);
+    }
+  }
 
 
 

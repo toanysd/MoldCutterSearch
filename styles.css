@@ -1992,7 +1992,8 @@ body.detail-panel-open .results-container {
 
   .sidebar.open { transform: translateX(0); }
 
-  .main-content { margin-left: 0; }
+  .sidebar ~ .main-content,
+  .sidebar.collapsed ~ .main-content { margin-left: 0 !important; }
 
 
 

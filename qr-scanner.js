@@ -288,13 +288,24 @@
         requestAnimationFrame(() => this.scanTick());
       } catch (err) {
         console.error('[QRScanSearch] Lỗi truy cập Camera:', err);
-        // Draw error message on canvas so user knows the modal works but camera failed
-        this.state.ctx.fillStyle = '#111';
-        this.state.ctx.fillRect(0, 0, this.state.canvas.width || 300, this.state.canvas.height || 200);
+        // Set canvas size so error message is visible
+        const cw = 400, ch = 250;
+        this.state.canvas.width = cw;
+        this.state.canvas.height = ch;
+        this.state.ctx.fillStyle = '#1a1a2e';
+        this.state.ctx.fillRect(0, 0, cw, ch);
+        // Icon placeholder
         this.state.ctx.fillStyle = '#ef4444';
-        this.state.ctx.font = '14px Arial';
+        this.state.ctx.font = 'bold 40px Arial';
         this.state.ctx.textAlign = 'center';
-        this.state.ctx.fillText('Camera Error: ' + err.message, (this.state.canvas.width || 300) / 2, (this.state.canvas.height || 200) / 2);
+        this.state.ctx.fillText('⚠', cw / 2, ch / 2 - 30);
+        // Error text
+        this.state.ctx.fillStyle = '#fff';
+        this.state.ctx.font = 'bold 14px Arial';
+        this.state.ctx.fillText('カメラ接続エラー / Lỗi Camera', cw / 2, ch / 2 + 10);
+        this.state.ctx.fillStyle = '#94a3b8';
+        this.state.ctx.font = '12px Arial';
+        this.state.ctx.fillText(err.message || 'Unknown error', cw / 2, ch / 2 + 35);
       }
     },
 

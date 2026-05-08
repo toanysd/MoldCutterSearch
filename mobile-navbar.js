@@ -75,8 +75,16 @@ class MobileNavbar {
                 }
                 break;
             case 'qrscan':
+                console.log('[MobileNavbar] QR scan tapped. QRScanSearch =', !!window.QRScanSearch);
                 if (window.QRScanSearch && typeof window.QRScanSearch.openModal === 'function') {
                     window.QRScanSearch.openModal();
+                } else {
+                    console.warn('[MobileNavbar] QRScanSearch not ready, retry in 500ms');
+                    setTimeout(() => {
+                        if (window.QRScanSearch && typeof window.QRScanSearch.openModal === 'function') {
+                            window.QRScanSearch.openModal();
+                        }
+                    }, 500);
                 }
                 this.setActive(null);
                 break;

@@ -1,4 +1,4 @@
-// v9.0.2
+// v9.0.3
 /* ============================================================================
 
 DetailPanel AssistiveTouch Module v8.4.3-2
@@ -693,42 +693,42 @@ Updated: 2026-03-03
 
     sheet.innerHTML = `
       <div class="dp-at-drag-handle"></div>
-      <div class="dp-at-settings-title">Thiết lập Action (Mobile)</div>
+      <div class="dp-at-settings-title">アクション設定 | Thiết lập Action (Mobile)</div>
 
       <div class="dp-at-row" data-dp-at-mode>
         <div style="flex:1;">
-          <label>Kiểu hiển thị</label>
-          <div class="hint">Chỉ hiển thị ở tab Thông tin</div>
+          <label>表示モード | Kiểu hiển thị</label>
+          <div class="hint">情報タブのみ表示 | Chỉ hiển thị ở tab Thông tin</div>
         </div>
         <div style="display:flex;gap:12px;align-items:center;">
           <label style="display:flex;gap:6px;align-items:center;font-weight:700;font-size:13px;cursor:pointer;">
             <input type="radio" name="dp_at_mode" value="bar" style="accent-color:#2563eb;width:16px;height:16px;margin:0;" />
-            Thanh đáy
+            ボトムバー | Thanh đáy
           </label>
           <label style="display:flex;gap:6px;align-items:center;font-weight:700;font-size:13px;cursor:pointer;">
             <input type="radio" name="dp_at_mode" value="assistive" style="accent-color:#2563eb;width:16px;height:16px;margin:0;" />
-            Assistive
+            アシスティブ | Nổi
           </label>
         </div>
       </div>
 
       <div class="dp-at-row" data-dp-at-icononly>
         <div style="flex:1;">
-          <label>Giao diện siêu gọn</label>
-          <div class="hint">Ẩn chữ, chỉ hiện icon</div>
+          <label>コンパクトUI | Giao diện siêu gọn</label>
+          <div class="hint">アイコンのみ表示 | Ẩn chữ, chỉ hiện icon</div>
         </div>
         <div>
           <input type="checkbox" data-dp-at-icononly-toggle style="accent-color:#2563eb;width:20px;height:20px;margin:0;cursor:pointer;" />
         </div>
       </div>
 
-      <div style="margin:16px 4px 8px; font-weight:800; font-size:13px; color:#475569;">Chọn nút hiển thị</div>
+      <div style="margin:16px 4px 8px; font-weight:800; font-size:13px; color:#475569;">表示するボタンを選択 | Chọn nút hiển thị</div>
       <div class="dp-at-actions-grid" data-dp-at-actions></div>
 
       <div class="dp-at-btns">
-        <button class="dp-at-btn" type="button" data-dp-at-close>Đóng</button>
-        <button class="dp-at-btn" type="button" style="background:#fee2e2; color:#ef4444;" data-dp-at-reset>Reset</button>
-        <button class="dp-at-btn primary" type="button" data-dp-at-apply>Áp dụng</button>
+        <button class="dp-at-btn" type="button" data-dp-at-close>閉じる | Đóng</button>
+        <button class="dp-at-btn" type="button" style="background:#fee2e2; color:#ef4444;" data-dp-at-reset>リセット | Đặt lại</button>
+        <button class="dp-at-btn primary" type="button" data-dp-at-apply>適用 | Áp dụng</button>
       </div>
     `;
 

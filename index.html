@@ -381,7 +381,7 @@
                                 </div>
                             </a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item" id="sidebarActionSettingsItem">
                             <a href="#" id="sidebarActionSettingsBtn" class="nav-link">
                                 <i class="fas fa-bolt" style="color:#60a5fa;"></i>
                                 <div class="nav-link-text">
@@ -390,6 +390,11 @@
                                 </div>
                             </a>
                         </li>
+                        <style>
+                            @media (min-width: 769px) {
+                                #sidebarActionSettingsItem { display: none !important; }
+                            }
+                        </style>
                         <li class="nav-item">
                             <a href="#" id="sidebarRefreshDataBtn" class="nav-link"
                                 onclick="document.getElementById('data-refresh-modal').style.display='flex';">
@@ -807,7 +812,7 @@
     <link rel="stylesheet" href="extended-editor.css">
     <script src="dp-extended-editor.js?v=v10.2.10-AssistiveRedesign"></script>
 
-    <script src="global-assistive-touch.js?v=v10.2.10-SettingsFix"></script>
+    <script src="global-assistive-touch.js?v=v10.2.11-SettingsBilingual"></script>
     <script src="detail-panel-photos-tab.js?v=v8.4.3-1"></script>
     <script src="detail-panel-trayphotos-tab.js?v=v10.2.7"></script>
     <script src="detail-panel-related-tab.js?v=v8.4.6"></script>

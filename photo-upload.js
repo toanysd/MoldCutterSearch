@@ -1,4 +1,4 @@
-// v9.1.23
+// v9.1.24
 /* ============================================================
    PHOTO UPLOAD v8.5.9
    Module chụp / upload / chỉnh sửa ảnh khuôn–dao cắt & vị trí
@@ -908,6 +908,7 @@
     var weightFromDM = '';
     var weightUnit = 'kg';
     this._missingWeightItem = null;
+    this._missingWeightType = null;
 
     if (d.type === 'tray' && d.id && global.DataManager && global.DataManager.data && global.DataManager.data.trays) {
       var _tr = global.DataManager.data.trays.find(function(t) { return String(t.TrayID) === String(d.id) || String(t.TrayCode) === String(d.code); });
@@ -928,6 +929,11 @@
          var _trDims = arr.join('x');
          if (!_trDims) _trDims = _tr.displaySize || _tr.Size || _tr.Dimensions || '';
          if (_trDims) dimsFromDM = _trDims;
+
+         if (!weightFromDM) {
+            this._missingWeightItem = _tr;
+            this._missingWeightType = 'tray';
+         }
       }
     } else if (d.id && global.DataManager && typeof global.DataManager.getAllItems === 'function') {
       var _allItems = global.DataManager.getAllItems() || [];
@@ -939,7 +945,10 @@
           dimsFromDM = _it.displayDimensions || _it.dimensions || ''; 
           if (d.type === 'mold') {
             weightFromDM = _it.MoldWeight || (_it.designInfo ? _it.designInfo.MoldDesignWeight : '') || '';
-            if (!weightFromDM) this._missingWeightItem = _it;
+            if (!weightFromDM) {
+              this._missingWeightItem = _it;
+              this._missingWeightType = 'mold';
+            }
           }
           break; 
         }
@@ -2685,15 +2694,20 @@
         this._toast('success', msg, '成功 / Thành công');
         
         var missingItem = this._missingWeightItem;
+        var missingType = this._missingWeightType;
         this._resetAfterSuccess();
 
         if (missingItem && window.QuickUpdateModule) {
           setTimeout(function() {
-            if (confirm("金型の重量データがありません。重量を更新しますか？\n\nKhuôn này chưa có dữ liệu khối lượng. Bạn có muốn cập nhật khối lượng khuôn không?")) {
-              window.QuickUpdateModule.openModal('WEIGHT', {
-                MoldID: missingItem.MoldID || missingItem.id || '',
-                code: missingItem.MoldCode || missingItem.YSD_Code || missingItem.displayCode || missingItem.code || ''
-              });
+            var promptMsg = missingType === 'tray'
+              ? "トレイの重量データがありません。重量を更新しますか？\n\nKhay này chưa có dữ liệu khối lượng. Bạn có muốn cập nhật khối lượng khay không?"
+              : "金型の重量データがありません。重量を更新しますか？\n\nKhuôn này chưa có dữ liệu khối lượng. Bạn có muốn cập nhật khối lượng khuôn không?";
+            
+            if (confirm(promptMsg)) {
+              var payload = missingType === 'tray'
+                ? { TrayID: missingItem.TrayID || missingItem.id || '', code: missingItem.TrayCode || missingItem.code || '' }
+                : { MoldID: missingItem.MoldID || missingItem.id || '', code: missingItem.MoldCode || missingItem.YSD_Code || missingItem.displayCode || missingItem.code || '' };
+              window.QuickUpdateModule.openModal('WEIGHT', payload);
             }
           }, 300);
         }

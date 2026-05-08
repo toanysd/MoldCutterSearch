@@ -75,8 +75,8 @@ class MobileNavbar {
                 }
                 break;
             case 'qrscan':
-                if (window.ScanSearchModule && typeof window.ScanSearchModule.openModal === 'function') {
-                    window.ScanSearchModule.openModal();
+                if (window.QRScanSearch && typeof window.QRScanSearch.openModal === 'function') {
+                    window.QRScanSearch.openModal();
                 }
                 this.setActive(null);
                 break;

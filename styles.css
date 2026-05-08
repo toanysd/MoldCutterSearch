@@ -549,14 +549,10 @@ body {
 /* Nav container */
 
 .sidebar-nav {
-
   flex: 1;
-
   overflow-y: auto;
-
   padding: var(--spacing-sm);
-  padding-bottom: 40px; /* Thêm khoảng trống ở đáy để cuộn dễ hơn trên mobile */
-
+  padding-bottom: 90px; /* Thêm khoảng trống đủ lớn để cuộn qua Assistive Touch */
 }
 
 

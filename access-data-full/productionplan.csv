@@ -1,0 +1,3 @@
+﻿ProductionPlanID,OrderLineID,PlanCode,PlanDate,PlanStatus,PlannedQuantity,PlannedStartDate,PlannedEndDate,PriorityNo,CreatedAt,UpdatedAt,Notes,UpdatedBy
+1,1,PLAN-261881-01,3/10/2026,NEW,44,3/23/2026,3/24/2026,1,3/10/2026,3/10/2026,MTM-194 main plan from TrayOrder,
+2,2,PLAN-TO-2,3/10/2026,NEW,120,,,1,,,Created from TrayOrderID=2,

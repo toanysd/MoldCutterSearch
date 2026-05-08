@@ -1,0 +1,4 @@
+﻿PlanStepID,ProductionPlanID,StepNo,StepType,MoldID,CutterID,MachineID,EmployeeID,CompanyID,PlannedQty,PlannedStart,PlannedEnd,StepStatus,CreatedAt,UpdatedAt,Notes,UpdatedBy
+1,1,20,FORMING,5754,,,3,2,44,3/23/2026,3/24/2026,NEW,3/10/2026,3/10/2026,台湾機成形,
+2,1,20,CUT,5754,,,,,44,,,NEW,,,別抜き,
+3,1,30,PACKING,5754,,0,,,144,,,Draft,3/13/2026,3/13/2026,袋詰め,

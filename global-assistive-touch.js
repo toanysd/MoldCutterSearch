@@ -1,4 +1,4 @@
-// v9.0.3
+// v9.0.4
 /* ============================================================================
 
 DetailPanel AssistiveTouch Module v8.4.3-2
@@ -693,42 +693,65 @@ Updated: 2026-03-03
 
     sheet.innerHTML = `
       <div class="dp-at-drag-handle"></div>
-      <div class="dp-at-settings-title">アクション設定 | Thiết lập Action (Mobile)</div>
+      <div class="dp-at-settings-title" style="display:flex; flex-direction:column; align-items:center; gap:2px; margin-bottom:20px;">
+        <span style="font-size:16px; color:#0f172a; text-transform:uppercase; letter-spacing:0.5px;">アクション設定</span>
+        <span style="font-size:12px; font-weight:700; color:#64748b; text-transform:none; letter-spacing:0;">Thiết lập Action (Mobile)</span>
+      </div>
 
-      <div class="dp-at-row" data-dp-at-mode>
-        <div style="flex:1;">
-          <label>表示モード | Kiểu hiển thị</label>
-          <div class="hint">情報タブのみ表示 | Chỉ hiển thị ở tab Thông tin</div>
+      <div class="dp-at-row" data-dp-at-mode style="align-items:flex-start;">
+        <div style="flex:1; padding-right:8px;">
+          <div style="font-weight:800; font-size:13px; color:#1e293b;">表示モード</div>
+          <div style="font-size:11px; font-weight:700; color:#64748b; margin-top:2px;">Kiểu hiển thị</div>
+          <div class="hint" style="margin-top:6px; line-height:1.4;">情報タブのみ表示<br>Chỉ hiển thị ở tab Thông tin</div>
         </div>
-        <div style="display:flex;gap:12px;align-items:center;">
-          <label style="display:flex;gap:6px;align-items:center;font-weight:700;font-size:13px;cursor:pointer;">
-            <input type="radio" name="dp_at_mode" value="bar" style="accent-color:#2563eb;width:16px;height:16px;margin:0;" />
-            ボトムバー | Thanh đáy
+        <div style="display:flex; flex-direction:column; gap:12px; padding-top:2px;">
+          <label style="display:flex; gap:8px; align-items:flex-start; cursor:pointer;">
+            <input type="radio" name="dp_at_mode" value="bar" style="accent-color:#2563eb; width:18px; height:18px; margin:0; flex-shrink:0; margin-top:2px;" />
+            <div style="display:flex; flex-direction:column; line-height:1.2;">
+              <span style="font-weight:800; font-size:13px; color:#1e293b;">ボトムバー</span>
+              <span style="font-size:11px; font-weight:600; color:#64748b; margin-top:3px;">Thanh đáy</span>
+            </div>
           </label>
-          <label style="display:flex;gap:6px;align-items:center;font-weight:700;font-size:13px;cursor:pointer;">
-            <input type="radio" name="dp_at_mode" value="assistive" style="accent-color:#2563eb;width:16px;height:16px;margin:0;" />
-            アシスティブ | Nổi
+          <label style="display:flex; gap:8px; align-items:flex-start; cursor:pointer;">
+            <input type="radio" name="dp_at_mode" value="assistive" style="accent-color:#2563eb; width:18px; height:18px; margin:0; flex-shrink:0; margin-top:2px;" />
+            <div style="display:flex; flex-direction:column; line-height:1.2;">
+              <span style="font-weight:800; font-size:13px; color:#1e293b;">アシスティブ</span>
+              <span style="font-size:11px; font-weight:600; color:#64748b; margin-top:3px;">Nổi (Float)</span>
+            </div>
           </label>
         </div>
       </div>
 
-      <div class="dp-at-row" data-dp-at-icononly>
-        <div style="flex:1;">
-          <label>コンパクトUI | Giao diện siêu gọn</label>
-          <div class="hint">アイコンのみ表示 | Ẩn chữ, chỉ hiện icon</div>
+      <div class="dp-at-row" data-dp-at-icononly style="align-items:center;">
+        <div style="flex:1; padding-right:8px;">
+          <div style="font-weight:800; font-size:13px; color:#1e293b;">コンパクトUI</div>
+          <div style="font-size:11px; font-weight:700; color:#64748b; margin-top:2px;">Giao diện siêu gọn</div>
+          <div class="hint" style="margin-top:6px; line-height:1.4;">アイコンのみ表示<br>Ẩn chữ, chỉ hiện icon</div>
         </div>
         <div>
-          <input type="checkbox" data-dp-at-icononly-toggle style="accent-color:#2563eb;width:20px;height:20px;margin:0;cursor:pointer;" />
+          <input type="checkbox" data-dp-at-icononly-toggle style="accent-color:#2563eb; width:22px; height:22px; margin:0; cursor:pointer;" />
         </div>
       </div>
 
-      <div style="margin:16px 4px 8px; font-weight:800; font-size:13px; color:#475569;">表示するボタンを選択 | Chọn nút hiển thị</div>
+      <div style="margin:20px 4px 10px; line-height:1.3;">
+         <div style="font-weight:900; font-size:14px; color:#1e293b;">表示するボタンを選択</div>
+         <div style="font-size:11.5px; font-weight:700; color:#64748b; margin-top:2px;">Chọn nút hiển thị</div>
+      </div>
       <div class="dp-at-actions-grid" data-dp-at-actions></div>
 
-      <div class="dp-at-btns">
-        <button class="dp-at-btn" type="button" data-dp-at-close>閉じる | Đóng</button>
-        <button class="dp-at-btn" type="button" style="background:#fee2e2; color:#ef4444;" data-dp-at-reset>リセット | Đặt lại</button>
-        <button class="dp-at-btn primary" type="button" data-dp-at-apply>適用 | Áp dụng</button>
+      <div class="dp-at-btns" style="gap:8px;">
+        <button class="dp-at-btn" type="button" data-dp-at-close style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:0; height:48px;">
+          <span style="font-weight:800; font-size:13px; line-height:1.2;">閉じる</span>
+          <span style="font-weight:700; font-size:10px; opacity:0.8; margin-top:2px;">Đóng</span>
+        </button>
+        <button class="dp-at-btn" type="button" style="background:#fee2e2; color:#ef4444; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:0; height:48px;" data-dp-at-reset>
+          <span style="font-weight:800; font-size:13px; line-height:1.2;">リセット</span>
+          <span style="font-weight:700; font-size:10px; opacity:0.8; margin-top:2px;">Đặt lại</span>
+        </button>
+        <button class="dp-at-btn primary" type="button" data-dp-at-apply style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:0; height:48px; flex:1.5;">
+          <span style="font-weight:800; font-size:14px; line-height:1.2;">適用</span>
+          <span style="font-weight:700; font-size:10px; opacity:0.8; margin-top:2px;">Áp dụng</span>
+        </button>
       </div>
     `;
 

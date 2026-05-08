@@ -3745,13 +3745,16 @@ Created: 2026-02-04
 
 
       // ===== URL STATE SYNC CLEANUP =====
-      try {
-        const cleanUrl = new URL(window.location.href);
-        if (cleanUrl.searchParams.has('q')) {
-          cleanUrl.searchParams.delete('q');
-          window.history.replaceState({}, document.title, cleanUrl.toString());
-        }
-      } catch (e) { console.warn('URL Cleanup error:', e); }
+      // Chỉ xóa URL khi đóng panel thực sự (silent=false), KHÔNG xóa khi khởi tạo (silent=true)
+      if (!silent) {
+        try {
+          const cleanUrl = new URL(window.location.href);
+          if (cleanUrl.searchParams.has('q')) {
+            cleanUrl.searchParams.delete('q');
+            window.history.replaceState({}, document.title, cleanUrl.toString());
+          }
+        } catch (e) { console.warn('URL Cleanup error:', e); }
+      }
 
 
 
@@ -3779,7 +3782,7 @@ Created: 2026-02-04
 
 
 
-      this.closePreview();
+      this.closePreview(silent);
 
 
 

@@ -1,4 +1,4 @@
-// v9.0.2
+// v9.0.5
 /* ============================================================================
 
    APP v8.3.1 - Main Application Controller (SearchModule Integrated)
@@ -596,7 +596,12 @@ class App {
 
 
   async init() {
-    console.log('🚀 Initializing MoldCutterSearch v8.1.0-1...');
+    console.log('🚀 Initializing MoldCutterSearch v8.1.0-3...');
+
+    // ===== CRITICAL: Lưu tham số ?q= TRƯỚC KHI bất kỳ module nào xóa nó =====
+    // DetailPanel.close() gọi replaceState xóa ?q= trong khi app.js đang chờ DataManager
+    const _savedQParam = new URLSearchParams(window.location.search).get('q');
+    if (_savedQParam) console.log('[SPA Routing] Đã chụp lại tham số q=', _savedQParam);
 
     // V10: Khởi tạo UI Shell (Sidebar, Topbar, Events) MẶC KỆ mạng hay Auth Guard!
     this.initComponents();
@@ -621,35 +626,51 @@ class App {
     this.updateResultCount();
 
     // ===== URL STATE SYNC (Short URL QR Routing) =====
-    const urlParams = new URLSearchParams(window.location.search);
-    const qParam = urlParams.get('q');
-    if (qParam && window.DetailPanel && typeof window.DetailPanel.open === 'function') {
-      const typeCode = qParam.charAt(0).toUpperCase();
-      const idCode = qParam.substring(1);
-      let targetItem = null;
-      let targetKind = '';
-      
-      if (typeCode === 'M') {
-        targetKind = 'mold';
-        targetItem = this.allItems.find(i => String(i.MoldID || '').trim() === idCode || String(i.MoldCode || '').trim() === idCode || String(i.MoldCode || '').trim() === `M${idCode}`);
-      } else if (typeCode === 'C') {
-        targetKind = 'cutter';
-        targetItem = this.allItems.find(i => String(i.CutterID || '').trim() === idCode || String(i.CutterCode || '').trim() === idCode || String(i.CutterNo || '').trim() === idCode || String(i.CutterCode || '').trim() === `C${idCode}`);
-      }
-      
-      if (targetItem) {
-        window.DetailPanel.open(targetItem, targetKind);
-        // Chùi sạch URL sau khi mở (SPA behavior)
-        try {
-          const cleanUrl = new URL(window.location.href);
-          cleanUrl.searchParams.delete('q');
-          window.history.replaceState({}, document.title, cleanUrl.toString());
-        } catch (e) {
-          console.warn('[SPA Routing] Không thể dọn dẹp URL trên môi trường hiện tại:', e);
+    const qParam = _savedQParam;
+    if (qParam) {
+      const tryOpenDetail = () => {
+        if (window.DetailPanel && typeof window.DetailPanel.open === 'function') {
+          const typeCode = qParam.charAt(0).toUpperCase();
+          const idCode = qParam.substring(1).trim().toUpperCase();
+          let targetItem = null;
+          let targetKind = '';
+          
+          if (typeCode === 'M') {
+            targetKind = 'mold';
+            targetItem = this.allItems.find(i => {
+              const mId = String(i.MoldID || '').trim().toUpperCase();
+              const mCode = String(i.MoldCode || '').trim().toUpperCase();
+              return mId === idCode || mCode === idCode;
+            });
+          } else if (typeCode === 'C') {
+            targetKind = 'cutter';
+            targetItem = this.allItems.find(i => {
+              const cId = String(i.CutterID || '').trim().toUpperCase();
+              const cCode = String(i.CutterCode || '').trim().toUpperCase();
+              const cNo = String(i.CutterNo || '').trim().toUpperCase();
+              return cId === idCode || cCode === idCode || cNo === idCode;
+            });
+          }
+          
+          if (targetItem) {
+            window.DetailPanel.open(targetItem, targetKind);
+            // Chùi sạch URL sau khi mở (SPA behavior)
+            try {
+              const cleanUrl = new URL(window.location.href);
+              cleanUrl.searchParams.delete('q');
+              window.history.replaceState({}, document.title, cleanUrl.toString());
+            } catch (e) {
+              console.warn('[SPA Routing] Không thể dọn dẹp URL trên môi trường hiện tại:', e);
+            }
+          } else {
+            console.warn('[SPA Routing] Không tìm thấy thiết bị từ tham số q=', qParam);
+          }
+        } else {
+          // Retry if DetailPanel is not yet parsed
+          setTimeout(tryOpenDetail, 50);
         }
-      } else {
-        console.warn('[SPA Routing] Không tìm thấy thiết bị từ tham số q=', qParam);
-      }
+      };
+      tryOpenDetail();
     }
 
     // Re-render pagination when viewport changes (3 pages <-> 7 pages)

@@ -1,4 +1,4 @@
-// v10.0.0-PubSub
+// v10.0.1-deeplink
 (function (global) {
     'use strict';
 
@@ -227,7 +227,9 @@
                 // ----------------------------------------
 
                 // Nếu app chưa kéo DataManager thì tạm khóa màn hình login và show Ui Loading
-                if (global.DataManager && !global.DataManager.loaded && typeof global.DataManager.loadAllData === 'function') {
+                // Guard: tránh SIGNED_IN + INITIAL_SESSION gọi loadAllData() song song
+                if (global.DataManager && !global.DataManager.loaded && !global.__MCS_AUTH_DATA_LOADING__ && typeof global.DataManager.loadAllData === 'function') {
+                    global.__MCS_AUTH_DATA_LOADING__ = true;
                     console.log('🚀 Auth Guard: Đang tiến hành kéo CSV máy chủ...');
 
                     if (loginOverlay) loginOverlay.style.display = 'none'; // SỬA LỖI: Luôn ẩn Overlay lúc đang tải, tránh Flash Login

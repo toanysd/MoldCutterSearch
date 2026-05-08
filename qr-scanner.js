@@ -230,7 +230,8 @@
     bindGlobalButtons() {
       const selectors = [
         '#nav-qr-scan', '#nav-qr-scan-btn', '#search-qr-scan', '#search-qr-scan-btn',
-        '.btn-qr-scan', '[data-role="qr-scan-trigger"]'
+        '.btn-qr-scan', '[data-role="qr-scan-trigger"]',
+        '.mcs-qr-trigger', '#sidebarQRScanBtn', '#searchbarQRBtn'
       ];
       document.addEventListener('click', (e) => {
         const btn = e.target.closest(selectors.join(','));

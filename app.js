@@ -1992,7 +1992,7 @@ class App {
 
     // QR Scanner button (for both desktop search bar and mobile bottom nav)
 
-    const qrBtns = document.querySelectorAll('.qr-btn, .qr-nav-btn');
+    const qrBtns = document.querySelectorAll('.qr-btn, .qr-nav-btn, .mcs-qr-trigger');
 
     qrBtns.forEach(btn => {
 

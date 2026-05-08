@@ -95,24 +95,17 @@ window.SwipeHistoryTrap = (function () {
 
     },
 
-    remove: function (id) {
-
+    remove: function (id, skipBack = false) {
       if (isHandlingPop) return;
-
       var idx = states.findIndex(function (s) { return s.id === id; });
-
       if (idx !== -1) {
-
         if (idx === states.length - 1) {
-
           states.pop();
-
-          isHandlingPop = true;
-
-          window.history.back();
-
-          setTimeout(function () { isHandlingPop = false; }, 100);
-
+          if (!skipBack) {
+            isHandlingPop = true;
+            window.history.back();
+            setTimeout(function () { isHandlingPop = false; }, 100);
+          }
         } else {
 
           states.splice(idx, 1);
@@ -626,6 +619,38 @@ class App {
 
     this.switchView(this.currentView);
     this.updateResultCount();
+
+    // ===== URL STATE SYNC (Short URL QR Routing) =====
+    const urlParams = new URLSearchParams(window.location.search);
+    const qParam = urlParams.get('q');
+    if (qParam && window.DetailPanel && typeof window.DetailPanel.open === 'function') {
+      const typeCode = qParam.charAt(0).toUpperCase();
+      const idCode = qParam.substring(1);
+      let targetItem = null;
+      let targetKind = '';
+      
+      if (typeCode === 'M') {
+        targetKind = 'mold';
+        targetItem = this.allItems.find(i => String(i.MoldID || '').trim() === idCode || String(i.MoldCode || '').trim() === idCode || String(i.MoldCode || '').trim() === `M${idCode}`);
+      } else if (typeCode === 'C') {
+        targetKind = 'cutter';
+        targetItem = this.allItems.find(i => String(i.CutterID || '').trim() === idCode || String(i.CutterCode || '').trim() === idCode || String(i.CutterNo || '').trim() === idCode || String(i.CutterCode || '').trim() === `C${idCode}`);
+      }
+      
+      if (targetItem) {
+        window.DetailPanel.open(targetItem, targetKind);
+        // Chùi sạch URL sau khi mở (SPA behavior)
+        try {
+          const cleanUrl = new URL(window.location.href);
+          cleanUrl.searchParams.delete('q');
+          window.history.replaceState({}, document.title, cleanUrl.toString());
+        } catch (e) {
+          console.warn('[SPA Routing] Không thể dọn dẹp URL trên môi trường hiện tại:', e);
+        }
+      } else {
+        console.warn('[SPA Routing] Không tìm thấy thiết bị từ tham số q=', qParam);
+      }
+    }
 
     // Re-render pagination when viewport changes (3 pages <-> 7 pages)
 

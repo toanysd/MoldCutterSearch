@@ -1,1487 +1,531 @@
-// v9.0.2
+// v10.0.1
 /**
-
- * export-qr-r7.0.8.js
-
+ * qr-export.js
  * ===========================================================
-
- * Module xuất mã QR cho Mold / Cutter (金型 / 刃型)
-
- * - Gọi từ action-buttons (iPad): window.ExportQR.generate(currentItem)
-
- * - Gọi từ MobileDetailModal:    window.ExportQR.generate(item)
-
- * 
-
- * Chức năng:
-
- *  - Sinh nội dung QR:
-
- *      + Mold:   MCQR|MOLD|<MoldID>|<MoldCode>
-
- *      + Cutter: MCQR|CUTTER|<CutterID>|<CutterCode>
-
- *  - Hiển thị popup preview QR (song ngữ Nhật – Việt)
-
- *  - Cho phép chọn kích thước QR tiêu chuẩn (150 / 300 / 600 px)
-
- *  - In trực tiếp QR (mở cửa sổ in)
-
- *  - Tải về file JPG (download) để gắn vào tài liệu
-
- * 
-
- * Ghi chú:
-
- *  - Sử dụng dịch vụ QR public (api.qrserver.com) để sinh ảnh QR.
-
- *  - Không phụ thuộc DataManager; chỉ cần object item hiện tại.
-
- *  - Không yêu cầu chỉnh sửa các file mã nguồn khác.
-
- * ===========================================================
-
+ * Module xuất mã QR nâng cấp (Single & Mass Export)
+ * Sử dụng thư viện qrcode.js (Local) để sinh QR an toàn.
+ * Hỗ trợ in theo lưới A4 (Grid). Ngôn ngữ chính: Tiếng Nhật.
  */
 
-
-
 (function () {
-
   'use strict';
 
-
-
-  const QR_API_BASE = 'https://api.qrserver.com/v1/create-qr-code/';
-
-
-
-  const ExportQR = {
-
-    state: {
-
-      initialized: false,
-
-      modal: null,
-
-      backdrop: null,
-
-      dialog: null,
-
-      img: null,
-
-      titleEl: null,
-
-      infoTypeEl: null,
-
-      infoIdEl: null,
-
-      infoCodeEl: null,
-
-      infoNameEl: null,
-
-      sizeSelect: null,
-
-      downloadBtn: null,
-
-      printBtn: null,
-
-      closeButtons: [],
-
-      currentPayload: '',
-
-      currentType: '',
-
-      currentId: '',
-
-      currentCode: '',
-
-      currentName: '',
-
-      currentSize: 300,
-
-      currentJpgUrl: ''
-
-    },
-
-
-
-    /**
-
-     * Public API: generate QR for given item
-
-     * @param {Object} item - mold/cutter object hiện tại
-
-     */
-
-    generate(item) {
-
-      if (!item) {
-
-        alert('対象が選択されていません。\nChưa chọn khuôn hoặc dao cắt.');
-
-        return;
-
-      }
-
-      if (!this.state.initialized) {
-
-        this.init();
-
-      }
-
-
-
-      const typeInfo = this.detectItemType(item);
-
-      if (!typeInfo) {
-
-        alert('QRコード用のID/コードが見つかりません。\nKhông tìm thấy ID/Code để tạo QR.');
-
-        return;
-
-      }
-
-
-
-      const { type, id, code, name, typeLabel } = typeInfo;
-
-
-
-      // Build payload: MCQR|MOLD|MoldID|MoldCode  or  MCQR|CUTTER|CutterID|CutterCode
-
-      const payload = this.buildPayload(type, id, code);
-
-
-
-      // Lưu state hiện tại để tái tạo khi đổi size
-
-      this.state.currentType = type;
-
-      this.state.currentId = id;
-
-      this.state.currentCode = code;
-
-      this.state.currentName = name;
-
-      this.state.currentPayload = payload;
-
-
-
-      // Đồng bộ thông tin hiển thị
-
-      this.updateInfoHeader(typeLabel, id, code, name);
-
-
-
-      // Lấy size hiện tại (nếu user đã chọn)
-
-      const size = this.getCurrentSize();
-
-      this.state.currentSize = size;
-
-
-
-      // Cập nhật preview và link JPG
-
-      this.updatePreviewAndLinks();
-
-
-
-      // Mở modal
-
-      this.openModal();
-
-    },
-
-
-
-    /**
-
-     * Khởi tạo: chèn CSS + HTML modal và gắn event handlers
-
-     */
-
-    init() {
-
-      if (this.state.initialized) return;
-
-
-
-      this.injectStyles();
-
-      this.createModalStructure();
-
-      this.bindEvents();
-
-
-
-      // ✅ LẮNG NGHE SỰ KIỆN TỪ MobileDetailModal & các module khác
-
-      document.addEventListener('triggerQRCode', (e) => {
-
-        const detail = e.detail || {};
-
-        const item = detail.item;
-
-        const source = detail.source || 'unknown';
-
-        const type = detail.type || '';
-
-        console.log('[ExportQR] triggerQRCode received from', source, 'type:', type);
-
-        if (item) {
-
-          ExportQR.generate(item);
-
-        } else {
-
-          console.warn('[ExportQR] triggerQRCode without item detail');
-
-        }
-
-      });
-
-
-
-      this.state.initialized = true;
-
-      console.log('[ExportQR] Initialized');
-
-    },
-
-
-
-    /**
-
-     * Xác định loại item (mold / cutter) và lấy ID/Code/Name
-
-     */
-
-    detectItemType(item) {
-
-      // Ưu tiên field itemType nếu có
-
-      const rawType = (item.itemType || '').toLowerCase();
-
-      let type = '';
-
-
-
-      if (rawType === 'mold') {
-
-        type = 'mold';
-
-      } else if (rawType === 'cutter') {
-
-        type = 'cutter';
-
-      } else if (item.MoldID || item.MoldCode) {
-
-        type = 'mold';
-
-      } else if (item.CutterID || item.CutterCode || item.CutterNo) {
-
-        type = 'cutter';
-
-      } else {
-
-        return null;
-
-      }
-
-
-
-      if (type === 'mold') {
-
-        const id = String(item.MoldID || '').trim();
-
-        const code = String(item.MoldCode || '').trim();
-
-        const name = String(item.MoldName || '').trim();
-
-        if (!id || !code) return null;
-
-        return {
-
-          type: 'mold',
-
-          id,
-
-          code,
-
-          name,
-
-          typeLabel: '金型 / Khuôn'
-
-        };
-
-      } else {
-
-        const id = String(item.CutterID || '').trim();
-
-        // CutterCode có thể trống, ưu tiên CutterCode, sau đó đến CutterNo
-
-        const code = String(item.CutterCode || item.CutterNo || '').trim();
-
-        const name = String(item.CutterName || item.Name || '').trim();
-
-        if (!id || !code) return null;
-
-        return {
-
-          type: 'cutter',
-
-          id,
-
-          code,
-
-          name,
-
-          typeLabel: '刃型 / Dao cắt'
-
-        };
-
-      }
-
-    },
-
-
-
-    /**
-
-     * Sinh payload QR chuẩn cho module scan ở trang chính
-
-     * @param {'mold'|'cutter'} type
-
-     * @param {string} id
-
-     * @param {string} code
-
-     */
-
-    buildPayload(type, id, code) {
-
-      const upperType = type === 'mold' ? 'MOLD' : 'CUTTER';
-
-      // Đảm bảo không có ký tự xuống dòng
-
-      const safeId = (id || '').replace(/\s+/g, '');
-
-      const safeCode = (code || '').replace(/\s+/g, '');
-
-      return `https://toanysd.github.io/ysd/?scan=qr&type=${upperType}&id=${encodeURIComponent(safeId)}&code=${encodeURIComponent(safeCode)}`;
-
-    },
-
-
-
-    /**
-
-     * Cập nhật thông tin text trên header modal
-
-     */
-
-    updateInfoHeader(typeLabel, id, code, name) {
-
-      if (!this.state.modal) return;
-
-      if (this.state.infoTypeEl) {
-
-        this.state.infoTypeEl.textContent = typeLabel;
-
-      }
-
-      if (this.state.infoIdEl) {
-
-        this.state.infoIdEl.textContent = `ID: ${id}`;
-
-      }
-
-      if (this.state.infoCodeEl) {
-
-        this.state.infoCodeEl.textContent = `Code: ${code}`;
-
-      }
-
-      if (this.state.infoNameEl) {
-
-        this.state.infoNameEl.textContent = name || '-';
-
-      }
-
-    },
-
-
-
-    /**
-
-     * Lấy kích thước hiện tại từ select (default: 300)
-
-     */
-
-    getCurrentSize() {
-
-      if (this.state.sizeSelect) {
-
-        const val = parseInt(this.state.sizeSelect.value, 10);
-
-        if (!isNaN(val) && val > 0) return val;
-
-      }
-
-      return 300;
-
-    },
-
-
-
-    /**
-
-     * Tạo URL ảnh QR (PNG cho preview, JPG cho download/print)
-
-     */
-
-    buildQrUrls() {
-
-      const size = this.state.currentSize || 300;
-
-      const encodedPayload = encodeURIComponent(this.state.currentPayload || '');
-
-      const sizeParam = `${size}x${size}`;
-
-
-
-      // PNG preview
-
-      const pngUrl = `${QR_API_BASE}?size=${sizeParam}&data=${encodedPayload}`;
-
-
-
-      // JPG download/print
-
-      const jpgUrl = `${QR_API_BASE}?format=jpg&size=${sizeParam}&data=${encodedPayload}`;
-
-
-
-      return { pngUrl, jpgUrl };
-
-    },
-
-
-
-    /**
-
-     * Cập nhật preview QR + link JPG tương ứng size hiện tại
-
-     */
-
-    updatePreviewAndLinks() {
-
-      if (!this.state.currentPayload) return;
-
-
-
-      const { pngUrl, jpgUrl } = this.buildQrUrls();
-
-      this.state.currentJpgUrl = jpgUrl;
-
-
-
-      // Ảnh preview
-
-      if (this.state.img) {
-
-        this.state.img.src = pngUrl;
-
-        this.state.img.alt = 'QRコードプレビュー / Xem trước mã QR';
-
-      }
-
-
-
-      // Nút download JPG
-
-      if (this.state.downloadBtn) {
-
-        const typeCode = this.state.currentType === 'mold' ? 'MOLD' : 'CUTTER';
-
-        const fileName = `MCQR_${typeCode}_${this.state.currentId || ''}_${this.state.currentCode || ''}_${this.state.currentSize}.jpg`;
-
-        this.state.downloadBtn.setAttribute('href', jpgUrl);
-
-        this.state.downloadBtn.setAttribute('download', fileName);
-
-      }
-
-    },
-
-
-
-    /**
-
-     * Mở modal QR
-
-     */
-
-    openModal() {
-
-      if (!this.state.modal) return;
-
-      if (window.SwipeHistoryTrap) {
-
-        window.SwipeHistoryTrap.push('qrExportModal', () => this.closeModal());
-
-        window.SwipeHistoryTrap.bindSwipe(this.state.modal, () => this.closeModal());
-
-      }
-
-      this.state.modal.classList.add('qr-modal-open');
-
-      this.state.modal.classList.remove('qr-modal-hidden');
-
-      document.body.style.overflow = 'hidden';
-
-    },
-
-
-
-    /**
-
-     * Đóng modal QR
-
-     */
-
-    closeModal() {
-
-      if (window.SwipeHistoryTrap) window.SwipeHistoryTrap.remove('qrExportModal');
-
-      if (!this.state.modal) return;
-
-      this.state.modal.classList.remove('qr-modal-open');
-
-      this.state.modal.classList.add('qr-modal-hidden');
-
-      document.body.style.overflow = '';
-
-    },
-
-
-
-    /**
-
-     * In QR: mở cửa sổ mới chứa duy nhất QR + thông tin
-
-     */
-
-    openPrintView() {
-
-      if (!this.state.currentPayload) {
-
-        alert('印刷するQRコードがありません。\nChưa có mã QR để in.');
-
-        return;
-
-      }
-
-
-
-      const { jpgUrl } = this.buildQrUrls();
-
-      const size = this.state.currentSize || 300;
-
-      const typeLabel = this.state.currentType === 'mold'
-
-        ? '金型 / Khuôn'
-
-        : '刃型 / Dao cắt';
-
-
-
-      const win = window.open('', '_blank', 'width=800,height=600');
-
-      if (!win) {
-
-        alert('ポップアップがブロックされました。\nCửa sổ in bị chặn bởi trình duyệt.');
-
-        return;
-
-      }
-
-
-
-      const html = `
-
-        <!DOCTYPE html>
-
-        <html lang="ja">
-
-        <head>
-
-          <meta charset="UTF-8">
-
-          <title>QRコード印刷 / In mã QR</title>
-
-          <style>
-
-            body {
-
-              margin: 0;
-
-              padding: 16px;
-
-              font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-
-              text-align: center;
-
-            }
-
-            .info {
-
-              margin-bottom: 16px;
-
-              font-size: 14px;
-
-              line-height: 1.5;
-
-            }
-
-            .info strong {
-
-              display: block;
-
-              font-size: 16px;
-
-              margin-bottom: 4px;
-
-            }
-
-            .qr-wrap {
-
-              display: flex;
-
-              align-items: center;
-
-              justify-content: center;
-
-              margin-bottom: 16px;
-
-            }
-
-            img {
-
-              width: ${size}px;
-
-              height: ${size}px;
-
-            }
-
-            @media print {
-
-              body {
-
-                margin: 0;
-
-                padding: 0;
-
-              }
-
-            }
-
-          </style>
-
-        </head>
-
-        <body>
-
-          <div class="info">
-
-            <strong>${typeLabel}</strong>
-
-            <div>ID: ${this.state.currentId || ''}</div>
-
-            <div>Code: ${this.state.currentCode || ''}</div>
-
-            <div>${this.state.currentName || ''}</div>
-
-          </div>
-
-          <div class="qr-wrap">
-
-            <img src="${jpgUrl}" alt="QR Code">
-
-          </div>
-
-          <script>
-
-            window.onload = function () {
-
-              setTimeout(function () {
-
-                window.print();
-
-              }, 300);
-
-            };
-
-          </script>
-
-        </body>
-
-        </html>
-
-      `;
-
-
-
-      win.document.open();
-
-      win.document.write(html);
-
-      win.document.close();
-
-    },
-
-
-
-    /**
-
-     * Chèn CSS cần thiết cho modal QR
-
-     */
-
-    injectStyles() {
-
-      if (document.getElementById('export-qr-styles')) return;
-
-
-
-      const style = document.createElement('style');
-
-      style.id = 'export-qr-styles';
-
-      style.textContent = `
-
-        .qr-modal-root {
-
-          position: fixed;
-
-          inset: 0;
-
-          z-index: 11000;
-
-          display: flex;
-
-          align-items: center;
-
-          justify-content: center;
-
-          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-
-        }
-
-        .qr-modal-hidden {
-
-          display: none !important;
-
-        }
-
-        .qr-modal-open {
-
-          display: flex;
-
-        }
-
-        .qr-modal-backdrop {
-
-          position: absolute;
-
-          inset: 0;
-
-          background: rgba(0, 0, 0, 0.4);
-
-          backdrop-filter: blur(10px);
-
-          -webkit-backdrop-filter: blur(10px);
-
-        }
-
-        .qr-modal-dialog {
-
-          position: relative;
-
-          background: #ffffff;
-
-          border-radius: 24px;
-
-          box-shadow: 0 24px 48px rgba(0, 0, 0, 0.2);
-
-          max-width: 440px;
-
-          width: 90%;
-
-          max-height: 90vh;
-
-          overflow-y: auto;
-
-          padding: 24px 28px;
-
-          z-index: 1;
-
-        }
-
-        .qr-modal-header {
-
-          display: flex;
-
-          align-items: center;
-
-          justify-content: space-between;
-
-          margin-bottom: 16px;
-
-        }
-
-        .qr-modal-title {
-
-          font-size: 18px;
-
-          font-weight: 700;
-
-          color: #1e293b;
-
-        }
-
-        .export-qr-close-btn {
-
-          border: none;
-
-          background: #f1f5f9;
-
-          color: #64748b;
-
-          width: 36px;
-
-          height: 36px;
-
-          border-radius: 50%;
-
-          font-size: 20px;
-
-          display: flex;
-
-          flex-shrink: 0;
-
-          align-items: center;
-
-          justify-content: center;
-
-          cursor: pointer;
-
-          transition: background 0.2s, color 0.2s;
-
-        }
-
-        .export-qr-close-btn:hover {
-
-          background: #e2e8f0;
-
-          color: #0f172a;
-
-        }
-
-        .qr-modal-body {
-
-          display: flex;
-
-          flex-direction: column;
-
-          gap: 12px;
-
-        }
-
-        .qr-info-block {
-
-          font-size: 14px;
-
-          line-height: 1.6;
-
-          background: #f8fafc;
-
-          border-radius: 12px;
-
-          padding: 14px 16px;
-
-          color: #334155;
-
-        }
-
-        .qr-info-row {
-
-          display: flex;
-
-          justify-content: space-between;
-
-          gap: 8px;
-
-        }
-
-        .qr-info-label {
-
-          font-weight: 600;
-
-          color: #64748b;
-
-        }
-
-        .qr-size-row {
-
-          display: flex;
-
-          align-items: center;
-
-          justify-content: space-between;
-
-          margin-top: 4px;
-
-          gap: 8px;
-
-        }
-
-        .qr-size-label {
-
-          font-size: 14px;
-
-          font-weight: 600;
-
-          color: #475569;
-
-        }
-
-        .qr-size-select {
-
-          flex: 0 0 auto;
-
-        }
-
-        .qr-size-select select {
-
-          padding: 6px 10px;
-
-          font-size: 14px;
-
-          border-radius: 8px;
-
-          border: 1px solid #cbd5e1;
-
-          background: #fff;
-
-          font-weight: 600;
-
-          color: #334155;
-
-          outline: none;
-
-        }
-
-        .qr-preview-wrap {
-
-          display: flex;
-
-          align-items: center;
-
-          justify-content: center;
-
-          padding: 24px;
-
-          background: #fff;
-
-          border: 2px dashed #cbd5e1;
-
-          border-radius: 16px;
-
-          margin: 8px 0;
-
-          min-height: 150px;
-
-        }
-
-        .qr-preview-img {
-
-          width: 100%;
-
-          max-width: 240px;
-
-          height: auto;
-
-          aspect-ratio: 1/1;
-
-          border-radius: 8px;
-
-          object-fit: contain;
-
-          display: block;
-
-        }
-
-        .qr-modal-footer {
-
-          display: flex;
-
-          justify-content: center;
-
-          align-items: stretch;
-
-          gap: 12px;
-
-          margin-top: 20px;
-
-        }
-
-        .export-qr-action-btn {
-
-          border-radius: 12px;
-
-          border: none;
-
-          cursor: pointer;
-
-          font-size: 14px;
-
-          font-weight: 700;
-
-          padding: 12px 16px;
-
-          display: inline-flex;
-
-          align-items: center;
-
-          justify-content: center;
-
-          gap: 8px;
-
-          text-decoration: none;
-
-          flex: 1;
-
-          text-align: center;
-
-          transition: all 0.2s;
-
-        }
-
-        .export-qr-action-btn i {
-
-          font-size: 16px;
-
-        }
-
-        .export-qr-action-btn:hover {
-
-          filter: brightness(0.95);
-
-          transform: translateY(-1px);
-
-        }
-
-        .export-qr-action-btn:active {
-
-          transform: translateY(1px);
-
-        }
-
-        .export-qr-action-btn-primary {
-
-          background: #0ea5e9;
-
-          color: #ffffff;
-
-        }
-
-        .export-qr-action-btn-secondary {
-
-          background: #f1f5f9;
-
-          color: #334155;
-
-        }
-
-        @media (max-width: 480px) {
-
-          .qr-modal-dialog {
-
-            max-width: 360px;
-
-            padding: 20px;
-
-          }
-
-        }
-
-      `;
-
-      document.head.appendChild(style);
-
-    },
-
-
-
-    /**
-
-     * Tạo cấu trúc HTML modal QR và cache DOM elements
-
-     */
-
-    createModalStructure() {
-
-      if (this.state.modal) return;
-
-
-
-      const root = document.createElement('div');
-
-      root.className = 'qr-modal-root qr-modal-hidden';
-
-      root.id = 'qr-export-modal';
-
-
-
-      root.innerHTML = `
-
-        <div class="qr-modal-backdrop"></div>
-
-        <div class="qr-modal-dialog">
-
-          <div class="qr-modal-header">
-
-            <div class="qr-modal-title">
-
-              QRコード出力 / Xuất mã QR
-
-            </div>
-
-            <button type="button" class="export-qr-close-btn" aria-label="Close">×</button>
-
-          </div>
-
-          <div class="qr-modal-body">
-
-            <div class="qr-info-block">
-
-              <div class="qr-info-row">
-
-                <span class="qr-info-label">種別 / Loại:</span>
-
-                <span id="qr-info-type"></span>
-
-              </div>
-
-              <div class="qr-info-row">
-
-                <span class="qr-info-label">ID:</span>
-
-                <span id="qr-info-id"></span>
-
-              </div>
-
-              <div class="qr-info-row">
-
-                <span class="qr-info-label">Code:</span>
-
-                <span id="qr-info-code"></span>
-
-              </div>
-
-              <div class="qr-info-row">
-
-                <span class="qr-info-label">名称 / Tên:</span>
-
-                <span id="qr-info-name"></span>
-
-              </div>
-
-            </div>
-
-
-
-            <div class="qr-size-row">
-
-              <div class="qr-size-label">
-
-                サイズ / Kích thước:
-
-              </div>
-
-              <div class="qr-size-select">
-
-                <select id="qr-size-select">
-
-                  <option value="150">150 x 150 px（小・tem nhỏ）</option>
-
-                  <option value="300" selected>300 x 300 px（標準・chuẩn）</option>
-
-                  <option value="600">600 x 600 px（大・in lớn）</option>
-
-                </select>
-
-              </div>
-
-            </div>
-
-
-
-            <div class="qr-preview-wrap">
-
-              <img id="qr-preview-img" class="qr-preview-img" src="" alt="">
-
-            </div>
-
-          </div>
-
-          <div class="qr-modal-footer">
-
-            <a id="qr-download-btn" class="export-qr-action-btn export-qr-action-btn-secondary" href="#" download>
-
-              <i class="fas fa-download"></i> Tải JPG
-
-            </a>
-
-            <button type="button" id="qr-print-btn" class="export-qr-action-btn export-qr-action-btn-primary">
-
-              <i class="fas fa-print"></i> In Mã QR
-
-            </button>
-
-          </div>
-
-        </div>
-
-      `;
-
-
-
-      document.body.appendChild(root);
-
-
-
-      // Cache elements
-
-      this.state.modal = root;
-
-      this.state.backdrop = root.querySelector('.qr-modal-backdrop');
-
-      this.state.dialog = root.querySelector('.qr-modal-dialog');
-
-      this.state.img = root.querySelector('#qr-preview-img');
-
-      this.state.titleEl = root.querySelector('.qr-modal-title');
-
-      this.state.infoTypeEl = root.querySelector('#qr-info-type');
-
-      this.state.infoIdEl = root.querySelector('#qr-info-id');
-
-      this.state.infoCodeEl = root.querySelector('#qr-info-code');
-
-      this.state.infoNameEl = root.querySelector('#qr-info-name');
-
-      this.state.sizeSelect = root.querySelector('#qr-size-select');
-
-      this.state.downloadBtn = root.querySelector('#qr-download-btn');
-
-      this.state.printBtn = root.querySelector('#qr-print-btn');
-
-      this.state.closeButtons = Array.from(root.querySelectorAll('.export-qr-close-btn'));
-
-    },
-
-
-
-    /**
-
-     * Gắn event handlers cho modal QR
-
-     */
-
-    bindEvents() {
-
-      if (!this.state.modal) return;
-
-
-
-      // Đóng khi click backdrop
-
-      if (this.state.backdrop) {
-
-        this.state.backdrop.addEventListener('click', () => this.closeModal());
-
-      }
-
-
-
-      // Đóng khi click nút đóng
-
-      if (this.state.closeButtons && this.state.closeButtons.length) {
-
-        this.state.closeButtons.forEach(btn => {
-
-          btn.addEventListener('click', () => this.closeModal());
-
-        });
-
-      }
-
-
-
-      // Thay đổi size QR
-
-      if (this.state.sizeSelect) {
-
-        this.state.sizeSelect.addEventListener('change', () => {
-
-          this.state.currentSize = this.getCurrentSize();
-
-          this.updatePreviewAndLinks();
-
-        });
-
-      }
-
-
-
-      // In
-
-      if (this.state.printBtn) {
-
-        this.state.printBtn.addEventListener('click', () => {
-
-          this.openPrintView();
-
-        });
-
-      }
-
-
-
-      // Download JPG:
-
-      if (this.state.downloadBtn) {
-
-        this.state.downloadBtn.addEventListener('click', async (e) => {
-
-          e.preventDefault();
-
-          if (!this.state.currentPayload) {
-
-            alert('ダウンロードするQRコードがありません。\\nChưa có mã QR để tải.');
-
-            return;
-
-          }
-
-
-
-          const originalText = this.state.downloadBtn.innerHTML;
-
-          this.state.downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang tải...';
-
-          this.state.downloadBtn.style.pointerEvents = 'none';
-
-
-
-          try {
-
-            const response = await fetch(this.state.currentJpgUrl);
-
-            if (!response.ok) throw new Error('Network error');
-
-            const blob = await response.blob();
-
-            const objectUrl = window.URL.createObjectURL(blob);
-
-
-
-            const typeCode = this.state.currentType === 'mold' ? 'MOLD' : 'CUTTER';
-
-            const fileName = `MCQR_${typeCode}_${this.state.currentId || ''}_${this.state.currentCode || ''}_${this.state.currentSize}.jpg`;
-
-
-
-            const link = document.createElement('a');
-
-            link.href = objectUrl;
-
-            link.download = fileName;
-
-            document.body.appendChild(link);
-
-            link.click();
-
-            link.remove();
-
-
-
-            setTimeout(() => window.URL.revokeObjectURL(objectUrl), 100);
-
-          } catch (error) {
-
-            console.warn('Lỗi tải ảnh trực tiếp, tự động chuyển hướng tab mới:', error);
-
-            window.open(this.state.currentJpgUrl, '_blank');
-
-          } finally {
-
-            this.state.downloadBtn.innerHTML = originalText;
-
-            this.state.downloadBtn.style.pointerEvents = '';
-
-          }
-
-        });
-
-      }
-
-
-
-      // ESC để đóng modal
-
-      document.addEventListener('keydown', (e) => {
-
-        if (e.key === 'Escape' && this.state.modal && this.state.modal.classList.contains('qr-modal-open')) {
-
-          this.closeModal();
-
-        }
-
-      });
-
+  class ExportQR {
+    constructor() {
+      this.initialized = false;
     }
 
-  };
+    init() {
+      if (this.initialized) return;
+      this.injectStyles();
+      this.initialized = true;
+    }
 
+    // --- UTILS ---
+    detectItemType(item) {
+      const rawType = (item.itemType || '').toLowerCase();
+      let type = '';
 
+      if (rawType === 'mold') {
+        type = 'mold';
+      } else if (rawType === 'cutter') {
+        type = 'cutter';
+      } else if (item.MoldID || item.MoldCode) {
+        type = 'mold';
+      } else if (item.CutterID || item.CutterCode || item.CutterNo) {
+        type = 'cutter';
+      } else {
+        return null;
+      }
 
-  // Expose to global
+      if (type === 'mold') {
+        const id = String(item.MoldID || '').trim();
+        const code = String(item.MoldCode || '').trim();
+        const name = String(item.MoldName || '').trim();
+        if (!id || !code) return null;
+        return { type: 'mold', id, code, name, typeLabel: '金型 / Khuôn' };
+      } else {
+        const id = String(item.CutterID || '').trim();
+        const code = String(item.CutterCode || item.CutterNo || '').trim();
+        const name = String(item.CutterName || item.Name || '').trim();
+        if (!id || !code) return null;
+        return { type: 'cutter', id, code, name, typeLabel: '刃型 / Dao cắt' };
+      }
+    }
 
-  window.ExportQR = ExportQR;
+    buildPayload(type, id) {
+      const typeCode = type === 'mold' ? 'M' : 'C';
+      const safeId = (id || '').replace(/\s+/g, '');
+      // BẮT BUỘC dùng domain thực tế để QR có thể quét được bằng điện thoại, mở web tương thích
+      return `https://ysd-pack.pages.dev/?q=${typeCode}${encodeURIComponent(safeId)}`;
+    }
 
+    generateLocalQR(payload, size) {
+      const tempDiv = document.createElement('div');
+      try {
+        new window.QRCode(tempDiv, {
+          text: payload,
+          width: size,
+          height: size,
+          colorDark: "#000000",
+          colorLight: "#ffffff",
+          correctLevel: window.QRCode.CorrectLevel.M
+        });
+        const canvas = tempDiv.querySelector('canvas');
+        if (canvas) return canvas.toDataURL("image/png");
+      } catch (e) {
+        console.error('Lỗi tạo mã QR cục bộ:', e);
+      }
+      return '';
+    }
 
+    async copyQRToClipboard(dataUrl) {
+      try {
+        const res = await fetch(dataUrl);
+        const blob = await res.blob();
+        await navigator.clipboard.write([
+          new ClipboardItem({
+            [blob.type]: blob
+          })
+        ]);
+        alert('コピーしました！ / Đã sao chép vào clipboard!');
+      } catch (err) {
+        console.error(err);
+        alert('コピーに失敗しました / Lỗi sao chép.');
+      }
+    }
 
-  // Auto init (chỉ khởi tạo structure; generate() sẽ update nội dung)
+    // --- SINGLE EXPORT ---
+    generate(item) {
+      this.init();
+      if (!item) {
+        alert('対象が選択されていません。\nChưa chọn khuôn hoặc dao cắt.');
+        return;
+      }
 
-  if (document.readyState === 'loading') {
+      const typeInfo = this.detectItemType(item);
+      if (!typeInfo) {
+        alert('QRコード用のID/コードが見つかりません。\nKhông tìm thấy ID/Code để tạo QR.');
+        return;
+      }
 
-    document.addEventListener('DOMContentLoaded', function () {
+      this.openSingleModal(typeInfo);
+    }
 
-      ExportQR.init();
+    openSingleModal(typeInfo) {
+      this.closeModal('qrSingleModal');
 
-    });
+      const payload = this.buildPayload(typeInfo.type, typeInfo.id);
+      const defaultSize = 300;
+      let currentDataUrl = this.generateLocalQR(payload, defaultSize);
 
-  } else {
+      const typeCode = typeInfo.type === 'mold' ? 'MOLD' : 'CUTTER';
+      const fileName = `MCQR_${typeCode}_${typeInfo.id}_${typeInfo.code}_${defaultSize}.png`;
 
-    ExportQR.init();
+      const overlay = document.createElement('div');
+      overlay.className = 'qre-modal-backdrop';
+      overlay.id = 'qrSingleModal';
 
+      overlay.innerHTML = `
+        <div class="qre-modal">
+          <div class="qre-modal-header">
+            <h3>QRコード出力 / QR Export</h3>
+            <button class="qre-close-btn" id="qrSingleClose">&times;</button>
+          </div>
+          <div class="qre-modal-body">
+            <div class="qre-info-box">
+              <strong>${typeInfo.typeLabel}</strong>
+              <div>ID: ${typeInfo.id}</div>
+              <div>Code: ${typeInfo.code}</div>
+              <div style="font-size: 0.9em; color: #666; margin-top: 4px;">${typeInfo.name}</div>
+            </div>
+            
+            <div class="qre-preview">
+              <img src="${currentDataUrl}" alt="QR Code" id="qrSingleImg" style="width: 200px; height: 200px; border: 1px solid #ccc; padding: 10px; border-radius: 8px;">
+            </div>
+
+            <div class="qre-controls">
+              <label>サイズ / Kích thước (px):</label>
+              <select id="qrSingleSize">
+                <option value="150">150 x 150</option>
+                <option value="300" selected>300 x 300</option>
+                <option value="600">600 x 600</option>
+              </select>
+            </div>
+
+            <div class="qre-actions">
+              <a href="${currentDataUrl}" download="${fileName}" class="qre-btn qre-btn-download" id="qrSingleDownload">
+                <i class="fas fa-download"></i> ダウンロード <br><small>Tải xuống</small>
+              </a>
+              <button class="qre-btn qre-btn-copy" id="qrSingleCopy">
+                <i class="fas fa-copy"></i> コピー <br><small>Sao chép</small>
+              </button>
+              <button class="qre-btn qre-btn-print" id="qrSinglePrint">
+                <i class="fas fa-print"></i> 印刷 <br><small>In thẻ</small>
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      document.body.appendChild(overlay);
+
+      // Events
+      document.getElementById('qrSingleClose').addEventListener('click', () => this.closeModal('qrSingleModal'));
+      
+      const sizeSelect = document.getElementById('qrSingleSize');
+      const imgEl = document.getElementById('qrSingleImg');
+      const downloadEl = document.getElementById('qrSingleDownload');
+
+      sizeSelect.addEventListener('change', (e) => {
+        const newSize = parseInt(e.target.value, 10);
+        currentDataUrl = this.generateLocalQR(payload, newSize);
+        imgEl.src = currentDataUrl;
+        downloadEl.href = currentDataUrl;
+        downloadEl.download = `MCQR_${typeCode}_${typeInfo.id}_${typeInfo.code}_${newSize}.png`;
+      });
+
+      document.getElementById('qrSingleCopy').addEventListener('click', () => {
+        this.copyQRToClipboard(currentDataUrl);
+      });
+
+      document.getElementById('qrSinglePrint').addEventListener('click', () => {
+        this.printSingle(typeInfo, payload, sizeSelect.value);
+      });
+
+      if (window.SwipeHistoryTrap) {
+        window.SwipeHistoryTrap.push('qrSingleModal', () => this.closeModal('qrSingleModal'));
+      }
+    }
+
+    printSingle(typeInfo, payload, size) {
+      const jpgUrl = this.generateLocalQR(payload, size);
+      const win = window.open('', '_blank', 'width=800,height=600');
+      if (!win) {
+        alert('Cửa sổ in bị chặn. Vui lòng cho phép popup.');
+        return;
+      }
+
+      const html = `
+        <!DOCTYPE html>
+        <html lang="ja">
+        <head>
+          <meta charset="UTF-8">
+          <title>印刷 / In QR: ${typeInfo.code}</title>
+          <style>
+            body { margin: 0; padding: 20px; font-family: sans-serif; text-align: center; }
+            .info { margin-bottom: 16px; font-size: 16px; line-height: 1.5; }
+            .info strong { display: block; font-size: 20px; margin-bottom: 8px; }
+            img { width: ${size}px; height: ${size}px; }
+            @media print { body { margin: 0; padding: 0; } }
+          </style>
+        </head>
+        <body>
+          <div class="info">
+            <strong>${typeInfo.typeLabel}</strong>
+            <div>ID: ${typeInfo.id} - Code: ${typeInfo.code}</div>
+            <div>${typeInfo.name}</div>
+          </div>
+          <div>
+            <img src="${jpgUrl}" alt="QR">
+          </div>
+          <script>
+            window.onload = () => { setTimeout(() => window.print(), 300); };
+          </script>
+        </body>
+        </html>
+      `;
+      win.document.open();
+      win.document.write(html);
+      win.document.close();
+    }
+
+    // --- MASS EXPORT ---
+    generateMass(items) {
+      this.init();
+      if (!items || items.length === 0) {
+        alert('選択されたアイテムがありません。\nKhông có bản ghi nào được chọn!');
+        return;
+      }
+
+      const validItems = items.map(item => this.detectItemType(item)).filter(Boolean);
+      if (validItems.length === 0) {
+        alert('IDまたはコードを抽出できません。\nKhông thể trích xuất ID/Code.');
+        return;
+      }
+
+      this.openMassModal(validItems);
+    }
+
+    openMassModal(validItems) {
+      this.closeModal('qrMassModal');
+
+      const overlay = document.createElement('div');
+      overlay.className = 'qre-modal-backdrop';
+      overlay.id = 'qrMassModal';
+
+      overlay.innerHTML = `
+        <div class="qre-modal">
+          <div class="qre-modal-header">
+            <h3>一括印刷設定 / Cấu hình In (${validItems.length} thẻ)</h3>
+            <button class="qre-close-btn" id="qrMassClose">&times;</button>
+          </div>
+          <div class="qre-modal-body">
+            
+            <div class="qre-config-grid">
+              <div class="qre-config-item">
+                <label>サイズ / Kích thước (mm):</label>
+                <select id="qrMassSize">
+                  <option value="30">30 x 30 mm (小 / Nhỏ)</option>
+                  <option value="40" selected>40 x 40 mm (中 / Vừa)</option>
+                  <option value="50">50 x 50 mm (大 / Lớn)</option>
+                </select>
+              </div>
+              <div class="qre-config-item">
+                <label>用紙サイズ / Khổ giấy:</label>
+                <select id="qrMassPaper" disabled>
+                  <option value="A4">A4 (210 x 297 mm)</option>
+                </select>
+              </div>
+              <div class="qre-config-item">
+                <label>表示項目 / Ghi chú trên tem:</label>
+                <div style="font-size: 14px; margin-top: 8px;">
+                  <label style="display:flex; align-items:center; margin-bottom:6px; cursor:pointer;">
+                    <input type="checkbox" id="qrMassShowCode" checked style="margin-right:8px; width:16px; height:16px;"> 
+                    機器コード (Mã thiết bị)
+                  </label>
+                  <label style="display:flex; align-items:center; cursor:pointer;">
+                    <input type="checkbox" id="qrMassShowName" checked style="margin-right:8px; width:16px; height:16px;"> 
+                    機器名 (Tên thiết bị)
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="qre-actions" style="margin-top: 24px;">
+              <button class="qre-btn qre-btn-close" id="qrMassCloseBtn">
+                <i class="fas fa-times"></i> 閉じる <br><small>Đóng</small>
+              </button>
+              <button class="qre-btn qre-btn-print" id="qrMassPrint">
+                <i class="fas fa-print"></i> 印刷プレビュー <br><small>Tạo bản in A4</small>
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      document.body.appendChild(overlay);
+
+      document.getElementById('qrMassClose').addEventListener('click', () => this.closeModal('qrMassModal'));
+      document.getElementById('qrMassCloseBtn').addEventListener('click', () => this.closeModal('qrMassModal'));
+      
+      document.getElementById('qrMassPrint').addEventListener('click', () => {
+        const sizeMm = parseInt(document.getElementById('qrMassSize').value, 10);
+        const showCode = document.getElementById('qrMassShowCode').checked;
+        const showName = document.getElementById('qrMassShowName').checked;
+        this.printMass(validItems, sizeMm, showCode, showName);
+      });
+
+      if (window.SwipeHistoryTrap) {
+        window.SwipeHistoryTrap.push('qrMassModal', () => this.closeModal('qrMassModal'));
+      }
+    }
+
+    printMass(validItems, sizeMm, showCode, showName) {
+      const win = window.open('', '_blank');
+      if (!win) {
+        alert('Cửa sổ in bị chặn. Vui lòng cho phép popup.');
+        return;
+      }
+
+      // Render từng thẻ
+      let labelsHtml = '';
+      validItems.forEach(item => {
+        const payload = this.buildPayload(item.type, item.id);
+        const dataUrl = this.generateLocalQR(payload, 300);
+
+        let textHtml = '';
+        if (showCode) textHtml += \`<div class="lbl-code">\${item.code}</div>\`;
+        if (showName) textHtml += \`<div class="lbl-name">\${item.name}</div>\`;
+
+        labelsHtml += \`
+          <div class="qr-label" style="width: \${sizeMm}mm;">
+            <img src="\${dataUrl}" alt="QR">
+            \${textHtml}
+          </div>
+        \`;
+      });
+
+      const html = \`
+        <!DOCTYPE html>
+        <html lang="ja">
+        <head>
+          <meta charset="UTF-8">
+          <title>一括印刷 / Mass Print QR (\${validItems.length})</title>
+          <style>
+            @page {
+              size: A4;
+              margin: 10mm;
+            }
+            body {
+              margin: 0;
+              padding: 0;
+              font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+              background: #fff;
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
+            }
+            .grid-container {
+              display: grid;
+              grid-template-columns: repeat(auto-fill, minmax(\${sizeMm}mm, 1fr));
+              gap: 10mm 5mm;
+              justify-content: center;
+              padding: 10mm;
+            }
+            .qr-label {
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              text-align: center;
+              border: 1px dashed #ccc;
+              padding: 4mm;
+              box-sizing: border-box;
+              page-break-inside: avoid;
+            }
+            .qr-label img {
+              width: 100%;
+              height: auto;
+              aspect-ratio: 1/1;
+              margin-bottom: 2mm;
+            }
+            .lbl-code {
+              font-size: 10pt;
+              font-weight: bold;
+              word-break: break-all;
+              line-height: 1.2;
+            }
+            .lbl-name {
+              font-size: 8pt;
+              color: #333;
+              margin-top: 1mm;
+              display: -webkit-box;
+              -webkit-line-clamp: 2;
+              -webkit-box-orient: vertical;
+              overflow: hidden;
+              line-height: 1.2;
+            }
+            @media print {
+              .grid-container {
+                padding: 0;
+                gap: 5mm;
+              }
+              .qr-label {
+                border: 0.5px dotted #999;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="grid-container">
+            \${labelsHtml}
+          </div>
+          <script>
+            window.onload = () => { setTimeout(() => window.print(), 500); };
+          </script>
+        </body>
+        </html>
+      \`;
+      win.document.open();
+      win.document.write(html);
+      win.document.close();
+    }
+
+    // --- COMMON ---
+    closeModal(id) {
+      const el = document.getElementById(id);
+      if (el) el.remove();
+      if (window.SwipeHistoryTrap) window.SwipeHistoryTrap.remove(id);
+    }
+
+    injectStyles() {
+      if (document.getElementById('export-qr-v2-styles')) return;
+      const style = document.createElement('style');
+      style.id = 'export-qr-v2-styles';
+      style.textContent = \`
+        .qre-modal-backdrop {
+          position: fixed; inset: 0; z-index: 11000;
+          display: flex; align-items: center; justify-content: center;
+          background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+        .qre-modal {
+          background: #fff; width: 90%; max-width: 420px;
+          border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+          overflow: hidden; display: flex; flex-direction: column;
+          animation: qreModalIn 0.2s ease-out;
+        }
+        @keyframes qreModalIn {
+          from { transform: scale(0.95); opacity: 0; }
+          to { transform: scale(1); opacity: 1; }
+        }
+        .qre-modal-header {
+          display: flex; justify-content: space-between; align-items: center;
+          padding: 16px 20px; background: #f8fafc; border-bottom: 1px solid #e2e8f0;
+        }
+        .qre-modal-header h3 { margin: 0; font-size: 16px; color: #1e293b; }
+        .qre-close-btn {
+          background: transparent; border: none; font-size: 24px; line-height: 1;
+          color: #64748b; cursor: pointer; padding: 0; margin: 0;
+        }
+        .qre-modal-body { padding: 20px; }
+        .qre-info-box {
+          background: #f1f5f9; padding: 12px; border-radius: 8px; margin-bottom: 16px;
+          font-size: 14px; color: #334155; line-height: 1.5;
+        }
+        .qre-info-box strong { display: block; color: #0f172a; font-size: 15px; margin-bottom: 4px; }
+        .qre-preview { display: flex; justify-content: center; margin-bottom: 16px; }
+        .qre-controls { margin-bottom: 20px; }
+        .qre-controls label { display: block; font-size: 13px; color: #64748b; margin-bottom: 6px; font-weight: 500;}
+        .qre-controls select {
+          width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1;
+          border-radius: 6px; font-size: 14px; color: #1e293b;
+          outline: none; background: #fff;
+        }
+        .qre-actions { display: flex; gap: 10px; }
+        .qre-btn {
+          flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+          padding: 10px 8px; border: none; border-radius: 8px;
+          font-size: 14px; font-weight: 600; cursor: pointer;
+          text-decoration: none; transition: all 0.2s; line-height: 1.2;
+        }
+        .qre-btn i { font-size: 18px; margin-bottom: 4px; }
+        .qre-btn small { font-size: 11px; opacity: 0.8; font-weight: normal; margin-top: 2px;}
+        
+        .qre-btn-download { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+        .qre-btn-download:hover { background: #dbeafe; }
+        .qre-btn-copy { background: #f8fafc; color: #475569; border: 1px solid #e2e8f0; }
+        .qre-btn-copy:hover { background: #f1f5f9; }
+        .qre-btn-print { background: #2563eb; color: #fff; }
+        .qre-btn-print:hover { background: #1d4ed8; }
+        .qre-btn-close { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
+        .qre-btn-close:hover { background: #e2e8f0; }
+        
+        .qre-config-grid { display: flex; flex-direction: column; gap: 16px; }
+        .qre-config-item label { display: block; font-size: 13px; color: #64748b; margin-bottom: 6px; font-weight: 500; }
+        .qre-config-item select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; }
+      \`;
+      document.head.appendChild(style);
+    }
   }
 
+  window.ExportQR = new ExportQR();
 
+  // Compat for existing events
+  document.addEventListener('triggerQRCode', (e) => {
+    const detail = e.detail || {};
+    if (detail.item) {
+      window.ExportQR.generate(detail.item);
+    }
+  });
 
 })();
-

@@ -2874,77 +2874,26 @@ Created: 2026-02-04
 
 
           if (key === 'open-full') {
-
-
-
             try {
-
-
-
               const p = this._preview || {};
-
-
-
               const it = p.item;
-
-
-
               const tp = p.itemType;
-
-
-
-              this.closePreview();
-
-
-
+              this.closePreview(true);
               if (it) this.open(it, tp, { fromPanelLink: true });
-
-
-
             } catch (err) { }
-
-
-
             return;
-
-
-
           }
 
 
 
           if (key === 'open-full-mold') {
-
-
-
             try {
-
-
-
               const p = this._preview || {};
-
-
-
               const m = p.centerMold;
-
-
-
-              this.closePreview();
-
-
-
+              this.closePreview(true);
               if (m) this.open(m, 'mold', { fromPanelLink: true });
-
-
-
             } catch (err) { }
-
-
-
             return;
-
-
-
           }
 
 
@@ -3138,33 +3087,12 @@ Created: 2026-02-04
 
 
           if (key === 'open-full') {
-
-
-
             const p = this._preview || {};
-
-
-
             const it = p.item;
-
-
-
             const tp = p.itemType;
-
-
-
-            this.closePreview();
-
-
-
+            this.closePreview(true);
             if (it) this.open(it, tp, { fromPanelLink: true });
-
-
-
             return;
-
-
-
           }
 
 
@@ -3174,29 +3102,11 @@ Created: 2026-02-04
 
 
           if (key === 'open-full-mold') {
-
-
-
             const p = this._preview || {};
-
-
-
             const m = p.centerMold;
-
-
-
-            this.closePreview();
-
-
-
+            this.closePreview(true);
             if (m) this.open(m, 'mold', { fromPanelLink: true });
-
-
-
             return;
-
-
-
           }
 
 
@@ -3774,6 +3684,29 @@ Created: 2026-02-04
 
 
 
+      // ===== URL STATE SYNC (SPA Routing) =====
+      try {
+        let q = '';
+        console.log(`[URL SYNC] open() called. currentItemType: ${this.currentItemType}`);
+        if (this.currentItemType === 'mold') {
+          const mId = this.currentItem.MoldID || this.currentItem.MoldCode;
+          if (mId) q = '?q=M' + mId;
+        } else if (this.currentItemType === 'cutter') {
+          const cId = this.currentItem.CutterID || this.currentItem.CutterCode || this.currentItem.CutterNo;
+          console.log(`[URL SYNC] Resolving Cutter ID for URL: CutterID=${this.currentItem.CutterID}, CutterCode=${this.currentItem.CutterCode}, CutterNo=${this.currentItem.CutterNo} -> cId=${cId}`);
+          if (cId) q = '?q=C' + cId;
+        }
+        console.log(`[URL SYNC] open() attempting replaceState to: "${q}"`);
+        if (q) {
+            window.history.replaceState({}, document.title, q);
+            console.log(`[URL SYNC] open() replaceState SUCCESS. New URL:`, window.location.href);
+        } else {
+            console.log(`[URL SYNC] open() skipped replaceState because q is empty`);
+        }
+      } catch (e) { console.error('[URL SYNC] open() URL Sync error:', e); }
+
+
+
       this.panel.classList.add('open');
 
 
@@ -3808,6 +3741,19 @@ Created: 2026-02-04
 
 
       if (window.SwipeHistoryTrap) window.SwipeHistoryTrap.remove('detailPanel');
+
+
+
+      // ===== URL STATE SYNC CLEANUP =====
+      try {
+        const cleanUrl = new URL(window.location.href);
+        if (cleanUrl.searchParams.has('q')) {
+          cleanUrl.searchParams.delete('q');
+          window.history.replaceState({}, document.title, cleanUrl.toString());
+        }
+      } catch (e) { console.warn('URL Cleanup error:', e); }
+
+
 
       this.panel.classList.remove('open');
 
@@ -4466,6 +4412,17 @@ Created: 2026-02-04
 
         if (window.SwipeHistoryTrap) window.SwipeHistoryTrap.push('detailPreview', () => this.closePreview());
 
+        try {
+          let q = '';
+          if (t === 'mold') q = '?q=M' + (full.MoldID || full.MoldCode || '');
+          else if (t === 'cutter') q = '?q=C' + (full.CutterID || full.CutterCode || full.CutterNo || '');
+          console.log(`[URL SYNC] openPreview attempting replaceState to: "${q}"`);
+          if (q && q.length > 4) {
+            window.history.replaceState({}, document.title, q);
+            console.log(`[URL SYNC] openPreview replaceState SUCCESS. New URL:`, window.location.href);
+          }
+        } catch (e) { console.error('[URL SYNC] openPreview error:', e); }
+
 
 
         try { if (this.panel) this.panel.classList.add('dp-preview-open'); } catch (e) { }
@@ -4496,11 +4453,23 @@ Created: 2026-02-04
 
 
 
-    closePreview() {
+    closePreview(skipUrlRestore = false) {
+      if (window.SwipeHistoryTrap) window.SwipeHistoryTrap.remove('detailPreview', skipUrlRestore);
 
-
-
-      if (window.SwipeHistoryTrap) window.SwipeHistoryTrap.remove('detailPreview');
+      console.log(`[URL SYNC] closePreview called. skipUrlRestore: ${skipUrlRestore}`);
+      if (!skipUrlRestore) {
+        try {
+          let q = '';
+          if (this.currentItemType === 'mold' && this.currentItem) q = '?q=M' + (this.currentItem.MoldID || this.currentItem.MoldCode || '');
+          else if (this.currentItemType === 'cutter' && this.currentItem) q = '?q=C' + (this.currentItem.CutterID || this.currentItem.CutterCode || this.currentItem.CutterNo || '');
+          console.log(`[URL SYNC] closePreview attempting replaceState to: "${q}"`);
+          if (q && q.length > 4) window.history.replaceState({}, document.title, q);
+          else window.history.replaceState({}, document.title, window.location.pathname);
+          console.log(`[URL SYNC] closePreview replaceState SUCCESS. New URL:`, window.location.href);
+        } catch (e) { console.error('[URL SYNC] closePreview error:', e); }
+      } else {
+        console.log(`[URL SYNC] closePreview skipping URL restore due to skipUrlRestore=true`);
+      }
 
 
 

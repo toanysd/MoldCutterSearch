@@ -55,12 +55,15 @@ class PrintExportModule {
           <div class="pe-modal-desc">
             選択された <b>${this.selectedItems.length}</b> 件のデータをどう処理しますか？
           </div>
-          <div class="pe-modal-actions">
-            <button class="pe-btn pe-btn-print" id="pePrintBtn">
-              <i class="fas fa-print"></i> 印刷
+          <div class="pe-modal-actions" style="flex-direction: column;">
+            <button class="pe-btn pe-btn-print" id="pePrintBtn" style="width: 100%; margin-bottom: 8px;">
+              <i class="fas fa-print"></i> 印刷 (In danh sách)
             </button>
-            <button class="pe-btn pe-btn-export" id="peExportBtn">
-              <i class="fas fa-file-excel"></i> Excel出力
+            <button class="pe-btn pe-btn-export" id="peExportBtn" style="width: 100%; margin-bottom: 8px;">
+              <i class="fas fa-file-excel"></i> Excel出力 (Xuất Excel)
+            </button>
+            <button class="pe-btn pe-btn-print" id="pePrintQRBtn" style="width: 100%; background: #8b5cf6;">
+              <i class="fas fa-qrcode"></i> QR印刷 (In tem QR)
             </button>
           </div>
         </div>
@@ -78,6 +81,14 @@ class PrintExportModule {
     document.getElementById('peExportBtn').addEventListener('click', () => {
       this.closeDialog();
       this.executeExportExcel();
+    });
+    document.getElementById('pePrintQRBtn').addEventListener('click', () => {
+      this.closeDialog();
+      if (window.ExportQR && typeof window.ExportQR.generateMass === 'function') {
+        window.ExportQR.generateMass(this.selectedItems);
+      } else {
+        alert('Module Export QR chưa được tải.');
+      }
     });
   }
 

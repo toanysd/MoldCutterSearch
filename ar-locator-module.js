@@ -302,7 +302,7 @@
             e.preventDefault();
             const sel = items[this.state.highlightIdx];
             dd.classList.remove('open');
-            this.state.singleTarget = { code: sel.code, kind: sel.kind, item: sel.item, normCode: sel.normCode };
+            this.state.singleTarget = { code: sel.code, kind: sel.kind, item: sel.item, normCode: sel.normCode, normId: sel.normId };
             this.renderBody();
           }
         });
@@ -373,7 +373,7 @@
               e.preventDefault();
               const sel = this.state.dropdownItems[this.state.highlightIdx];
               if (sel && !this.state.batchList.find(b => this.normalizeCode(b.code) === sel.normCode)) {
-                this.state.batchList.push({ code: sel.code, kind: sel.kind, item: sel.item, checked: false, normCode: sel.normCode });
+                this.state.batchList.push({ code: sel.code, kind: sel.kind, item: sel.item, checked: false, normCode: sel.normCode, normId: sel.normId });
               }
               inp.value = ''; clr.classList.remove('visible'); dd.classList.remove('open');
               this.renderBody(); // re-render to show new item
@@ -421,13 +421,13 @@
           const sel = items[idx];
           if (!sel) return;
           if (this.state.mode === 'single') {
-              this.state.singleTarget = { code: sel.code, kind: sel.kind, item: sel.item, normCode: sel.normCode };
+              this.state.singleTarget = { code: sel.code, kind: sel.kind, item: sel.item, normCode: sel.normCode, normId: sel.normId };
               dd.classList.remove('open');
               this.renderBody();
           }
           else {
             if (!this.state.batchList.find(b => this.normalizeCode(b.code) === sel.normCode)) {
-              this.state.batchList.push({ code: sel.code, kind: sel.kind, item: sel.item, checked: false, normCode: sel.normCode });
+              this.state.batchList.push({ code: sel.code, kind: sel.kind, item: sel.item, checked: false, normCode: sel.normCode, normId: sel.normId });
             }
             const inp = document.getElementById('arl-batch-input');
             if (inp) inp.value = '';
@@ -480,7 +480,7 @@
             <button class="arl-camera-close" id="arl-cam-close">&times;</button>
             <div style="display:flex; flex-direction:column; line-height:1.2;">
                <span class="arl-camera-title" style="font-size:15px;">ARスキャン</span>
-               <span style="font-size:10px; color:#aaa;">v1.1.4</span>
+               <span style="font-size:10px; color:#aaa;">v1.1.5</span>
             </div>
             <div style="display:flex; gap:6px; align-items:center;">
               <select id="arl-camera-select" style="max-width:110px; font-size:12px; padding:4px; border-radius:4px;"></select>

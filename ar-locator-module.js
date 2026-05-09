@@ -490,7 +490,7 @@
               this.renderBody();
           }
           else {
-            if (!this.state.batchList.find(b => this.normalizeCode(b.code) === sel.normCode)) {
+            if (!this.state.batchList.find(b => this.normalizeCode(b.code) === sel.normCode && b.kind === sel.kind)) {
               this.state.batchList.push({ code: sel.code, kind: sel.kind, item: sel.item, checked: false, normCode: sel.normCode, normId: sel.normId });
             }
             const inp = document.getElementById('arl-batch-input');

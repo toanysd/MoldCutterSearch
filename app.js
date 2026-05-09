@@ -713,6 +713,7 @@ class App {
 
 
 
+    console.log('🚀 === SYSTEM VERSION UPDATE: v9.1.34 ===');
     console.log('✅ App initialized successfully');
 
     console.log(`📊 Total items: ${this.allItems.length}`);
@@ -1894,6 +1895,14 @@ class App {
 
       });
 
+    }
+
+    const topInventoryBtn = document.getElementById('topInventoryAuditBtn');
+    if (topInventoryBtn) {
+      topInventoryBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.handleInventory();
+      });
     }
 
 

@@ -133,8 +133,8 @@
           <div class="arl-main-title">
             <div class="arl-header-icon"><i class="fas fa-crosshairs"></i></div>
             <div class="arl-header-text">
-              <span class="ja">ARロケーター</span>
-              <span class="vi">Tìm khuôn AR</span>
+              <span class="ja">AR探索ツール</span>
+              <span class="vi">Tìm kiếm bằng AR</span>
             </div>
           </div>
           <button class="arl-main-close" id="arl-main-close-btn">&times;</button>
@@ -143,14 +143,18 @@
           <button class="arl-tab active" data-mode="single"><i class="fas fa-crosshairs"></i> 特定検索</button>
           <button class="arl-tab" data-mode="batch"><i class="fas fa-list-check"></i> 一括棚卸</button>
         </div>
-        <div class="arl-body" id="arl-body"></div>
+        <div class="arl-body" id="arl-body" style="flex:1;"></div>
         <div id="arl-camera-root"></div>
+        <div class="arl-mobile-footer" style="padding: 12px 16px; background: var(--mcs-surface, #fff); border-top: 1px solid var(--mcs-border, #e2e6ea); display: none;">
+           <button class="arl-btn" id="arl-mobile-close-btn" style="width:100%; padding:14px; background:var(--mcs-surface); border:1px solid var(--mcs-border); font-size:16px; font-weight:bold; color:var(--mcs-text); border-radius:8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);"><i class="fas fa-times"></i> 閉じる / Đóng</button>
+        </div>
       `;
 
       wrapper.appendChild(root);
       document.body.appendChild(wrapper);
 
       document.getElementById('arl-main-close-btn').addEventListener('click', () => this.close());
+      document.getElementById('arl-mobile-close-btn').addEventListener('click', () => this.close());
       // Cho phép đóng modal khi click ra ngoài vùng xám
       wrapper.addEventListener('click', (e) => {
         if (e.target === wrapper) this.close();
@@ -225,15 +229,15 @@
             <button class="arl-btn arl-btn-primary" id="arl-single-camera" style="font-size:16px; padding:16px;"><i class="fas fa-camera"></i> 探索カメラ起動 (Mở Camera)</button>
           </div>
         ` : `
-          <div style="display:flex; gap:8px; margin-top:10px;">
-            <select id="arl-single-kind-select" class="arl-select" style="width:110px;">
+          <div class="arl-search-wrap" style="margin-top:10px; display:flex; gap:8px;">
+            <select id="arl-single-kind-select" style="padding:10px; border-radius:6px; border:1px solid var(--mcs-border); background:var(--mcs-surface); color:var(--mcs-text); font-weight:600;">
               <option value="all" ${this.state.searchKind === 'all' ? 'selected' : ''}>全て (Tất cả)</option>
               <option value="mold" ${this.state.searchKind === 'mold' ? 'selected' : ''}>金型 (Khuôn)</option>
               <option value="cutter" ${this.state.searchKind === 'cutter' ? 'selected' : ''}>抜型 (Dao)</option>
             </select>
-            <div style="position:relative; flex:1;">
-              <input type="text" id="arl-single-input" class="arl-input" placeholder="コード入力... (Mã khuôn/dao)" autocomplete="off">
-              <button id="arl-single-clear" class="arl-clear">&times;</button>
+            <div style="flex:1; position:relative;">
+              <input type="text" class="arl-search-input" id="arl-single-input" placeholder="コード入力... (Mã khuôn/dao)" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" style="width:100%; border-radius:6px;">
+              <button class="arl-search-clear" id="arl-single-clear">&times;</button>
               <div class="arl-dropdown" id="arl-single-dropdown"></div>
             </div>
           </div>
@@ -397,7 +401,7 @@
                   sel = this.state.dropdownItems[0];
               }
               
-              if (sel && !this.state.batchList.find(b => this.normalizeCode(b.code) === sel.normCode)) {
+              if (sel && !this.state.batchList.find(b => this.normalizeCode(b.code) === sel.normCode && b.kind === sel.kind)) {
                 this.state.batchList.push({ code: sel.code, kind: sel.kind, item: sel.item, checked: false, normCode: sel.normCode, normId: sel.normId });
               }
               inp.value = ''; clr.classList.remove('visible'); dd.classList.remove('open');

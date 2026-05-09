@@ -135,11 +135,14 @@
 
         .qrscan-hint { text-align: center; font-size: 12px; color: #888; padding: 8px 0 4px; flex-shrink: 0; }
         .qrscan-hint .ja { font-weight: 600; color: #555; }
+        
+        .qrscan-mobile-footer { display: none; padding: 12px 16px; background: #fff; border-top: 1px solid #eee; }
 
         @media (max-width: 768px) {
           .qrscan-dialog { width: 96%; max-width: none; max-height: 85vh; border-radius: 14px; }
           .qrscan-camera-view-wrap { max-height: 50vh; }
           #qrscan-canvas { max-height: 50vh; }
+          .qrscan-mobile-footer { display: block; }
         }
       `;
       document.head.appendChild(style);
@@ -182,6 +185,9 @@
               <div class="vi">Hướng camera vào mã QR trên khuôn hoặc dao cắt</div>
             </div>
           </div>
+          <div class="qrscan-mobile-footer">
+            <button class="qrscan-btn" id="qrscan-mobile-close-btn" style="width:100%; padding:14px; background:#fff; border:1px solid #ddd; font-size:16px; font-weight:bold; color:#333; border-radius:8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); cursor:pointer;"><i class="fas fa-times"></i> 閉じる / Đóng</button>
+          </div>
         </div>
       `;
       document.body.appendChild(root);
@@ -193,6 +199,7 @@
       this.state.cameraSelect = root.querySelector('#qrscan-camera-select');
 
       root.querySelector('.qrscan-close').addEventListener('click', () => this.closeModal());
+      root.querySelector('#qrscan-mobile-close-btn').addEventListener('click', () => this.closeModal());
       root.querySelector('.qrscan-backdrop').addEventListener('click', () => this.closeModal());
       root.querySelector('#qrscan-toggle-camera').addEventListener('click', () => this.toggleCamera());
       this.state.cameraSelect.addEventListener('change', (e) => {

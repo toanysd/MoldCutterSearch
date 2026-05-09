@@ -31,6 +31,7 @@
 @media (max-width: 768px) {
   .arl-overlay-wrapper { padding: 18px 12px; }
   .arl-overlay { max-width: 100%; height: calc(100dvh - 36px); max-height: calc(100dvh - 36px); border-radius: 12px; }
+  .arl-mobile-footer { display: block !important; }
 }
 
 .arl-main-header {

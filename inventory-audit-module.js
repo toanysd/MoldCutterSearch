@@ -68,10 +68,12 @@
             if (sidebarBtn) {
 
                 sidebarBtn.addEventListener('click', (e) => {
-
                     e.preventDefault();
-
-                    this.startWorkflow();
+                    if (window.app && typeof window.app.handleInventory === 'function') {
+                        window.app.handleInventory();
+                    } else {
+                        this.startWorkflow();
+                    }
 
                     const sb = document.getElementById('sidebar');
 
@@ -92,17 +94,15 @@
 
 
             const topBtn = document.getElementById('topInventoryAuditBtn');
-
             if (topBtn) {
-
                 topBtn.addEventListener('click', (e) => {
-
                     e.preventDefault();
-
-                    this.startWorkflow();
-
+                    if (window.app && typeof window.app.handleInventory === 'function') {
+                        window.app.handleInventory();
+                    } else {
+                        this.startWorkflow();
+                    }
                 });
-
             }
 
         }

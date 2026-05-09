@@ -244,13 +244,6 @@
         if (!this.state.cameras.length) {
           const devices = await navigator.mediaDevices.enumerateDevices();
           this.state.cameras = devices.filter(d => d.kind === 'videoinput');
-          this.state.cameraSelect.innerHTML = '';
-          this.state.cameras.forEach((cam, i) => {
-            const opt = document.createElement('option');
-            opt.value = cam.deviceId;
-            opt.textContent = cam.label || `カメラ ${i + 1}`;
-            this.state.cameraSelect.appendChild(opt);
-          });
         }
 
         const constraints = {
@@ -266,8 +259,18 @@
         const track = this.state.stream.getVideoTracks()[0];
         if (track) {
           this.state.currentCameraId = track.getSettings().deviceId;
-          this.state.cameraSelect.value = this.state.currentCameraId;
         }
+
+        const updatedDevices = await navigator.mediaDevices.enumerateDevices();
+        this.state.cameras = updatedDevices.filter(d => d.kind === 'videoinput');
+        this.state.cameraSelect.innerHTML = '';
+        this.state.cameras.forEach((cam, i) => {
+          const opt = document.createElement('option');
+          opt.value = cam.deviceId;
+          opt.textContent = cam.label || `カメラ ${i + 1}`;
+          this.state.cameraSelect.appendChild(opt);
+        });
+        if (this.state.currentCameraId) this.state.cameraSelect.value = this.state.currentCameraId;
         
         await this.state.video.play();
         

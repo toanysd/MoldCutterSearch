@@ -91,12 +91,12 @@
       });
     },
 
-    open() {
+    open(initialMode = 'single', initialBatchList = []) {
       if (this.state.isOpen) return;
       this.state.isOpen = true;
-      this.state.mode = 'single';
+      this.state.mode = initialMode;
       this.state.singleTarget = null;
-      this.state.batchList = [];
+      this.state.batchList = initialBatchList;
       this.state.foundImage = null;
       if (window.ViewManager?.currentView && window.ViewManager.currentView !== 'ar-locator') {
         this.state.prevView = window.ViewManager.currentView;
@@ -594,20 +594,11 @@
       this.stopCameraStream();
       this.state.scanning = true;
       try {
+        // Placeholder initialization
         if (!this.state.cameras) this.state.cameras = [];
         if (!this.state.cameras.length) {
           const devices = await navigator.mediaDevices.enumerateDevices();
           this.state.cameras = devices.filter(d => d.kind === 'videoinput');
-          const sel = document.getElementById('arl-camera-select');
-          if (sel) {
-            sel.innerHTML = '';
-            this.state.cameras.forEach((cam, i) => {
-              const opt = document.createElement('option');
-              opt.value = cam.deviceId;
-              opt.textContent = cam.label || `カメラ ${i + 1}`;
-              sel.appendChild(opt);
-            });
-          }
         }
 
         const constraints = { 
@@ -620,8 +611,21 @@
         const track = this.state.stream.getVideoTracks()[0];
         if (track) {
            this.state.currentCameraId = track.getSettings().deviceId;
-           const sel = document.getElementById('arl-camera-select');
-           if(sel) sel.value = this.state.currentCameraId;
+        }
+
+        // Re-enumerate after stream started to get full labels & all cameras
+        const updatedDevices = await navigator.mediaDevices.enumerateDevices();
+        this.state.cameras = updatedDevices.filter(d => d.kind === 'videoinput');
+        const sel = document.getElementById('arl-camera-select');
+        if (sel) {
+          sel.innerHTML = '';
+          this.state.cameras.forEach((cam, i) => {
+            const opt = document.createElement('option');
+            opt.value = cam.deviceId;
+            opt.textContent = cam.label || `カメラ ${i + 1}`;
+            sel.appendChild(opt);
+          });
+          if (this.state.currentCameraId) sel.value = this.state.currentCameraId;
         }
 
         await this.state.video.play();
@@ -693,8 +697,10 @@
       const targets = this.state.cameraTargets || [];
 
       // Flexible Match function
-      const isMatchFound = (target, qrNorm) => {
+      const isMatchFound = (target, qrNorm, qrKind) => {
           if (!qrNorm) return false;
+          if (qrKind && target.kind && target.kind !== qrKind) return false; // Match kind if provided
+          
           const targetNorm = target.normCode;
           const targetId = target.normId;
           
@@ -712,13 +718,13 @@
       let displayCode = parsed ? parsed.code : rawText;
       
       if(this.state.mode === 'single') {
-          if (targets.length > 0 && isMatchFound(targets[0], parsedNorm)) {
+          if (targets.length > 0 && isMatchFound(targets[0], parsedNorm, parsed?.kind)) {
               isMatch = true;
               displayCode = targets[0].code;
           }
       } else {
           // Batch Mode
-          const found = targets.find(t => !t.checked && isMatchFound(t, parsedNorm));
+          const found = targets.find(t => !t.checked && isMatchFound(t, parsedNorm, parsed?.kind));
           if (found) {
               isMatch = true;
               found.checked = true;
@@ -726,7 +732,7 @@
               this.syncAuditLog(found); // 🔥 Ghi log audit
           } else {
              // Đã quét rồi thì thôi, không báo lỗi liên tục
-             const alreadyChecked = targets.find(t => t.checked && isMatchFound(t, parsedNorm));
+             const alreadyChecked = targets.find(t => t.checked && isMatchFound(t, parsedNorm, parsed?.kind));
              if(alreadyChecked) {
                  isMatch = true; // Cho xanh lá luôn cho đẹp, ko bip
                  displayCode = alreadyChecked.code;

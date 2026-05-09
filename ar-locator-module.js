@@ -13,7 +13,8 @@
       video: null, canvas: null, ctx: null,
       audioCtx: null, lastBeepTime: 0,
       facingMode: 'environment',
-      foundImage: null // For single mode found result
+      foundImage: null, // For single mode found result
+      searchKind: 'all' // all, mold, cutter
     },
 
     normalizeCode(raw) {
@@ -21,19 +22,16 @@
     },
 
     searchDevices(query) {
-      const norm = this.normalizeCode(query);
-      if (norm.length < 2) return [];
+      if (!query || query.length < 2) return [];
       const dm = window.DataManager?.data;
       if (!dm) return [];
+      const q = query.toLowerCase();
       const results = [];
-      const seen = new Set();
+      const searchKind = this.state.searchKind || 'all';
 
       const check = (list, kind) => {
-        if (!Array.isArray(list)) return;
-        list.forEach(item => {
+        for (const item of list) {
           const code = kind === 'mold' ? (item.MoldCode || '') : (item.CutterCode || item.CutterNo || '');
-          const id = kind === 'mold' ? (item.MoldID || '') : (item.CutterID || '');
-          const normItem = this.normalizeCode(code);
           const normId = this.normalizeCode(id);
           
           if (!normItem || seen.has(normItem)) return;
@@ -264,10 +262,17 @@
             <button class="arl-btn arl-btn-primary" id="arl-single-camera" style="font-size:16px; padding:16px;"><i class="fas fa-camera"></i> 探索カメラ起動 (Mở Camera)</button>
           </div>
         ` : `
-          <div class="arl-search-wrap" style="margin-top:10px;">
-            <input type="text" class="arl-search-input" id="arl-single-input" placeholder="金型コード入力... (例: JAE001)" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-            <button class="arl-search-clear" id="arl-single-clear">&times;</button>
-            <div class="arl-dropdown" id="arl-single-dropdown"></div>
+          <div class="arl-search-wrap" style="margin-top:10px; display:flex; gap:8px;">
+            <select id="arl-single-kind-select" style="padding:10px; border-radius:6px; border:1px solid var(--mcs-border); background:var(--mcs-surface); color:var(--mcs-text); font-weight:600;">
+              <option value="all" ${this.state.searchKind === 'all' ? 'selected' : ''}>全て (Tất cả)</option>
+              <option value="mold" ${this.state.searchKind === 'mold' ? 'selected' : ''}>金型 (Khuôn)</option>
+              <option value="cutter" ${this.state.searchKind === 'cutter' ? 'selected' : ''}>抜型 (Dao cắt)</option>
+            </select>
+            <div style="flex:1; position:relative;">
+              <input type="text" class="arl-search-input" id="arl-single-input" placeholder="コード入力... (Mã khuôn/dao)" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" style="width:100%; border-radius:6px;">
+              <button class="arl-search-clear" id="arl-single-clear">&times;</button>
+              <div class="arl-dropdown" id="arl-single-dropdown"></div>
+            </div>
           </div>
         `}
       `;
@@ -284,6 +289,16 @@
         const inp = document.getElementById('arl-single-input');
         const dd = document.getElementById('arl-single-dropdown');
         const clr = document.getElementById('arl-single-clear');
+        const kindSelect = document.getElementById('arl-single-kind-select');
+
+        kindSelect.addEventListener('change', (e) => {
+           this.state.searchKind = e.target.value;
+           if (inp.value.trim().length >= 2) {
+               this.state.dropdownItems = this.searchDevices(inp.value.trim());
+               this.state.highlightIdx = this.state.dropdownItems.length > 0 ? 0 : -1;
+               this.renderDropdown(dd, inp.value.trim());
+           }
+        });
 
         inp.addEventListener('input', () => {
           const q = inp.value.trim();
@@ -294,21 +309,45 @@
           this.renderDropdown(dd, q);
         });
 
+        const submitSingle = () => {
+            const items = this.state.dropdownItems;
+            let sel = null;
+            if (this.state.highlightIdx >= 0 && items[this.state.highlightIdx]) {
+                sel = items[this.state.highlightIdx];
+            } else if (items.length > 0) {
+                sel = items[0];
+            }
+            if (sel) {
+                dd.classList.remove('open');
+                this.state.singleTarget = { code: sel.code, kind: sel.kind, item: sel.item, normCode: sel.normCode, normId: sel.normId };
+                this.renderBody();
+            }
+        };
+
         inp.addEventListener('keydown', (e) => {
           const items = this.state.dropdownItems;
           if (e.key === 'ArrowDown') { e.preventDefault(); this.state.highlightIdx = Math.min(this.state.highlightIdx + 1, items.length - 1); this.renderDropdown(dd, inp.value.trim()); }
           else if (e.key === 'ArrowUp') { e.preventDefault(); this.state.highlightIdx = Math.max(this.state.highlightIdx - 1, 0); this.renderDropdown(dd, inp.value.trim()); }
-          else if (e.key === 'Enter' && this.state.highlightIdx >= 0 && items[this.state.highlightIdx]) {
+          else if (e.key === 'Enter') {
             e.preventDefault();
-            const sel = items[this.state.highlightIdx];
-            dd.classList.remove('open');
-            this.state.singleTarget = { code: sel.code, kind: sel.kind, item: sel.item, normCode: sel.normCode, normId: sel.normId };
-            this.renderBody();
+            submitSingle();
           }
         });
 
+        const handleMobileKeyboard = (e) => {
+            if (window.innerWidth <= 768 && window.VirtualKeyboard && !inp.readOnly) {
+                e.preventDefault();
+                inp.blur();
+                window.VirtualKeyboard.open(inp, {
+                    onSubmit: () => submitSingle()
+                });
+            }
+        };
+        inp.addEventListener('click', handleMobileKeyboard);
+        inp.addEventListener('focus', handleMobileKeyboard);
+
         clr.addEventListener('click', () => { inp.value = ''; clr.classList.remove('visible'); dd.classList.remove('open'); inp.focus(); });
-        setTimeout(() => inp.focus(), 100);
+        setTimeout(() => { if (window.innerWidth > 768) inp.focus(); }, 100);
       }
     },
 
@@ -317,9 +356,11 @@
       const listHtml = this.state.batchList.map((b, i) => `
         <div class="arl-batch-item ${b.checked ? 'checked' : ''}" data-idx="${i}">
           <div class="arl-batch-num">${b.checked ? '✓' : (i + 1)}</div>
-          <span class="arl-batch-code">${b.code}</span>
-          <span class="arl-batch-type ${b.kind}">${b.kind === 'mold' ? '金型' : '抜型'}</span>
-          <span class="arl-batch-status ${b.checked ? 'found' : 'pending'}">${b.checked ? '確認済' : '未確認'}</span>
+          <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+             <span class="arl-batch-code">${b.code}</span>
+             <span class="arl-batch-type ${b.kind}">${b.kind === 'mold' ? '金型' : '抜型'} - ${b.checked ? '確認済' : '未確認'}</span>
+          </div>
+          <button class="arl-batch-info" data-idx="${i}" style="color:var(--mcs-primary); font-size:18px; margin-right:8px;"><i class="fas fa-info-circle"></i></button>
           <button class="arl-batch-remove" data-idx="${i}">&times;</button>
         </div>
       `).join('');
@@ -330,12 +371,19 @@
       body.innerHTML = `
         <div class="arl-hint">
           <div class="ja"><i class="fas fa-list-check"></i> 一括棚卸モード / Kiểm kê hàng loạt</div>
-          コードを入力 → Enter でリスト追加 → 「スキャン開始」でカメラ確認。一致すると自動で棚卸記録（AUDIT）が保存されます。
+          コードを入力 → Enter でリスト追加 → 「スキャン開始」でカメラ確認。
         </div>
-        <div class="arl-search-wrap" style="margin-top:10px;">
-          <input type="text" class="arl-search-input" id="arl-batch-input" placeholder="金型コードを追加... (Enter で登録)" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-          <button class="arl-search-clear" id="arl-batch-clear">&times;</button>
-          <div class="arl-dropdown" id="arl-batch-dropdown"></div>
+        <div class="arl-search-wrap" style="margin-top:10px; display:flex; gap:8px;">
+          <select id="arl-batch-kind-select" style="padding:10px; border-radius:6px; border:1px solid var(--mcs-border); background:var(--mcs-surface); color:var(--mcs-text); font-weight:600;">
+            <option value="all" ${this.state.searchKind === 'all' ? 'selected' : ''}>全て (Tất cả)</option>
+            <option value="mold" ${this.state.searchKind === 'mold' ? 'selected' : ''}>金型 (Khuôn)</option>
+            <option value="cutter" ${this.state.searchKind === 'cutter' ? 'selected' : ''}>抜型 (Dao cắt)</option>
+          </select>
+          <div style="flex:1; position:relative;">
+            <input type="text" class="arl-search-input" id="arl-batch-input" placeholder="追加... (Nhập mã thêm)" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" style="width:100%; border-radius:6px;">
+            <button class="arl-search-clear" id="arl-batch-clear">&times;</button>
+            <div class="arl-dropdown" id="arl-batch-dropdown"></div>
+          </div>
         </div>
         ${total > 0 ? `
           <div class="arl-stats" style="margin-top:10px;">
@@ -355,8 +403,20 @@
       const inp = document.getElementById('arl-batch-input');
       const dd = document.getElementById('arl-batch-dropdown');
       const clr = document.getElementById('arl-batch-clear');
+      const kindSelect = document.getElementById('arl-batch-kind-select');
 
       if(inp) {
+          if (kindSelect) {
+              kindSelect.addEventListener('change', (e) => {
+                 this.state.searchKind = e.target.value;
+                 if (inp.value.trim().length >= 2) {
+                     this.state.dropdownItems = this.searchDevices(inp.value.trim());
+                     this.state.highlightIdx = this.state.dropdownItems.length > 0 ? 0 : -1;
+                     this.renderDropdown(dd, inp.value.trim());
+                 }
+              });
+          }
+
           inp.addEventListener('input', () => {
             const q = inp.value.trim();
             clr.classList.toggle('visible', q.length > 0);
@@ -366,24 +426,61 @@
             this.renderDropdown(dd, q);
           });
 
-          inp.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowDown') { e.preventDefault(); this.state.highlightIdx = Math.min(this.state.highlightIdx + 1, this.state.dropdownItems.length - 1); this.renderDropdown(dd, inp.value.trim()); }
-            else if (e.key === 'ArrowUp') { e.preventDefault(); this.state.highlightIdx = Math.max(this.state.highlightIdx - 1, 0); this.renderDropdown(dd, inp.value.trim()); }
-            else if (e.key === 'Enter' && this.state.highlightIdx >= 0) {
-              e.preventDefault();
-              const sel = this.state.dropdownItems[this.state.highlightIdx];
+          const submitBatch = () => {
+              let sel = null;
+              if (this.state.highlightIdx >= 0 && this.state.dropdownItems[this.state.highlightIdx]) {
+                  sel = this.state.dropdownItems[this.state.highlightIdx];
+              } else if (this.state.dropdownItems.length > 0) {
+                  sel = this.state.dropdownItems[0];
+              }
+              
               if (sel && !this.state.batchList.find(b => this.normalizeCode(b.code) === sel.normCode)) {
                 this.state.batchList.push({ code: sel.code, kind: sel.kind, item: sel.item, checked: false, normCode: sel.normCode, normId: sel.normId });
               }
               inp.value = ''; clr.classList.remove('visible'); dd.classList.remove('open');
               this.renderBody(); // re-render to show new item
-              setTimeout(() => document.getElementById('arl-batch-input')?.focus(), 50);
+              
+              // Tự động mở lại VirtualKeyboard trên Mobile hoặc Focus trên Desktop
+              setTimeout(() => { 
+                 const newInp = document.getElementById('arl-batch-input');
+                 if (!newInp) return;
+                 if (window.innerWidth > 768) {
+                    newInp.focus(); 
+                 } else if (window.VirtualKeyboard && !newInp.readOnly) {
+                    window.VirtualKeyboard.open(newInp, { onSubmit: submitBatch });
+                 }
+              }, 100);
+          };
+
+          inp.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowDown') { e.preventDefault(); this.state.highlightIdx = Math.min(this.state.highlightIdx + 1, this.state.dropdownItems.length - 1); this.renderDropdown(dd, inp.value.trim()); }
+            else if (e.key === 'ArrowUp') { e.preventDefault(); this.state.highlightIdx = Math.max(this.state.highlightIdx - 1, 0); this.renderDropdown(dd, inp.value.trim()); }
+            else if (e.key === 'Enter') {
+              e.preventDefault();
+              submitBatch();
             }
           });
 
+          const handleMobileKeyboardBatch = (e) => {
+              if (window.innerWidth <= 768 && window.VirtualKeyboard && !inp.readOnly) {
+                  e.preventDefault();
+                  inp.blur();
+                  window.VirtualKeyboard.open(inp, {
+                      onSubmit: () => submitBatch()
+                  });
+              }
+          };
+          inp.addEventListener('click', handleMobileKeyboardBatch);
+          inp.addEventListener('focus', handleMobileKeyboardBatch);
+
           clr.addEventListener('click', () => { inp.value = ''; clr.classList.remove('visible'); dd.classList.remove('open'); inp.focus(); });
-          setTimeout(() => inp.focus(), 100);
+          setTimeout(() => { if (window.innerWidth > 768) inp.focus(); }, 100);
       }
+
+      body.querySelectorAll('.arl-batch-info').forEach(btn => btn.addEventListener('click', () => {
+        const item = this.state.batchList[parseInt(btn.dataset.idx)];
+        if (item && window.DetailPanel) window.DetailPanel.open(item.item, item.kind === 'mold' ? 'mold' : 'cutter');
+      }));
 
       body.querySelectorAll('.arl-batch-remove').forEach(btn => btn.addEventListener('click', () => {
         this.state.batchList.splice(parseInt(btn.dataset.idx), 1);

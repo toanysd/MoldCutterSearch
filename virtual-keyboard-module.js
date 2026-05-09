@@ -402,12 +402,11 @@
         // Bắt phím
 
         var onKeyClick = function (e) {
-
-            // Find closest .vk-key
-
             var key = e.target.closest('.vk-key');
-
             if (!key) return;
+
+            e.preventDefault();
+            e.stopPropagation();
 
 
 
@@ -1062,12 +1061,17 @@
     VirtualKeyboard.prototype._submit = function () {
         this.close();
 
+        if (this.options && typeof this.options.onSubmit === 'function') {
+            this.options.onSubmit(this.currentText);
+            return;
+        }
+
         var mainSearchInput = document.getElementById('searchInput');
 
-        // Bất kể đang ở module nào (Tray, History), khi bấm Search -> ép về giao diện chính
-        if (window.ViewManager && typeof window.ViewManager.switchView === 'function') {
-            window.ViewManager.switchView('mold');
-            
+        // CHỈ ép chuyển View nếu người dùng mở bàn phím ảo từ THANH TÌM KIẾM CHÍNH. 
+        // Nếu mở từ Radial (Nút QR), targetInput của VK là mainSearchInput, nhưng ta CÓ THỂ KHÔNG MUỐN MẤT VIEW HIỆN TẠI!
+        // Để an toàn, nếu đang ở Molds thì thôi, nếu đang ở view khác thì mới gọi.
+        if (window.ViewManager && typeof window.ViewManager.switchView === 'function' && window.ViewManager.currentView !== 'mold') {
             // Cập nhật giao diện Mobile Nav
             var navBtns = document.querySelectorAll('.mobile-nav-btn');
             if (navBtns) navBtns.forEach(btn => btn.classList.remove('active'));
@@ -1117,8 +1121,9 @@
 
 
 
-    VirtualKeyboard.prototype.open = function (inputEl) {
+    VirtualKeyboard.prototype.open = function (inputEl, options) {
         this.targetInput = inputEl;
+        this.options = options || {};
         if (inputEl) {
             this.currentText = inputEl.value || '';
             // ★ QUAN TRỌNG: Đuổi bàn phím gốc (iOS/Android) đi để tránh lỗi chớp giật Viewport

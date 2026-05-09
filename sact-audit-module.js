@@ -96,22 +96,23 @@
         },
 
         injectSactHeader() {
+            const tb = document.getElementById('topbar');
+            if (!tb) return;
+
             const searchWrap = document.getElementById('globalSearchWrap');
             if (searchWrap) {
                 // save original state
                 this.originalSearchWrapDisplay = searchWrap.style.display;
-                this.originalSearchWrapHTML = searchWrap.innerHTML;
-                searchWrap.style.setProperty('display', 'flex', 'important');
-                searchWrap.style.setProperty('flex', '1', 'important');
+                searchWrap.style.setProperty('display', 'none', 'important');
+            }
                 
-                const topbarModule = document.querySelector('.topbar-module');
-                if (topbarModule) {
-                    this.originalLogoDisplay = topbarModule.style.display;
-                    if (window.innerWidth < 768) topbarModule.style.setProperty('display', 'none', 'important');
-                }
+            let shl = document.getElementById('sact-header-wrap');
+            if (!shl) {
+                shl = document.createElement('div');
+                shl.id = 'sact-header-wrap';
+                shl.style.cssText = 'display:flex; align-items:center; justify-content:space-between; width:100%; flex:1; padding:0 8px;';
                 
-                // inject SACT title inline with back button
-                searchWrap.innerHTML = `
+                shl.innerHTML = `
                     <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
                         <div style="display:flex; align-items:center; gap:12px; padding-left:8px;">
                             <button id="sact-back-btn" style="background:none; border:none; cursor:pointer; color:var(--mcs-text-muted); font-size:18px; padding:4px;" title="Quay lại">
@@ -129,10 +130,23 @@
                     </div>
                 `;
                 
+                const tbi = document.getElementById('topbar-module-info');
+                if(tbi && tbi.nextSibling) {
+                    tb.insertBefore(shl, tbi.nextSibling);
+                } else {
+                    tb.insertBefore(shl, searchWrap);
+                }
+                
                 setTimeout(() => {
                     const backBtn = document.getElementById('sact-back-btn');
                     if (backBtn) backBtn.addEventListener('click', () => this.close());
                 }, 0);
+            }
+
+            const topbarModule = document.querySelector('.topbar-module');
+            if (topbarModule) {
+                this.originalLogoDisplay = topbarModule.style.display;
+                if (window.innerWidth < 768) topbarModule.style.setProperty('display', 'none', 'important');
             }
 
             const topbarActions = document.querySelector('.topbar-actions');
@@ -154,12 +168,13 @@
         },
 
         restoreSactHeader() {
+            const shl = document.getElementById('sact-header-wrap');
+            if (shl) shl.remove();
+
             const searchWrap = document.getElementById('globalSearchWrap');
-            if (searchWrap && this.originalSearchWrapHTML !== undefined) {
-                searchWrap.innerHTML = this.originalSearchWrapHTML;
+            if (searchWrap && this.originalSearchWrapDisplay !== undefined) {
                 searchWrap.style.display = this.originalSearchWrapDisplay || '';
                 if (!this.originalSearchWrapDisplay) searchWrap.style.removeProperty('display');
-                searchWrap.style.removeProperty('flex');
             }
 
             const topbarModule = document.querySelector('.topbar-module');

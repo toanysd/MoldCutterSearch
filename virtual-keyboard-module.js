@@ -165,6 +165,14 @@
 
           </div>
 
+          <div class="vk-radial-item" data-action="arlocator" id="vkRadialItemAR">
+
+            <i class="fas fa-crosshairs vk-radial-icon"></i>
+
+            <span class="vk-radial-lbl">AR</span>
+
+          </div>
+
         </div>
 
       </div>
@@ -209,7 +217,9 @@
 
             radialSearch: document.getElementById('vkRadialItemSearch'),
 
-            radialPhoto: document.getElementById('vkRadialItemPhoto')
+            radialPhoto: document.getElementById('vkRadialItemPhoto'),
+
+            radialAR: document.getElementById('vkRadialItemAR')
 
         };
 
@@ -653,6 +663,20 @@
 
             self.el.radialPhoto.classList.add('show');
 
+
+
+            // AR Locator (Trên/Giữa)
+
+            if (self.el.radialAR) {
+
+                self.el.radialAR.style.left = '0px';
+
+                self.el.radialAR.style.top = '-90px';
+
+                self.el.radialAR.classList.add('show');
+
+            }
+
         };
 
 
@@ -666,6 +690,8 @@
             self.el.radialSearch.classList.remove('show', 'active');
 
             self.el.radialPhoto.classList.remove('show', 'active');
+
+            if (self.el.radialAR) self.el.radialAR.classList.remove('show', 'active');
 
         };
 
@@ -733,6 +759,8 @@
 
                 self.el.radialPhoto.classList.remove('active');
 
+                if (self.el.radialAR) self.el.radialAR.classList.remove('active');
+
 
 
                 // Vuốt chéo trái hoặc vuốt ngang trái -> Tìm kiếm
@@ -748,6 +776,14 @@
                 else if ((dy < -20 && dx > 10) || dx > 30) {
 
                     self.el.radialPhoto.classList.add('active');
+
+                }
+
+                // Vuốt thẳng lên -> AR Locator
+
+                else if (dy < -40 && Math.abs(dx) < 25) {
+
+                    if (self.el.radialAR) self.el.radialAR.classList.add('active');
 
                 }
 
@@ -793,9 +829,15 @@
 
                 if (window.PhotoUpload) window.PhotoUpload.open();
 
+            } else if (self.el.radialAR && self.el.radialAR.classList.contains('active')) {
+
+                hideRadial();
+
+                if (window.ARLocatorModule) window.ARLocatorModule.open();
+
             } else {
 
-                hideRadial(); // Đóng nếu thả tay ở khoảnh không gian trống
+                hideRadial();
 
             }
 

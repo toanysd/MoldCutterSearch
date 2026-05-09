@@ -478,7 +478,10 @@
         <div class="arl-camera-overlay open" id="arl-camera-overlay">
           <div class="arl-camera-topbar">
             <button class="arl-camera-close" id="arl-cam-close">&times;</button>
-            <span class="arl-camera-title">ARスキャン</span>
+            <div style="display:flex; flex-direction:column; line-height:1.2;">
+               <span class="arl-camera-title" style="font-size:15px;">ARスキャン</span>
+               <span style="font-size:10px; color:#aaa;">v1.1.4</span>
+            </div>
             <div style="display:flex; gap:6px; align-items:center;">
               <select id="arl-camera-select" style="max-width:110px; font-size:12px; padding:4px; border-radius:4px;"></select>
               <button id="arl-cam-swap" style="border:1px solid #ccc; background:#f5f5f5; padding:4px 10px; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer;">切替 / Đổi</button>
@@ -678,6 +681,18 @@
       ctx.shadowBlur = 5;
       ctx.lineWidth = 2; ctx.strokeStyle = 'white'; ctx.stroke();
       ctx.shadowBlur = 0; // reset
+
+      // DEBUG OUTPUT ON CANVAS
+      ctx.fillStyle = "rgba(0,0,0,0.7)";
+      ctx.fillRect(10, 10, 380, 80);
+      ctx.fillStyle = "white";
+      ctx.font = "12px Courier";
+      ctx.fillText(`Raw: ${rawText.substring(0,40)}`, 15, 25);
+      ctx.fillText(`NormQR: ${parsedNorm}`, 15, 40);
+      if (targets[0]) {
+         ctx.fillText(`TargetCode: ${targets[0].normCode} | TargetId: ${targets[0].normId}`, 15, 55);
+      }
+      ctx.fillText(`Match: ${isMatch} | ParseFail: ${!parsed}`, 15, 70);
 
       if (isMatch) {
         ctx.font = 'bold 22px Arial'; ctx.fillStyle = '#00FF00';

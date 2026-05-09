@@ -114,8 +114,16 @@
             if (scopePill) { scopePill.innerHTML = '<i class="fas fa-history"></i> HIS'; scopePill.classList.remove('mcs-hidden'); }
             if (searchInput) searchInput.placeholder = '履歴を検索... / Tìm thiết bị, hành động...';
             if (moduleIcon) moduleIcon.innerHTML = '<i class="fas fa-history"></i>';
-            if (moduleLabelJa) moduleLabelJa.textContent = 'システム履歴';
+            if (moduleLabelJa) moduleLabelJa.innerHTML = 'システム履歴';
             if (moduleLabelVi) moduleLabelVi.textContent = 'Lịch sử hệ thống';
+            if (categoryDropdown) categoryDropdown.classList.add('mcs-hidden');
+            if (searchDivider) searchDivider.classList.add('mcs-hidden');
+        } else if (viewName === 'sact') {
+            if (scopePill) { scopePill.classList.add('mcs-hidden'); }
+            if (searchInput) searchInput.placeholder = 'SACT / Mã chiến dịch...';
+            if (moduleIcon) moduleIcon.innerHTML = '<i class="fas fa-clipboard-check"></i>';
+            if (moduleLabelJa) moduleLabelJa.innerHTML = 'SACT モニター';
+            if (moduleLabelVi) moduleLabelVi.textContent = 'Điểm danh khuôn SACT';
             if (categoryDropdown) categoryDropdown.classList.add('mcs-hidden');
             if (searchDivider) searchDivider.classList.add('mcs-hidden');
         } else {
@@ -123,7 +131,7 @@
             if (scopePill) scopePill.classList.add('mcs-hidden');
             if (searchInput) searchInput.placeholder = 'Mã, tên, vị trí, công ty...';
             if (moduleIcon) moduleIcon.innerHTML = '<i class="fas fa-search"></i>';
-            if (moduleLabelJa) moduleLabelJa.innerHTML = '金型・抜型 検索 <span style="font-size: 0.7em; color: var(--mcs-text-muted); font-weight: normal; margin-left: 4px;">v9.1.28</span>';
+            if (moduleLabelJa) moduleLabelJa.innerHTML = '金型・抜型 検索 <span style="font-size: 0.7em; color: var(--mcs-text-muted); font-weight: normal; margin-left: 4px;">v9.1.29</span>';
             if (moduleLabelVi) moduleLabelVi.textContent = 'Tìm kiếm Khuôn / Dao cắt';
             if (categoryDropdown) categoryDropdown.classList.remove('mcs-hidden');
             if (searchDivider) searchDivider.classList.remove('mcs-hidden');
@@ -137,6 +145,14 @@
 
         if (this.views[viewName]) {
             this.views[viewName].style.display = 'flex';
+        } else {
+            // Đối với các view tạo động như SACT, tìm element bằng DOM id
+            var dynamicView = null;
+            if (viewName === 'sact') dynamicView = document.getElementById('sact-module-root');
+            
+            if (dynamicView) {
+                dynamicView.style.display = 'flex';
+            }
         }
 
         // Tự động đóng Detail Panel của Khuôn nếu mở

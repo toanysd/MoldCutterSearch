@@ -1,14 +1,97 @@
 /* ar-locator-module.css v1.0.0 */
 /* ARロケーター専用スタイル / CSS cho AR Locator Module */
 
-/* ===== OVERLAY (Full-screen like SACT) ===== */
+/* ===== OVERLAY (Full-screen Mobile, Centered Modal Desktop) ===== */
+.arl-overlay-wrapper {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  background: rgba(15,23,42,.62);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px 12px;
+}
+
 .arl-overlay {
+  width: 100%;
+  max-width: 600px;
+  height: calc(100dvh - 36px);
+  max-height: calc(100dvh - 36px);
+  background: var(--mcs-bg, #f0f2f5);
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
-  flex: 1;
   overflow: hidden;
-  background: var(--mcs-bg, #f0f2f5);
+  box-shadow: 0 10px 30px rgba(2,6,23,.18);
   font-family: var(--font-body, 'Inter', 'Noto Sans JP', sans-serif);
+}
+
+@media (max-width: 768px) {
+  .arl-overlay-wrapper { padding: 18px 12px; }
+  .arl-overlay { max-width: 100%; height: calc(100dvh - 36px); max-height: calc(100dvh - 36px); border-radius: 12px; }
+}
+
+.arl-main-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 12px;
+  background: linear-gradient(135deg, #0f766e, #0ea5e9);
+  color: #fff;
+  flex-shrink: 0;
+}
+.arl-main-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.arl-header-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 99px;
+  background: rgba(255,255,255,.16);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 15px;
+}
+.arl-header-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+.arl-header-text .ja {
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .2px;
+}
+.arl-header-text .vi {
+  font-size: 10px;
+  font-weight: 700;
+  opacity: .86;
+  font-style: italic;
+}
+.arl-main-close {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 99px;
+  background: rgba(255,255,255,.14);
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+.arl-main-close:hover { 
+  background: rgba(255,255,255,.24);
+  transform: translateY(-1px);
 }
 
 /* ===== MODE TABS ===== */

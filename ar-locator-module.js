@@ -1,4 +1,4 @@
-// ar-locator-module.js v1.2.0
+// ar-locator-module.js v1.2.1
 // ARロケーター — 金型検索・一括確認ツール
 (function () {
   'use strict';
@@ -77,12 +77,6 @@
             }
             
             this.open(); 
-            
-            // Xóa active class của các mục sidebar khác (giả lập ViewManager)
-            document.querySelectorAll('.sidebar-nav .nav-link').forEach(link => {
-                link.classList.remove('active');
-            });
-            e.target.closest('.nav-link')?.classList.add('active');
         }
       });
       document.addEventListener('open-ar-locator', () => this.open());
@@ -104,108 +98,47 @@
       this.state.singleTarget = null;
       this.state.batchList = [];
       this.state.foundImage = null;
-      if (window.ViewManager?.currentView) this.state.prevView = window.ViewManager.currentView;
+      if (window.ViewManager?.currentView && window.ViewManager.currentView !== 'ar-locator') {
+        this.state.prevView = window.ViewManager.currentView;
+      }
       this.render();
+      if (window.ViewManager) window.ViewManager.switchView('ar-locator');
     },
 
     close() {
       this.state.isOpen = false;
       this.closeCamera();
-      this.restoreHeader();
       
-      const root = document.getElementById('arl-root');
-      if (root) root.remove();
+      if (window.SwipeHistoryTrap) window.SwipeHistoryTrap.remove('arlOverlay');
       
-      // Xóa class active của nút AR Locator trên sidebar
-      const arBtn = document.getElementById('sidebarARLocatorBtn');
-      if (arBtn) arBtn.classList.remove('active');
-
-      if (!this.state.isSwitching && window.ViewManager && this.state.prevView) {
-        window.ViewManager.switchView(this.state.prevView);
-      } else if(!this.state.isSwitching) {
-        document.querySelectorAll('.main-content > .content-area').forEach(el => {
-          if (el.id !== 'arl-root') el.style.display = '';
-        });
-      }
+      const wrapper = document.getElementById('arl-overlay-wrapper');
+      if (wrapper) wrapper.remove();
     },
 
-    injectHeader() {
-      const tb = document.getElementById('topbar');
-      if (!tb) return;
-      
-      const sw = document.getElementById('globalSearchWrap');
-      if (sw) {
-        this._origSWDisplay = sw.style.display;
-        sw.style.setProperty('display', 'none', 'important');
-      }
 
-      let ahl = document.getElementById('arl-header-wrap');
-      if (!ahl) {
-        ahl = document.createElement('div');
-        ahl.id = 'arl-header-wrap';
-        ahl.style.cssText = 'display:flex; align-items:center; justify-content:space-between; width:100%; flex:1; padding:0 8px;';
-        ahl.innerHTML = `
-          <div style="display:flex; align-items:center; gap:12px;">
-            <button id="arl-back" style="background:none; border:none; cursor:pointer; color:var(--mcs-text-muted); font-size:18px; padding:4px;" title="Quay lại"><i class="fas fa-arrow-left"></i></button>
-            <i class="fas fa-crosshairs" style="color:#0d9488; font-size:18px;"></i>
-            <div style="line-height:1.2;">
-              <span style="font-size:15px; font-weight:700; color:var(--mcs-text);">ARロケーター</span><br>
-              <span style="font-size:11px; color:var(--mcs-text-muted);">探索・棚卸ツール</span>
-            </div>
-          </div>
-        `;
-        // Insert right after topbar-module-info (or at the end if it doesn't exist)
-        const tbi = document.getElementById('topbar-module-info');
-        if(tbi && tbi.nextSibling) {
-            tb.insertBefore(ahl, tbi.nextSibling);
-        } else {
-            tb.insertBefore(ahl, sw);
-        }
-        
-        setTimeout(() => document.getElementById('arl-back')?.addEventListener('click', () => this.close()), 0);
-      }
-
-      const tm = document.querySelector('.topbar-module');
-      if (tm && window.innerWidth < 768) { this._origTMDisplay = tm.style.display; tm.style.setProperty('display', 'none', 'important'); }
-      const fb = document.getElementById('filterDetailBtn');
-      if (fb) { this._origFBDisplay = fb.style.display; fb.style.setProperty('display', 'none', 'important'); }
-      const qb = document.getElementById('searchbarQRBtn');
-      if (qb) { this._origQBDisplay = qb.style.display; qb.style.setProperty('display', 'none', 'important'); }
-    },
-
-    restoreHeader() {
-      const ahl = document.getElementById('arl-header-wrap');
-      if(ahl) ahl.remove();
-
-      // Khôi phục tất cả phần tử header đã bị ẩn — dùng removeProperty để xóa triệt để !important
-      const sw = document.getElementById('globalSearchWrap');
-      if (sw) { sw.style.removeProperty('display'); }
-      
-      const tm = document.querySelector('.topbar-module');
-      if (tm) { tm.style.removeProperty('display'); }
-      
-      const fb = document.getElementById('filterDetailBtn');
-      if (fb) { fb.style.removeProperty('display'); }
-      
-      const qb = document.getElementById('searchbarQRBtn');
-      if (qb) { qb.style.removeProperty('display'); }
-      
-      // Reset cached values
-      this._origSWDisplay = undefined;
-      this._origTMDisplay = undefined;
-      this._origFBDisplay = undefined;
-      this._origQBDisplay = undefined;
-    },
 
     render() {
-      let root = document.getElementById('arl-root');
-      if (root) return;
-      this.injectHeader();
-      root = document.createElement('div');
+      if (document.getElementById('arl-overlay-wrapper')) return;
+      
+      const wrapper = document.createElement('div');
+      wrapper.id = 'arl-overlay-wrapper';
+      wrapper.className = 'arl-overlay-wrapper';
+
+      const root = document.createElement('div');
       root.id = 'arl-root';
-      root.className = 'arl-overlay content-area';
+      root.className = 'arl-overlay';
 
       root.innerHTML = `
+        <div class="arl-main-header">
+          <div class="arl-main-title">
+            <div class="arl-header-icon"><i class="fas fa-crosshairs"></i></div>
+            <div class="arl-header-text">
+              <span class="ja">ARロケーター</span>
+              <span class="vi">Tìm khuôn AR</span>
+            </div>
+          </div>
+          <button class="arl-main-close" id="arl-main-close-btn">&times;</button>
+        </div>
         <div class="arl-tabbar">
           <button class="arl-tab active" data-mode="single"><i class="fas fa-crosshairs"></i> 特定検索</button>
           <button class="arl-tab" data-mode="batch"><i class="fas fa-list-check"></i> 一括棚卸</button>
@@ -214,13 +147,19 @@
         <div id="arl-camera-root"></div>
       `;
 
-      const mc = document.querySelector('.main-content');
-      if (mc) {
-        document.querySelectorAll('.main-content > .content-area').forEach(el => {
-          if (el.id !== 'arl-root') el.style.display = 'none';
-        });
-        mc.appendChild(root);
-      } else document.body.appendChild(root);
+      wrapper.appendChild(root);
+      document.body.appendChild(wrapper);
+
+      document.getElementById('arl-main-close-btn').addEventListener('click', () => this.close());
+      // Cho phép đóng modal khi click ra ngoài vùng xám
+      wrapper.addEventListener('click', (e) => {
+        if (e.target === wrapper) this.close();
+      });
+
+      if (window.SwipeHistoryTrap) {
+        window.SwipeHistoryTrap.push('arlOverlay', () => this.close());
+        window.SwipeHistoryTrap.bindSwipe(wrapper, () => this.close(), { followFinger: true });
+      }
 
       root.querySelectorAll('.arl-tab').forEach(t => t.addEventListener('click', () => {
         this.state.mode = t.dataset.mode;
@@ -286,15 +225,15 @@
             <button class="arl-btn arl-btn-primary" id="arl-single-camera" style="font-size:16px; padding:16px;"><i class="fas fa-camera"></i> 探索カメラ起動 (Mở Camera)</button>
           </div>
         ` : `
-          <div class="arl-search-wrap" style="margin-top:10px; display:flex; gap:8px;">
-            <select id="arl-single-kind-select" style="padding:10px; border-radius:6px; border:1px solid var(--mcs-border); background:var(--mcs-surface); color:var(--mcs-text); font-weight:600;">
+          <div style="display:flex; gap:8px; margin-top:10px;">
+            <select id="arl-single-kind-select" class="arl-select" style="width:110px;">
               <option value="all" ${this.state.searchKind === 'all' ? 'selected' : ''}>全て (Tất cả)</option>
               <option value="mold" ${this.state.searchKind === 'mold' ? 'selected' : ''}>金型 (Khuôn)</option>
-              <option value="cutter" ${this.state.searchKind === 'cutter' ? 'selected' : ''}>抜型 (Dao cắt)</option>
+              <option value="cutter" ${this.state.searchKind === 'cutter' ? 'selected' : ''}>抜型 (Dao)</option>
             </select>
-            <div style="flex:1; position:relative;">
-              <input type="text" class="arl-search-input" id="arl-single-input" placeholder="コード入力... (Mã khuôn/dao)" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" style="width:100%; border-radius:6px;">
-              <button class="arl-search-clear" id="arl-single-clear">&times;</button>
+            <div style="position:relative; flex:1;">
+              <input type="text" id="arl-single-input" class="arl-input" placeholder="コード入力... (Mã khuôn/dao)" autocomplete="off">
+              <button id="arl-single-clear" class="arl-clear">&times;</button>
               <div class="arl-dropdown" id="arl-single-dropdown"></div>
             </div>
           </div>
@@ -359,10 +298,10 @@
         });
 
         const handleMobileKeyboard = (e) => {
-            if (window.innerWidth <= 768 && window.VirtualKeyboard && !inp.readOnly) {
+            if (window.innerWidth <= 768 && window.VirtualKeyboardModule && !inp.readOnly) {
                 e.preventDefault();
                 inp.blur();
-                window.VirtualKeyboard.open(inp, {
+                window.VirtualKeyboardModule.open(inp, {
                     onSubmit: () => submitSingle()
                 });
             }
@@ -470,8 +409,8 @@
                  if (!newInp) return;
                  if (window.innerWidth > 768) {
                     newInp.focus(); 
-                 } else if (window.VirtualKeyboard && !newInp.readOnly) {
-                    window.VirtualKeyboard.open(newInp, { onSubmit: submitBatch });
+                 } else if (window.VirtualKeyboardModule && !newInp.readOnly) {
+                    window.VirtualKeyboardModule.open(newInp, { onSubmit: submitBatch });
                  }
               }, 100);
           };
@@ -486,10 +425,10 @@
           });
 
           const handleMobileKeyboardBatch = (e) => {
-              if (window.innerWidth <= 768 && window.VirtualKeyboard && !inp.readOnly) {
+              if (window.innerWidth <= 768 && window.VirtualKeyboardModule && !inp.readOnly) {
                   e.preventDefault();
                   inp.blur();
-                  window.VirtualKeyboard.open(inp, {
+                  window.VirtualKeyboardModule.open(inp, {
                       onSubmit: () => submitBatch()
                   });
               }
@@ -523,7 +462,7 @@
         dd.classList.add('open'); return;
       }
       dd.innerHTML = items.map((r, i) => {
-        const statusText = r.status.includes('IN') || r.status === '入庫' ? '入庫' : (r.status.includes('OUT') || r.status === '出庫' ? '出庫' : '—');
+        const statusText = (r.status || '').includes('IN') || r.status === '入庫' ? '入庫' : ((r.status || '').includes('OUT') || r.status === '出庫' ? '出庫' : '—');
         const statusClass = statusText === '入庫' ? 'in' : (statusText === '出庫' ? 'out' : 'unknown');
         return `<div class="arl-dropdown-item ${i === this.state.highlightIdx ? 'highlighted' : ''}" data-idx="${i}">
           <div class="arl-dd-icon ${r.kind}"><i class="fas ${r.kind === 'mold' ? 'fa-cube' : 'fa-cut'}"></i></div>
@@ -647,7 +586,7 @@
       }
     },
 
-    async startCamera(deviceId = null) {
+    async startCamera(deviceId = null, isRetry = false) {
       this.stopCameraStream();
       this.state.scanning = true;
       try {
@@ -668,7 +607,7 @@
         }
 
         const constraints = { 
-            video: deviceId ? { deviceId: { exact: deviceId } } : { facingMode: this.state.facingMode, width: { ideal: 640 }, height: { ideal: 480 } }, 
+            video: deviceId ? { deviceId: { exact: deviceId } } : (isRetry ? true : { facingMode: this.state.facingMode, width: { ideal: 640 }, height: { ideal: 480 } }), 
             audio: false 
         };
         this.state.stream = await navigator.mediaDevices.getUserMedia(constraints);
@@ -684,6 +623,10 @@
         await this.state.video.play();
         requestAnimationFrame(() => this.camTick());
       } catch (err) {
+        if (!isRetry && (err.name === 'NotFoundError' || err.name === 'OverconstrainedError') && !deviceId) {
+          console.warn('[ARLocator] Camera with facingMode not found, retrying without constraints...');
+          return this.startCamera(null, true);
+        }
         console.error('[ARLocator] Camera error:', err);
         const c = this.state.canvas; c.width = 400; c.height = 250;
         const x = this.state.ctx;

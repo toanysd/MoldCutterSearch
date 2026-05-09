@@ -1,4 +1,4 @@
-// v12.0.0-QRScanOnly
+// v12.0.2
 // Phase 1: QR Scan chuyên dụng — Đã tách AR Locator sang module riêng
 (function () {
   'use strict';
@@ -229,7 +229,7 @@
       this.stopCamera();
     },
 
-    async startCamera(deviceId = null) {
+    async startCamera(deviceId = null, isRetry = false) {
       this.stopCamera();
       this.state.scanning = true;
 
@@ -249,7 +249,7 @@
         const constraints = {
           video: deviceId
             ? { deviceId: { exact: deviceId } }
-            : { facingMode: this.state.facingMode, width: { ideal: 640 }, height: { ideal: 480 } },
+            : (isRetry ? true : { facingMode: this.state.facingMode, width: { ideal: 640 }, height: { ideal: 480 } }),
           audio: false
         };
 
@@ -266,6 +266,11 @@
         
         requestAnimationFrame(() => this.scanTick());
       } catch (err) {
+        if (!isRetry && (err.name === 'NotFoundError' || err.name === 'OverconstrainedError') && !deviceId) {
+          console.warn('[QRScanSearch] Camera with facingMode not found, retrying without constraints...');
+          return this.startCamera(null, true);
+        }
+        
         console.error('[QRScanSearch] カメラエラー:', err);
         // Vẽ thông báo lỗi lên canvas
         const cw = 400, ch = 250;

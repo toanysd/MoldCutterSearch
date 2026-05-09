@@ -767,9 +767,9 @@
 
                 // Nếu chưa thành swipe, nghĩa là chỉ chạm (tap) -> Mở Scan QR mặc định
 
-                if (window.QRScannerModule && typeof window.QRScannerModule.open === 'function') {
+                if (window.QRScanSearch && typeof window.QRScanSearch.openModal === 'function') {
 
-                    window.QRScannerModule.open();
+                    window.QRScanSearch.openModal();
 
                 }
 

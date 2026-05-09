@@ -195,6 +195,10 @@
       root.querySelector('.qrscan-close').addEventListener('click', () => this.closeModal());
       root.querySelector('.qrscan-backdrop').addEventListener('click', () => this.closeModal());
       root.querySelector('#qrscan-toggle-camera').addEventListener('click', () => this.toggleCamera());
+      this.state.cameraSelect.addEventListener('change', (e) => {
+        const newCam = e.target.value;
+        if(newCam) this.startCamera(newCam);
+      });
     },
 
     bindGlobalButtons() {
@@ -291,8 +295,16 @@
     },
 
     toggleCamera() {
-      this.state.facingMode = this.state.facingMode === 'environment' ? 'user' : 'environment';
-      this.startCamera();
+      if (this.state.cameras.length > 1) {
+        let idx = this.state.cameras.findIndex(c => c.deviceId === this.state.currentCameraId);
+        idx = (idx + 1) % this.state.cameras.length;
+        const newCam = this.state.cameras[idx].deviceId;
+        this.state.cameraSelect.value = newCam;
+        this.startCamera(newCam);
+      } else {
+        this.state.facingMode = this.state.facingMode === 'environment' ? 'user' : 'environment';
+        this.startCamera();
+      }
     },
 
     drawBoundingBox(loc, color) {

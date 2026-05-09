@@ -476,7 +476,13 @@
           <div class="arl-camera-topbar">
             <button class="arl-camera-close" id="arl-cam-close">&times;</button>
             <span class="arl-camera-title">ARスキャン</span>
-            <span class="arl-camera-target-badge" id="arl-cam-badge" style="${this.state.mode === 'single' ? 'background:rgba(13,109,110,0.5)' : ''}">${targetInfo}</span>
+            <div style="display:flex; gap:6px; align-items:center;">
+              <select id="arl-camera-select" style="max-width:110px; font-size:12px; padding:4px; border-radius:4px;"></select>
+              <button id="arl-cam-swap" style="border:1px solid #ccc; background:#f5f5f5; padding:4px 10px; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer;">切替 / Đổi</button>
+            </div>
+          </div>
+          <div style="background:rgba(0,0,0,0.5); padding:4px 10px; text-align:center;">
+             <span class="arl-camera-target-badge" id="arl-cam-badge" style="${this.state.mode === 'single' ? 'background:rgba(13,109,110,0.5)' : ''}">${targetInfo}</span>
           </div>
           <div class="arl-camera-canvas-wrap">
             <video id="arl-video" playsinline></video>
@@ -494,16 +500,60 @@
       this.state.cameraTargets = targets;
 
       document.getElementById('arl-cam-close').addEventListener('click', () => this.closeCamera());
+      document.getElementById('arl-cam-swap').addEventListener('click', () => this.toggleCamera());
+      document.getElementById('arl-camera-select').addEventListener('change', (e) => {
+         const newCam = e.target.value;
+         if(newCam) this.startCamera(newCam);
+      });
       this.startCamera();
     },
 
-    async startCamera() {
+    toggleCamera() {
+      if (this.state.cameras && this.state.cameras.length > 1) {
+        let idx = this.state.cameras.findIndex(c => c.deviceId === this.state.currentCameraId);
+        idx = (idx + 1) % this.state.cameras.length;
+        const newCam = this.state.cameras[idx].deviceId;
+        this.startCamera(newCam);
+      } else {
+        this.state.facingMode = this.state.facingMode === 'environment' ? 'user' : 'environment';
+        this.startCamera();
+      }
+    },
+
+    async startCamera(deviceId = null) {
       this.stopCameraStream();
       this.state.scanning = true;
       try {
-        const constraints = { video: { facingMode: this.state.facingMode, width: { ideal: 640 }, height: { ideal: 480 } }, audio: false };
+        if (!this.state.cameras) this.state.cameras = [];
+        if (!this.state.cameras.length) {
+          const devices = await navigator.mediaDevices.enumerateDevices();
+          this.state.cameras = devices.filter(d => d.kind === 'videoinput');
+          const sel = document.getElementById('arl-camera-select');
+          if (sel) {
+            sel.innerHTML = '';
+            this.state.cameras.forEach((cam, i) => {
+              const opt = document.createElement('option');
+              opt.value = cam.deviceId;
+              opt.textContent = cam.label || `カメラ ${i + 1}`;
+              sel.appendChild(opt);
+            });
+          }
+        }
+
+        const constraints = { 
+            video: deviceId ? { deviceId: { exact: deviceId } } : { facingMode: this.state.facingMode, width: { ideal: 640 }, height: { ideal: 480 } }, 
+            audio: false 
+        };
         this.state.stream = await navigator.mediaDevices.getUserMedia(constraints);
         this.state.video.srcObject = this.state.stream;
+        
+        const track = this.state.stream.getVideoTracks()[0];
+        if (track) {
+           this.state.currentCameraId = track.getSettings().deviceId;
+           const sel = document.getElementById('arl-camera-select');
+           if(sel) sel.value = this.state.currentCameraId;
+        }
+
         await this.state.video.play();
         requestAnimationFrame(() => this.camTick());
       } catch (err) {
@@ -552,31 +602,54 @@
     },
 
     handleCamQR(code) {
-      const parsed = window.QRScanSearch?.parsePayload?.(code.data);
-      if (!parsed) return;
+      const rawText = String(code.data).trim();
+      const parsed = window.QRScanSearch?.parsePayload?.(rawText);
+      let parsedNorm = '';
+      if (parsed && parsed.code) {
+         parsedNorm = this.normalizeCode(parsed.code);
+      } else {
+         // Fallback cho mã in đơn giản
+         parsedNorm = this.normalizeCode(rawText);
+      }
+
+      if (!parsedNorm) return;
 
       const loc = code.location;
       const ctx = this.state.ctx;
       const targets = this.state.cameraTargets || [];
-      const parsedNorm = this.normalizeCode(parsed.code);
+
+      // Flexible Match function
+      const isMatchFound = (targetNorm, qrNorm) => {
+          if (!qrNorm) return false;
+          if (targetNorm === qrNorm) return true;
+          if (qrNorm.length >= 4 && targetNorm.includes(qrNorm)) return true;
+          if (targetNorm.length >= 4 && qrNorm.includes(targetNorm)) return true;
+          return false;
+      };
 
       let isMatch = false;
+      let displayCode = parsed ? parsed.code : rawText;
       
       if(this.state.mode === 'single') {
-          if (targets.length > 0 && targets[0].normCode === parsedNorm) {
+          if (targets.length > 0 && isMatchFound(targets[0].normCode, parsedNorm)) {
               isMatch = true;
+              displayCode = targets[0].code;
           }
       } else {
           // Batch Mode
-          const found = targets.find(t => !t.checked && t.normCode === parsedNorm);
+          const found = targets.find(t => !t.checked && isMatchFound(t.normCode, parsedNorm));
           if (found) {
               isMatch = true;
               found.checked = true;
+              displayCode = found.code;
               this.syncAuditLog(found); // 🔥 Ghi log audit
           } else {
              // Đã quét rồi thì thôi, không báo lỗi liên tục
-             const alreadyChecked = targets.find(t => t.checked && t.normCode === parsedNorm);
-             if(alreadyChecked) isMatch = true; // Cho xanh lá luôn cho đẹp, ko bip
+             const alreadyChecked = targets.find(t => t.checked && isMatchFound(t.normCode, parsedNorm));
+             if(alreadyChecked) {
+                 isMatch = true; // Cho xanh lá luôn cho đẹp, ko bip
+                 displayCode = alreadyChecked.code;
+             }
           }
       }
 
@@ -599,7 +672,7 @@
       if (isMatch) {
         ctx.font = 'bold 22px Arial'; ctx.fillStyle = '#00FF00';
         ctx.shadowColor = "black"; ctx.shadowBlur = 4;
-        ctx.fillText('✓ ' + parsed.code, loc.topLeftCorner.x, loc.topLeftCorner.y - 12);
+        ctx.fillText('✓ ' + displayCode, loc.topLeftCorner.x, loc.topLeftCorner.y - 12);
         ctx.shadowBlur = 0;
         
         if(this.state.mode === 'single') {
@@ -616,14 +689,12 @@
         } else {
             // Batch Mode
             const foundJustNow = targets.find(t => t.normCode === parsedNorm && t.checked);
-            // Chỉ beep 1 lần cho mã mới
-            if(foundJustNow) {
-               // Chống beep liên tục
-               if (Date.now() - this.state.lastBeepTime > 1000) {
-                    this.beep();
-                    this.updateCamBadge();
-                    if (window.showToast) window.showToast('success', '', `Đã quét: ${parsed.code}`);
-               }
+            // Chỉ beep 1 lần cho mã mới (hoặc mã vừa được match)
+            if (Date.now() - this.state.lastBeepTime > 1000) {
+                 this.beep();
+                 this.updateCamBadge();
+                 if (window.showToast) window.showToast('success', '', `Đã quét: ${displayCode}`);
+                 // Vẽ dấu check nhỏ trên màn hình (tuỳ chọn)
             }
         }
       }

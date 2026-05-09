@@ -1,4 +1,4 @@
-// ar-locator-module.js v1.1.0
+// ar-locator-module.js v1.2.0
 // ARロケーター — 金型検索・一括確認ツール
 (function () {
   'use strict';
@@ -30,20 +30,28 @@
       const searchKind = this.state.searchKind || 'all';
 
       const check = (list, kind) => {
+        if (!Array.isArray(list)) return;
         for (const item of list) {
           const code = kind === 'mold' ? (item.MoldCode || '') : (item.CutterCode || item.CutterNo || '');
-          const normId = this.normalizeCode(id);
+          const name = kind === 'mold' ? (item.MoldName || '') : (item.CutterName || '');
+          const dCode = item.displayCode || '';
           
-          if (!normItem || seen.has(normItem)) return;
-          if (normItem.includes(norm) || code.toUpperCase().includes(query.toUpperCase())) {
-            seen.add(normItem);
-            const status = String(item.InOutStatus || item.Status || '').trim();
-            results.push({ code, kind, item, status, normCode: normItem, normId: normId });
+          if (code.toLowerCase().includes(q) || name.toLowerCase().includes(q) || dCode.toLowerCase().includes(q)) {
+            results.push({
+              code: dCode || code,
+              kind: kind,
+              item: item,
+              normCode: this.normalizeCode(dCode || code),
+              normId: item.normId || (kind === 'mold' ? item.MoldID : item.CutterID)
+            });
+            if (results.length >= 20) return true; // max 20
           }
-        });
+        }
+        return false;
       };
-      check(dm.molds, 'mold');
-      check(dm.cutters, 'cutter');
+
+      if ((searchKind === 'all' || searchKind === 'mold') && dm.molds) check(dm.molds, 'mold');
+      if (results.length < 20 && (searchKind === 'all' || searchKind === 'cutter') && dm.cutters) check(dm.cutters, 'cutter');
       return results.slice(0, 20);
     },
 
@@ -59,6 +67,15 @@
       document.addEventListener('click', (e) => {
         if (e.target.closest('#sidebarARLocatorBtn')) { 
             e.preventDefault(); 
+            
+            // Đóng sidebar trên mobile trước khi mở AR (giống pattern SACT/Location Manager)
+            const sb = document.getElementById('sidebar');
+            if (sb && window.innerWidth <= 768) { 
+                sb.classList.remove('open'); 
+                const backdrop = document.getElementById('backdrop'); 
+                if (backdrop) backdrop.classList.remove('show'); 
+            }
+            
             this.open(); 
             
             // Xóa active class của các mục sidebar khác (giả lập ViewManager)
@@ -160,17 +177,24 @@
       const ahl = document.getElementById('arl-header-wrap');
       if(ahl) ahl.remove();
 
+      // Khôi phục tất cả phần tử header đã bị ẩn — dùng removeProperty để xóa triệt để !important
       const sw = document.getElementById('globalSearchWrap');
-      if (sw && this._origSWDisplay !== undefined) { sw.style.display = this._origSWDisplay; }
+      if (sw) { sw.style.removeProperty('display'); }
       
       const tm = document.querySelector('.topbar-module');
-      if (tm && this._origTMDisplay !== undefined) { tm.style.display = this._origTMDisplay; }
+      if (tm) { tm.style.removeProperty('display'); }
       
       const fb = document.getElementById('filterDetailBtn');
-      if (fb && this._origFBDisplay !== undefined) { fb.style.display = this._origFBDisplay; }
+      if (fb) { fb.style.removeProperty('display'); }
       
       const qb = document.getElementById('searchbarQRBtn');
-      if (qb && this._origQBDisplay !== undefined) { qb.style.display = this._origQBDisplay; }
+      if (qb) { qb.style.removeProperty('display'); }
+      
+      // Reset cached values
+      this._origSWDisplay = undefined;
+      this._origTMDisplay = undefined;
+      this._origFBDisplay = undefined;
+      this._origQBDisplay = undefined;
     },
 
     render() {

@@ -32,12 +32,15 @@
         if (!Array.isArray(list)) return;
         list.forEach(item => {
           const code = kind === 'mold' ? (item.MoldCode || '') : (item.CutterCode || item.CutterNo || '');
+          const id = kind === 'mold' ? (item.MoldID || '') : (item.CutterID || '');
           const normItem = this.normalizeCode(code);
+          const normId = this.normalizeCode(id);
+          
           if (!normItem || seen.has(normItem)) return;
           if (normItem.includes(norm) || code.toUpperCase().includes(query.toUpperCase())) {
             seen.add(normItem);
             const status = String(item.InOutStatus || item.Status || '').trim();
-            results.push({ code, kind, item, status, normCode: normItem });
+            results.push({ code, kind, item, status, normCode: normItem, normId: normId });
           }
         });
       };
@@ -619,11 +622,18 @@
       const targets = this.state.cameraTargets || [];
 
       // Flexible Match function
-      const isMatchFound = (targetNorm, qrNorm) => {
+      const isMatchFound = (target, qrNorm) => {
           if (!qrNorm) return false;
-          if (targetNorm === qrNorm) return true;
-          if (qrNorm.length >= 4 && targetNorm.includes(qrNorm)) return true;
-          if (targetNorm.length >= 4 && qrNorm.includes(targetNorm)) return true;
+          const targetNorm = target.normCode;
+          const targetId = target.normId;
+          
+          if (targetNorm === qrNorm || targetId === qrNorm) return true;
+          if (qrNorm.length >= 3) {
+             if (targetNorm && targetNorm.includes(qrNorm)) return true;
+             if (targetNorm && qrNorm.includes(targetNorm)) return true;
+             if (targetId && targetId.includes(qrNorm)) return true;
+             if (targetId && qrNorm.includes(targetId)) return true;
+          }
           return false;
       };
 
@@ -631,13 +641,13 @@
       let displayCode = parsed ? parsed.code : rawText;
       
       if(this.state.mode === 'single') {
-          if (targets.length > 0 && isMatchFound(targets[0].normCode, parsedNorm)) {
+          if (targets.length > 0 && isMatchFound(targets[0], parsedNorm)) {
               isMatch = true;
               displayCode = targets[0].code;
           }
       } else {
           // Batch Mode
-          const found = targets.find(t => !t.checked && isMatchFound(t.normCode, parsedNorm));
+          const found = targets.find(t => !t.checked && isMatchFound(t, parsedNorm));
           if (found) {
               isMatch = true;
               found.checked = true;
@@ -645,7 +655,7 @@
               this.syncAuditLog(found); // 🔥 Ghi log audit
           } else {
              // Đã quét rồi thì thôi, không báo lỗi liên tục
-             const alreadyChecked = targets.find(t => t.checked && isMatchFound(t.normCode, parsedNorm));
+             const alreadyChecked = targets.find(t => t.checked && isMatchFound(t, parsedNorm));
              if(alreadyChecked) {
                  isMatch = true; // Cho xanh lá luôn cho đẹp, ko bip
                  displayCode = alreadyChecked.code;

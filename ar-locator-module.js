@@ -14,7 +14,21 @@
       audioCtx: null, lastBeepTime: 0,
       facingMode: 'environment',
       foundImage: null, // For single mode found result
-      searchKind: 'all' // all, mold, cutter
+      searchKind: 'all', // all, mold, cutter
+      sessions: [], activeSessionId: null
+    },
+
+    loadSessions() {
+      try {
+        const stored = localStorage.getItem('mcs_ar_audit_sessions');
+        if (stored) this.state.sessions = JSON.parse(stored);
+        else this.state.sessions = [];
+      } catch (e) { this.state.sessions = []; }
+    },
+    saveSessions() {
+      try {
+        localStorage.setItem('mcs_ar_audit_sessions', JSON.stringify(this.state.sessions));
+      } catch (e) {}
     },
 
     normalizeCode(raw) {
@@ -64,6 +78,7 @@
 
     // ===== INIT =====
     init() {
+      this.loadSessions();
       document.addEventListener('click', (e) => {
         if (e.target.closest('#sidebarARLocatorBtn')) { 
             e.preventDefault(); 
@@ -142,6 +157,7 @@
         <div class="arl-tabbar">
           <button class="arl-tab active" data-mode="single"><i class="fas fa-crosshairs"></i> 特定検索</button>
           <button class="arl-tab" data-mode="batch"><i class="fas fa-list-check"></i> 一括棚卸</button>
+          <button class="arl-tab" data-mode="location"><i class="fas fa-map-marker-alt"></i> 位置確認</button>
         </div>
         <div class="arl-body" id="arl-body" style="flex:1;"></div>
         <div id="arl-camera-root"></div>
@@ -178,7 +194,8 @@
       const body = document.getElementById('arl-body');
       if (!body) return;
       if (this.state.mode === 'single') this.renderSingle(body);
-      else this.renderBatch(body);
+      else if (this.state.mode === 'batch') this.renderBatch(body);
+      else this.renderLocation(body);
     },
 
     // ===== SINGLE MODE =====
@@ -194,11 +211,23 @@
           <div style="margin-top:16px; border-radius:12px; overflow:hidden; border:2px solid #22c55e; box-shadow:0 8px 16px rgba(0,0,0,0.1);">
             <img src="${this.state.foundImage}" style="width:100%; display:block; background:#000;" />
           </div>
-          <div class="arl-actions" style="margin-top:24px;">
-            <button class="arl-btn arl-btn-secondary" id="arl-single-retry"><i class="fas fa-redo"></i> もう一度検索</button>
-            <button class="arl-btn arl-btn-primary" id="arl-single-detail"><i class="fas fa-info-circle"></i> 詳細表示 / Chi tiết</button>
+          <div class="arl-actions" style="margin-top:24px; display:flex; flex-wrap:wrap; gap:8px;">
+            <button class="arl-btn" id="arl-single-audit" ${this.state.singleTarget.isLoggedToDb ? 'disabled' : ''} style="flex: 1 1 100%; border-radius:8px; padding:12px; font-weight:bold; ${this.state.singleTarget.isLoggedToDb ? 'background: #94a3b8; border-color: #94a3b8; color:#fff;' : 'background: #22c55e; border-color: #22c55e; color: #fff;'}">
+                <i class="fas ${this.state.singleTarget.isLoggedToDb ? 'fa-check-double' : 'fa-clipboard-check'}"></i> 
+                ${this.state.singleTarget.isLoggedToDb ? '確認記録済 (Đã ghi Log)' : '確認済として記録 (Ghi Log Kiểm kê)'}
+            </button>
+            <button class="arl-btn arl-btn-secondary" id="arl-single-retry" style="flex:1;"><i class="fas fa-redo"></i> もう一度</button>
+            <button class="arl-btn arl-btn-primary" id="arl-single-detail" style="flex:1;"><i class="fas fa-info-circle"></i> 詳細表示</button>
           </div>
         `;
+        document.getElementById('arl-single-audit')?.addEventListener('click', () => {
+           if (this.state.singleTarget && !this.state.singleTarget.isLoggedToDb) {
+               this.syncAuditLog(this.state.singleTarget);
+               this.state.singleTarget.isLoggedToDb = true;
+               if (window.showToast) window.showToast('success', '記録完了', 'Đã ghi log kiểm kê vào hệ thống');
+               this.renderBody();
+           }
+        });
         document.getElementById('arl-single-retry')?.addEventListener('click', () => {
           this.state.foundImage = null;
           this.renderBody();
@@ -286,7 +315,7 @@
             }
             if (sel) {
                 dd.classList.remove('open');
-                this.state.singleTarget = { code: sel.code, kind: sel.kind, item: sel.item, normCode: sel.normCode, normId: sel.normId };
+                this.state.singleTarget = { code: sel.code, kind: sel.kind, item: sel.item, normCode: sel.normCode, normId: sel.normId, isLoggedToDb: false };
                 this.renderBody();
             }
         };
@@ -318,29 +347,115 @@
       }
     },
 
-    // ===== BATCH MODE =====
+    // ===== BATCH MODE (SESSIONS) =====
     renderBatch(body) {
-      const listHtml = this.state.batchList.map((b, i) => `
+      if (!this.state.activeSessionId) {
+        this.renderSessionDashboard(body);
+      } else {
+        const session = this.state.sessions.find(s => s.id === this.state.activeSessionId);
+        if (!session) {
+          this.state.activeSessionId = null;
+          this.renderSessionDashboard(body);
+        } else {
+          this.renderSessionDetail(body, session);
+        }
+      }
+    },
+
+    renderSessionDashboard(body) {
+      let cardsHtml = '';
+      if (this.state.sessions.length === 0) {
+          cardsHtml = `<div style="text-align:center; padding: 40px 20px; color: var(--mcs-text-muted);">
+             <i class="fas fa-box-open" style="font-size: 40px; opacity: 0.2; margin-bottom: 16px;"></i>
+             <div>セッションなし / Chưa có phiên kiểm kê nào</div>
+          </div>`;
+      } else {
+          const batchSessions = this.state.sessions.filter(s => s.type === 'BATCH_LIST');
+          cardsHtml = batchSessions.map(s => {
+              const total = s.items.length;
+              const checked = s.items.filter(i => i.checked).length;
+              const pct = total === 0 ? 0 : Math.round((checked / total) * 100);
+              const isDone = total > 0 && checked === total;
+              
+              let dStr = new Date(s.createdAt).toLocaleString();
+              return `
+              <div class="arl-session-card" data-id="${s.id}">
+                  <div class="arl-session-header">
+                      <div class="arl-session-title">${s.name || '一括確認 (Kiểm kê hàng loạt)'}</div>
+                      <div class="arl-session-date">${dStr}</div>
+                  </div>
+                  <div class="arl-session-progress-wrap">
+                      <div class="arl-session-progress ${isDone ? 'complete' : ''}" style="width: ${pct}%;"></div>
+                  </div>
+                  <div class="arl-session-meta">
+                      <span>進捗: ${checked} / ${total}</span>
+                      <span style="color: ${isDone ? '#16a34a' : '#ea580c'}">${isDone ? '完了 (Đã xong)' : '確認中 (Đang quét)'}</span>
+                  </div>
+              </div>
+              `;
+          }).join('');
+      }
+
+      body.innerHTML = `
+        <div class="arl-hint">
+          <div class="ja"><i class="fas fa-list-check"></i> 一括棚卸セッション / Danh sách Phiên kiểm kê</div>
+          「＋ 新規作成」で新しい確認リストを作ります。
+        </div>
+        <div style="margin-top:16px;">
+           <button class="arl-btn arl-btn-primary" id="arl-new-session" style="width:100%; margin-bottom:16px; padding:16px; font-size:16px;"><i class="fas fa-plus"></i> 新規作成 / Tạo phiên mới</button>
+        </div>
+        <div style="flex:1; overflow-y:auto; padding-bottom:20px;">
+           ${cardsHtml}
+        </div>
+      `;
+
+      document.getElementById('arl-new-session')?.addEventListener('click', () => {
+          const newId = 'session_' + Date.now();
+          this.state.sessions.unshift({
+             id: newId,
+             createdAt: new Date().toISOString(),
+             name: 'Kiểm kê ' + new Date().toLocaleDateString(),
+             type: 'BATCH_LIST',
+             status: 'IN_PROGRESS',
+             items: []
+          });
+          this.saveSessions();
+          this.state.activeSessionId = newId;
+          this.renderBody();
+      });
+
+      body.querySelectorAll('.arl-session-card').forEach(card => {
+          card.addEventListener('click', () => {
+              this.state.activeSessionId = card.dataset.id;
+              this.renderBody();
+          });
+      });
+    },
+
+    renderSessionDetail(body, session) {
+      const listHtml = session.items.map((b, i) => `
         <div class="arl-batch-item ${b.checked ? 'checked' : ''}" data-idx="${i}">
           <div class="arl-batch-num">${b.checked ? '✓' : (i + 1)}</div>
           <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
              <span class="arl-batch-code">${b.code}</span>
-             <span class="arl-batch-type ${b.kind}">${b.kind === 'mold' ? '金型' : '抜型'} - ${b.checked ? '確認済' : '未確認'}</span>
+             <span class="arl-batch-type ${b.kind}">${b.kind === 'mold' ? '金型' : '抜型'} - ${b.checked ? (b.isLoggedToDb ? '記録済' : '確認済') : '未確認'}</span>
           </div>
-          <button class="arl-batch-info" data-idx="${i}" style="color:var(--mcs-primary); font-size:18px; margin-right:8px;"><i class="fas fa-info-circle"></i></button>
-          <button class="arl-batch-remove" data-idx="${i}">&times;</button>
+          <button class="arl-batch-manual" data-idx="${i}" style="color:${b.checked ? '#94a3b8' : '#3b82f6'}; font-size:18px; margin-right:8px; background:none; border:none; padding:4px;" title="手動確認 / Check tay"><i class="fas fa-check-circle"></i></button>
+          <button class="arl-batch-info" data-idx="${i}" style="color:var(--mcs-primary); font-size:18px; margin-right:8px; background:none; border:none; padding:4px;" title="詳細 / Chi tiết"><i class="fas fa-info-circle"></i></button>
+          <button class="arl-batch-remove" data-idx="${i}" title="削除 / Xóa">&times;</button>
         </div>
       `).join('');
 
-      const total = this.state.batchList.length;
-      const checked = this.state.batchList.filter(b => b.checked).length;
+      const total = session.items.length;
+      const checked = session.items.filter(b => b.checked).length;
+      const allDone = total > 0 && checked === total;
 
       body.innerHTML = `
-        <div class="arl-hint">
-          <div class="ja"><i class="fas fa-list-check"></i> 一括棚卸モード / Kiểm kê hàng loạt</div>
-          コードを入力 → Enter でリスト追加 → 「スキャン開始」でカメラ確認。
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+           <button class="arl-btn" id="arl-session-back" style="padding:6px 12px; background:#f1f5f9; border:1px solid #cbd5e1; border-radius:6px; font-size:14px; flex:0 0 auto;"><i class="fas fa-arrow-left"></i> 戻る</button>
+           <div style="flex:1; font-weight:bold; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${session.name}</div>
         </div>
-        <div class="arl-search-wrap" style="margin-top:10px; display:flex; gap:8px;">
+        <div class="arl-search-wrap" style="display:flex; gap:8px;">
           <select id="arl-batch-kind-select" style="padding:10px; border-radius:6px; border:1px solid var(--mcs-border); background:var(--mcs-surface); color:var(--mcs-text); font-weight:600;">
             <option value="all" ${this.state.searchKind === 'all' ? 'selected' : ''}>全て (Tất cả)</option>
             <option value="mold" ${this.state.searchKind === 'mold' ? 'selected' : ''}>金型 (Khuôn)</option>
@@ -360,13 +475,22 @@
           </div>
           <div class="arl-batch-list" style="margin-top:10px; flex:1; overflow-y:auto; padding-bottom:20px;">${listHtml}</div>
         ` : ''}
-        <div class="arl-actions" style="margin-top:auto;">
-          ${total > 0 ? `<button class="arl-btn arl-btn-secondary" id="arl-batch-reset"><i class="fas fa-trash"></i></button>` : ''}
-          <button class="arl-btn arl-btn-primary" id="arl-batch-scan" ${total === 0 ? 'disabled' : ''}><i class="fas fa-camera"></i> スキャン開始 ${total > 0 ? `(${total - checked})` : ''}</button>
+        <div class="arl-actions" style="margin-top:auto; flex-direction:column; gap:8px;">
+          <div style="display:flex; gap:8px;">
+              ${total > 0 ? `<button class="arl-btn arl-btn-secondary" id="arl-batch-reset" style="flex:0 0 auto;"><i class="fas fa-trash"></i></button>` : ''}
+              <button class="arl-btn arl-btn-primary" id="arl-batch-scan" ${total === 0 ? 'disabled' : ''} style="flex:1; padding:16px; font-size:16px;">
+                 <i class="fas fa-camera"></i> ${allDone ? '再スキャン (Quét lại)' : `スキャン開始 (Bắt đầu quét)`}
+              </button>
+          </div>
         </div>
       `;
 
-      // Bind
+      // Bindings
+      document.getElementById('arl-session-back')?.addEventListener('click', () => {
+          this.state.activeSessionId = null;
+          this.renderBody();
+      });
+
       const inp = document.getElementById('arl-batch-input');
       const dd = document.getElementById('arl-batch-dropdown');
       const clr = document.getElementById('arl-batch-clear');
@@ -401,13 +525,13 @@
                   sel = this.state.dropdownItems[0];
               }
               
-              if (sel && !this.state.batchList.find(b => this.normalizeCode(b.code) === sel.normCode && b.kind === sel.kind)) {
-                this.state.batchList.push({ code: sel.code, kind: sel.kind, item: sel.item, checked: false, normCode: sel.normCode, normId: sel.normId });
+              if (sel && !session.items.find(b => this.normalizeCode(b.code) === sel.normCode && b.kind === sel.kind)) {
+                session.items.unshift({ code: sel.code, kind: sel.kind, item: sel.item, checked: false, isLoggedToDb: false, normCode: sel.normCode, normId: sel.normId });
+                this.saveSessions();
               }
               inp.value = ''; clr.classList.remove('visible'); dd.classList.remove('open');
-              this.renderBody(); // re-render to show new item
+              this.renderBody(); 
               
-              // Tự động mở lại VirtualKeyboard trên Mobile hoặc Focus trên Desktop
               setTimeout(() => { 
                  const newInp = document.getElementById('arl-batch-input');
                  if (!newInp) return;
@@ -445,17 +569,187 @@
       }
 
       body.querySelectorAll('.arl-batch-info').forEach(btn => btn.addEventListener('click', () => {
-        const item = this.state.batchList[parseInt(btn.dataset.idx)];
+        const item = session.items[parseInt(btn.dataset.idx)];
         if (item && window.DetailPanel) window.DetailPanel.open(item.item, item.kind === 'mold' ? 'mold' : 'cutter');
       }));
 
+      body.querySelectorAll('.arl-batch-manual').forEach(btn => btn.addEventListener('click', () => {
+        const item = session.items[parseInt(btn.dataset.idx)];
+        if (item && !item.checked) {
+            item.checked = true;
+            if (!item.isLoggedToDb) {
+                this.syncAuditLog(item);
+                item.isLoggedToDb = true;
+            }
+            this.saveSessions();
+            this.renderBody();
+            if (window.showToast) window.showToast('success', '', `Đã đánh dấu tay: ${item.code}`);
+        }
+      }));
+
       body.querySelectorAll('.arl-batch-remove').forEach(btn => btn.addEventListener('click', () => {
-        this.state.batchList.splice(parseInt(btn.dataset.idx), 1);
+        session.items.splice(parseInt(btn.dataset.idx), 1);
+        this.saveSessions();
         this.renderBody();
       }));
 
-      document.getElementById('arl-batch-reset')?.addEventListener('click', () => { this.state.batchList = []; this.renderBody(); });
-      document.getElementById('arl-batch-scan')?.addEventListener('click', () => { this.openCamera(this.state.batchList); });
+      document.getElementById('arl-batch-reset')?.addEventListener('click', () => { 
+          if(confirm('リストをクリアしますか？ / Bạn có chắc muốn xóa toàn bộ danh sách?')) {
+             session.items = []; 
+             this.saveSessions();
+             this.renderBody(); 
+          }
+      });
+      document.getElementById('arl-batch-scan')?.addEventListener('click', () => { this.openCamera(session.items); });
+    },
+
+    // ===== LOCATION MODE (PHASE 3) =====
+    renderLocation(body) {
+      if (!this.state.locationSession) {
+         body.innerHTML = `
+           <div class="arl-hint">
+             <div class="ja"><i class="fas fa-map-marker-alt"></i> 位置確認モード / Kiểm kê theo vị trí</div>
+             ラックや棚のコードを入力し、その場所にある金型を一括でスキャンして照合します。
+           </div>
+           <div class="arl-search-wrap" style="margin-top:16px;">
+             <input type="text" class="arl-search-input" id="arl-loc-input" placeholder="場所コードを入力 (Nhập mã Giá/Tầng)" style="text-transform:uppercase;">
+           </div>
+           <button class="arl-btn arl-btn-primary" id="arl-loc-start" style="margin-top:16px; width:100%;"><i class="fas fa-arrow-right"></i> 棚卸開始 (Bắt đầu kiểm kê)</button>
+         `;
+         const inp = document.getElementById('arl-loc-input');
+         const startBtn = document.getElementById('arl-loc-start');
+         
+         const startLocSession = () => {
+             const val = inp.value.trim().toUpperCase();
+             if (!val) return;
+             
+             // Chuẩn hóa thành RackLayerID dạng số (Loại bỏ ký tự gạch nối)
+             const searchRackLayerId = val.replace(/-/g, '');
+             
+             // Tìm expected molds
+             const dm = window.DataManager?.data;
+             const expected = [];
+             if (dm && dm.molds) {
+                 dm.molds.forEach(m => {
+                     if (String(m.RackLayerID) === searchRackLayerId || m.Location === val || (m.Location && m.Location.startsWith(val + '-'))) {
+                         expected.push({ code: m.displayCode || m.MoldCode, kind: 'mold', item: m, normCode: this.normalizeCode(m.displayCode || m.MoldCode) });
+                     }
+                 });
+             }
+             if (dm && dm.cutters) {
+                 dm.cutters.forEach(c => {
+                     if (String(c.RackLayerID) === searchRackLayerId || c.Location === val || (c.Location && c.Location.startsWith(val + '-'))) {
+                         expected.push({ code: c.displayCode || c.CutterCode || c.CutterNo, kind: 'cutter', item: c, normCode: this.normalizeCode(c.displayCode || c.CutterCode || c.CutterNo) });
+                     }
+                 });
+             }
+             
+             this.state.locationSession = { locCode: searchRackLayerId, displayLoc: val, expected: expected, scanned: [] };
+             this.renderBody();
+         };
+         
+         startBtn.addEventListener('click', startLocSession);
+         inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') startLocSession(); });
+         
+         setTimeout(() => { if (window.innerWidth > 768) inp.focus(); }, 100);
+         return;
+      }
+      
+      const s = this.state.locationSession;
+      
+      // Tính toán reconciliation
+      const match = [];
+      const missing = [];
+      const wrongLoc = [];
+      
+      s.expected.forEach(ex => {
+          if (s.scanned.find(sc => sc.normCode === ex.normCode)) {
+              match.push(ex);
+          } else {
+              missing.push(ex);
+          }
+      });
+      
+      s.scanned.forEach(sc => {
+          if (!s.expected.find(ex => ex.normCode === sc.normCode)) {
+              wrongLoc.push(sc);
+          }
+      });
+      
+      const renderItem = (item, type) => `
+        <div class="arl-batch-item" style="border-left: 4px solid ${type === 'match' ? '#22c55e' : (type === 'missing' ? '#f59e0b' : '#ef4444')}; padding:8px 12px; margin-bottom:4px;">
+           <div style="flex:1; display:flex; flex-direction:column;">
+             <span class="arl-batch-code">${item.code}</span>
+             <span class="arl-batch-type ${item.kind}" style="background:transparent; padding:0; font-size:11px;">${item.kind === 'mold' ? '金型' : '抜型'}</span>
+           </div>
+           ${type === 'wrongLoc' && !item.isLocUpdated ? `<button class="arl-btn-loc-update" data-code="${item.normCode}" style="background:#ef4444; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:11px; cursor:pointer;"><i class="fas fa-sync-alt"></i> 位置更新</button>` : ''}
+           ${type === 'wrongLoc' && item.isLocUpdated ? `<span style="color:#22c55e; font-size:11px; font-weight:bold;"><i class="fas fa-check"></i> 更新済</span>` : ''}
+        </div>
+      `;
+
+      body.innerHTML = `
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+           <button class="arl-btn" id="arl-loc-back" style="padding:6px 12px; background:#f1f5f9; border:1px solid #cbd5e1; border-radius:6px; font-size:14px; flex:0 0 auto;"><i class="fas fa-arrow-left"></i> 戻る</button>
+           <div style="flex:1; font-weight:bold; font-size:14px;">位置: <span style="color:var(--mcs-primary);">${s.displayLoc}</span> <span style="font-size:11px; color:#888;">(RackLayerID: ${s.locCode})</span></div>
+        </div>
+        
+        <div class="arl-stats" style="margin-bottom:12px;">
+            <div class="arl-stat"><div class="arl-stat-num" style="color:#22c55e">${match.length}</div><div class="arl-stat-label">一致 (Khớp)</div></div>
+            <div class="arl-stat"><div class="arl-stat-num" style="color:#f59e0b">${missing.length}</div><div class="arl-stat-label">不足 (Thiếu)</div></div>
+            <div class="arl-stat"><div class="arl-stat-num" style="color:#ef4444">${wrongLoc.length}</div><div class="arl-stat-label">誤配置 (Lạc chỗ)</div></div>
+        </div>
+        
+        <div style="flex:1; overflow-y:auto; padding-bottom:12px; display:flex; flex-direction:column; gap:16px;">
+            ${wrongLoc.length > 0 ? `<div><div style="font-size:12px; font-weight:bold; color:#ef4444; margin-bottom:4px;"><i class="fas fa-exclamation-triangle"></i> 誤配置 (Lạc chỗ)</div>${wrongLoc.map(i => renderItem(i, 'wrongLoc')).join('')}</div>` : ''}
+            ${missing.length > 0 ? `<div><div style="font-size:12px; font-weight:bold; color:#f59e0b; margin-bottom:4px;"><i class="fas fa-question-circle"></i> 不足 (Thiếu trên giá)</div>${missing.map(i => renderItem(i, 'missing')).join('')}</div>` : ''}
+            ${match.length > 0 ? `<div><div style="font-size:12px; font-weight:bold; color:#22c55e; margin-bottom:4px;"><i class="fas fa-check-circle"></i> 一致 (Khớp vị trí)</div>${match.map(i => renderItem(i, 'match')).join('')}</div>` : ''}
+            ${s.scanned.length === 0 && s.expected.length === 0 ? `<div style="text-align:center; padding:20px; color:#aaa; font-size:12px;">データがありません / Chưa có dữ liệu</div>` : ''}
+        </div>
+        
+        <div class="arl-actions" style="margin-top:auto;">
+           <button class="arl-btn arl-btn-primary" id="arl-loc-scan" style="width:100%; padding:14px;"><i class="fas fa-camera"></i> スキャン開始 (Quét giá này)</button>
+        </div>
+      `;
+      
+      document.getElementById('arl-loc-back')?.addEventListener('click', () => {
+         if (confirm('この位置のセッションを終了しますか？ / Bạn có muốn thoát phiên vị trí này?')) {
+             this.state.locationSession = null;
+             this.renderBody();
+         }
+      });
+      
+      document.getElementById('arl-loc-scan')?.addEventListener('click', () => {
+          // Open camera in location mode
+          this.openCamera([]);
+      });
+      
+      body.querySelectorAll('.arl-btn-loc-update').forEach(btn => btn.addEventListener('click', () => {
+          const normCode = btn.dataset.code;
+          const scItem = s.scanned.find(x => x.normCode === normCode);
+          if (scItem && scItem.item) {
+              const isMold = scItem.kind === 'mold';
+              const idVal = isMold ? (scItem.item.MoldID || scItem.item.MoldCode) : (scItem.item.CutterID || scItem.item.CutterNo);
+              if (window.showToast) window.showToast('info', '', 'Đang cập nhật vị trí...');
+              
+              // Call LocationMove Headless API to ensure locationlog.csv and datachangehistory.csv are updated
+              const employeeId = (window.app && window.app.currentUser && window.app.currentUser.EmployeeID) ? window.app.currentUser.EmployeeID : '1';
+              
+              if (window.LocationMove && window.LocationMove.apiMoveRackLayer) {
+                  window.LocationMove.apiMoveRackLayer(scItem.item, s.locCode, employeeId, 'Update from AR Locator')
+                    .then(() => {
+                        scItem.isLocUpdated = true;
+                        this.renderBody();
+                        if (window.showToast) window.showToast('success', '', `Đã cập nhật vị trí ${scItem.code} về ${s.displayLoc}`);
+                    });
+              } else {
+                  // Fallback
+                  document.dispatchEvent(new CustomEvent('mcs-data-sync', { detail: { idValue: idVal, payload: { RackLayerID: parseInt(s.locCode, 10), Location: s.displayLoc } } }));
+                  scItem.isLocUpdated = true;
+                  this.renderBody();
+                  if (window.showToast) window.showToast('success', '', `Đã cập nhật vị trí ${scItem.code} về ${s.displayLoc}`);
+              }
+          }
+      }));
     },
 
     // ===== DROPDOWN RENDERER =====
@@ -485,13 +779,17 @@
           const sel = items[idx];
           if (!sel) return;
           if (this.state.mode === 'single') {
-              this.state.singleTarget = { code: sel.code, kind: sel.kind, item: sel.item, normCode: sel.normCode, normId: sel.normId };
+              this.state.singleTarget = { code: sel.code, kind: sel.kind, item: sel.item, normCode: sel.normCode, normId: sel.normId, isLoggedToDb: false };
               dd.classList.remove('open');
               this.renderBody();
           }
           else {
-            if (!this.state.batchList.find(b => this.normalizeCode(b.code) === sel.normCode && b.kind === sel.kind)) {
-              this.state.batchList.push({ code: sel.code, kind: sel.kind, item: sel.item, checked: false, normCode: sel.normCode, normId: sel.normId });
+            const session = this.state.activeSessionId ? this.state.sessions.find(s => s.id === this.state.activeSessionId) : null;
+            if (session) {
+                if (!session.items.find(b => this.normalizeCode(b.code) === sel.normCode && b.kind === sel.kind)) {
+                  session.items.unshift({ code: sel.code, kind: sel.kind, item: sel.item, checked: false, isLoggedToDb: false, normCode: sel.normCode, normId: sel.normId });
+                  this.saveSessions();
+                }
             }
             const inp = document.getElementById('arl-batch-input');
             if (inp) inp.value = '';
@@ -532,10 +830,18 @@
       if (!camRoot) { camRoot = document.createElement('div'); camRoot.id = 'arl-camera-root'; document.body.appendChild(camRoot); }
 
       let targetInfo = '';
+      let miniListHtml = '';
       if(this.state.mode === 'single') {
           targetInfo = `探索対象: ${targets[0].code}`;
-      } else {
+      } else if (this.state.mode === 'batch') {
           targetInfo = targets.length > 0 ? `${targets.filter(t => !t.checked).length} 件未確認` : '全QRコードをスキャン';
+          if (targets.length > 0) {
+              const itemsHtml = targets.map(t => `<div class="arl-mini-item ${t.checked ? 'checked' : ''}" id="mini-${t.normCode}"><span>${t.code}</span></div>`).join('');
+              miniListHtml = `<div class="arl-camera-minilist" id="arl-cam-minilist">${itemsHtml}</div>`;
+          }
+      } else {
+          // Location mode
+          targetInfo = `位置: ${this.state.locationSession ? this.state.locationSession.locCode : ''} (Free Scan)`;
       }
 
       camRoot.innerHTML = `
@@ -544,7 +850,7 @@
             <button class="arl-camera-close" id="arl-cam-close">&times;</button>
             <div style="display:flex; flex-direction:column; line-height:1.2;">
                <span class="arl-camera-title" style="font-size:15px;">ARスキャン</span>
-               <span style="font-size:10px; color:#aaa;">v1.1.5</span>
+               <span style="font-size:10px; color:#aaa;">v1.3.0</span>
             </div>
             <div style="display:flex; gap:6px; align-items:center;">
               <select id="arl-camera-select" style="max-width:110px; font-size:12px; padding:4px; border-radius:4px;"></select>
@@ -555,6 +861,7 @@
              <span class="arl-camera-target-badge" id="arl-cam-badge" style="${this.state.mode === 'single' ? 'background:rgba(13,109,110,0.5)' : ''}">${targetInfo}</span>
           </div>
           <div class="arl-camera-canvas-wrap">
+            ${miniListHtml}
             <video id="arl-video" playsinline></video>
             <canvas id="arl-canvas"></canvas>
           </div>
@@ -722,6 +1029,36 @@
               isMatch = true;
               displayCode = targets[0].code;
           }
+      } else if (this.state.mode === 'location') {
+          // Location Mode: Free scan
+          const s = this.state.locationSession;
+          if (s) {
+              // Tìm thiết bị trong DataManager
+              const devices = this.searchDevices(parsedNorm);
+              let foundItem = null;
+              if (devices.length > 0) {
+                 // Ưu tiên cái khớp mã
+                 foundItem = devices.find(d => d.normCode === parsedNorm) || devices[0];
+              }
+              
+              if (foundItem) {
+                  isMatch = true;
+                  displayCode = foundItem.code;
+                  
+                  // Chỉ thêm nếu chưa có
+                  if (!s.scanned.find(sc => sc.normCode === foundItem.normCode)) {
+                      s.scanned.unshift(foundItem);
+                      
+                      if (Date.now() - this.state.lastBeepTime > 1000) {
+                         this.beep();
+                         if (window.showToast) window.showToast('info', '', `Đã quét: ${displayCode}`);
+                      }
+                  } else {
+                     // Đã quét rồi
+                     isMatch = true; 
+                  }
+              }
+          }
       } else {
           // Batch Mode
           const found = targets.find(t => !t.checked && isMatchFound(t, parsedNorm, parsed?.kind));
@@ -729,7 +1066,15 @@
               isMatch = true;
               found.checked = true;
               displayCode = found.code;
-              this.syncAuditLog(found); // 🔥 Ghi log audit
+              
+              if (!found.isLoggedToDb) {
+                  this.syncAuditLog(found); // 🔥 Ghi log audit
+                  found.isLoggedToDb = true;
+              }
+              this.saveSessions();
+              
+              const miniItem = document.getElementById('mini-' + found.normCode);
+              if (miniItem) miniItem.classList.add('checked');
           } else {
              // Đã quét rồi thì thôi, không báo lỗi liên tục
              const alreadyChecked = targets.find(t => t.checked && isMatchFound(t, parsedNorm, parsed?.kind));
@@ -785,15 +1130,25 @@
             setTimeout(() => {
                 this.closeCamera();
             }, 600); // Đợi xíu cho người dùng nhìn thấy xanh
+        } else if (this.state.mode === 'location') {
+            // Location Mode: Already beeped during scan addition
         } else {
             // Batch Mode
-            const foundJustNow = targets.find(t => t.normCode === parsedNorm && t.checked);
-            // Chỉ beep 1 lần cho mã mới (hoặc mã vừa được match)
+            // Chỉ beep 1 lần cho mã mới
             if (Date.now() - this.state.lastBeepTime > 1000) {
                  this.beep();
                  this.updateCamBadge();
                  if (window.showToast) window.showToast('success', '', `Đã quét: ${displayCode}`);
-                 // Vẽ dấu check nhỏ trên màn hình (tuỳ chọn)
+                 
+                 // Auto-close if all targets are checked
+                 const allDone = targets.length > 0 && targets.every(t => t.checked);
+                 if (allDone) {
+                     this.state.scanning = false; // Ngừng tick
+                     setTimeout(() => {
+                         if (window.showToast) window.showToast('success', '完了', 'Danh sách đã kiểm kê xong toàn bộ!');
+                         this.closeCamera();
+                     }, 1500);
+                 }
             }
         }
       }

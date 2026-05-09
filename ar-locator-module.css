@@ -495,3 +495,55 @@
   .arl-body { padding: 12px; }
   .arl-search-input { font-size: 15px; padding: 10px 12px; }
 }
+
+/* ===== SESSION DASHBOARD ===== */
+.arl-session-card {
+  background: var(--mcs-surface, #fff);
+  border: 1px solid var(--mcs-border, #e2e6ea);
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.arl-session-card:hover { border-color: var(--mcs-primary, #0d6d6e); box-shadow: 0 4px 12px rgba(13,109,110,0.1); }
+.arl-session-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.arl-session-title { font-size: 14px; font-weight: 700; color: var(--mcs-text, #111); }
+.arl-session-date { font-size: 11px; color: var(--mcs-text-muted, #888); }
+.arl-session-progress-wrap { height: 6px; background: var(--mcs-surface-3, #e5e7eb); border-radius: 3px; overflow: hidden; margin-bottom: 8px; }
+.arl-session-progress { height: 100%; background: var(--mcs-primary, #0d6d6e); border-radius: 3px; transition: width 0.3s; }
+.arl-session-progress.complete { background: #22c55e; }
+.arl-session-meta { display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; color: var(--mcs-text-muted, #888); }
+
+/* ===== CAMERA MINI LIST ===== */
+.arl-camera-minilist {
+  position: absolute;
+  bottom: 60px;
+  right: 12px;
+  width: 180px;
+  max-height: 200px;
+  background: rgba(15,23,42,0.75);
+  backdrop-filter: blur(8px);
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.1);
+  overflow-y: auto;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  padding: 6px;
+  gap: 4px;
+}
+.arl-mini-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 8px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 11px;
+  font-family: 'JetBrains Mono', monospace;
+  transition: all 0.3s;
+}
+.arl-mini-item.checked { background: rgba(34,197,94,0.2); color: #86efac; text-decoration: line-through; opacity: 0.7; }

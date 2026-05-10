@@ -27,21 +27,22 @@
       } catch (e) { this.state.sessions = []; }
       
       // Merge with remote DataManager if available
-      if (window.DataManager && window.DataManager.data && window.DataManager.data.auditsessions) {
+      if (window.DataManager && window.DataManager.data && window.DataManager.data.auditsession) {
          let changed = false;
-         window.DataManager.data.auditsessions.forEach(remoteS => {
-             if (!remoteS.SessionID) return;
-             let localS = this.state.sessions.find(s => s.id === remoteS.SessionID);
+         window.DataManager.data.auditsession.forEach(remoteS => {
+             if (!remoteS.AuditSessionID) return;
+             let localS = this.state.sessions.find(s => s.id === remoteS.AuditSessionID);
              if (!localS) {
                  try {
+                     const parsedNotes = JSON.parse(remoteS.Notes || '{}');
                      localS = {
-                         id: remoteS.SessionID,
-                         name: remoteS.SessionName || 'Kiểm kê',
-                         type: remoteS.SessionType || 'BATCH_LIST',
-                         status: remoteS.Status || 'IN_PROGRESS',
-                         createdAt: remoteS.StartTime,
-                         employeeId: remoteS.EmployeeID,
-                         items: JSON.parse(remoteS.Notes || '[]')
+                         id: remoteS.AuditSessionID,
+                         name: remoteS.AuditSessionName || 'Kiểm kê',
+                         type: remoteS.AuditMode || 'BATCH_LIST',
+                         status: parsedNotes.status || 'IN_PROGRESS',
+                         createdAt: remoteS.CreatedAt,
+                         employeeId: remoteS.CreatedByEmployeeID,
+                         items: parsedNotes.items || []
                      };
                      this.state.sessions.push(localS);
                      changed = true;
@@ -67,17 +68,21 @@
       if (!s) return;
       
       const payload = {
-         filename: 'auditsessions.csv',
-         itemIdField: 'SessionID',
+         filename: 'auditsession.csv',
+         itemIdField: 'AuditSessionID',
          itemIdValue: s.id,
          updates: {
-             SessionName: s.name,
-             SessionType: s.type,
-             Status: s.status,
-             EmployeeID: s.employeeId || (window.app?.currentUser?.EmployeeID || '1'),
-             StartTime: s.createdAt,
-             TotalItems: s.items ? s.items.length : 0,
-             Notes: JSON.stringify(s.items.map(i => ({ code: i.code, kind: i.kind, checked: i.checked, isLoggedToDb: i.isLoggedToDb, normCode: i.normCode, normId: i.normId })))
+             AuditSessionName: s.name,
+             AuditMode: s.type,
+             CreatedByEmployeeID: s.employeeId || (window.app?.currentUser?.EmployeeID || '1'),
+             CreatedAt: s.createdAt,
+             AuditDate: s.createdAt.substring(0, 10),
+             AuditSessionCode: s.id,
+             Notes: JSON.stringify({
+                 status: s.status,
+                 totalItems: s.items ? s.items.length : 0,
+                 items: s.items.map(i => ({ code: i.code, kind: i.kind, checked: i.checked, isLoggedToDb: i.isLoggedToDb, normCode: i.normCode, normId: i.normId }))
+             })
          }
       };
       
@@ -486,7 +491,7 @@
           this.state.sessions.unshift({
              id: newId,
              createdAt: new Date().toISOString(),
-             name: \`棚卸_\${dateStr}_\${timeStr}_\${empName}\`,
+             name: `棚卸_${dateStr}_${timeStr}_${empName}`,
              type: 'BATCH_LIST',
              status: 'IN_PROGRESS',
              employeeId: empId,

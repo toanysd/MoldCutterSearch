@@ -244,7 +244,6 @@ const FILE_HEADERS = {
   'trays.csv': ['TrayID', 'TrayName', 'TrayCode', 'TrayCapacity', 'Notes'],
 
   'worklog.csv': ['WorkLogID', 'MoldID', 'CutterID', 'EmployeeID', 'WorkDate', 'WorkType', 'Notes'],
-  'auditsession.csv': ['AuditSessionID', 'AuditSessionCode', 'AuditSessionName', 'AuditDate', 'AuditMode', 'CreatedByEmployeeID', 'CreatedAt', 'Notes'],
   'datachangehistory.csv': ['DataChangeID', 'TableName', 'RecordID', 'RecordIDField', 'FieldName', 'OldValue', 'NewValue', 'ChangedAt', 'ChangedBy', 'BaseValueAtEdit', 'BaseCommitID', 'BaseCommitAt', 'ChangeSource', 'ChangeNote', 'IsConflict', 'ResolvedValue', 'ResolvedAt', 'ResolvedBy'],
 
   'accesscommithistory.csv': ['AccessCommitID', 'TableName', 'Filename', 'CommitSHA', 'CommitAt', 'CommitBy', 'CommitMessage', 'RowCount', 'FileChecksum', 'ImportSource', 'ImportNote'],
@@ -322,7 +321,6 @@ const ALLOWED_CSV_FILES = new Set([
 
   // History tables
   'datachangehistory.csv',
-  'auditsession.csv',
   'accesscommithistory.csv',
 
   // Plastic Module (WMS)
@@ -359,7 +357,6 @@ const WRITABLE_CORE_FILES = new Set([
   'locationlog.csv',
   'usercomments.csv',
   'scraplog.csv',
-  'auditsession.csv',
   'molds.csv',
   'cutters.csv',
   'molddesign.csv',
@@ -413,7 +410,6 @@ const TABLE_KEY_TO_FILENAME = {
   tray: 'trays.csv',
   trays: 'trays.csv',
   worklog: 'worklog.csv',
-  auditsession: 'auditsession.csv',
   datachangehistory: 'datachangehistory.csv',
   accesscommithistory: 'accesscommithistory.csv',
 
@@ -875,13 +871,9 @@ async function updateCsvFileDynamicWithRetry(filename, commitMessage, mutateFn, 
       const fileData = await getGitHubFile(filePath);
       if (requireExisting && !fileData.sha) throw httpError(404, `CSV not found on GitHub: ${fn}`);
 
-      let headers = extractHeadersFromCsvContent(fileData.content);
+      const headers = extractHeadersFromCsvContent(fileData.content);
       if (!headers || headers.length === 0) {
-        if (!requireExisting && FILE_HEADERS[fn]) {
-          headers = FILE_HEADERS[fn];
-        } else {
-          throw httpError(400, `CSV header row missing or empty: ${fn}`);
-        }
+        throw httpError(400, `CSV header row missing or empty: ${fn}`);
       }
 
       let records = await parseCsvText(fileData.content);
@@ -1481,7 +1473,7 @@ app.post('/api/update-item', async (req, res) => {
 
         return { records };
       },
-      { maxRetry: 4, requireExisting: false }
+      { maxRetry: 4, requireExisting: true }
     );
 
     // TRỢ LỰC DELTA SYNC

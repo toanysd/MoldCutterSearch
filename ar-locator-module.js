@@ -19,16 +19,73 @@
     },
 
     loadSessions() {
+      // Load from local storage as buffer
       try {
         const stored = localStorage.getItem('mcs_ar_audit_sessions');
         if (stored) this.state.sessions = JSON.parse(stored);
         else this.state.sessions = [];
       } catch (e) { this.state.sessions = []; }
+      
+      // Merge with remote DataManager if available
+      if (window.DataManager && window.DataManager.data && window.DataManager.data.auditsessions) {
+         let changed = false;
+         window.DataManager.data.auditsessions.forEach(remoteS => {
+             if (!remoteS.SessionID) return;
+             let localS = this.state.sessions.find(s => s.id === remoteS.SessionID);
+             if (!localS) {
+                 try {
+                     localS = {
+                         id: remoteS.SessionID,
+                         name: remoteS.SessionName || 'Kiểm kê',
+                         type: remoteS.SessionType || 'BATCH_LIST',
+                         status: remoteS.Status || 'IN_PROGRESS',
+                         createdAt: remoteS.StartTime,
+                         employeeId: remoteS.EmployeeID,
+                         items: JSON.parse(remoteS.Notes || '[]')
+                     };
+                     this.state.sessions.push(localS);
+                     changed = true;
+                 } catch(e) {}
+             }
+         });
+         if (changed) {
+             this.state.sessions.sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+             this.saveSessionsLocalOnly();
+         }
+      }
     },
-    saveSessions() {
-      try {
-        localStorage.setItem('mcs_ar_audit_sessions', JSON.stringify(this.state.sessions));
-      } catch (e) {}
+    saveSessionsLocalOnly() {
+      try { localStorage.setItem('mcs_ar_audit_sessions', JSON.stringify(this.state.sessions)); } catch (e) {}
+    },
+    saveSessions(syncSessionId = null) {
+      this.saveSessionsLocalOnly();
+      
+      const targetId = syncSessionId || this.state.activeSessionId;
+      if (!targetId) return;
+      
+      const s = this.state.sessions.find(x => x.id === targetId);
+      if (!s) return;
+      
+      const payload = {
+         filename: 'auditsessions.csv',
+         itemIdField: 'SessionID',
+         itemIdValue: s.id,
+         updates: {
+             SessionName: s.name,
+             SessionType: s.type,
+             Status: s.status,
+             EmployeeID: s.employeeId || (window.app?.currentUser?.EmployeeID || '1'),
+             StartTime: s.createdAt,
+             TotalItems: s.items ? s.items.length : 0,
+             Notes: JSON.stringify(s.items.map(i => ({ code: i.code, kind: i.kind, checked: i.checked, isLoggedToDb: i.isLoggedToDb, normCode: i.normCode, normId: i.normId })))
+         }
+      };
+      
+      fetch('https://ysd-moldcutter-backend.onrender.com/api/update-item', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+      }).catch(e => console.warn('Failed to sync audit session', e));
     },
 
     normalizeCode(raw) {
@@ -396,31 +453,47 @@
           }).join('');
       }
 
+      const employees = window.DataManager?.data?.employees || [];
+      const defaultEmpId = window.app?.currentUser?.EmployeeID || '1';
+      const empOptions = employees.map(e => `<option value="${e.EmployeeID}" ${e.EmployeeID === defaultEmpId ? 'selected' : ''}>${e.EmployeeName}</option>`).join('');
+
       body.innerHTML = `
         <div class="arl-hint">
           <div class="ja"><i class="fas fa-list-check"></i> 一括棚卸セッション / Danh sách Phiên kiểm kê</div>
           「＋ 新規作成」で新しい確認リストを作ります。
         </div>
-        <div style="margin-top:16px;">
-           <button class="arl-btn arl-btn-primary" id="arl-new-session" style="width:100%; margin-bottom:16px; padding:16px; font-size:16px;"><i class="fas fa-plus"></i> 新規作成 / Tạo phiên mới</button>
+        <div style="margin-top:16px; background:var(--mcs-surface); border:1px solid var(--mcs-border); padding:12px; border-radius:8px;">
+           <label style="display:block; margin-bottom:8px; font-weight:bold; font-size:12px; color:var(--mcs-text);">担当者 (Nhân viên):</label>
+           <select id="arl-new-session-emp" style="width:100%; padding:10px; border-radius:6px; border:1px solid var(--mcs-border); margin-bottom:12px;">
+             ${empOptions}
+           </select>
+           <button class="arl-btn arl-btn-primary" id="arl-new-session" style="width:100%; padding:14px; font-size:14px;"><i class="fas fa-plus"></i> 新規作成 / Tạo phiên mới</button>
         </div>
-        <div style="flex:1; overflow-y:auto; padding-bottom:20px;">
+        <div style="flex:1; overflow-y:auto; padding-bottom:20px; margin-top:16px;">
            ${cardsHtml}
         </div>
       `;
 
       document.getElementById('arl-new-session')?.addEventListener('click', () => {
+          const empSelect = document.getElementById('arl-new-session-emp');
+          const empId = empSelect ? empSelect.value : defaultEmpId;
+          const empName = empSelect && empSelect.options[empSelect.selectedIndex] ? empSelect.options[empSelect.selectedIndex].text : empId;
+          
           const newId = 'session_' + Date.now();
+          const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+          const timeStr = new Date().toTimeString().slice(0, 5).replace(/:/g, '');
+          
           this.state.sessions.unshift({
              id: newId,
              createdAt: new Date().toISOString(),
-             name: 'Kiểm kê ' + new Date().toLocaleDateString(),
+             name: \`棚卸_\${dateStr}_\${timeStr}_\${empName}\`,
              type: 'BATCH_LIST',
              status: 'IN_PROGRESS',
+             employeeId: empId,
              items: []
           });
-          this.saveSessions();
           this.state.activeSessionId = newId;
+          this.saveSessions(newId);
           this.renderBody();
       });
 
@@ -466,6 +539,7 @@
             <button class="arl-search-clear" id="arl-batch-clear">&times;</button>
             <div class="arl-dropdown" id="arl-batch-dropdown"></div>
           </div>
+          <button class="arl-btn" id="arl-batch-import-rack" style="padding:10px; border-radius:6px; border:1px solid var(--mcs-border); background:#f8fafc; color:var(--mcs-primary); font-weight:bold;" title="ラックから追加 (Thêm từ Giá)"><i class="fas fa-layer-group"></i></button>
         </div>
         ${total > 0 ? `
           <div class="arl-stats" style="margin-top:10px;">
@@ -567,6 +641,41 @@
           clr.addEventListener('click', () => { inp.value = ''; clr.classList.remove('visible'); dd.classList.remove('open'); inp.focus(); });
           setTimeout(() => { if (window.innerWidth > 768) inp.focus(); }, 100);
       }
+      
+      document.getElementById('arl-batch-import-rack')?.addEventListener('click', () => {
+          const rackId = prompt('追加するラックのコードを入力してください (Nhập mã Giá/Tầng cần thêm):');
+          if (!rackId) return;
+          const cleanRackId = rackId.trim().toUpperCase().replace(/-/g, '');
+          let added = 0;
+          const dm = window.DataManager?.data;
+          
+          const processList = (list, kind) => {
+              if(!list) return;
+              list.forEach(item => {
+                  const rId = String(item.RackLayerID || '');
+                  const loc = String(item.Location || '');
+                  if (rId === cleanRackId || loc === rackId.trim().toUpperCase() || loc.startsWith(rackId.trim().toUpperCase() + '-')) {
+                      const code = kind === 'mold' ? (item.displayCode || item.MoldCode) : (item.displayCode || item.CutterCode || item.CutterNo);
+                      const norm = this.normalizeCode(code);
+                      if (!session.items.find(b => b.normCode === norm)) {
+                          session.items.unshift({ code: code, kind: kind, item: item, checked: false, isLoggedToDb: false, normCode: norm, normId: (kind === 'mold' ? item.MoldID : item.CutterID) });
+                          added++;
+                      }
+                  }
+              });
+          };
+          
+          if (this.state.searchKind === 'all' || this.state.searchKind === 'mold') processList(dm?.molds, 'mold');
+          if (this.state.searchKind === 'all' || this.state.searchKind === 'cutter') processList(dm?.cutters, 'cutter');
+          
+          if (added > 0) {
+              if(window.showToast) window.showToast('success', '', `${added}件追加しました (Đã thêm ${added} thiết bị)`);
+              this.saveSessions();
+              this.renderBody();
+          } else {
+              if(window.showToast) window.showToast('warning', '', '見つかりませんでした (Không tìm thấy thiết bị nào)');
+          }
+      });
 
       body.querySelectorAll('.arl-batch-info').forEach(btn => btn.addEventListener('click', () => {
         const item = session.items[parseInt(btn.dataset.idx)];
@@ -719,8 +828,13 @@
       });
       
       document.getElementById('arl-loc-scan')?.addEventListener('click', () => {
-          // Open camera in location mode
-          this.openCamera([]);
+          // Open camera in location mode, passing expected items and mapping their check status
+          const mappedTargets = s.expected.map(ex => ({
+              code: ex.code,
+              normCode: ex.normCode,
+              checked: s.scanned.some(sc => sc.normCode === ex.normCode)
+          }));
+          this.openCamera(mappedTargets);
       });
       
       body.querySelectorAll('.arl-btn-loc-update').forEach(btn => btn.addEventListener('click', () => {
@@ -842,6 +956,10 @@
       } else {
           // Location mode
           targetInfo = `位置: ${this.state.locationSession ? this.state.locationSession.locCode : ''} (Free Scan)`;
+          if (targets.length > 0) {
+              const itemsHtml = targets.map(t => `<div class="arl-mini-item ${t.checked ? 'checked' : ''}" id="mini-${t.normCode}"><span>${t.code}</span></div>`).join('');
+              miniListHtml = `<div class="arl-camera-minilist" id="arl-cam-minilist">${itemsHtml}</div>`;
+          }
       }
 
       camRoot.innerHTML = `

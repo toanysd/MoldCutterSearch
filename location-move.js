@@ -416,17 +416,15 @@
         var idValue = isMold ? (item.MoldID || item.MoldCode) : (item.CutterID || item.CutterNo);
         
         if (idValue) {
-          var upsertPayload = {
-            filename: csvFile,
-            idField: idField,
-            idValue: idValue,
-            mode: 'upsert',
-            updates: { RackLayerID: layerId }
-          };
-          fetch('https://ysd-moldcutter-backend.onrender.com/api/csv/upsert', {
+          fetch('https://ysd-moldcutter-backend.onrender.com/api/update-item', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(upsertPayload)
+            body: JSON.stringify({
+              filename: csvFile,
+              itemIdField: idField,
+              itemIdValue: idValue,
+              updates: { RackLayerID: layerId }
+            })
           }).catch(function (e) { console.warn('Upsert RackLayerID failed in headless API', e); });
         }
 

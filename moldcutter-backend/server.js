@@ -244,7 +244,7 @@ const FILE_HEADERS = {
   'trays.csv': ['TrayID', 'TrayName', 'TrayCode', 'TrayCapacity', 'Notes'],
 
   'worklog.csv': ['WorkLogID', 'MoldID', 'CutterID', 'EmployeeID', 'WorkDate', 'WorkType', 'Notes'],
-  'auditsession.csv': ['AuditSessionID', 'AuditSessionCode', 'AuditSessionName', 'AuditDate', 'AuditMode', 'CreatedByEmployeeID', 'CreatedAt', 'Notes'],
+  'auditsessions.csv': ['SessionID', 'SessionName', 'SessionType', 'Status', 'EmployeeID', 'StartTime', 'EndTime', 'TotalItems', 'Notes'],
   'datachangehistory.csv': ['DataChangeID', 'TableName', 'RecordID', 'RecordIDField', 'FieldName', 'OldValue', 'NewValue', 'ChangedAt', 'ChangedBy', 'BaseValueAtEdit', 'BaseCommitID', 'BaseCommitAt', 'ChangeSource', 'ChangeNote', 'IsConflict', 'ResolvedValue', 'ResolvedAt', 'ResolvedBy'],
 
   'accesscommithistory.csv': ['AccessCommitID', 'TableName', 'Filename', 'CommitSHA', 'CommitAt', 'CommitBy', 'CommitMessage', 'RowCount', 'FileChecksum', 'ImportSource', 'ImportNote'],
@@ -322,7 +322,7 @@ const ALLOWED_CSV_FILES = new Set([
 
   // History tables
   'datachangehistory.csv',
-  'auditsession.csv',
+  'auditsessions.csv',
   'accesscommithistory.csv',
 
   // Plastic Module (WMS)
@@ -359,7 +359,7 @@ const WRITABLE_CORE_FILES = new Set([
   'locationlog.csv',
   'usercomments.csv',
   'scraplog.csv',
-  'auditsession.csv',
+  'auditsessions.csv',
   'molds.csv',
   'cutters.csv',
   'molddesign.csv',
@@ -413,7 +413,7 @@ const TABLE_KEY_TO_FILENAME = {
   tray: 'trays.csv',
   trays: 'trays.csv',
   worklog: 'worklog.csv',
-  auditsession: 'auditsession.csv',
+  auditsessions: 'auditsessions.csv',
   datachangehistory: 'datachangehistory.csv',
   accesscommithistory: 'accesscommithistory.csv',
 

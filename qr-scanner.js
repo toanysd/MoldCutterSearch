@@ -1,4 +1,5 @@
-// v11.0.0-ARLocator
+// v12.0.2
+// Phase 1: QR Scan chuyên dụng — Đã tách AR Locator sang module riêng
 (function () {
   'use strict';
 
@@ -11,13 +12,12 @@
       ctx: null,
       stream: null,
       scanning: false,
-      mode: 'normal', // 'normal' | 'locator'
-      targetId: '',
       cameras: [],
       currentCameraId: null,
       facingMode: 'environment',
       lastBeepTime: 0,
-      audioCtx: null
+      audioCtx: null,
+      lastScannedData: '' // Chống quét trùng liên tục
     },
 
     init() {
@@ -26,7 +26,7 @@
       this.createModalStructure();
       this.bindGlobalButtons();
       this.state.initialized = true;
-      console.log('[QRScanSearch] AR Locator Initialized');
+      console.log('[QRScanSearch] v12.0.0 Initialized (QR Scan Only)');
     },
 
     initAudio() {
@@ -114,35 +114,36 @@
         .qrscan-root { position: fixed; inset: 0; z-index: 999999; display: none; align-items: center; justify-content: center; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
         .qrscan-root.qrscan-open { display: flex; }
         .qrscan-backdrop { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(2px); }
-        .qrscan-dialog { position: relative; z-index: 1; background: #fff; border-radius: 12px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35); width: 90%; max-width: 480px; display: flex; flex-direction: column; overflow: hidden; }
-        .qrscan-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: #f8f9fa; border-bottom: 1px solid #eee; }
+        .qrscan-dialog { position: relative; z-index: 1; background: #fff; border-radius: 12px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35); width: 90%; max-width: 480px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; }
+        .qrscan-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: #f8f9fa; border-bottom: 1px solid #eee; flex-shrink: 0; }
         .qrscan-title { font-size: 16px; font-weight: 600; }
         .qrscan-title .ja { display: block; font-size: 15px; color: #111; }
-        .qrscan-title .vi { display: block; font-size: 12px; color: #666; margin-top: 2px; }
+        .qrscan-title .vi { display: block; font-size: 11px; color: #888; margin-top: 1px; }
         .qrscan-close { border: none; background: transparent; font-size: 24px; line-height: 1; cursor: pointer; color: #555; padding: 4px; }
         
-        .qrscan-tabs { display: flex; border-bottom: 1px solid #e0e0e0; background: #fff; }
-        .qrscan-tab { flex: 1; padding: 10px 0; border: none; background: transparent; font-size: 14px; font-weight: 600; color: #777; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
-        .qrscan-tab.active { color: #1976d2; border-bottom-color: #1976d2; background: #f0f7ff; }
-        
-        .qrscan-body { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
-        
-        .qrscan-locator-input-wrap { display: none; }
-        .qrscan-root[data-mode="locator"] .qrscan-locator-input-wrap { display: block; }
-        .qrscan-input { width: 100%; padding: 10px 12px; border: 2px solid #ddd; border-radius: 6px; font-size: 16px; font-weight: bold; text-align: center; text-transform: uppercase; transition: border-color 0.2s; box-sizing: border-box; }
-        .qrscan-input:focus { border-color: #1976d2; outline: none; }
+        .qrscan-body { padding: 12px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; flex: 1; }
         
         .qrscan-camera-block { border-radius: 8px; overflow: hidden; border: 1px solid #ddd; background: #000; }
-        .qrscan-camera-header { display: flex; justify-content: space-between; align-items: center; padding: 8px; background: rgba(255,255,255,0.9); border-bottom: 1px solid #ddd; }
+        .qrscan-camera-header { display: flex; justify-content: space-between; align-items: center; padding: 6px 8px; background: rgba(255,255,255,0.9); border-bottom: 1px solid #ddd; }
+        .qrscan-camera-header .ja { font-size: 11px; color: #555; font-weight: 600; }
         .qrscan-select { font-size: 12px; padding: 4px; max-width: 150px; }
-        .qrscan-toggle-camera { font-size: 12px; padding: 4px 8px; border-radius: 4px; border: 1px solid #bbb; background: #f5f5f5; cursor: pointer; }
+        .qrscan-toggle-camera { font-size: 11px; padding: 4px 10px; border-radius: 4px; border: 1px solid #bbb; background: #f5f5f5; cursor: pointer; font-weight: 600; }
         
-        .qrscan-camera-view-wrap { position: relative; width: 100%; min-height: 250px; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #000; }
-        #qrscan-canvas { width: 100%; max-width: 100%; height: auto; display: block; }
+        .qrscan-camera-view-wrap { position: relative; width: 100%; max-height: 55vh; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #111; }
+        #qrscan-canvas { width: 100%; max-width: 100%; height: auto; max-height: 55vh; display: block; object-fit: contain; }
         #qrscan-video { display: none; }
 
-        .qrscan-ar-overlay { position: absolute; inset: 0; pointer-events: none; z-index: 2; display: flex; align-items: center; justify-content: center; }
-        .qrscan-ar-target { font-size: 18px; font-weight: 800; color: #fff; text-shadow: 0 0 4px #000; background: rgba(0,0,0,0.5); padding: 4px 12px; border-radius: 20px; position: absolute; top: 10px; }
+        .qrscan-hint { text-align: center; font-size: 12px; color: #888; padding: 8px 0 4px; flex-shrink: 0; }
+        .qrscan-hint .ja { font-weight: 600; color: #555; }
+        
+        .qrscan-mobile-footer { display: none; padding: 12px 16px; background: #fff; border-top: 1px solid #eee; }
+
+        @media (max-width: 768px) {
+          .qrscan-dialog { width: 96%; max-width: none; max-height: 85vh; border-radius: 14px; }
+          .qrscan-camera-view-wrap { max-height: 50vh; }
+          #qrscan-canvas { max-height: 50vh; }
+          .qrscan-mobile-footer { display: block; }
+        }
       `;
       document.head.appendChild(style);
     },
@@ -152,42 +153,40 @@
       const root = document.createElement('div');
       root.className = 'qrscan-root';
       root.id = 'qr-scan-modal';
-      root.dataset.mode = 'normal';
 
       root.innerHTML = `
         <div class="qrscan-backdrop"></div>
         <div class="qrscan-dialog">
           <div class="qrscan-header">
             <div class="qrscan-title">
-              <span class="ja">QRスキャン & ARロケーター</span>
-              <span class="vi">Quét QR & Tìm kiếm AR</span>
+              <span class="ja">QRスキャン</span>
+              <span class="vi">Quét mã QR</span>
             </div>
-            <button type="button" class="qrscan-close" aria-label="Close">&times;</button>
-          </div>
-          
-          <div class="qrscan-tabs">
-            <button type="button" class="qrscan-tab active" data-tab="normal">Scan Thường</button>
-            <button type="button" class="qrscan-tab" data-tab="locator">AR Locator</button>
+            <button type="button" class="qrscan-close" aria-label="閉じる">&times;</button>
           </div>
 
           <div class="qrscan-body">
-            <div class="qrscan-locator-input-wrap">
-              <input type="text" id="qrscan-locator-input" class="qrscan-input" placeholder="Nhập ID cần tìm (VD: M5791)" autocomplete="off">
-            </div>
-
             <div class="qrscan-camera-block">
               <div class="qrscan-camera-header">
-                <select id="qrscan-camera-select" class="qrscan-select"></select>
-                <button type="button" id="qrscan-toggle-camera" class="qrscan-toggle-camera">Đổi Camera</button>
+                <span class="ja">📷 カメラ</span>
+                <div style="display:flex; gap:6px; align-items:center;">
+                  <select id="qrscan-camera-select" class="qrscan-select"></select>
+                  <button type="button" id="qrscan-toggle-camera" class="qrscan-toggle-camera">切替 / Đổi</button>
+                </div>
               </div>
               <div class="qrscan-camera-view-wrap">
                 <video id="qrscan-video" playsinline></video>
                 <canvas id="qrscan-canvas"></canvas>
-                <div class="qrscan-ar-overlay" id="qrscan-ar-overlay" style="display:none;">
-                  <div class="qrscan-ar-target" id="qrscan-ar-target-display"></div>
-                </div>
               </div>
             </div>
+
+            <div class="qrscan-hint">
+              <div class="ja">金型・抜型のQRコードをカメラに映してください</div>
+              <div class="vi">Hướng camera vào mã QR trên khuôn hoặc dao cắt</div>
+            </div>
+          </div>
+          <div class="qrscan-mobile-footer">
+            <button class="qrscan-btn" id="qrscan-mobile-close-btn" style="width:100%; padding:14px; background:#fff; border:1px solid #ddd; font-size:16px; font-weight:bold; color:#333; border-radius:8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); cursor:pointer;"><i class="fas fa-times"></i> 閉じる / Đóng</button>
           </div>
         </div>
       `;
@@ -197,33 +196,15 @@
       this.state.video = root.querySelector('#qrscan-video');
       this.state.canvas = root.querySelector('#qrscan-canvas');
       this.state.ctx = this.state.canvas.getContext('2d', { willReadFrequently: true });
-      this.state.locatorInput = root.querySelector('#qrscan-locator-input');
       this.state.cameraSelect = root.querySelector('#qrscan-camera-select');
 
       root.querySelector('.qrscan-close').addEventListener('click', () => this.closeModal());
+      root.querySelector('#qrscan-mobile-close-btn').addEventListener('click', () => this.closeModal());
       root.querySelector('.qrscan-backdrop').addEventListener('click', () => this.closeModal());
       root.querySelector('#qrscan-toggle-camera').addEventListener('click', () => this.toggleCamera());
-
-      const tabs = root.querySelectorAll('.qrscan-tab');
-      tabs.forEach(t => {
-        t.addEventListener('click', (e) => {
-          tabs.forEach(btn => btn.classList.remove('active'));
-          e.currentTarget.classList.add('active');
-          const mode = e.currentTarget.dataset.tab;
-          this.state.mode = mode;
-          root.dataset.mode = mode;
-          if (mode === 'locator') {
-            this.state.locatorInput.focus();
-            root.querySelector('#qrscan-ar-overlay').style.display = 'flex';
-          } else {
-            root.querySelector('#qrscan-ar-overlay').style.display = 'none';
-          }
-        });
-      });
-
-      this.state.locatorInput.addEventListener('input', (e) => {
-        this.state.targetId = e.target.value.trim().toUpperCase();
-        root.querySelector('#qrscan-ar-target-display').textContent = this.state.targetId ? `Tìm: ${this.state.targetId}` : '';
+      this.state.cameraSelect.addEventListener('change', (e) => {
+        const newCam = e.target.value;
+        if(newCam) this.startCamera(newCam);
       });
     },
 
@@ -245,10 +226,8 @@
 
     openModal() {
       this.initAudio();
+      this.state.lastScannedData = ''; // Reset chống trùng
       this.state.modal.classList.add('qrscan-open');
-      this.state.locatorInput.value = '';
-      this.state.targetId = '';
-      this.state.modal.querySelector('#qrscan-ar-target-display').textContent = '';
       this.startCamera();
     },
 
@@ -257,7 +236,7 @@
       this.stopCamera();
     },
 
-    async startCamera(deviceId = null) {
+    async startCamera(deviceId = null, isRetry = false) {
       this.stopCamera();
       this.state.scanning = true;
 
@@ -265,48 +244,60 @@
         if (!this.state.cameras.length) {
           const devices = await navigator.mediaDevices.enumerateDevices();
           this.state.cameras = devices.filter(d => d.kind === 'videoinput');
-          this.state.cameraSelect.innerHTML = '';
-          this.state.cameras.forEach((cam, i) => {
-            const opt = document.createElement('option');
-            opt.value = cam.deviceId;
-            opt.text = cam.label || `Camera ${i + 1}`;
-            this.state.cameraSelect.appendChild(opt);
-          });
         }
 
         const constraints = {
-          video: deviceId 
-            ? { deviceId: { exact: deviceId } } 
-            : { facingMode: this.state.facingMode, width: { ideal: 1280 }, height: { ideal: 720 } }
+          video: deviceId
+            ? { deviceId: { exact: deviceId } }
+            : (isRetry ? true : { facingMode: this.state.facingMode, width: { ideal: 640 }, height: { ideal: 480 } }),
+          audio: false
         };
 
         this.state.stream = await navigator.mediaDevices.getUserMedia(constraints);
         this.state.video.srcObject = this.state.stream;
-        this.state.video.setAttribute('playsinline', true);
+        
+        const track = this.state.stream.getVideoTracks()[0];
+        if (track) {
+          this.state.currentCameraId = track.getSettings().deviceId;
+        }
+
+        const updatedDevices = await navigator.mediaDevices.enumerateDevices();
+        this.state.cameras = updatedDevices.filter(d => d.kind === 'videoinput');
+        this.state.cameraSelect.innerHTML = '';
+        this.state.cameras.forEach((cam, i) => {
+          const opt = document.createElement('option');
+          opt.value = cam.deviceId;
+          opt.textContent = cam.label || `カメラ ${i + 1}`;
+          this.state.cameraSelect.appendChild(opt);
+        });
+        if (this.state.currentCameraId) this.state.cameraSelect.value = this.state.currentCameraId;
         
         await this.state.video.play();
         
         requestAnimationFrame(() => this.scanTick());
       } catch (err) {
-        console.error('[QRScanSearch] Lỗi truy cập Camera:', err);
-        // Set canvas size so error message is visible
+        if (!isRetry && (err.name === 'NotFoundError' || err.name === 'OverconstrainedError') && !deviceId) {
+          console.warn('[QRScanSearch] Camera with facingMode not found, retrying without constraints...');
+          return this.startCamera(null, true);
+        }
+        
+        console.error('[QRScanSearch] カメラエラー:', err);
+        // Vẽ thông báo lỗi lên canvas
         const cw = 400, ch = 250;
         this.state.canvas.width = cw;
         this.state.canvas.height = ch;
         this.state.ctx.fillStyle = '#1a1a2e';
         this.state.ctx.fillRect(0, 0, cw, ch);
-        // Icon placeholder
         this.state.ctx.fillStyle = '#ef4444';
-        this.state.ctx.font = 'bold 40px Arial';
+        this.state.ctx.font = 'bold 36px Arial';
         this.state.ctx.textAlign = 'center';
         this.state.ctx.fillText('⚠', cw / 2, ch / 2 - 30);
-        // Error text
         this.state.ctx.fillStyle = '#fff';
         this.state.ctx.font = 'bold 14px Arial';
         this.state.ctx.fillText('カメラ接続エラー / Lỗi Camera', cw / 2, ch / 2 + 10);
         this.state.ctx.fillStyle = '#94a3b8';
-        this.state.ctx.font = '12px Arial';
-        this.state.ctx.fillText(err.message || 'Unknown error', cw / 2, ch / 2 + 35);
+        this.state.ctx.font = '11px Arial';
+        this.state.ctx.fillText(err.message || 'Unknown error', cw / 2, ch / 2 + 30);
       }
     },
 
@@ -319,17 +310,29 @@
     },
 
     toggleCamera() {
-      this.state.facingMode = this.state.facingMode === 'environment' ? 'user' : 'environment';
-      this.startCamera(); // re-init without specific deviceId to use facingMode
+      if (this.state.cameras.length > 1) {
+        let idx = this.state.cameras.findIndex(c => c.deviceId === this.state.currentCameraId);
+        idx = (idx + 1) % this.state.cameras.length;
+        const newCam = this.state.cameras[idx].deviceId;
+        this.state.cameraSelect.value = newCam;
+        this.startCamera(newCam);
+      } else {
+        this.state.facingMode = this.state.facingMode === 'environment' ? 'user' : 'environment';
+        this.startCamera();
+      }
     },
 
-    drawLine(begin, end, color) {
-      this.state.ctx.beginPath();
-      this.state.ctx.moveTo(begin.x, begin.y);
-      this.state.ctx.lineTo(end.x, end.y);
-      this.state.ctx.lineWidth = 4;
-      this.state.ctx.strokeStyle = color;
-      this.state.ctx.stroke();
+    drawBoundingBox(loc, color) {
+      const ctx = this.state.ctx;
+      ctx.beginPath();
+      ctx.moveTo(loc.topLeftCorner.x, loc.topLeftCorner.y);
+      ctx.lineTo(loc.topRightCorner.x, loc.topRightCorner.y);
+      ctx.lineTo(loc.bottomRightCorner.x, loc.bottomRightCorner.y);
+      ctx.lineTo(loc.bottomLeftCorner.x, loc.bottomLeftCorner.y);
+      ctx.closePath();
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = color;
+      ctx.stroke();
     },
 
     scanTick() {
@@ -365,49 +368,29 @@
 
     handleQRDetected(code) {
       const parsed = this.parsePayload(code.data);
-      if (!parsed) return; // ignore invalid formats entirely visually
+      if (!parsed) return;
 
-      if (this.state.mode === 'normal') {
-        // Mode Normal: Chụp phát ăn luôn
-        this.drawLine(code.location.topLeftCorner, code.location.topRightCorner, "#00FF00");
-        this.drawLine(code.location.topRightCorner, code.location.bottomRightCorner, "#00FF00");
-        this.drawLine(code.location.bottomRightCorner, code.location.bottomLeftCorner, "#00FF00");
-        this.drawLine(code.location.bottomLeftCorner, code.location.topLeftCorner, "#00FF00");
-        
-        this.beep('success');
-        this.closeModal();
-        setTimeout(() => this.handlePayload(code.data, 'camera'), 100);
-      } else {
-        // Mode AR Locator: Vẽ box và kêu liên tục nếu đúng
-        const isMatch = this.state.targetId && (
-           parsed.id.includes(this.state.targetId) || 
-           parsed.code.includes(this.state.targetId)
-        );
+      // Chống quét trùng: cùng 1 QR code không xử lý lại trong 3 giây
+      if (this.state.lastScannedData === code.data) return;
+      this.state.lastScannedData = code.data;
 
-        const color = isMatch ? "#00FF00" : "#FF3333";
-        
-        this.drawLine(code.location.topLeftCorner, code.location.topRightCorner, color);
-        this.drawLine(code.location.topRightCorner, code.location.bottomRightCorner, color);
-        this.drawLine(code.location.bottomRightCorner, code.location.bottomLeftCorner, color);
-        this.drawLine(code.location.bottomLeftCorner, code.location.topLeftCorner, color);
-
-        if (isMatch) {
-          this.beep('success');
-          // Vẽ text ở trên QR
-          this.state.ctx.font = '24px Arial';
-          this.state.ctx.fillStyle = color;
-          this.state.ctx.fillText(parsed.code, code.location.topLeftCorner.x, code.location.topLeftCorner.y - 10);
-        } else {
-          // Báo sai nếu muốn
-          // this.beep('error');
-        }
-      }
+      // Vẽ bounding box xanh
+      this.drawBoundingBox(code.location, '#00FF00');
+      
+      // Beep thành công
+      this.beep('success');
+      
+      // ★ ĐÓNG CAMERA TRƯỚC KHI MỞ DETAIL (Fix issue #4)
+      this.closeModal();
+      
+      // Mở detail sau 100ms để modal đóng mượt
+      setTimeout(() => this.handlePayload(code.data, 'camera'), 150);
     },
 
     handlePayload(raw, source) {
       const parsed = this.parsePayload(raw);
       if (!parsed) {
-        alert('無効なQR形式です / Định dạng QR không hợp lệ.\n' + raw);
+        console.warn('[QRScanSearch] 無効なQR:', raw);
         return;
       }
       console.log('[QRScanSearch] Parsed QR:', parsed, 'source:', source);
@@ -418,7 +401,7 @@
         : (window.DataManager?.data?.cutters || []);
 
       if (!Array.isArray(list) || !list.length) {
-        alert('データ未読込 / Dữ liệu chưa được nạp vào hệ thống.');
+        console.warn('[QRScanSearch] データ未読込');
         return;
       }
 
@@ -430,7 +413,7 @@
 
       const results = this.searchByCode(list, parsed.code, parsed.kind);
       if (!results.length) {
-        alert('対象が見つかりません / Không tìm thấy dữ liệu.\nCode: ' + parsed.code);
+        console.warn('[QRScanSearch] 対象未発見:', parsed.code);
         return;
       }
       this.pushToGlobalSearch(parsed.code, results, parsed.kind);
@@ -476,7 +459,7 @@
       return list.find(item => {
         const itemId = isMold ? String(item.MoldID || '').trim() : String(item.CutterID || '').trim();
         const itemCode = isMold ? String(item.MoldCode || '').trim() : String(item.CutterCode || item.CutterNo || '').trim();
-        return itemId === parsed.id || itemCode === parsed.code; // Loose match fallback
+        return itemId === parsed.id || itemCode === parsed.code;
       }) || null;
     },
 

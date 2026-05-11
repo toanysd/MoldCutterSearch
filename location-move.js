@@ -371,6 +371,71 @@
     }
   }
 
+  // --- Headless API for other modules (e.g. AR Locator) ---
+  LocationMove.apiMoveRackLayer = function(item, layerId, empId, note) {
+    if (!item || !layerId || !empId) {
+      console.warn('LocationMove.apiMoveRackLayer: Missing required parameters', {item, layerId, empId});
+      return Promise.reject('Missing required parameters');
+    }
+
+    var payload = {
+      Timestamp: new Date().toISOString(),
+      MoldID: item.type === 'mold' ? (item.MoldID || item.MoldCode || '') : '',
+      CutterID: item.type === 'cutter' ? (item.CutterID || item.CutterNo || '') : '',
+      EmployeeID: String(empId),
+      RackLayerID: String(layerId),
+      Notes: String(note || '')
+    };
+
+    return fetch(apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+      .then(function (res) {
+        return res.ok ? res.json() : Promise.reject('HTTP ' + res.status);
+      })
+      .catch(function (err) {
+        console.warn('LocationMove.apiMoveRackLayer API error', err);
+        return { success: false, error: err };
+      })
+      .finally(function () {
+        var allData = getAllData();
+        if (allData && allData.locationlog) {
+          payload.LocationLogID = 'TEMP_' + Date.now();
+          payload._pending = true;
+          allData.locationlog.unshift(payload);
+        }
+
+        item.RackLayerID = layerId;
+
+        // Upsert direct to molds/cutters
+        var isMold = Boolean(item.MoldID || item.MoldCode || item.type === 'mold');
+        var csvFile = isMold ? 'molds.csv' : 'cutters.csv';
+        var idField = isMold ? 'MoldID' : 'CutterID';
+        var idValue = isMold ? (item.MoldID || item.MoldCode) : (item.CutterID || item.CutterNo);
+        
+        if (idValue) {
+          fetch('https://ysd-moldcutter-backend.onrender.com/api/update-item', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              filename: csvFile,
+              itemIdField: idField,
+              itemIdValue: idValue,
+              updates: { RackLayerID: layerId }
+            })
+          }).catch(function (e) { console.warn('Upsert RackLayerID failed in headless API', e); });
+        }
+
+        if (global.app && typeof global.app.applyFilters === 'function') {
+          global.app.applyFilters();
+        } else {
+          document.dispatchEvent(new CustomEvent('data-manager:ready'));
+        }
+      });
+  };
+
   global.LocationMove = LocationMove;
 
 })(window);

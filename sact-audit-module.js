@@ -1,4 +1,4 @@
-// v1.0.0-3
+// v1.0.0-4
 /**
  * sact-audit-module.js
  * Chức năng: Điều phối quy trình điểm danh khuôn SACT theo Mobile UI Workflow.
@@ -65,11 +65,12 @@
             };
             
             // Lưu lại view hiện tại để khôi phục khi đóng SACT
-            if (window.ViewManager && window.ViewManager.currentView) {
+            if (window.ViewManager && window.ViewManager.currentView && window.ViewManager.currentView !== 'sact') {
                 this.state.previousView = window.ViewManager.currentView;
             }
 
             this.renderLayout();
+            if (window.ViewManager) window.ViewManager.switchView('sact');
             await this.loadCampaigns();
             this.switchTab('dashboard');
         },
@@ -96,85 +97,61 @@
         },
 
         injectSactHeader() {
-            const searchWrap = document.getElementById('globalSearchWrap');
-            if (searchWrap) {
-                // save original state
-                this.originalSearchWrapDisplay = searchWrap.style.display;
-                this.originalSearchWrapHTML = searchWrap.innerHTML;
-                searchWrap.style.setProperty('display', 'flex', 'important');
-                searchWrap.style.setProperty('flex', '1', 'important');
-                
-                const topbarModule = document.querySelector('.topbar-module');
-                if (topbarModule) {
-                    this.originalLogoDisplay = topbarModule.style.display;
-                    if (window.innerWidth < 768) topbarModule.style.setProperty('display', 'none', 'important');
-                }
-                
-                // inject SACT title inline with back button
-                searchWrap.innerHTML = `
-                    <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
-                        <div style="display:flex; align-items:center; gap:12px; padding-left:8px;">
-                            <button id="sact-back-btn" style="background:none; border:none; cursor:pointer; color:var(--mcs-text-muted); font-size:18px; padding:4px;" title="Quay lại">
-                                <i class="fas fa-arrow-left"></i>
-                            </button>
-                            <i class="fas fa-clipboard-check" style="color:var(--mcs-primary); font-size:18px;"></i>
-                            <div style="display:flex; flex-direction:column; line-height:1.2;">
-                                <span style="font-size:15px; font-weight:700; color:var(--mcs-text);">SACT モニター</span>
-                                <span style="font-size:11px; color:var(--mcs-text-muted);">MoldCutterSearch</span>
-                            </div>
-                        </div>
-                        <button onclick="window.SACTModule.showHelpDialog()" style="background:none; border:none; cursor:pointer; color:var(--mcs-info); font-size:20px; padding:4px 12px;" title="Hướng dẫn SACT">
-                            <i class="fas fa-question-circle"></i>
-                        </button>
-                    </div>
-                `;
-                
-                setTimeout(() => {
-                    const backBtn = document.getElementById('sact-back-btn');
-                    if (backBtn) backBtn.addEventListener('click', () => this.close());
-                }, 0);
-            }
+            // Sử dụng pattern chuẩn của ViewManager: cập nhật trực tiếp topbar-module
+            const moduleIcon = document.querySelector('.topbar-module-icon');
+            const moduleLabelJa = document.querySelector('.topbar-module-label .ja');
+            const moduleLabelVi = document.querySelector('.topbar-module-label .vi');
+            
+            if (moduleIcon) moduleIcon.innerHTML = '<i class="fas fa-clipboard-check" style="color:var(--mcs-primary);"></i>';
+            if (moduleLabelJa) moduleLabelJa.innerHTML = 'SACT モニター';
+            if (moduleLabelVi) moduleLabelVi.textContent = 'Điểm danh khuôn SACT';
 
+            // Ẩn search bar và các nút không liên quan
+            const searchWrap = document.getElementById('globalSearchWrap');
+            if (searchWrap) searchWrap.style.setProperty('display', 'none', 'important');
+            
+            const filterBtn = document.getElementById('filterDetailBtn');
+            if (filterBtn) filterBtn.style.setProperty('display', 'none', 'important');
+
+            const qb = document.getElementById('searchbarQRBtn');
+            if (qb) qb.style.setProperty('display', 'none', 'important');
+
+            const scopePill = document.getElementById('search-scope-pill');
+            if (scopePill) scopePill.classList.add('mcs-hidden');
+
+            const catDd = document.getElementById('categoryDropdown');
+            if (catDd) catDd.classList.add('mcs-hidden');
+            
+            const searchDiv = document.querySelector('.search-divider');
+            if (searchDiv) searchDiv.classList.add('mcs-hidden');
+
+            // Thêm deadline badge vào topbar-actions
             const topbarActions = document.querySelector('.topbar-actions');
-            if (topbarActions) {
+            if (topbarActions && !document.getElementById('sact-deadline-badge')) {
                 const badge = document.createElement('div');
                 badge.id = 'sact-deadline-badge';
                 badge.className = 'sact-deadline-badge';
                 badge.innerHTML = `<i class="fas fa-clock" style="font-size:10px"></i> <span id="sact-deadline-text"></span>`;
-                badge.style.display = 'none'; // hidden by default, shown by active campaign
+                badge.style.display = 'none';
                 topbarActions.prepend(badge);
-            }
-            
-            // hide filter detail btn
-            const filterBtn = document.getElementById('filterDetailBtn');
-            if (filterBtn) {
-                this.originalFilterBtnDisplay = filterBtn.style.display;
-                filterBtn.style.display = 'none';
             }
         },
 
         restoreSactHeader() {
+            // Khôi phục tất cả phần tử header đã bị ẩn
             const searchWrap = document.getElementById('globalSearchWrap');
-            if (searchWrap && this.originalSearchWrapHTML !== undefined) {
-                searchWrap.innerHTML = this.originalSearchWrapHTML;
-                searchWrap.style.display = this.originalSearchWrapDisplay || '';
-                if (!this.originalSearchWrapDisplay) searchWrap.style.removeProperty('display');
-                searchWrap.style.removeProperty('flex');
-            }
+            if (searchWrap) searchWrap.style.removeProperty('display');
 
-            const topbarModule = document.querySelector('.topbar-module');
-            if (topbarModule && this.originalLogoDisplay !== undefined) {
-                topbarModule.style.display = this.originalLogoDisplay || '';
-                if (!this.originalLogoDisplay) topbarModule.style.removeProperty('display');
-            }
+            const filterBtn = document.getElementById('filterDetailBtn');
+            if (filterBtn) filterBtn.style.removeProperty('display');
+
+            const qb = document.getElementById('searchbarQRBtn');
+            if (qb) qb.style.removeProperty('display');
 
             const badge = document.getElementById('sact-deadline-badge');
             if (badge) badge.remove();
-
-            const filterBtn = document.getElementById('filterDetailBtn');
-            if (filterBtn && this.originalFilterBtnDisplay !== undefined) {
-                filterBtn.style.display = this.originalFilterBtnDisplay;
-            }
+            
+            // ViewManager.switchView(prevView) sẽ khôi phục lại icon/label/scope tự động
         },
 
         renderLayout() {

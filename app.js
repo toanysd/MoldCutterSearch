@@ -713,6 +713,7 @@ class App {
 
 
 
+    console.log('🚀 === SYSTEM VERSION UPDATE: v9.1.38 ===');
     console.log('✅ App initialized successfully');
 
     console.log(`📊 Total items: ${this.allItems.length}`);
@@ -1894,6 +1895,14 @@ class App {
 
       });
 
+    }
+
+    const topInventoryBtn = document.getElementById('topInventoryAuditBtn');
+    if (topInventoryBtn) {
+      topInventoryBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.handleInventory();
+      });
     }
 
 
@@ -4336,14 +4345,26 @@ class App {
 
 
 
-    if (window.InventoryModule && typeof window.InventoryModule.openMultiple === 'function') {
-
-      window.InventoryModule.openMultiple(selected);
-
+    if (window.ARLocator) {
+      const batchList = selected.map(sel => {
+        const itemObj = sel.payload ? sel.payload : sel;
+        const isMold = itemObj.type === 'mold' || typeof itemObj.MoldID !== 'undefined';
+        const kind = isMold ? 'mold' : 'cutter';
+        const rawCode = isMold ? (itemObj.MoldCode || itemObj.MoldID) : (itemObj.CutterCode || itemObj.CutterID);
+        const code = String(rawCode).trim();
+        const normCode = code.replace(/\s+/g, '').toUpperCase();
+        return {
+          code: code,
+          kind: kind,
+          item: itemObj,
+          checked: false,
+          normCode: normCode,
+          normId: String(isMold ? itemObj.MoldID : itemObj.CutterID)
+        };
+      });
+      window.ARLocator.open('batch', batchList);
     } else {
-
-      alert('Chưa nạp module Inventory');
-
+      alert('AR Locator (AR探索) モジュールがロードされていません / Chưa nạp module AR Locator');
     }
 
   }

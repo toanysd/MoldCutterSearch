@@ -23,7 +23,7 @@
 
     background: #ebeced;
 
-    z-index: 9999;
+    z-index: 10000000;
 
     box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.2);
 
@@ -345,7 +345,7 @@
 
     bottom: 0;
 
-    z-index: 10000;
+    z-index: 10000001;
 
     display: none;
 

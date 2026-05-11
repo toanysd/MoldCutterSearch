@@ -144,7 +144,10 @@
               s.items.forEach(i => i.isLoggedToDb = true);
               this.saveSessionsLocalOnly();
           }
-      } catch (e) { console.error('Supabase Sync Session Error:', e); }
+      } catch (e) { 
+          console.error('Supabase Sync Session Error:');
+          console.error(JSON.stringify(e, null, 2));
+      }
     },
 
     normalizeCode(raw) {

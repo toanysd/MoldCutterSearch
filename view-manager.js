@@ -131,7 +131,7 @@
             if (scopePill) scopePill.classList.add('mcs-hidden');
             if (searchInput) searchInput.placeholder = 'Mã, tên, vị trí, công ty...';
             if (moduleIcon) moduleIcon.innerHTML = '<i class="fas fa-search"></i>';
-            if (moduleLabelJa) moduleLabelJa.innerHTML = '金型・抜型 検索 <span style="font-size: 0.7em; color: var(--mcs-text-muted); font-weight: normal; margin-left: 4px;">v9.1.34</span>';
+            if (moduleLabelJa) moduleLabelJa.innerHTML = '金型・抜型 検索';
             if (moduleLabelVi) moduleLabelVi.textContent = 'Tìm kiếm Khuôn / Dao cắt';
             if (categoryDropdown) categoryDropdown.classList.remove('mcs-hidden');
             if (searchDivider) searchDivider.classList.remove('mcs-hidden');

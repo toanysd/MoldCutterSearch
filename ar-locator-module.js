@@ -18,79 +18,133 @@
       sessions: [], activeSessionId: null
     },
 
-    loadSessions() {
-      // Load from local storage as buffer
+    getSupabaseClient() {
+        if (this.state.supabaseClient) return this.state.supabaseClient;
+        if (window.SupabaseConfig && window.supabase && typeof window.supabase.createClient === 'function') {
+            const cfg = window.SupabaseConfig.get();
+            if (cfg && cfg.supabaseUrl && cfg.supabaseAnonKey) {
+                this.state.supabaseClient = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+                return this.state.supabaseClient;
+            }
+        }
+        return null;
+    },
+
+    generateUUID() {
+        if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    },
+
+    async loadSessions() {
       try {
         const stored = localStorage.getItem('mcs_ar_audit_sessions');
         if (stored) this.state.sessions = JSON.parse(stored);
         else this.state.sessions = [];
       } catch (e) { this.state.sessions = []; }
       
-      // Merge with remote DataManager if available
-      if (window.DataManager && window.DataManager.data && window.DataManager.data.auditsession) {
-         let changed = false;
-         window.DataManager.data.auditsession.forEach(remoteS => {
-             if (!remoteS.AuditSessionID) return;
-             let localS = this.state.sessions.find(s => s.id === remoteS.AuditSessionID);
-             if (!localS) {
-                 try {
-                     const parsedNotes = JSON.parse(remoteS.Notes || '{}');
-                     localS = {
-                         id: remoteS.AuditSessionID,
-                         name: remoteS.AuditSessionName || 'Kiểm kê',
-                         type: remoteS.AuditMode || 'BATCH_LIST',
-                         status: parsedNotes.status || 'IN_PROGRESS',
-                         createdAt: remoteS.CreatedAt,
-                         employeeId: remoteS.CreatedByEmployeeID,
-                         items: parsedNotes.items || []
-                     };
-                     this.state.sessions.push(localS);
-                     changed = true;
-                 } catch(e) {}
-             }
-         });
-         if (changed) {
-             this.state.sessions.sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-             this.saveSessionsLocalOnly();
-         }
-      }
+      const sb = this.getSupabaseClient();
+      if (!sb) return;
+
+      try {
+          const { data, error } = await sb.from('inventory_sessions').select('*, inventory_session_lines(*)').order('created_at', { ascending: false });
+          if (error) throw error;
+          if (data) {
+              this.state.sessions = data.map(row => ({
+                  id: row.session_id,
+                  name: row.session_name,
+                  type: row.session_type,
+                  status: row.status,
+                  referenceId: row.reference_id,
+                  createdAt: row.created_at,
+                  completedAt: row.completed_at,
+                  employeeId: row.created_by,
+                  notes: row.notes,
+                  items: (row.inventory_session_lines || []).map(line => ({
+                      line_id: line.line_id,
+                      code: line.item_code,
+                      kind: line.item_kind,
+                      expectedLoc: line.expected_location,
+                      actualLoc: line.actual_location,
+                      scanStatus: line.scan_status,
+                      isManual: line.is_manual_check,
+                      scannedAt: line.scanned_at,
+                      scannedBy: line.scanned_by,
+                      checked: line.scan_status !== 'PENDING',
+                      isLoggedToDb: true,
+                      normCode: this.normalizeCode(line.item_code)
+                  }))
+              }));
+              this.saveSessionsLocalOnly();
+              
+              // Cập nhật lại list đã scan trong locationSession nếu có
+              if (this.state.locationSession) {
+                  const locSess = this.state.sessions.find(s => s.id === this.state.locationSession.id);
+                  if (locSess) {
+                      this.state.locationSession.scanned = locSess.items.filter(i => i.scanStatus === 'MATCHED' || i.scanStatus === 'WRONG_LOCATION');
+                  }
+              }
+              
+              if (this.state.isOpen) this.renderBody();
+          }
+      } catch (e) { console.warn('Supabase Load Sessions Error:', e); }
     },
+
     saveSessionsLocalOnly() {
       try { localStorage.setItem('mcs_ar_audit_sessions', JSON.stringify(this.state.sessions)); } catch (e) {}
     },
-    saveSessions(syncSessionId = null) {
+
+    async saveSessions(syncSessionId = null) {
       this.saveSessionsLocalOnly();
       
-      const targetId = syncSessionId || this.state.activeSessionId;
+      const targetId = syncSessionId || this.state.activeSessionId || (this.state.locationSession ? this.state.locationSession.id : null);
       if (!targetId) return;
       
       const s = this.state.sessions.find(x => x.id === targetId);
       if (!s) return;
       
-      const payload = {
-         filename: 'auditsession.csv',
-         itemIdField: 'AuditSessionID',
-         itemIdValue: s.id,
-         updates: {
-             AuditSessionName: s.name,
-             AuditMode: s.type,
-             CreatedByEmployeeID: s.employeeId || (window.app?.currentUser?.EmployeeID || '1'),
-             CreatedAt: s.createdAt,
-             AuditDate: s.createdAt.substring(0, 10),
-             AuditSessionCode: s.id,
-             Notes: JSON.stringify({
-                 status: s.status,
-                 totalItems: s.items ? s.items.length : 0,
-                 items: s.items.map(i => ({ code: i.code, kind: i.kind, checked: i.checked, isLoggedToDb: i.isLoggedToDb, normCode: i.normCode, normId: i.normId }))
-             })
-         }
-      };
-      
-      fetch('https://ysd-moldcutter-backend.onrender.com/api/update-item', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-      }).catch(e => console.warn('Failed to sync audit session', e));
+      const sb = this.getSupabaseClient();
+      if (!sb) return;
+
+      try {
+          const sessionPayload = {
+              session_id: s.id,
+              session_name: s.name,
+              session_type: s.type,
+              status: s.status,
+              created_by: s.employeeId || window.app?.currentUser?.EmployeeID || '1',
+              reference_id: s.referenceId || null,
+              notes: s.notes || null,
+              completed_at: s.completedAt || null,
+              created_at: s.createdAt
+          };
+          const { error: sErr } = await sb.from('inventory_sessions').upsert(sessionPayload);
+          if (sErr) throw sErr;
+
+          if (s.items && s.items.length > 0) {
+              const linesPayload = s.items.map(i => {
+                  if (!i.line_id) i.line_id = this.generateUUID();
+                  return {
+                      line_id: i.line_id,
+                      session_id: s.id,
+                      item_code: i.code,
+                      item_kind: i.kind,
+                      expected_location: i.expectedLoc || null,
+                      actual_location: i.actualLoc || null,
+                      scan_status: i.scanStatus || (i.checked ? 'MATCHED' : 'PENDING'),
+                      is_manual_check: i.isManual || false,
+                      scanned_at: i.scannedAt || (i.checked ? new Date().toISOString() : null),
+                      scanned_by: i.scannedBy || s.employeeId || null
+                  };
+              });
+              const { error: lErr } = await sb.from('inventory_session_lines').upsert(linesPayload);
+              if (lErr) throw lErr;
+              s.items.forEach(i => i.isLoggedToDb = true);
+              this.saveSessionsLocalOnly();
+          }
+      } catch (e) { console.error('Supabase Sync Session Error:', e); }
     },
 
     normalizeCode(raw) {
@@ -312,6 +366,7 @@
             <div style="flex:1;">
               <div class="arl-batch-code" style="font-size:16px;">${this.state.singleTarget.code}</div>
               <div class="arl-batch-type ${this.state.singleTarget.kind}">${this.state.singleTarget.kind === 'mold' ? '金型' : '抜型'}</div>
+              <div style="font-size:12px; color:var(--mcs-text-muted); margin-top:4px;"><i class="fas fa-map-marker-alt"></i> Vị trí: ${this.state.singleTarget.item.Location || this.state.singleTarget.item.RackLayerID || 'Chưa rõ'}</div>
             </div>
             <button class="arl-batch-remove" id="arl-single-remove" style="color:var(--mcs-error); font-size:20px;">&times;</button>
           </div>
@@ -484,7 +539,7 @@
           const empId = empSelect ? empSelect.value : defaultEmpId;
           const empName = empSelect && empSelect.options[empSelect.selectedIndex] ? empSelect.options[empSelect.selectedIndex].text : empId;
           
-          const newId = 'session_' + Date.now();
+          const newId = this.generateUUID();
           const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
           const timeStr = new Date().toTimeString().slice(0, 5).replace(/:/g, '');
           
@@ -758,7 +813,31 @@
                  });
              }
              
-             this.state.locationSession = { locCode: searchRackLayerId, displayLoc: val, expected: expected, scanned: [] };
+             const newId = this.generateUUID();
+             this.state.locationSession = { id: newId, locCode: searchRackLayerId, displayLoc: val, expected: expected, scanned: [] };
+             
+             this.state.sessions.unshift({
+                 id: newId,
+                 createdAt: new Date().toISOString(),
+                 name: `Kiểm tra giá_${val}`,
+                 type: 'LOCATION_CHECK',
+                 referenceId: searchRackLayerId,
+                 status: 'IN_PROGRESS',
+                 employeeId: window.app?.currentUser?.EmployeeID || '1',
+                 items: expected.map(ex => ({
+                     line_id: this.generateUUID(),
+                     code: ex.code,
+                     kind: ex.kind,
+                     expectedLoc: searchRackLayerId,
+                     scanStatus: 'PENDING',
+                     isManual: false,
+                     checked: false,
+                     isLoggedToDb: false,
+                     normCode: ex.normCode
+                 }))
+             });
+             this.state.activeSessionId = newId;
+             this.saveSessions(newId);
              this.renderBody();
          };
          
@@ -1179,6 +1258,33 @@
                   if (!s.scanned.find(sc => sc.normCode === foundItem.normCode)) {
                       s.scanned.unshift(foundItem);
                       
+                      const dbSess = this.state.sessions.find(x => x.id === s.id);
+                      if (dbSess) {
+                          let line = dbSess.items.find(i => i.normCode === foundItem.normCode);
+                          const isExpected = s.expected.some(e => e.normCode === foundItem.normCode);
+                          if (line) {
+                              line.scanStatus = isExpected ? 'MATCHED' : 'WRONG_LOCATION';
+                              line.actualLoc = s.locCode;
+                              line.scannedAt = new Date().toISOString();
+                              line.checked = true;
+                          } else {
+                              dbSess.items.unshift({
+                                  line_id: this.generateUUID(),
+                                  code: foundItem.code,
+                                  kind: foundItem.kind,
+                                  expectedLoc: foundItem.item.RackLayerID || foundItem.item.Location || '',
+                                  actualLoc: s.locCode,
+                                  scanStatus: 'WRONG_LOCATION',
+                                  isManual: false,
+                                  scannedAt: new Date().toISOString(),
+                                  checked: true,
+                                  isLoggedToDb: false,
+                                  normCode: foundItem.normCode
+                              });
+                          }
+                          this.saveSessions(s.id);
+                      }
+                      
                       if (Date.now() - this.state.lastBeepTime > 1000) {
                          this.beep();
                          if (window.showToast) window.showToast('info', '', `Đã quét: ${displayCode}`);
@@ -1195,12 +1301,10 @@
           if (found) {
               isMatch = true;
               found.checked = true;
+              found.scanStatus = 'MATCHED';
+              found.scannedAt = new Date().toISOString();
               displayCode = found.code;
               
-              if (!found.isLoggedToDb) {
-                  this.syncAuditLog(found); // 🔥 Ghi log audit
-                  found.isLoggedToDb = true;
-              }
               this.saveSessions();
               
               const miniItem = document.getElementById('mini-' + found.normCode);

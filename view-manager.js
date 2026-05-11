@@ -46,9 +46,9 @@
         }
 
         // Tích hợp Global Searchbox: 
-        // Khi gõ vào ô search, nếu đang ềEview Tray, ta tự động gán categoryDropdown thành 'tray'
-        // Tuy nhiên sếp yêu cầu: "Phần global search giữ nguyên đềEkhi cần chềEcần gõ tìm kiếm là vềEngay trang search thiết bềE"
-        // Nghĩa là: nếu đang ềEtab Khay mà User gõ vào Global Search -> Tự động nhảy vềEMold View.
+        // Khi gõ vào ô search, nếu đang ở view Tray, ta tự động gán categoryDropdown thành 'tray'
+        // Tuy nhiên sếp yêu cầu: "Phần global search giữ nguyên để khi cần chỉ cần gõ tìm kiếm là về ngay trang search thiết bị."
+        // Nghĩa là: nếu đang ở tab Khay mà User gõ vào Global Search -> Tự động nhảy về Mold View.
         var searchInput = document.getElementById('searchInput');
         if (searchInput) {
             // [EDIT]: Removed automatic switch to mold view on focus for Tray Manager
@@ -82,7 +82,7 @@
             if (scopePill) { scopePill.innerHTML = '<i class="fas fa-box-open"></i> WMS専用'; scopePill.classList.remove('mcs-hidden'); }
             if (searchInput) searchInput.placeholder = 'ロール番号、種類、場所などを検索... / Tìm cuộn, mã nhựa, nsx...';
             if (moduleIcon) moduleIcon.innerHTML = '<i class="fas fa-box-open"></i>';
-            if (moduleLabelJa) moduleLabelJa.textContent = 'プラ材料倉庫管理(WMS)';
+            if (moduleLabelJa) moduleLabelJa.textContent = 'プラ材料倉庫管理 (WMS)';
             if (moduleLabelVi) moduleLabelVi.textContent = 'Quản lý Nhựa / Plastic WMS';
             if (categoryDropdown) categoryDropdown.classList.add('mcs-hidden');
             if (searchDivider) searchDivider.classList.add('mcs-hidden');
@@ -104,9 +104,9 @@
             if (searchDivider) searchDivider.classList.add('mcs-hidden');
         } else if (viewName === 'location') {
             if (scopePill) { scopePill.innerHTML = '<i class="fas fa-layer-group"></i> LOC'; scopePill.classList.remove('mcs-hidden'); }
-            if (searchInput) searchInput.placeholder = 'ラベルを検索... / Tìm mã giá, kệ...';
+            if (searchInput) searchInput.placeholder = 'ラックを検索... / Tìm mã giá, kệ...';
             if (moduleIcon) moduleIcon.innerHTML = '<i class="fas fa-layer-group"></i>';
-            if (moduleLabelJa) moduleLabelJa.textContent = '保管ラベル管理';
+            if (moduleLabelJa) moduleLabelJa.textContent = '保管ラック管理';
             if (moduleLabelVi) moduleLabelVi.textContent = 'Quản lý Giá kệ';
             if (categoryDropdown) categoryDropdown.classList.add('mcs-hidden');
             if (searchDivider) searchDivider.classList.add('mcs-hidden');
@@ -114,16 +114,8 @@
             if (scopePill) { scopePill.innerHTML = '<i class="fas fa-history"></i> HIS'; scopePill.classList.remove('mcs-hidden'); }
             if (searchInput) searchInput.placeholder = '履歴を検索... / Tìm thiết bị, hành động...';
             if (moduleIcon) moduleIcon.innerHTML = '<i class="fas fa-history"></i>';
-            if (moduleLabelJa) moduleLabelJa.innerHTML = 'システム履歴';
+            if (moduleLabelJa) moduleLabelJa.textContent = 'システム履歴';
             if (moduleLabelVi) moduleLabelVi.textContent = 'Lịch sử hệ thống';
-            if (categoryDropdown) categoryDropdown.classList.add('mcs-hidden');
-            if (searchDivider) searchDivider.classList.add('mcs-hidden');
-        } else if (viewName === 'sact') {
-            if (scopePill) { scopePill.classList.add('mcs-hidden'); }
-            if (searchInput) searchInput.placeholder = 'SACT / Mã chiến dịch...';
-            if (moduleIcon) moduleIcon.innerHTML = '<i class="fas fa-clipboard-check"></i>';
-            if (moduleLabelJa) moduleLabelJa.innerHTML = 'SACT モニター';
-            if (moduleLabelVi) moduleLabelVi.textContent = 'Điểm danh khuôn SACT';
             if (categoryDropdown) categoryDropdown.classList.add('mcs-hidden');
             if (searchDivider) searchDivider.classList.add('mcs-hidden');
         } else {
@@ -131,7 +123,7 @@
             if (scopePill) scopePill.classList.add('mcs-hidden');
             if (searchInput) searchInput.placeholder = 'Mã, tên, vị trí, công ty...';
             if (moduleIcon) moduleIcon.innerHTML = '<i class="fas fa-search"></i>';
-            if (moduleLabelJa) moduleLabelJa.innerHTML = '金型・抜型 検索 <span style="font-size: 0.7em; color: var(--mcs-text-muted); font-weight: normal; margin-left: 4px;">v9.1.34</span>';
+            if (moduleLabelJa) moduleLabelJa.textContent = '金型・抜型 検索';
             if (moduleLabelVi) moduleLabelVi.textContent = 'Tìm kiếm Khuôn / Dao cắt';
             if (categoryDropdown) categoryDropdown.classList.remove('mcs-hidden');
             if (searchDivider) searchDivider.classList.remove('mcs-hidden');
@@ -145,17 +137,9 @@
 
         if (this.views[viewName]) {
             this.views[viewName].style.display = 'flex';
-        } else {
-            // Đối với các view tạo động như SACT, tìm element bằng DOM id
-            var dynamicView = null;
-            if (viewName === 'sact') dynamicView = document.getElementById('sact-module-root');
-            
-            if (dynamicView) {
-                dynamicView.style.display = 'flex';
-            }
         }
 
-        // Tự động đóng Detail Panel của Khuôn nếu mềE
+        // Tự động đóng Detail Panel của Khuôn nếu mở
         var dp = document.getElementById('detailPanel');
         if (dp && dp.classList.contains('open')) {
             dp.classList.remove('open', 'active');
@@ -174,7 +158,7 @@
             }
         });
 
-        // Dispatch event đềEcác module khác biết (e.g. TrayManager có thềEre-render)
+        // Dispatch event để các module khác biết (e.g. TrayManager có thể re-render)
         document.dispatchEvent(new CustomEvent('mcsViewChanged', { detail: { view: viewName } }));
 
         // Nếu chuyển sang module khác, đóng sidebar trên mobile (nếu đang bật)

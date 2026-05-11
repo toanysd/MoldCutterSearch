@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-    <title>金型・抜型検索システム / Mold Cutter System v9.1.38</title>
+    <title>金型・抜型検索システム / Mold Cutter System v9.1.26</title>
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="favicon.png">
@@ -28,7 +28,7 @@
     <link rel="stylesheet" href="mobile-navbar.css">
     <link rel="stylesheet" href="login-ui.css">
 
-    <!-- ✁ETHÊM mới Phím Nổi -->
+    <!-- ✅ THÊM mới Phím Nổi -->
     <link rel="stylesheet" href="search-layout-mobile.css">
 
     <link rel="stylesheet" href="detail-panel.css?v=10.2.17">
@@ -50,10 +50,10 @@
     <link rel="stylesheet" href="checkin-checkout.css">
 
     <link rel="stylesheet" href="location-move.css">
-    <!-- ✁ETHÊM mới: Location (Rack) Manager -->
+    <!-- ✅ THÊM mới: Location (Rack) Manager -->
     <link rel="stylesheet" href="location-manager.css">
 
-    <!-- ✁ETHÊM mới: Tray Manager -->
+    <!-- ✅ THÊM mới: Tray Manager -->
     <link rel="stylesheet" href="tray-manager.css">
 
     <!-- Teflon Processing -->
@@ -115,7 +115,8 @@
                 <div class="remember-me-container"
                     style="display:flex; align-items:center; font-size: 14px; gap: 8px; margin-top: -8px;">
                     <input type="checkbox" id="auth-remember" checked style="accent-color: var(--mcs-primary);">
-                <label for="auth-remember" style="color: var(--mcs-text-secondary); cursor: pointer;">記憶 / Ghi nhớ đăng nhập</label>
+                    <label for="auth-remember" style="color: var(--mcs-text-secondary); cursor: pointer;">記憶する / Ghi nhớ
+                        đăng nhập</label>
                 </div>
 
                 <div id="auth-error-msg" style="color:#ef4444; font-size:14px; text-align:center; display:none;"></div>
@@ -131,7 +132,7 @@
                     style="width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top-color: var(--mcs-primary); border-radius: 50%; animation: qrs-spin 1s linear infinite;">
                 </div>
                 <div style="font-size: 15px; color: var(--mcs-text-secondary); font-weight: 500; text-align:center;">
-            システム起動中...<br>Đang tải dữ liệu máy chủ
+                    システム初期化中...<br>Đang tải dữ liệu máy chủ
                 </div>
             </div>
         </div>
@@ -144,10 +145,10 @@
             <div style="padding:24px; text-align:center;">
                 <i class="fas fa-sync-alt" style="font-size:40px; color:var(--mcs-primary); margin-bottom:16px;"></i>
                 <h3 style="margin:0 0 8px; font-size:18px; color:var(--mcs-text);">最新データを強制取得しますか？</h3>
-        <p style="margin:0 0 16px; font-size:15px; color:var(--mcs-text-secondary); font-weight:500;">Cập nhật toàn bộ dữ liệu mới nhất từ máy chủ?</p>
+                <p style="margin:0 0 16px; font-size:15px; color:var(--mcs-text-secondary); font-weight:500;">Cập nhật toàn bộ dữ liệu mới nhất từ máy chủ?</p>
                 <div style="background:var(--warning-light); padding:12px; border-radius:8px; border-left:4px solid var(--warning-color); text-align:left;">
                     <div style="font-size:13px; color:var(--warning-dark); font-weight:700; margin-bottom:4px;"><i class="fas fa-exclamation-triangle"></i> 注意 / Lưu ý:</div>
-        <div style="font-size:12px; color:var(--warning-dark);">データ更新された場合、クラウドデータ反映まで3分程度かかることがあります。<br><i>(Nếu vừa cập nhật, hệ thống Cloud có thể mất tới 3 phút để đồng bộ)</i></div>
+                    <div style="font-size:12px; color:var(--warning-dark);">データが更新されたばかりの場合、クラウド同期が完了するまで3〜5分かかることがあります。<br><i>(Nếu vừa cập nhật, hệ thống Cloud có thể cần 3-5 phút để đồng bộ hoàn toàn)</i></div>
                 </div>
             </div>
             <div style="display:flex; border-top:1px solid var(--border-color); background:var(--bg-surface);">
@@ -191,7 +192,7 @@
         </div>
 
         <!-- Global Sync Icon -->
-            <div class="global-sync-icon success" id="globalSyncIcon" title="Đồng bộ máy chủ"
+        <div class="global-sync-icon success" id="globalSyncIcon" title="Đồng bộ máy chủ"
             style="position: absolute; right: 12px; top: -8px; z-index: 1000; transform: scale(0.65);">
             <i class="fas fa-cloud"></i>
         </div>
@@ -203,7 +204,7 @@
                     <i class="fas fa-search"></i>
                     <div class="sidebar-logo-text">
                         <span class="title">MoldCutter</span>
-                <span class="subtitle">システム v9.1.38</span>
+                        <span class="subtitle">検索システム v9.1.15</span>
                     </div>
                 </div>
                 <button class="sidebar-toggle" id="sidebarToggleBtn">
@@ -213,7 +214,7 @@
 
             <nav class="sidebar-nav">
 
-            <!-- Account / Login Section (Hiển thị chủ yếu cho Mobile khi topbar bị ẩn) -->
+                <!-- Account / Login Section (Hiển thị chủ yếu cho Mobile khi topbar bị ẩn) -->
                 <div class="nav-section" id="sidebarAuthSection">
                     <div class="nav-section-title">
                         <i class="fas fa-user-circle"></i>
@@ -297,7 +298,7 @@
                             <a href="#" class="nav-link" id="sidebarNavTrays">
                                 <i class="fas fa-layer-group"></i>
                                 <div class="nav-link-text">
-                            <span class="ja">トレイ管理</span>
+                                    <span class="ja">トレイ管理</span>
                                     <span class="vi">Quản lý Khay</span>
                                 </div>
                             </a>
@@ -326,20 +327,9 @@
                             <a href="#" class="nav-link" id="sidebarLocationManagerBtn">
                                 <i class="fas fa-server"></i>
                                 <div class="nav-link-text">
-                            <span class="ja">ラック管理</span>
-                            <span class="vi">Quản lý Giá để khuôn</span>
+                                    <span class="ja">ラック管理</span>
+                                    <span class="vi">Quản lý Giá để khuôn</span>
                                 </div>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link" id="sidebarSactAuditBtn">
-                                <i class="fas fa-satellite-dish"></i>
-                                <div class="nav-link-text">
-                            <span class="ja">SACTシステム</span>
-                                    <span class="vi">Panasonic SACT</span>
-                                </div>
-                                <span class="nav-badge notify-badge notify-red" id="sact-nav-badge"
-                                    style="display:none;">!</span>
                             </a>
                         </li>
                     </ul>
@@ -357,16 +347,7 @@
                                 <i class="fas fa-qrcode" style="color: #1976d2;"></i>
                                 <div class="nav-link-text">
                                     <span class="ja">QRスキャン</span>
-                                    <span class="vi">Quét mã QR</span>
-                                </div>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link" id="sidebarARLocatorBtn">
-                                <i class="fas fa-crosshairs" style="color: #0d9488;"></i>
-                                <div class="nav-link-text">
-                                    <span class="ja">ARロケーター</span>
-                                    <span class="vi">Tìm khuôn AR</span>
+                                    <span class="vi">Quét QR & AR Locator</span>
                                 </div>
                             </a>
                         </li>
@@ -380,7 +361,17 @@
                                 <span class="nav-badge success" style="display:none;">0</span>
                             </a>
                         </li>
-
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" id="sidebarSactAuditBtn">
+                                <i class="fas fa-satellite-dish"></i>
+                                <div class="nav-link-text">
+                                    <span class="ja">SACTシステム</span>
+                                    <span class="vi">Panasonic SACT</span>
+                                </div>
+                                <span class="nav-badge notify-badge notify-red" id="sact-nav-badge"
+                                    style="display:none;">!</span>
+                            </a>
+                        </li>
                         <li class="nav-item">
                             <a href="#" class="nav-link" id="sidebarPhotoUploadBtn">
                                 <i class="fas fa-camera"></i>
@@ -394,7 +385,7 @@
                             <a href="#" class="nav-link" id="sidebarPhotoManagerBtn">
                                 <i class="fas fa-images"></i>
                                 <div class="nav-link-text">
-                            <span class="ja">写真管理</span>
+                                    <span class="ja">写真管理</span>
                                     <span class="vi">Quản lý ảnh</span>
                                 </div>
                             </a>
@@ -419,7 +410,7 @@
                                 <i class="fas fa-sync-alt" style="color:#ef4444;"></i>
                                 <div class="nav-link-text">
                                     <span class="ja">最新データ取得</span>
-                            <span class="vi">Làm mới dữ liệu (Chờ 5p)</span>
+                                    <span class="vi">Làm mới dữ liệu (Chờ 5p)</span>
                                 </div>
                             </a>
                         </li>
@@ -443,20 +434,20 @@
         <!-- ===== MAIN CONTENT ===== -->
         <main class="main-content">
 
-            <!-- TOP BAR  EGLOBAL (search isolated to active module) -->
+            <!-- TOP BAR — GLOBAL (search isolated to active module) -->
             <div class="topbar" id="topbar">
 
                 <!-- Module icon + name -->
                 <div class="topbar-module" id="topbar-module-info">
                     <div class="topbar-module-icon" id="topbar-icon"><i class="fas fa-search"></i></div>
                     <div class="topbar-module-label">
-                        <span class="ja" id="topbar-ja">金型・抜型 検索 <span style="font-size: 0.7em; color: var(--mcs-text-muted); font-weight: normal; margin-left: 4px;">v9.1.38</span></span>
+                        <span class="ja" id="topbar-ja">金型・抜型 検索</span>
                         <span class="vi" id="topbar-vi">Tìm kiếm Khuôn / Dao cắt</span>
                     </div>
                 </div>
                 <div class="topbar-sep"></div>
 
-                <!-- SEARCH scope pill shows which module -->
+                <!-- SEARCH — scope pill shows which module -->
                 <div class="search-wrap" id="globalSearchWrap">
                     <select class="category-dropdown" id="categoryDropdown" title="カテゴリ / Loại">
                         <option value="all">全て (0)</option>
@@ -542,7 +533,7 @@
                     style="font-size:64px; color:var(--mcs-text-secondary); margin-bottom:24px; opacity: 0.5;"></i>
                 <h2 style="font-size:24px; font-weight:700; color:var(--mcs-text); margin:0 0 12px;">ログインしてください</h2>
                 <h3 style="font-size:18px; font-weight:500; color:var(--mcs-text-secondary); margin:0 0 24px;">Vui lòng
-                <h3 style="font-size:18px; font-weight:500; color:var(--mcs-text-secondary); margin:0 0 12px;">Đăng nhập để xem dữ liệu</h3>
+                    đăng nhập để xem dữ liệu</h3>
                 <button onclick="document.getElementById('topbarLoginBtn').click()"
                     style="background:var(--mcs-primary); color:#fff; border:none; padding:12px 32px; border-radius:24px; font-size:16px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); transition: all 0.2s;">
                     <i class="fas fa-sign-in-alt"></i> ログイン / Đăng nhập
@@ -568,7 +559,7 @@
                         <button class="btn-action btn-toggle-select" id="btnToggleSelect"
                             style="display: none; margin-left: 12px; padding: 0 12px; height: 32px; border-radius: 4px; border: 1px solid var(--mcs-border); background: var(--mcs-surface); font-size: 13px; cursor: pointer; align-items: center; gap: 6px; color: #4b5563;">
                             <i class="far fa-square"></i>
-                            <span class="btn-text desktop-only">全選抁E/span>
+                            <span class="btn-text desktop-only">全選択</span>
                         </button>
 
                         <!-- Result Count -->
@@ -580,7 +571,7 @@
                         <!-- Selection Info -->
                         <div class="selection-info" id="selectionInfo" style="display: none;">
                             <i class="fas fa-check-circle"></i>
-                            <span id="selectedCount">0</span> 件選抁E
+                            <span id="selectedCount">0</span> 件選択
                         </div>
 
                     </div>
@@ -605,7 +596,7 @@
                                 <i class="fas fa-print"></i>
                                 <span>印刷</span>
                             </button>
-                            <button class="btn-action btn-inventory" id="topInventoryAuditBtn">
+                            <button class="btn-action" id="topInventoryAuditBtn">
                                 <i class="fas fa-clipboard-check"></i>
                                 <span>棚卸</span>
                             </button>
@@ -686,14 +677,14 @@
     <!-- ===== DETAIL PANEL ===== -->
     <detailPanel class="detail-panel" id="detailPanel">
         <div class="detail-panel-header">
-            <span class="detail-panel-title">詳細惁E��</span>
+            <span class="detail-panel-title">詳細情報</span>
             <button class="detail-panel-close">
                 <i class="fas fa-times"></i>
             </button>
         </div>
 
         <div class="detail-tabs">
-            <button class="detail-tab active" data-tab="info">基本惁E��</button>
+            <button class="detail-tab active" data-tab="info">基本情報</button>
             <button class="detail-tab" data-tab="history">履歴</button>
             <button class="detail-tab" data-tab="photos">写真</button>
         </div>
@@ -712,7 +703,7 @@
 
         <div class="detail-panel-actions">
             <button class="btn-detail-action secondary">
-                <i class="fas fa-edit"></i> 編雁E
+                <i class="fas fa-edit"></i> 編集
             </button>
             <button class="btn-detail-action primary">
                 <i class="fas fa-print"></i> 印刷
@@ -774,7 +765,7 @@
     <script src="relocate-wizard-module.js"></script>
     <script src="location-move.js?v=v8.8.2_return"></script>
 
-    <!-- ✁ETích hợp: Location (Rack) Manager -->
+    <!-- ✅ Tích hợp: Location (Rack) Manager -->
     <script src="location-manager.js"></script>
 
     <!-- App Data -->
@@ -816,7 +807,7 @@
     <script src="qrcode.min.js"></script>
     <script src="qr-export.js?v=v10.0.2"></script>
     <script src="jsQR.min.js"></script>
-    <script src="qr-scanner.js?v=v12.0.2"></script>
+    <script src="qr-scanner.js?v=v11.0.3-ARLocator"></script>
 
     <!-- Các module cần DOM, đặt cuối -->
     <script src="device-history-status.js?v=v8.3.1_sync"></script><!-- Module Detail Panel - Trộn chung Mold/Cutter -->
@@ -892,7 +883,7 @@
             }
         });
 
-            // Mở module quản lý Vị Trí/Rack
+        // Mở module quản lý Vị Trí/Rack
         document.getElementById('sidebarLocationManagerBtn')?.addEventListener('click', function (e) {
             e.preventDefault();
             if (window.ViewManager) window.ViewManager.switchView('location');
@@ -911,7 +902,7 @@
                 window.LocationManager.setMode && window.LocationManager.setMode('tray');
                 window.LocationManager.open();
             }
-                // Đóng sidebar nếu ở mobile
+            // Đóng sidebar nếu ở mobile
             const sb = document.getElementById('sidebar');
             if (sb && window.innerWidth <= 768) {
                 sb.classList.remove('open');
@@ -946,7 +937,7 @@
             if (sb && window.innerWidth <= 768) { sb.classList.remove('open'); const backdrop = document.getElementById('backdrop'); if (backdrop) backdrop.classList.remove('show'); }
             document.dispatchEvent(new CustomEvent('open-sact-ui'));
 
-            // Xóa cảnh báo để tạm thời trên badge
+            // Xóa cảnh báo đỏ tạm thời trên badge
             const badge = document.getElementById('sact-nav-badge');
             if (badge) badge.style.display = 'none';
         });
@@ -977,11 +968,7 @@
 
     <!-- SACT Module by AntiGravity -->
     <link rel="stylesheet" href="sact-audit-module.css?v=2.0.0-11">
-    <script src="sact-audit-module.js?v=1.0.0-16"></script>
-
-    <!-- AR Locator Module -->
-    <link rel="stylesheet" href="ar-locator-module.css?v=1.3.0">
-    <script src="ar-locator-module.js?v=1.3.0"></script>
+    <script src="sact-audit-module.js?v=1.0.0-14"></script>
 
     <!-- Floating Module Switcher (Assistive Touch Style) -->
     <style id="assistive-module-css">
@@ -1115,7 +1102,7 @@
         <!-- Floating Menu Popup -->
         <div class="assistive-menu" id="assistiveMenu">
             <div class="assistive-menu-header">
-                モジュール刁E��
+                モジュール切替
                 <i class="fas fa-times assistive-menu-close" onclick="toggleAssistiveMenu()"></i>
             </div>
 
@@ -1131,12 +1118,12 @@
             </button>
             <button class="ms-btn"
                 onclick="if(window.ViewManager) window.ViewManager.switchView('tray'); toggleAssistiveMenu();">
-                    <i class="fas fa-inbox"></i> トレイ管理
+                <i class="fas fa-inbox"></i> トレイ管理
             </button>
         </div>
 
         <!-- Base Floating Button -->
-    <button class="assistive-fab" id="assistiveFab" title="Mở danh sách Module">
+        <button class="assistive-fab" id="assistiveFab" title="Mở danh sách Module">
             <i class="fas fa-th-large"></i>
         </button>
     </div>
@@ -1208,7 +1195,7 @@
         })();
     </script>
     <!-- Virtual Keyboard Module -->
-    <script src="virtual-keyboard-module.js?v=v9.1.33"></script>
+    <script src="virtual-keyboard-module.js?v=v9.0.7"></script>
 </body>
 
 </html>

@@ -894,11 +894,7 @@ class ResultsTableRenderer {
   }
 
   getSelectedItems() {
-    return this.items.filter(item => {
-      const id = item.type === 'tray' ? item.TrayID : (item.type === 'mold' ? item.MoldID : item.CutterID);
-      const uid = (item.type === 'tray' ? 'T_' : (item.type === 'mold' ? 'M_' : 'C_')) + id;
-      return this.selectedItems.has(uid);
-    });
+    return Array.from(this.selectedItems);
   }
 
   selectItems(itemIds) {

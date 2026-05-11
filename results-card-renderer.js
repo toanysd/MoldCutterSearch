@@ -1231,8 +1231,8 @@ class ResultsCardRenderer {
      */
     getSelectedItems() {
         return this.items.filter(item => {
-            const uid = (item.type === 'mold' ? 'M_' : 'C_') + (item.type === 'mold' ? item.MoldID : item.CutterID);
-            return this.selectedItems.has(uid);
+            const id = item.type === 'mold' ? item.MoldID : item.CutterID;
+            return this.selectedItems.has(id);
         });
     }
 

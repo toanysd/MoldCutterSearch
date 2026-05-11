@@ -223,7 +223,7 @@
         <body>
           <div class="info">
             <strong>${typeInfo.typeLabel}</strong>
-            <div>ID: ${typeInfo.id} - Code: ${typeInfo.type === 'mold' ? '[金型]' : '[抜型]'} ${typeInfo.code}</div>
+            <div>ID: ${typeInfo.id} - Code: ${typeInfo.code}</div>
             <div>${typeInfo.name}</div>
           </div>
           <div>
@@ -344,9 +344,8 @@
         const payload = this.buildPayload(item.type, item.id);
         const dataUrl = this.generateLocalQR(payload, 300);
 
-        let typePrefix = item.type === 'mold' ? '[金型]' : '[抜型]';
         let textHtml = '';
-        if (showCode) textHtml += `<div class="lbl-code">${typePrefix} ${item.code}</div>`;
+        if (showCode) textHtml += `<div class="lbl-code">${item.code}</div>`;
         if (showName) textHtml += `<div class="lbl-name">${item.name}</div>`;
 
         labelsHtml += `

@@ -750,25 +750,40 @@
 
 
         openHistoryView: function () {
-            // Sử dụng ViewManager chuẩn để đồng bộ header topbar và trạng thái sidebar
-            if (window.ViewManager) {
-                window.ViewManager.switchView('history');
-            } else {
-                // Fallback nếu không có ViewManager
-                document.querySelectorAll('.sidebar .nav-link').forEach(el => el.classList.remove('active'));
-                const btn = document.getElementById('sidebarHistoryModuleBtn');
-                if (btn) btn.classList.add('active');
-                document.querySelectorAll('.main-content > .content-area').forEach(el => el.style.display = 'none');
-                if (this.container) this.container.style.display = 'block';
-            }
 
-            // Cập nhật dữ liệu
+            // Un-highlight all navs
+
+            document.querySelectorAll('.sidebar .nav-link').forEach(el => el.classList.remove('active'));
+
+            // Highlight history nav
+
+            const btn = document.getElementById('sidebarHistoryModuleBtn');
+
+            if (btn) btn.classList.add('active');
+
+
+
+            // Hide all other views
+
+            document.querySelectorAll('.main-content > .content-area').forEach(el => el.style.display = 'none');
+
+
+
+            // Show global history
+
+            this.container.style.display = 'block';
+
+
+
+            // IMPORTANT: We do not blindly update mcs_history_last_checked anymore.
+
+            // Badges clear out by clicking individual rows.
+
             this.updateBadge();
-            this.renderTable(this.searchInput ? this.searchInput.value : '');
+
+            this.renderTable(this.searchInput.value);
+
         },
-
-
-
 
 
 

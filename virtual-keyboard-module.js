@@ -1,4 +1,4 @@
-// v9.1.28-3
+// v9.0.5
 /**
 
  * Bàn phím Ảo (Virtual Keyboard Module)
@@ -165,14 +165,6 @@
 
           </div>
 
-          <div class="vk-radial-item" data-action="arlocator" id="vkRadialItemAR">
-
-            <i class="fas fa-crosshairs vk-radial-icon"></i>
-
-            <span class="vk-radial-lbl">AR</span>
-
-          </div>
-
         </div>
 
       </div>
@@ -217,9 +209,7 @@
 
             radialSearch: document.getElementById('vkRadialItemSearch'),
 
-            radialPhoto: document.getElementById('vkRadialItemPhoto'),
-
-            radialAR: document.getElementById('vkRadialItemAR')
+            radialPhoto: document.getElementById('vkRadialItemPhoto')
 
         };
 
@@ -402,11 +392,12 @@
         // Bắt phím
 
         var onKeyClick = function (e) {
-            var key = e.target.closest('.vk-key');
-            if (!key) return;
 
-            e.preventDefault();
-            e.stopPropagation();
+            // Find closest .vk-key
+
+            var key = e.target.closest('.vk-key');
+
+            if (!key) return;
 
 
 
@@ -458,25 +449,44 @@
 
         // Chuẩn hóa touch / click (dùng mousedown để không trùng touch)
 
-        if (window.PointerEvent) {
-            this.el.container.addEventListener('pointerup', function (e) {
-                if (e.target.closest('.vk-key') || e.target.closest('.vk-wizard-item') || e.target.closest('.vk-icon-btn')) {
-                    e.preventDefault();
-                    onKeyClick(e);
+        if ('ontouchstart' in window) {
+
+            this.el.container.addEventListener('touchstart', function (e) {
+
+                var key = e.target.closest('.vk-key');
+
+                if (key) {
+
+                    key.classList.add('active'); // active feedback
+
                 }
+
             });
+
+            this.el.container.addEventListener('touchend', function (e) {
+
+                var key = e.target.closest('.vk-key');
+
+                if (key) {
+
+                    key.classList.remove('active');
+
+                    if (e.cancelable) {
+
+                        e.preventDefault(); // chặn click double
+
+                    }
+
+                }
+
+                onKeyClick(e);
+
+            });
+
         } else {
-            this.el.container.addEventListener('touchend', function(e) {
-                if (e.target.closest('.vk-key') || e.target.closest('.vk-wizard-item') || e.target.closest('.vk-icon-btn')) {
-                    e.preventDefault();
-                    onKeyClick(e);
-                }
-            });
-            this.el.container.addEventListener('click', function(e) {
-                if (e.pointerType !== 'touch') {
-                    onKeyClick(e);
-                }
-            });
+
+            this.el.container.addEventListener('click', onKeyClick);
+
         }
 
 
@@ -643,20 +653,6 @@
 
             self.el.radialPhoto.classList.add('show');
 
-
-
-            // AR Locator (Trên/Giữa)
-
-            if (self.el.radialAR) {
-
-                self.el.radialAR.style.left = '0px';
-
-                self.el.radialAR.style.top = '-90px';
-
-                self.el.radialAR.classList.add('show');
-
-            }
-
         };
 
 
@@ -670,8 +666,6 @@
             self.el.radialSearch.classList.remove('show', 'active');
 
             self.el.radialPhoto.classList.remove('show', 'active');
-
-            if (self.el.radialAR) self.el.radialAR.classList.remove('show', 'active');
 
         };
 
@@ -739,8 +733,6 @@
 
                 self.el.radialPhoto.classList.remove('active');
 
-                if (self.el.radialAR) self.el.radialAR.classList.remove('active');
-
 
 
                 // Vuốt chéo trái hoặc vuốt ngang trái -> Tìm kiếm
@@ -756,14 +748,6 @@
                 else if ((dy < -20 && dx > 10) || dx > 30) {
 
                     self.el.radialPhoto.classList.add('active');
-
-                }
-
-                // Vuốt thẳng lên -> AR Locator
-
-                else if (dy < -40 && Math.abs(dx) < 25) {
-
-                    if (self.el.radialAR) self.el.radialAR.classList.add('active');
 
                 }
 
@@ -783,9 +767,9 @@
 
                 // Nếu chưa thành swipe, nghĩa là chỉ chạm (tap) -> Mở Scan QR mặc định
 
-                if (window.QRScanSearch && typeof window.QRScanSearch.openModal === 'function') {
+                if (window.QRScannerModule && typeof window.QRScannerModule.open === 'function') {
 
-                    window.QRScanSearch.openModal();
+                    window.QRScannerModule.open();
 
                 }
 
@@ -809,15 +793,9 @@
 
                 if (window.PhotoUpload) window.PhotoUpload.open();
 
-            } else if (self.el.radialAR && self.el.radialAR.classList.contains('active')) {
-
-                hideRadial();
-
-                if (window.ARLocatorModule) window.ARLocatorModule.open();
-
             } else {
 
-                hideRadial();
+                hideRadial(); // Đóng nếu thả tay ở khoảnh không gian trống
 
             }
 
@@ -1040,67 +1018,65 @@
 
 
     VirtualKeyboard.prototype._submit = function () {
-        try {
-            this.close();
+        this.close();
 
-            // UU TIÊN CAO NHẤT: Nếu VK được mở với Callback, chỉ chạy Callback và kết thúc.
-            if (this.options && typeof this.options.onSubmit === 'function') {
-                this.options.onSubmit(this.currentText);
-                return;
+        var mainSearchInput = document.getElementById('searchInput');
+
+        // Bất kể đang ở module nào (Tray, History), khi bấm Search -> ép về giao diện chính
+        if (window.ViewManager && typeof window.ViewManager.switchView === 'function') {
+            window.ViewManager.switchView('mold');
+            
+            // Cập nhật giao diện Mobile Nav
+            var navBtns = document.querySelectorAll('.mobile-nav-btn');
+            if (navBtns) navBtns.forEach(btn => btn.classList.remove('active'));
+            var moldBtn = document.getElementById('mobileNavMoldsBtn');
+            if (moldBtn) moldBtn.classList.add('active');
+        }
+
+        // Đảm bảo Filter category là 'all' hoặc 'mold' thay vì bị kẹt ở 'tray'
+        if (window.app) {
+            if (window.app.selectedCategory === 'tray' || window.app.selectedCategory === 'history') {
+                window.app.selectedCategory = 'all';
+                var catDropdown = document.getElementById('categoryDropdown');
+                if (catDropdown) catDropdown.value = 'all';
+            }
+        }
+
+        if (mainSearchInput) {
+            mainSearchInput.value = this.currentText;
+
+            // Đóng tất cả các modal đang mở
+            if (window.PhotoUpload && typeof window.PhotoUpload.close === 'function') window.PhotoUpload.close();
+            if (window.SACTModule && typeof window.SACTModule.close === 'function') window.SACTModule.close();
+            if (window.LocationMoveModule && typeof window.LocationMoveModule.close === 'function') window.LocationMoveModule.close();
+            if (window.PhotoManagerModule && typeof window.PhotoManagerModule.close === 'function') window.PhotoManagerModule.close();
+
+            var detailPanel = document.getElementById('detailPanel');
+            if (detailPanel && detailPanel.classList.contains('open')) {
+                detailPanel.classList.remove('open', 'active');
+                var backdrop = document.getElementById('backdrop');
+                if (backdrop) backdrop.classList.remove('show');
             }
 
-            var mainSearchInput = document.getElementById('searchInput');
-            var isMainSearch = (!this.targetInput || this.targetInput === mainSearchInput || this.targetInput.id === 'searchInput');
-
-            // BẢO VỆ CHỐNG RÒ RỈ VIEW
-            if (!isMainSearch) {
-                if (this.targetInput) {
-                    this.targetInput.value = this.currentText;
-                    var evt = new Event('input', { bubbles: true });
-                    this.targetInput.dispatchEvent(evt);
-                    var kEvt = new KeyboardEvent('keydown', { key: 'Enter', keyCode: 13, bubbles: true });
-                    this.targetInput.dispatchEvent(kEvt);
-                }
-                return;
+            // Gọi trực tiếp search module với addToHistory=true (explicit submit)
+            if (window.app && window.app.searchModule && typeof window.app.searchModule.performSearch === 'function') {
+                window.app.searchModule.performSearch(true);
+            } else {
+                document.dispatchEvent(new CustomEvent('searchPerformed', { detail: { query: this.currentText, timestamp: Date.now() } }));
             }
-
-            // ===== LOGIC CHO MAIN SEARCH =====
-            if (window.app) {
-                if (window.app.selectedCategory === 'tray' || window.app.selectedCategory === 'history') {
-                    window.app.selectedCategory = 'all';
-                    var catDropdown = document.getElementById('categoryDropdown');
-                    if (catDropdown) catDropdown.value = 'all';
-                }
+        } else if (this.targetInput) {
+            if (window.app && window.app.searchModule && typeof window.app.searchModule.performSearch === 'function') {
+                window.app.searchModule.performSearch(true);
+            } else {
+                document.dispatchEvent(new CustomEvent('searchPerformed', { detail: { query: this.currentText, timestamp: Date.now() } }));
             }
-
-            // Chuyển view về Mold AN TOÀN trước khi search (nếu chưa ở mold)
-            if (window.ViewManager && typeof window.ViewManager.switchView === 'function' && window.ViewManager.currentView !== 'mold') {
-                window.ViewManager.switchView('mold');
-            }
-
-            if (mainSearchInput) {
-                mainSearchInput.value = this.currentText;
-
-                // GỌI SEARCH VỚI addToHistory=false ĐỂ TRÁNH search-module.js tự gọi switchView
-                if (window.app && window.app.searchModule && typeof window.app.searchModule.performSearch === 'function') {
-                    window.app.searchModule.performSearch(false);
-                    if (this.currentText && typeof window.app.searchModule.addToHistory === 'function') {
-                        window.app.searchModule.addToHistory(this.currentText);
-                    }
-                } else {
-                    document.dispatchEvent(new CustomEvent('searchPerformed', { detail: { query: this.currentText, timestamp: Date.now() } }));
-                }
-            }
-        } catch (err) {
-            console.error('[VK] _submit error:', err);
         }
     };
 
 
 
-    VirtualKeyboard.prototype.open = function (inputEl, options) {
+    VirtualKeyboard.prototype.open = function (inputEl) {
         this.targetInput = inputEl;
-        this.options = options || {};
         if (inputEl) {
             this.currentText = inputEl.value || '';
             // ★ QUAN TRỌNG: Đuổi bàn phím gốc (iOS/Android) đi để tránh lỗi chớp giật Viewport
@@ -1125,16 +1101,6 @@
         if (this.targetInput) {
             this.targetInput.readOnly = false;
         }
-
-        // Tạo mặt nạ Anti Ghost-Click (Chặn click xuyên thủng trong 500ms)
-        var mask = document.createElement('div');
-        mask.style.cssText = 'opacity: 0; position: fixed; inset: 0; z-index: 2147483647;';
-        document.body.appendChild(mask);
-        setTimeout(function() {
-            if (mask.parentNode) {
-                mask.parentNode.removeChild(mask);
-            }
-        }, 500);
     };
 
 

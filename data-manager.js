@@ -153,7 +153,6 @@
         { key: 'destinations', file: 'destinations.csv', required: false },
 
         { key: 'statuslogs', file: 'statuslogs.csv', required: false },
-        { key: 'auditsession', file: 'auditsession.csv', required: false },
 
         { key: 'teflonlog', file: 'teflonlog.csv', required: false },
 
@@ -284,8 +283,9 @@
             CAV: [],
 
             destinations: [],
+
             statuslogs: [],
-            auditsessions: [],
+
             teflonlog: [],
 
             scraplogs: [],

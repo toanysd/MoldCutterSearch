@@ -1099,11 +1099,17 @@
         const cw = this.state.video.videoWidth, ch = this.state.video.videoHeight;
         if (this.state.canvas.width !== cw) { this.state.canvas.width = cw; this.state.canvas.height = ch; }
         this.state.ctx.drawImage(this.state.video, 0, 0, cw, ch);
-        const imgData = this.state.ctx.getImageData(0, 0, cw, ch);
-
-        if (typeof window.jsQR === 'function') {
-          const code = window.jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: 'dontInvert' });
-          if (code) this.handleCamQR(code);
+        if (window.MCSMultiQRScanner && this.state.mode !== 'single') {
+            // Multi-region scanning cho Batch và Location mode (Quét nhiều QR cùng lúc)
+            const hits = window.MCSMultiQRScanner.scanRegions(this.state.canvas, this.state.ctx);
+            if (hits && hits.length) {
+                hits.forEach(hit => this.handleCamQR(hit));
+            }
+        } else if (typeof window.jsQR === 'function') {
+            // Fallback: Quét toàn khung hình 1 lần cho Single mode (tối ưu tốc độ)
+            const imgData = this.state.ctx.getImageData(0, 0, cw, ch);
+            const code = window.jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: 'dontInvert' });
+            if (code) this.handleCamQR(code);
         }
       }
       if (this.state.scanning) requestAnimationFrame(() => this.camTick());

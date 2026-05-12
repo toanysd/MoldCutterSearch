@@ -327,8 +327,11 @@
             <div class="ja" style="font-size:16px; color:#166534;">対象物を発見しました</div>
             <div class="vi" style="color:#15803d;">Đã tìm thấy thiết bị: <strong>${this.state.singleTarget.code}</strong></div>
           </div>
-          <div style="margin-top:16px; border-radius:12px; overflow:hidden; border:2px solid #22c55e; box-shadow:0 8px 16px rgba(0,0,0,0.1);">
+          <div style="position:relative; margin-top:16px; border-radius:12px; overflow:hidden; border:2px solid #22c55e; box-shadow:0 8px 16px rgba(0,0,0,0.1);">
             <img src="${this.state.foundImage}" style="width:100%; display:block; background:#000;" />
+            <button id="arl-btn-expand-img" style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.6); color:#fff; border:none; border-radius:6px; padding:8px 12px; font-size:14px; cursor:pointer; z-index:10; box-shadow:0 2px 4px rgba(0,0,0,0.3); backdrop-filter:blur(4px);">
+                <i class="fas fa-expand"></i> 全画面表示 (Phóng to)
+            </button>
           </div>
           <div class="arl-actions" style="margin-top:24px; display:flex; flex-wrap:wrap; gap:8px;">
             <button class="arl-btn" id="arl-single-audit" ${this.state.singleTarget.isLoggedToDb ? 'disabled' : ''} style="flex: 1 1 100%; border-radius:8px; padding:12px; font-weight:bold; ${this.state.singleTarget.isLoggedToDb ? 'background: #94a3b8; border-color: #94a3b8; color:#fff;' : 'background: #22c55e; border-color: #22c55e; color: #fff;'}">
@@ -353,6 +356,48 @@
         });
         document.getElementById('arl-single-detail')?.addEventListener('click', () => {
           if (window.DetailPanel?.open) window.DetailPanel.open(this.state.singleTarget.item, this.state.singleTarget.kind);
+        });
+        document.getElementById('arl-btn-expand-img')?.addEventListener('click', () => {
+            const overlay = document.createElement('div');
+            overlay.style.position = 'fixed';
+            overlay.style.top = '0';
+            overlay.style.left = '0';
+            overlay.style.width = '100vw';
+            overlay.style.height = '100vh';
+            overlay.style.backgroundColor = 'rgba(0,0,0,0.9)';
+            overlay.style.zIndex = '999999';
+            overlay.style.display = 'flex';
+            overlay.style.flexDirection = 'column';
+            overlay.style.justifyContent = 'center';
+            overlay.style.alignItems = 'center';
+            
+            const closeBtn = document.createElement('button');
+            closeBtn.innerHTML = '<i class="fas fa-times"></i> 閉じる / Đóng';
+            closeBtn.style.position = 'absolute';
+            closeBtn.style.top = '20px';
+            closeBtn.style.right = '20px';
+            closeBtn.style.padding = '12px 24px';
+            closeBtn.style.backgroundColor = 'rgba(255,255,255,0.2)';
+            closeBtn.style.color = '#fff';
+            closeBtn.style.border = '1px solid rgba(255,255,255,0.4)';
+            closeBtn.style.borderRadius = '8px';
+            closeBtn.style.fontSize = '16px';
+            closeBtn.style.cursor = 'pointer';
+            closeBtn.style.zIndex = '1000000';
+            closeBtn.style.backdropFilter = 'blur(4px)';
+            
+            const img = document.createElement('img');
+            img.src = this.state.foundImage;
+            img.style.maxWidth = '100vw';
+            img.style.maxHeight = '100vh';
+            img.style.objectFit = 'contain';
+            
+            closeBtn.onclick = () => document.body.removeChild(overlay);
+            overlay.onclick = (e) => { if (e.target === overlay) document.body.removeChild(overlay); };
+            
+            overlay.appendChild(closeBtn);
+            overlay.appendChild(img);
+            document.body.appendChild(overlay);
         });
         return;
       }

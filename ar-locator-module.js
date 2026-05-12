@@ -197,6 +197,16 @@
 
     // ===== INIT =====
     init() {
+      if (!window.showToast) {
+          window.showToast = function(type, title, message) {
+              if (window.notify) {
+                  if (type === 'success') window.notify.success(message);
+                  else if (type === 'warning') window.notify.warning(message);
+                  else if (type === 'error') window.notify.error(message);
+                  else window.notify.info(message);
+              }
+          };
+      }
       this.loadSessions();
       document.addEventListener('click', (e) => {
         if (e.target.closest('#sidebarARLocatorBtn')) { 
@@ -615,210 +625,506 @@
     },
 
     renderSessionDetail(body, session) {
-      const listHtml = session.items.map((b, i) => `
-        <div class="arl-batch-item ${b.checked ? 'checked' : ''}" data-idx="${i}">
-          <div class="arl-batch-num">${b.checked ? '✓' : (i + 1)}</div>
-          <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
-             <span class="arl-batch-code">${b.code}</span>
-             <span class="arl-batch-type ${b.kind}">${b.kind === 'mold' ? '金型' : '抜型'} - ${b.checked ? (b.isLoggedToDb ? '記録済' : '確認済') : '未確認'}</span>
-          </div>
-          <button class="arl-batch-manual" data-idx="${i}" style="color:${b.checked ? '#94a3b8' : '#3b82f6'}; font-size:18px; margin-right:8px; background:none; border:none; padding:4px;" title="手動確認 / Check tay"><i class="fas fa-check-circle"></i></button>
-          <button class="arl-batch-info" data-idx="${i}" style="color:var(--mcs-primary); font-size:18px; margin-right:8px; background:none; border:none; padding:4px;" title="詳細 / Chi tiết"><i class="fas fa-info-circle"></i></button>
-          <button class="arl-batch-remove" data-idx="${i}" title="削除 / Xóa">&times;</button>
-        </div>
-      `).join('');
-
       const total = session.items.length;
       const checked = session.items.filter(b => b.checked).length;
       const allDone = total > 0 && checked === total;
+
+      const grouped = {};
+      let unassignedCount = 0;
+      let unassignedChecked = 0;
+      
+      session.items.forEach(b => {
+          let itemData = b.item;
+          if (!itemData && window.DataManager && b.normCode) {
+              const devices = this.searchDevices(b.normCode);
+              if (devices.length > 0) itemData = devices[0];
+              b.item = itemData; // Hydrate
+          }
+          itemData = itemData || {};
+          
+          const isManual = !!(b.isManualAddition || b.isManual);
+          const loc = isManual ? '手動入力 (Nhập thủ công)' : (itemData.RackLayerID || '手動入力 (Nhập thủ công)');
+          if (isManual || !itemData.RackLayerID) {
+              unassignedCount++;
+              if (b.checked) unassignedChecked++;
+          } else {
+              if (!grouped[loc]) grouped[loc] = { total: 0, checked: 0 };
+              grouped[loc].total++;
+              if (b.checked) grouped[loc].checked++;
+          }
+      });
+      
+      let summaryHtml = '';
+      const renderSummaryCard = (loc, stats, isUnassigned) => {
+          const isDone = stats.total > 0 && stats.checked === stats.total;
+          const icon = isUnassigned ? 'fa-box-open' : 'fa-layer-group';
+          return `
+            <div class="arl-session-loc-card" data-loc="${loc}" style="background:var(--mcs-surface); border:1px solid ${isDone ? '#22c55e' : 'var(--mcs-border)'}; border-radius:8px; padding:12px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+               <div style="font-weight:bold; font-size:14px; color:${isDone ? '#16a34a' : 'var(--mcs-text)'};"><i class="fas ${icon}" style="margin-right:8px;"></i> ${isUnassigned ? '手動入力 (Nhập thủ công)' : loc}</div>
+               <div style="font-size:13px; font-weight:bold; color:${isDone ? '#16a34a' : '#64748b'};">${stats.checked} / ${stats.total} <i class="fas fa-chevron-right" style="margin-left:8px; color:#cbd5e1;"></i></div>
+            </div>
+          `;
+      };
+
+      Object.keys(grouped).sort().forEach(loc => {
+          summaryHtml += renderSummaryCard(loc, grouped[loc], false);
+      });
+      if (unassignedCount > 0) {
+          summaryHtml += renderSummaryCard('CHƯA PHÂN LOẠI', { total: unassignedCount, checked: unassignedChecked }, true);
+      }
 
       body.innerHTML = `
         <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
            <button class="arl-btn" id="arl-session-back" style="padding:6px 12px; background:#f1f5f9; border:1px solid #cbd5e1; border-radius:6px; font-size:14px; flex:0 0 auto;"><i class="fas fa-arrow-left"></i> 戻る</button>
            <div style="flex:1; font-weight:bold; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${session.name}</div>
         </div>
-        <div class="arl-search-wrap" style="display:flex; gap:8px;">
-          <select id="arl-batch-kind-select" style="padding:10px; border-radius:6px; border:1px solid var(--mcs-border); background:var(--mcs-surface); color:var(--mcs-text); font-weight:600;">
-            <option value="all" ${this.state.searchKind === 'all' ? 'selected' : ''}>全て (Tất cả)</option>
-            <option value="mold" ${this.state.searchKind === 'mold' ? 'selected' : ''}>金型 (Khuôn)</option>
-            <option value="cutter" ${this.state.searchKind === 'cutter' ? 'selected' : ''}>抜型 (Dao cắt)</option>
-          </select>
-          <div style="flex:1; position:relative;">
-            <input type="text" class="arl-search-input" id="arl-batch-input" placeholder="追加... (Nhập mã thêm)" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" style="width:100%; border-radius:6px;">
-            <button class="arl-search-clear" id="arl-batch-clear">&times;</button>
-            <div class="arl-dropdown" id="arl-batch-dropdown"></div>
-          </div>
-          <button class="arl-btn" id="arl-batch-import-rack" style="padding:10px; border-radius:6px; border:1px solid var(--mcs-border); background:#f8fafc; color:var(--mcs-primary); font-weight:bold;" title="ラックから追加 (Thêm từ Giá)"><i class="fas fa-layer-group"></i></button>
+        
+        <div class="arl-stats" style="margin-top:10px; margin-bottom:16px;">
+          <div class="arl-stat"><div class="arl-stat-num">${total}</div><div class="arl-stat-label">登録数 (Đã thêm)</div></div>
+          <div class="arl-stat"><div class="arl-stat-num" style="color:#22c55e">${checked}</div><div class="arl-stat-label">確認済 (Đã quét)</div></div>
+          <div class="arl-stat"><div class="arl-stat-num" style="color:#f59e0b">${total - checked}</div><div class="arl-stat-label">未確認 (Chưa quét)</div></div>
         </div>
-        ${total > 0 ? `
-          <div class="arl-stats" style="margin-top:10px;">
-            <div class="arl-stat"><div class="arl-stat-num">${total}</div><div class="arl-stat-label">登録数</div></div>
-            <div class="arl-stat"><div class="arl-stat-num" style="color:#22c55e">${checked}</div><div class="arl-stat-label">確認済</div></div>
-            <div class="arl-stat"><div class="arl-stat-num" style="color:#f59e0b">${total - checked}</div><div class="arl-stat-label">未確認</div></div>
-          </div>
-          <div class="arl-batch-list" style="margin-top:10px; flex:1; overflow-y:auto; padding-bottom:20px;">${listHtml}</div>
-        ` : ''}
-        <div class="arl-actions" style="margin-top:auto; flex-direction:column; gap:8px;">
-          <div style="display:flex; gap:8px;">
-              ${total > 0 ? `<button class="arl-btn arl-btn-secondary" id="arl-batch-reset" style="flex:0 0 auto;"><i class="fas fa-trash"></i></button>` : ''}
-              <button class="arl-btn arl-btn-primary" id="arl-batch-scan" ${total === 0 ? 'disabled' : ''} style="flex:1; padding:16px; font-size:16px;">
-                 <i class="fas fa-camera"></i> ${allDone ? '再スキャン (Quét lại)' : `スキャン開始 (Bắt đầu quét)`}
-              </button>
+        
+        <div style="flex:1; overflow-y:auto; margin-bottom:16px;">
+            ${summaryHtml || '<div style="text-align:center; color:#94a3b8; font-size:13px; padding:20px;">リストは空です<br>(Danh sách trống)</div>'}
+        </div>
+        
+        <div class="arl-actions" style="margin-top:auto; flex-direction:column; gap:12px;">
+          <button class="arl-btn" id="arl-manage-list" style="padding:16px; font-size:16px; background:var(--mcs-surface); color:var(--mcs-primary); border:2px solid var(--mcs-primary); border-radius:8px; font-weight:bold;">
+              <i class="fas fa-list-check"></i> リスト管理 (Quản lý danh sách)
+          </button>
+          
+          <button class="arl-btn arl-btn-primary" id="arl-batch-scan" ${total === 0 ? 'disabled' : ''} style="padding:16px; font-size:16px;">
+             <i class="fas fa-camera"></i> ${allDone ? '再スキャン (Quét lại)' : `スキャン開始 (Bắt đầu quét)`}
+          </button>
+          
+          <div style="display:flex; gap:8px; margin-top:12px;">
+              <button class="arl-btn" id="arl-session-delete" style="flex:1; padding:12px; font-size:14px; background:transparent; border:1px solid #ef4444; color:#ef4444; border-radius:8px; font-weight:bold;"><i class="fas fa-bomb"></i> セッション削除 (Xóa Phiên)</button>
           </div>
         </div>
       `;
 
-      // Bindings
       document.getElementById('arl-session-back')?.addEventListener('click', () => {
           this.state.activeSessionId = null;
           this.renderBody();
       });
-
-      const inp = document.getElementById('arl-batch-input');
-      const dd = document.getElementById('arl-batch-dropdown');
-      const clr = document.getElementById('arl-batch-clear');
-      const kindSelect = document.getElementById('arl-batch-kind-select');
-
-      if(inp) {
-          if (kindSelect) {
-              kindSelect.addEventListener('change', (e) => {
-                 this.state.searchKind = e.target.value;
-                 if (inp.value.trim().length >= 2) {
-                     this.state.dropdownItems = this.searchDevices(inp.value.trim());
-                     this.state.highlightIdx = this.state.dropdownItems.length > 0 ? 0 : -1;
-                     this.renderDropdown(dd, inp.value.trim());
-                 }
-              });
-          }
-
-          inp.addEventListener('input', () => {
-            const q = inp.value.trim();
-            clr.classList.toggle('visible', q.length > 0);
-            if (q.length < 2) { dd.classList.remove('open'); this.state.dropdownItems = []; return; }
-            this.state.dropdownItems = this.searchDevices(q);
-            this.state.highlightIdx = this.state.dropdownItems.length > 0 ? 0 : -1;
-            this.renderDropdown(dd, q);
-          });
-
-          const submitBatch = () => {
-              let sel = null;
-              if (this.state.highlightIdx >= 0 && this.state.dropdownItems[this.state.highlightIdx]) {
-                  sel = this.state.dropdownItems[this.state.highlightIdx];
-              } else if (this.state.dropdownItems.length > 0) {
-                  sel = this.state.dropdownItems[0];
-              }
-              
-              if (sel && !session.items.find(b => this.normalizeCode(b.code) === sel.normCode && b.kind === sel.kind)) {
-                session.items.unshift({ code: sel.code, kind: sel.kind, item: sel.item, checked: false, isLoggedToDb: false, normCode: sel.normCode, normId: sel.normId });
-                this.saveSessions();
-              }
-              inp.value = ''; clr.classList.remove('visible'); dd.classList.remove('open');
-              this.renderBody(); 
-              
-              setTimeout(() => { 
-                 const newInp = document.getElementById('arl-batch-input');
-                 if (!newInp) return;
-                 if (window.innerWidth > 768) {
-                    newInp.focus(); 
-                 } else if (window.VirtualKeyboardModule && !newInp.readOnly) {
-                    window.VirtualKeyboardModule.open(newInp, { onSubmit: submitBatch });
-                 }
-              }, 100);
-          };
-
-          inp.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowDown') { e.preventDefault(); this.state.highlightIdx = Math.min(this.state.highlightIdx + 1, this.state.dropdownItems.length - 1); this.renderDropdown(dd, inp.value.trim()); }
-            else if (e.key === 'ArrowUp') { e.preventDefault(); this.state.highlightIdx = Math.max(this.state.highlightIdx - 1, 0); this.renderDropdown(dd, inp.value.trim()); }
-            else if (e.key === 'Enter') {
-              e.preventDefault();
-              submitBatch();
-            }
-          });
-
-          const handleMobileKeyboardBatch = (e) => {
-              if (window.innerWidth <= 768 && window.VirtualKeyboardModule && !inp.readOnly) {
-                  e.preventDefault();
-                  inp.blur();
-                  window.VirtualKeyboardModule.open(inp, {
-                      onSubmit: () => submitBatch()
-                  });
-              }
-          };
-          inp.addEventListener('click', handleMobileKeyboardBatch);
-          inp.addEventListener('focus', handleMobileKeyboardBatch);
-
-          clr.addEventListener('click', () => { inp.value = ''; clr.classList.remove('visible'); dd.classList.remove('open'); inp.focus(); });
-          setTimeout(() => { if (window.innerWidth > 768) inp.focus(); }, 100);
-      }
       
-      document.getElementById('arl-batch-import-rack')?.addEventListener('click', () => {
-          const rackId = prompt('追加するラックのコードを入力してください (Nhập mã Giá/Tầng cần thêm):');
-          if (!rackId) return;
-          const cleanRackId = rackId.trim().toUpperCase().replace(/-/g, '');
-          let added = 0;
-          const dm = window.DataManager?.data;
-          
-          const processList = (list, kind) => {
-              if(!list) return;
-              list.forEach(item => {
-                  const rId = String(item.RackLayerID || '');
-                  const loc = String(item.Location || '');
-                  if (rId === cleanRackId || loc === rackId.trim().toUpperCase() || loc.startsWith(rackId.trim().toUpperCase() + '-')) {
-                      const code = kind === 'mold' ? (item.displayCode || item.MoldCode) : (item.displayCode || item.CutterCode || item.CutterNo);
-                      const norm = this.normalizeCode(code);
-                      if (!session.items.find(b => b.normCode === norm)) {
-                          session.items.unshift({ code: code, kind: kind, item: item, checked: false, isLoggedToDb: false, normCode: norm, normId: (kind === 'mold' ? item.MoldID : item.CutterID) });
-                          added++;
-                      }
+      document.getElementById('arl-manage-list')?.addEventListener('click', () => {
+          this.renderListManagerModal(session);
+      });
+      
+      body.querySelectorAll('.arl-session-loc-card').forEach(card => {
+          card.addEventListener('click', () => {
+              this.renderListManagerModal(session, card.dataset.loc);
+          });
+      });
+      
+      document.getElementById('arl-session-delete')?.addEventListener('click', () => {
+          setTimeout(() => {
+              if(confirm('現在のセッションをすべて削除します。よろしいですか？ / Hành động này sẽ XÓA TOÀN BỘ PHIÊN LÀM VIỆC hiện tại. Bạn có chắc chắn?')) {
+                  const currentId = session.id;
+                  this.state.sessions = this.state.sessions.filter(s => s.id !== currentId);
+                  this.state.activeSessionId = null;
+                  
+                  const sb = this.getSupabaseClient();
+                  if (sb) {
+                      sb.from('inventory_sessions').delete().eq('session_id', currentId).then(()=>{});
                   }
-              });
-          };
-          
-          if (this.state.searchKind === 'all' || this.state.searchKind === 'mold') processList(dm?.molds, 'mold');
-          if (this.state.searchKind === 'all' || this.state.searchKind === 'cutter') processList(dm?.cutters, 'cutter');
-          
-          if (added > 0) {
-              if(window.showToast) window.showToast('success', '', `${added}件追加しました (Đã thêm ${added} thiết bị)`);
-              this.saveSessions();
-              this.renderBody();
-          } else {
-              if(window.showToast) window.showToast('warning', '', '見つかりませんでした (Không tìm thấy thiết bị nào)');
-          }
+                  this.saveSessionsLocalOnly();
+                  this.renderBody();
+                  if (window.showToast) window.showToast('success', '', 'セッションを削除しました (Đã xóa phiên làm việc)');
+              }
+          }, 50);
       });
 
-      body.querySelectorAll('.arl-batch-info').forEach(btn => btn.addEventListener('click', () => {
-        const item = session.items[parseInt(btn.dataset.idx)];
-        if (item && window.DetailPanel) window.DetailPanel.open(item.item, item.kind === 'mold' ? 'mold' : 'cutter');
-      }));
-
-      body.querySelectorAll('.arl-batch-manual').forEach(btn => btn.addEventListener('click', () => {
-        const item = session.items[parseInt(btn.dataset.idx)];
-        if (item && !item.checked) {
-            item.checked = true;
-            if (!item.isLoggedToDb) {
-                this.syncAuditLog(item);
-                item.isLoggedToDb = true;
-            }
-            this.saveSessions();
-            this.renderBody();
-            if (window.showToast) window.showToast('success', '', `Đã đánh dấu tay: ${item.code}`);
-        }
-      }));
-
-      body.querySelectorAll('.arl-batch-remove').forEach(btn => btn.addEventListener('click', () => {
-        session.items.splice(parseInt(btn.dataset.idx), 1);
-        this.saveSessions();
-        this.renderBody();
-      }));
-
-      document.getElementById('arl-batch-reset')?.addEventListener('click', () => { 
-          if(confirm('リストをクリアしますか？ / Bạn có chắc muốn xóa toàn bộ danh sách?')) {
-             session.items = []; 
-             this.saveSessions();
-             this.renderBody(); 
-          }
-      });
       document.getElementById('arl-batch-scan')?.addEventListener('click', () => { this.openCamera(session.items); });
+    },
+
+    renderListManagerModal(session, focusLoc = null) {
+        let modal = document.getElementById('arl-list-manager-modal');
+        if (modal) document.body.removeChild(modal);
+        
+        modal = document.createElement('div');
+        modal.id = 'arl-list-manager-modal';
+        modal.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:99999; display:flex; align-items:center; justify-content:center; padding:20px; box-sizing:border-box;';
+        
+        const renderModalContent = () => {
+            const grouped = {};
+            const unassigned = [];
+            session.items.forEach((b, i) => {
+                let itemData = b.item;
+                if (!itemData && window.DataManager && b.normCode) {
+                    const devices = this.searchDevices(b.normCode);
+                    if (devices.length > 0) itemData = devices[0];
+                    b.item = itemData; // Hydrate
+                }
+                itemData = itemData || {};
+                
+                const isManual = !!(b.isManualAddition || b.isManual);
+                const loc = isManual ? '手動入力 (Nhập thủ công)' : (itemData.RackLayerID || '手動入力 (Nhập thủ công)');
+                if (isManual || !itemData.RackLayerID) {
+                    unassigned.push({ ...b, originalIndex: i });
+                } else {
+                    if (!grouped[loc]) grouped[loc] = [];
+                    grouped[loc].push({ ...b, originalIndex: i });
+                }
+            });
+            
+            let listHtml = '';
+            const renderGroup = (loc, items, isUnassigned) => {
+                const checkedCount = items.filter(x => x.checked).length;
+                const isDone = items.length > 0 && checkedCount === items.length;
+                const icon = isUnassigned ? 'fa-box-open' : 'fa-layer-group';
+                const itemsHtml = items.map(b => {
+                    const i = b.originalIndex;
+                    return `
+                      <div class="arl-batch-item ${b.checked ? 'checked' : ''}" data-idx="${i}" style="border-radius:0; border-left:none; border-right:none; border-top:none; border-bottom:1px solid var(--mcs-border);">
+                        <div class="arl-batch-num">${b.checked ? '✓' : (i + 1)}</div>
+                        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+                           <span class="arl-batch-code">${b.code}</span>
+                           <span class="arl-batch-type ${b.kind}">${b.kind === 'mold' ? '金型' : '抜型'} - ${b.checked ? (b.isLoggedToDb ? '記録済' : '確認済') : '未確認'}</span>
+                        </div>
+                        <button class="arl-batch-manual" data-idx="${i}" style="color:${b.checked ? '#94a3b8' : '#3b82f6'}; font-size:18px; margin-right:8px; background:none; border:none; padding:4px;" title="手動確認 / Check tay"><i class="fas fa-check-circle"></i></button>
+                        <button class="arl-batch-info" data-idx="${i}" style="color:var(--mcs-primary); font-size:18px; margin-right:8px; background:none; border:none; padding:4px;" title="詳細 / Chi tiết"><i class="fas fa-info-circle"></i></button>
+                        <button class="arl-batch-remove" data-idx="${i}" title="削除 / Xóa" style="background:none; border:none; color:#ef4444; font-size:24px; line-height:1; padding:0 8px;">&times;</button>
+                      </div>
+                    `;
+                }).join('');
+                
+                return `
+                  <div class="arl-layer-group" data-loc-group="${loc}" style="margin-bottom:12px; border:1px solid var(--mcs-border); border-radius:8px; overflow:hidden;">
+                    <div class="arl-layer-header" style="background:var(--mcs-surface); padding:12px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'">
+                       <div style="font-weight:bold; font-size:14px;"><i class="fas ${icon}" style="margin-right:4px;"></i> ${loc}</div>
+                       <div style="display:flex; align-items:center;">
+                          <span style="font-size:12px; font-weight:bold; color:${isDone ? '#16a34a' : '#64748b'}; margin-right:12px;">${checkedCount} / ${items.length}</span>
+                          <button class="arl-layer-delete-btn" data-loc="${loc}" title="Xóa toàn bộ vị trí này" style="background:none; border:none; color:#ef4444; font-size:16px; cursor:pointer; padding:4px;"><i class="fas fa-trash-alt"></i></button>
+                       </div>
+                    </div>
+                    <div class="arl-layer-body" style="display:block;">
+                       ${itemsHtml}
+                    </div>
+                  </div>
+                `;
+            };
+            
+            Object.keys(grouped).sort().forEach(loc => { listHtml += renderGroup(loc, grouped[loc], false); });
+            if (unassigned.length > 0) { listHtml += renderGroup('手動入力 (Nhập thủ công)', unassigned, true); }
+            
+            modal.innerHTML = `
+              <div style="background:var(--mcs-bg); width:100%; max-width:800px; height:100%; max-height:800px; border-radius:12px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,0.3);">
+                <div style="display:flex; align-items:center; justify-content:space-between; padding:16px; border-bottom:1px solid var(--mcs-border); background:var(--mcs-surface); box-shadow:0 2px 4px rgba(0,0,0,0.05);">
+                   <div style="display:flex; align-items:center; gap:8px;">
+                      <button id="arl-lm-close" style="background:none; border:none; font-size:18px; color:var(--mcs-text); cursor:pointer;"><i class="fas fa-times"></i></button>
+                      <h3 style="margin:0; font-size:16px;">リスト管理 (Quản lý danh sách)</h3>
+                   </div>
+                   <span style="font-size:12px; font-weight:bold; color:#64748b;">${session.items.length}件</span>
+                </div>
+                
+                <div style="padding:16px; border-bottom:1px solid var(--mcs-border); background:var(--mcs-surface);">
+                    <div class="arl-search-wrap" style="display:flex; gap:8px;">
+                      <select id="arl-batch-kind-select" style="padding:10px; border-radius:6px; border:1px solid var(--mcs-border); background:var(--mcs-surface); color:var(--mcs-text); font-weight:600;">
+                        <option value="all" ${this.state.searchKind === 'all' ? 'selected' : ''}>全て (Tất cả)</option>
+                        <option value="mold" ${this.state.searchKind === 'mold' ? 'selected' : ''}>金型 (Khuôn)</option>
+                        <option value="cutter" ${this.state.searchKind === 'cutter' ? 'selected' : ''}>抜型 (Dao cắt)</option>
+                      </select>
+                      <div style="flex:1; position:relative;">
+                        <input type="text" class="arl-search-input" id="arl-batch-input" placeholder="追加... (Nhập mã thêm)" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" style="width:100%; border-radius:6px;">
+                        <button class="arl-search-clear" id="arl-batch-clear">&times;</button>
+                        <div class="arl-dropdown" id="arl-batch-dropdown"></div>
+                      </div>
+                    </div>
+                    <div style="display:flex; gap:8px; margin-top:12px;">
+                        <button class="arl-btn" id="arl-batch-import-rack" style="flex:1; padding:10px 16px; border-radius:6px; border:1px solid var(--mcs-border); background:#f8fafc; color:var(--mcs-primary); font-weight:bold; white-space:nowrap;"><i class="fas fa-layer-group"></i> ラック追加 (Thêm từ Giá)</button>
+                        <button class="arl-btn" id="arl-batch-collapse" style="padding:10px 16px; border-radius:6px; border:1px solid var(--mcs-border); background:transparent; color:var(--mcs-text); font-weight:bold; white-space:nowrap;" title="Thu gọn/Mở rộng danh sách"><i class="fas fa-compress-alt"></i></button>
+                        ${session.items.length > 0 ? `<button class="arl-btn" id="arl-batch-reset" style="padding:10px 16px; border-radius:6px; border:1px solid #ef4444; background:transparent; color:#ef4444; font-weight:bold; white-space:nowrap;" title="Xóa toàn bộ"><i class="fas fa-trash"></i></button>` : ''}
+                    </div>
+                </div>
+                
+                <div style="flex:1; overflow-y:auto; padding:16px; background:#f8fafc;">
+                   ${listHtml || '<div style="text-align:center; padding:40px 20px; color:#aaa;"><i class="fas fa-box-open" style="font-size:32px; margin-bottom:12px; display:block;"></i>リストは空です (Danh sách trống)</div>'}
+                </div>
+              </div>
+            `;
+            
+            const closeBtn = modal.querySelector('#arl-lm-close');
+            if (closeBtn) {
+                closeBtn.onclick = () => {
+                    document.body.removeChild(modal);
+                    this.renderBody(); // Update stats in main view
+                    document.removeEventListener('mcs-arl-modal-update', renderModalContent);
+                };
+            }
+            
+            modal.querySelectorAll('.arl-layer-delete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    setTimeout(() => {
+                        const loc = btn.dataset.loc;
+                        if (confirm(`Bạn có chắc muốn xóa TOÀN BỘ khuôn của vị trí ${loc} khỏi phiên kiểm kê này?`)) {
+                            if (loc === '手動入力 (Nhập thủ công)') {
+                                session.items = session.items.filter(b => !(b.isManualAddition || b.isManual) && b.item && b.item.RackLayerID);
+                            } else {
+                                session.items = session.items.filter(b => (b.isManualAddition || b.isManual) || !(b.item && b.item.RackLayerID === loc));
+                            }
+                            this.saveSessions();
+                            renderModalContent();
+                        }
+                    }, 50);
+                });
+            });
+            
+            modal.querySelectorAll('.arl-batch-info').forEach(btn => btn.addEventListener('click', () => {
+              const item = session.items[parseInt(btn.dataset.idx)];
+              if (item && window.DetailPanel) window.DetailPanel.open(item.item, item.kind === 'mold' ? 'mold' : 'cutter');
+            }));
+
+            modal.querySelectorAll('.arl-batch-manual').forEach(btn => btn.addEventListener('click', () => {
+              const item = session.items[parseInt(btn.dataset.idx)];
+              if (item && !item.checked) {
+                  item.checked = true;
+                  if (!item.isLoggedToDb) {
+                      this.syncAuditLog(item);
+                      item.isLoggedToDb = true;
+                  }
+                  this.saveSessions();
+                  renderModalContent();
+                  if (window.showToast) window.showToast('success', '', `Đã đánh dấu tay: ${item.code}`);
+              }
+            }));
+
+            modal.querySelectorAll('.arl-batch-remove').forEach(btn => btn.addEventListener('click', () => {
+              session.items.splice(parseInt(btn.dataset.idx), 1);
+              this.saveSessions();
+              renderModalContent();
+            }));
+
+            const resetBtn = modal.querySelector('#arl-batch-reset');
+            if (resetBtn) {
+                resetBtn.addEventListener('click', () => { 
+                    setTimeout(() => {
+                        if(confirm('リストをクリアしますか？ / Bạn có chắc muốn xóa toàn bộ danh sách?')) {
+                           session.items = []; 
+                           this.saveSessions();
+                           renderModalContent();
+                        }
+                    }, 50);
+                });
+            }
+            
+            const importRackBtn = modal.querySelector('#arl-batch-import-rack');
+            if (importRackBtn) {
+                importRackBtn.addEventListener('click', () => {
+                const dm = window.DataManager?.data;
+                let rackOpts = '', layerOpts = '';
+                if (dm && dm.racks) rackOpts = dm.racks.map(r => `<option value="${r.RackID}">${r.RackName || ''}</option>`).join('');
+                if (dm && dm.racklayers) layerOpts = dm.racklayers.map(l => `<option value="${l.RackLayerID}">${l.RackLayerID}</option>`).join('');
+
+                const rackModal = document.createElement('div');
+                rackModal.style.position = 'fixed';
+                rackModal.style.top = '0'; rackModal.style.left = '0'; rackModal.style.width = '100vw'; rackModal.style.height = '100vh';
+                rackModal.style.backgroundColor = 'rgba(0,0,0,0.6)';
+                rackModal.style.zIndex = '9999999';
+                rackModal.style.display = 'flex'; rackModal.style.justifyContent = 'center'; rackModal.style.alignItems = 'center';
+                rackModal.style.padding = '16px';
+                
+                rackModal.innerHTML = `
+                  <div style="background:var(--mcs-surface); width:100%; max-width:400px; border-radius:12px; overflow:hidden; box-shadow:0 10px 25px rgba(0,0,0,0.2);">
+                     <div style="background:var(--mcs-primary); color:#fff; padding:16px; font-weight:bold; font-size:16px;">
+                       <i class="fas fa-layer-group"></i> ラック・段から一括追加 (Thêm từ Giá/Tầng)
+                     </div>
+                     <div style="padding:16px;">
+                       <div style="margin-bottom:12px;">
+                          <label style="display:block; margin-bottom:8px; font-weight:bold; font-size:13px; color:var(--mcs-text);">追加種類 (Loại vị trí):</label>
+                          <div style="display:flex; gap:8px;">
+                             <label style="flex:1; display:flex; align-items:center; gap:8px; padding:8px; border:1px solid var(--mcs-border); border-radius:6px; cursor:pointer;"><input type="radio" name="arl-import-type" value="rack" checked> ラック (Giá)</label>
+                             <label style="flex:1; display:flex; align-items:center; gap:8px; padding:8px; border:1px solid var(--mcs-border); border-radius:6px; cursor:pointer;"><input type="radio" name="arl-import-type" value="layer"> 段 (Tầng)</label>
+                          </div>
+                       </div>
+                       <div style="margin-bottom:16px;">
+                          <label style="display:block; margin-bottom:8px; font-weight:bold; font-size:13px; color:var(--mcs-text);">ラック・段コード (Mã Giá/Tầng):</label>
+                          <input type="text" id="arl-import-val" list="arl-import-datalist" placeholder="ここに入力... (Nhập vào đây)" autocomplete="off" style="width:100%; padding:12px; border-radius:6px; border:1px solid var(--mcs-border); font-size:16px;">
+                          <datalist id="arl-import-datalist">${rackOpts}</datalist>
+                       </div>
+                       <div style="display:flex; gap:8px;">
+                          <button class="arl-btn" id="arl-import-cancel" style="flex:1; background:#f1f5f9; border-color:#cbd5e1; color:#333;">キャンセル (Hủy)</button>
+                          <button class="arl-btn arl-btn-primary" id="arl-import-confirm" style="flex:1;">追加 (Thêm)</button>
+                       </div>
+                     </div>
+                  </div>
+                `;
+                
+                document.body.appendChild(rackModal);
+                const inp = document.getElementById('arl-import-val');
+                const dl = document.getElementById('arl-import-datalist');
+                const radios = rackModal.querySelectorAll('input[name="arl-import-type"]');
+                radios.forEach(r => r.addEventListener('change', () => {
+                    dl.innerHTML = r.value === 'rack' ? rackOpts : layerOpts;
+                    inp.value = '';
+                    inp.focus();
+                }));
+
+                setTimeout(() => inp.focus(), 100);
+                
+                const submitImport = () => {
+                   const val = inp.value.trim();
+                   if (!val) return;
+                   const type = document.querySelector('input[name="arl-import-type"]:checked').value;
+                   
+                   let targetLayerIds = [];
+                   if (type === 'rack') {
+                       if (dm && dm.racklayers) {
+                           targetLayerIds = dm.racklayers.filter(l => String(l.RackID) === val).map(l => String(l.RackLayerID));
+                       }
+                       if (targetLayerIds.length === 0) targetLayerIds = [val]; // Fallback
+                   } else {
+                       targetLayerIds = [val];
+                   }
+                   
+                   let added = 0;
+                   const processList = (list, kind) => {
+                       if(!list) return;
+                       list.forEach(item => {
+                           const rId = String(item.RackLayerID || '');
+                           if (targetLayerIds.includes(rId)) {
+                               const code = kind === 'mold' ? (item.displayCode || item.MoldCode) : (item.displayCode || item.CutterCode || item.CutterNo);
+                               const norm = this.normalizeCode(code);
+                               if (!session.items.find(b => b.normCode === norm)) {
+                                   session.items.unshift({ code: code, kind: kind, item: item, checked: false, isLoggedToDb: false, normCode: norm, normId: (kind === 'mold' ? item.MoldID : item.CutterID), isManualAddition: false });
+                                   added++;
+                               }
+                           }
+                       });
+                   };
+                   
+                   if(dm) {
+                       if (this.state.searchKind === 'all' || this.state.searchKind === 'mold') processList(dm.molds, 'mold');
+                       if (this.state.searchKind === 'all' || this.state.searchKind === 'cutter') processList(dm.cutters, 'cutter');
+                   }
+                   if (added > 0) {
+                       if(window.showToast) {
+                           const msgJP = `${val}から${added}件追加しました`;
+                           const msgVN = `Đã thêm ${added} thiết bị từ ${type === 'rack' ? 'giá' : 'tầng'} ${val}`;
+                           window.showToast('success', '', `${msgJP} (${msgVN})`);
+                       }
+                       this.saveSessions();
+                       renderModalContent();
+                   } else {
+                       if(window.showToast) {
+                           const msgJP = `該当するデータが見つかりません`;
+                           const msgVN = `Không tìm thấy thiết bị nào ở ${type === 'rack' ? 'giá' : 'tầng'} ${val}`;
+                           window.showToast('warning', '', `${msgJP} (${msgVN})`);
+                       }
+                   }
+                   
+                   inp.value = '';
+                   inp.focus();
+                };
+
+                document.getElementById('arl-import-cancel').onclick = () => document.body.removeChild(rackModal);
+                document.getElementById('arl-import-confirm').onclick = submitImport;
+                inp.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') { e.preventDefault(); submitImport(); }
+                });
+            });
+            }
+
+            const bInp = modal.querySelector('#arl-batch-input');
+            const dd = modal.querySelector('#arl-batch-dropdown');
+            const clr = modal.querySelector('#arl-batch-clear');
+            const kindSelect = modal.querySelector('#arl-batch-kind-select');
+
+            if(bInp) {
+                if (kindSelect) {
+                    kindSelect.addEventListener('change', (e) => {
+                       this.state.searchKind = e.target.value;
+                       if (bInp.value.trim().length >= 2) {
+                           this.state.dropdownItems = this.searchDevices(bInp.value.trim());
+                           this.state.highlightIdx = this.state.dropdownItems.length > 0 ? 0 : -1;
+                           this.renderDropdown(dd, bInp.value.trim());
+                       }
+                    });
+                }
+
+                bInp.addEventListener('input', () => {
+                  const q = bInp.value.trim();
+                  clr.classList.toggle('visible', q.length > 0);
+                  if (q.length < 2) { dd.classList.remove('open'); this.state.dropdownItems = []; return; }
+                  this.state.dropdownItems = this.searchDevices(q);
+                  this.state.highlightIdx = this.state.dropdownItems.length > 0 ? 0 : -1;
+                  this.renderDropdown(dd, q);
+                });
+
+                const submitBatch = () => {
+                    let sel = null;
+                    if (this.state.highlightIdx >= 0 && this.state.dropdownItems[this.state.highlightIdx]) {
+                        sel = this.state.dropdownItems[this.state.highlightIdx];
+                    } else if (this.state.dropdownItems.length > 0) {
+                        sel = this.state.dropdownItems[0];
+                    }
+                    
+                    if (sel && !session.items.find(b => this.normalizeCode(b.code) === sel.normCode && b.kind === sel.kind)) {
+                      session.items.unshift({ code: sel.code, kind: sel.kind, item: sel.item, checked: false, isLoggedToDb: false, normCode: sel.normCode, normId: sel.normId, isManualAddition: true });
+                      this.saveSessions();
+                    }
+                    bInp.value = ''; clr.classList.remove('visible'); dd.classList.remove('open');
+                    renderModalContent();
+                    
+                    setTimeout(() => { 
+                       const newInp = modal.querySelector('#arl-batch-input');
+                       if (!newInp) return;
+                       if (window.innerWidth > 768) {
+                          newInp.focus(); 
+                       } else if (window.VirtualKeyboardModule && !newInp.readOnly) {
+                          window.VirtualKeyboardModule.open(newInp, { onSubmit: submitBatch });
+                       }
+                    }, 100);
+                };
+
+                bInp.addEventListener('keydown', (e) => {
+                  if (e.key === 'ArrowDown') { e.preventDefault(); this.state.highlightIdx = Math.min(this.state.highlightIdx + 1, this.state.dropdownItems.length - 1); this.renderDropdown(dd, bInp.value.trim()); }
+                  else if (e.key === 'ArrowUp') { e.preventDefault(); this.state.highlightIdx = Math.max(this.state.highlightIdx - 1, 0); this.renderDropdown(dd, bInp.value.trim()); }
+                  else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    submitBatch();
+                  }
+                });
+
+                const handleMobileKeyboardBatch = (e) => {
+                    if (window.innerWidth <= 768 && window.VirtualKeyboardModule && !bInp.readOnly) {
+                        e.preventDefault();
+                        bInp.blur();
+                        window.VirtualKeyboardModule.open(bInp, {
+                            onSubmit: () => submitBatch()
+                        });
+                    }
+                };
+                bInp.addEventListener('click', handleMobileKeyboardBatch);
+                bInp.addEventListener('focus', handleMobileKeyboardBatch);
+
+                clr.addEventListener('click', () => { bInp.value = ''; clr.classList.remove('visible'); dd.classList.remove('open'); bInp.focus(); });
+                setTimeout(() => { if (window.innerWidth > 768) bInp.focus(); }, 100);
+            }
+            
+            if (focusLoc) {
+                setTimeout(() => {
+                    const group = modal.querySelector(`.arl-layer-group[data-loc-group="${focusLoc}"]`);
+                    if (group) {
+                        group.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        const header = group.querySelector('.arl-layer-header');
+                        if (header) {
+                            header.style.transition = 'background-color 0.3s ease';
+                            header.style.backgroundColor = '#e0f2fe';
+                            setTimeout(() => { header.style.backgroundColor = 'var(--mcs-surface)'; }, 1500);
+                        }
+                    }
+                    focusLoc = null;
+                }, 100);
+            }
+        };
+        
+        document.addEventListener('mcs-arl-modal-update', renderModalContent);
+        renderModalContent();
+        document.body.appendChild(modal);
     },
 
     // ===== LOCATION MODE (PHASE 3) =====
@@ -1042,6 +1348,9 @@
             if (inp) inp.value = '';
             dd.classList.remove('open');
             this.renderBody();
+            if (document.getElementById('arl-list-manager-modal')) {
+                document.dispatchEvent(new CustomEvent('mcs-arl-modal-update'));
+            }
             setTimeout(() => document.getElementById('arl-batch-input')?.focus(), 50);
           }
         });
@@ -1104,8 +1413,9 @@
                <span style="font-size:10px; color:#aaa;">v1.3.0</span>
             </div>
             <div style="display:flex; gap:6px; align-items:center;">
-              <select id="arl-camera-select" style="max-width:110px; font-size:12px; padding:4px; border-radius:4px;"></select>
-              <button id="arl-cam-swap" style="border:1px solid #ccc; background:#f5f5f5; padding:4px 10px; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer;">切替 / Đổi</button>
+              <select id="arl-camera-select" style="max-width:110px; font-size:12px; padding:4px; border-radius:4px; display:none;"></select>
+              <button id="arl-cam-swap" style="border:1px solid #ccc; background:#f5f5f5; padding:4px 10px; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer;">切替</button>
+              <button id="arl-cam-pause" style="background:#f59e0b; color:#fff; border:none; padding:4px 10px; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer;"><i class="fas fa-pause"></i> 停止</button>
             </div>
           </div>
           <div style="background:rgba(0,0,0,0.5); padding:4px 10px; text-align:center;">
@@ -1126,9 +1436,15 @@
       this.state.canvas = document.getElementById('arl-canvas');
       this.state.ctx = this.state.canvas.getContext('2d', { willReadFrequently: true });
       this.state.cameraTargets = targets;
+      this.state.completedLayers = new Set(); // Reset completed layers tracking
 
       document.getElementById('arl-cam-close').addEventListener('click', () => this.closeCamera());
       document.getElementById('arl-cam-swap').addEventListener('click', () => this.toggleCamera());
+      document.getElementById('arl-cam-pause')?.addEventListener('click', () => {
+          if (confirm('カメラを一時停止して結果に戻りますか？ / Tạm dừng và quay lại xem kết quả?')) {
+              this.closeCamera();
+          }
+      });
       document.getElementById('arl-camera-select').addEventListener('change', (e) => {
          const newCam = e.target.value;
          if(newCam) this.startCamera(newCam);
@@ -1358,6 +1674,49 @@
               
               const miniItem = document.getElementById('mini-' + found.normCode);
               if (miniItem) miniItem.classList.add('checked');
+              
+              // Cập nhật lại mini-list badge
+              const unconfirmed = targets.filter(t => !t.checked).length;
+              const badge = document.getElementById('arl-cam-badge');
+              if (badge) badge.innerText = unconfirmed > 0 ? `${unconfirmed} 件未確認` : '完了 (Đã xong toàn bộ)';
+              
+              // PHASE 3: LAYER COMPLETION OVERLAY
+              const layerId = found.item && found.item.RackLayerID;
+              if (layerId) {
+                  const layerItems = targets.filter(t => t.item && t.item.RackLayerID === layerId);
+                  if (layerItems.length > 0 && layerItems.every(t => t.checked)) {
+                      if (!this.state.completedLayers) this.state.completedLayers = new Set();
+                      if (!this.state.completedLayers.has(layerId)) {
+                          this.state.completedLayers.add(layerId);
+                          this.state.scanning = false; // Tạm dừng quét
+                          
+                          const overlay = document.createElement('div');
+                          overlay.style.cssText = 'position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:999; display:flex; flex-direction:column; justify-content:center; align-items:center; color:#fff; text-align:center; padding:20px;';
+                          overlay.innerHTML = `
+                            <div style="font-size:48px; margin-bottom:16px; animation: scaleUp 0.5s ease-out;">🎉</div>
+                            <h2 style="margin:0 0 8px 0; color:#22c55e;">完了 (Hoàn thành)</h2>
+                            <p style="font-size:16px; margin-bottom:24px;">Tầng: <b>${layerId}</b> (${layerItems.length} thiết bị)</p>
+                            <div style="display:flex; gap:12px; width:100%; max-width:300px;">
+                               <button id="btn-next-layer" class="arl-btn arl-btn-primary" style="flex:1; padding:12px; font-size:14px;"><i class="fas fa-play"></i> 次へ (Tiếp tục)</button>
+                               <button id="btn-view-stats" class="arl-btn" style="flex:1; padding:12px; font-size:14px; background:#f1f5f9; color:#333; border:none;"><i class="fas fa-chart-pie"></i> 結果 (Kết quả)</button>
+                            </div>
+                          `;
+                          
+                          const camRoot = document.getElementById('arl-camera-root');
+                          if (camRoot) {
+                              camRoot.appendChild(overlay);
+                              
+                              document.getElementById('btn-next-layer').onclick = () => {
+                                  camRoot.removeChild(overlay);
+                                  this.state.scanning = true;
+                              };
+                              document.getElementById('btn-view-stats').onclick = () => {
+                                  this.closeCamera();
+                              };
+                          }
+                      }
+                  }
+              }
           } else {
              // Đã quét rồi thì thôi, không báo lỗi liên tục
              const alreadyChecked = targets.find(t => t.checked && isMatchFound(t, parsedNorm, parsed?.kind));

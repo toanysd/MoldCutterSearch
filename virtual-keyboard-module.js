@@ -682,20 +682,13 @@
 
 
         qrBtn.addEventListener('touchstart', function (e) {
-
             e.preventDefault(); // ★ Chặn text-selection khi touch
-
             var touch = e.touches[0];
-
             self.touchStartX = touch.clientX;
-
             self.touchStartY = touch.clientY;
-
             isSwipingQR = true;
-
             // Không hẹn giờ nữa, vuốt là hiện luôn
-
-        });
+        }, { passive: false });
 
 
 

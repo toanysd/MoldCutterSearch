@@ -540,7 +540,8 @@
       document.getElementById('arl-new-session')?.addEventListener('click', () => {
           const empSelect = document.getElementById('arl-new-session-emp');
           const empId = empSelect ? empSelect.value : defaultEmpId;
-          const empName = empSelect && empSelect.options[empSelect.selectedIndex] ? empSelect.options[empSelect.selectedIndex].text : empId;
+          const empData = employees.find(e => String(e.EmployeeID) === String(empId));
+          const empName = empData ? (empData.EmployeeNameShort || empData.EmployeeName || empId) : empId;
           
           const newId = this.generateUUID();
           const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
@@ -1351,22 +1352,35 @@
       ctx.fillText(`Match: ${isMatch} | ParseFail: ${!parsed}`, 15, 70);
 
       if (isMatch) {
-        ctx.font = 'bold 22px Arial'; ctx.fillStyle = '#00FF00';
-        ctx.shadowColor = "black"; ctx.shadowBlur = 4;
-        ctx.fillText('✓ ' + displayCode, loc.topLeftCorner.x, loc.topLeftCorner.y - 12);
-        ctx.shadowBlur = 0;
-        
         if(this.state.mode === 'single') {
             this.beep();
             this.state.scanning = false; // Stop scanning immediately
             
-            // Lấy frame hiện tại làm ảnh
-            const dataUrl = this.state.canvas.toDataURL('image/jpeg', 0.85);
+            // --- GREEN BORDER EFFECT (NO DIMMING) ---
+            const pad = 20;
+            const w = (loc.bottomRightCorner.x - loc.topLeftCorner.x) + pad*2;
+            const h = (loc.bottomRightCorner.y - loc.topLeftCorner.y) + pad*2;
+            const x = loc.topLeftCorner.x - pad;
+            const y = loc.topLeftCorner.y - pad;
+            
+            // Vẽ viền xanh lá nhấn mạnh trên nền sáng
+            ctx.strokeStyle = "#22c55e"; // L0 Industrial Green
+            ctx.lineWidth = 4;
+            ctx.strokeRect(x, y, w, h);
+            
+            // Vẽ text
+            ctx.font = 'bold 24px Arial'; ctx.fillStyle = '#22c55e';
+            ctx.shadowColor = "black"; ctx.shadowBlur = 6;
+            ctx.fillText('✓ ' + displayCode, x, y - 10);
+            ctx.shadowBlur = 0;
+
+            // Lấy frame hiện tại làm ảnh (chụp toàn cảnh đủ sáng)
+            const dataUrl = this.state.canvas.toDataURL('image/jpeg', 0.9);
             this.state.foundImage = dataUrl;
             
             setTimeout(() => {
                 this.closeCamera();
-            }, 600); // Đợi xíu cho người dùng nhìn thấy xanh
+            }, 800); // Đợi 800ms cho người dùng thấy hiệu ứng Spotlight
         } else if (this.state.mode === 'location') {
             // Location Mode: Already beeped during scan addition
         } else {

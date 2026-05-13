@@ -1053,6 +1053,18 @@
      * V10 API: Explicitly wipe cache and force reload from network
      */
     async function forceClearCacheAndReload() {
+        try {
+            const baseUrl = _getDeltaBaseUrl();
+            if (baseUrl) {
+                // In local Dev, there might be no sb-auth-token, but the backend requires token for POST
+                const token = window.localStorage.getItem('sb-auth-token') || window.localStorage.getItem('mcs_token') || window.app?.currentUser?.token;
+                const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+                await fetch(baseUrl + '/sync/clear-cache', { method: 'POST', headers });
+                console.log('🧹 Backend proxy cache cleared.');
+            }
+        } catch (e) {
+            console.warn('Failed to clear backend cache', e);
+        }
         return loadAllData(true);
     }
 

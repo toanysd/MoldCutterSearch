@@ -1102,8 +1102,12 @@
             this._updateDisplay();
         }
 
-        // Mặc định bàn phím hiển thị dạng ABC
-        this._switchLayout('alpha');
+        // Chọn layout hiển thị
+        if (this.options && this.options.numeric) {
+            this._switchLayout('numeric');
+        } else {
+            this._switchLayout('alpha');
+        }
 
         // Gợi ý wizard
         this._updateWizard();

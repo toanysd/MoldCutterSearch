@@ -69,8 +69,10 @@ function pushDeltaEvent(filename, idField, idValue, payload) {
 function invalidateDataCache() { proxyFileCache.clear(); console.log('[Cache] Data Cache Invalidated'); }
 
 async function jwtAuthMiddleware(req, res, next) {
-  // 1. Pass health checks
-  if (req.path.startsWith('/health')) return next();
+  // 1. Pass public endpoints
+  if (req.path.startsWith('/health') || req.path.startsWith('/csv/read/') || (req.path.startsWith('/sync/') && req.method === 'GET')) {
+    return next();
+  }
 
   // 2. Kiểm tra format token
   const authHeader = req.headers.authorization;
@@ -128,6 +130,12 @@ app.use('/api', jwtAuthMiddleware);
 // ENDPOINT: Background Sync Check
 app.get('/api/sync/check-version', (req, res) => {
   return res.json({ version: globalDataVersion });
+});
+
+// ENDPOINT: Force Clear Backend Cache
+app.post('/api/sync/clear-cache', (req, res) => {
+  invalidateDataCache();
+  return res.json({ success: true, message: 'Backend proxy cache cleared' });
 });
 
 // ENDPOINT: Delta Sync API

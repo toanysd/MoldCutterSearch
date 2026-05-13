@@ -1,5 +1,4 @@
 StatusLogID,MoldID,CutterID,ItemType,Status,Timestamp,EmployeeID,DestinationID,Notes,AuditDate,AuditType,SessionID,SessionName,SessionMode,AuditSessionID,UpdatedAt,UpdatedBy
-WEB_SL_1778658844434_mxfu5s634,5781,,,OUT,2026-05-13T07:54:04.100Z,1,1,,,,,,,,2026-05-13T16:54:04.844Z,1
 7,3192,,,,,1,13,台車,,,,,,,,
 8,5604,,,,,4,9,Viet,,,,,,,,
 11,3331,,,,,1,13,,,,,,,,,

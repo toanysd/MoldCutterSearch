@@ -1905,7 +1905,10 @@
                <div style="font-weight:bold; font-size:15px; color:#1e293b; margin-bottom:4px;">段 (Tầng): ${lId}</div>
                <div style="font-size:12px; color:#64748b;">予定 (Dự kiến): <b>${expectedCount}</b> 件 | 読取 (Đã quét): <b>${scannedCount}</b> 件</div>
             </div>
-            <button class="arl-btn-go-layer" data-layer="${lId}" style="background:var(--mcs-primary); color:#fff; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; font-size:13px; cursor:pointer; min-width:80px; text-align:center;">
+            <button class="arl-btn-delete-layer" data-layer="${lId}" style="background:transparent; color:#ef4444; border:none; padding:8px 10px; margin-right:4px; border-radius:6px; font-size:16px; cursor:pointer; text-align:center;">
+               <i class="fas fa-trash"></i>
+            </button>
+            <button class="arl-btn-go-layer" data-layer="${lId}" style="background:var(--mcs-primary); color:#fff; border:none; padding:8px 12px; border-radius:6px; font-weight:bold; font-size:13px; cursor:pointer; min-width:70px; text-align:center;">
                <i class="fas fa-sign-in-alt"></i> 開く
             </button>
           </div>
@@ -1927,8 +1930,32 @@
         
         <div class="arl-actions" style="margin-top:auto; display:flex; flex-direction:column; gap:8px;">
            <button class="arl-btn arl-btn-primary" id="arl-loc-start-first" style="width:100%; padding:14px; font-size:15px; ${s.targetLayers.length === 0 ? 'opacity:0.5; pointer-events:none;' : ''}"><i class="fas fa-play"></i> 最初の段から開始 (Bắt đầu tầng đầu tiên)</button>
+           <div style="display:flex; gap:8px; margin-top:4px;">
+               <button class="arl-btn" id="arl-loc-session-print-master" style="flex:1; padding:12px; font-size:14px; background:#f59e0b; color:#fff; border-radius:8px; font-weight:bold;"><i class="fas fa-print"></i> 印刷 (In A4)</button>
+               <button class="arl-btn" id="arl-loc-session-export-master" style="flex:1; padding:12px; font-size:14px; background:#16a34a; color:#fff; border-radius:8px; font-weight:bold;"><i class="fas fa-file-excel"></i> Excel出力</button>
+               <button class="arl-btn" id="arl-loc-session-delete-master" style="flex:1; padding:12px; font-size:14px; background:transparent; border:1px solid #ef4444; color:#ef4444; border-radius:8px; font-weight:bold;"><i class="fas fa-bomb"></i> セッション削除</button>
+           </div>
         </div>
       `;
+
+      document.getElementById('arl-loc-session-print-master')?.addEventListener('click', () => {
+        this.exportSessionReport(s, true);
+      });
+      document.getElementById('arl-loc-session-export-master')?.addEventListener('click', () => {
+        this.exportSessionReport(s, false);
+      });
+      document.getElementById('arl-loc-session-delete-master')?.addEventListener('click', () => {
+        setTimeout(() => {
+          if (confirm('この実査セッションを完全に削除しますか？ (Bạn có chắc muốn xóa TOÀN BỘ phiên kiểm kê này không?)')) {
+            this.state.sessions = this.state.sessions.filter(ss => ss.id !== s.id);
+            this.state.activeSessionId = null;
+            this.state.locationSession = null;
+            this.saveSessions();
+            this.renderBody();
+            if (window.showToast) window.showToast('info', '', 'セッションを削除しました (Đã xóa phiên)');
+          }
+        }, 100);
+      });
 
       document.getElementById('arl-loc-back-dashboard')?.addEventListener('click', () => {
         this.state.activeSessionId = null;
@@ -1953,6 +1980,22 @@
           s.currentLayer = btn.getAttribute('data-layer');
           s.viewMode = 'detail';
           this.renderBody();
+        });
+      });
+
+      body.querySelectorAll('.arl-btn-delete-layer').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const lId = btn.getAttribute('data-layer');
+          if (confirm(`段: ${lId} をリストから削除しますか？ (Bạn có chắc muốn xóa Tầng: ${lId} khỏi phiên này không?)`)) {
+            s.targetLayers = s.targetLayers.filter(l => l !== lId);
+            const dbSess = this.state.sessions.find(db => db.id === s.id);
+            if (dbSess) {
+               dbSess.referenceId = s.targetLayers.join(',');
+               this.saveSessions(s.id);
+            }
+            this.renderBody();
+          }
         });
       });
 

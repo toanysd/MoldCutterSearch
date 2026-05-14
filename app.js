@@ -1907,16 +1907,6 @@ class App {
 
 
 
-    const inventoryBtn = document.querySelector('.btn-inventory');
-
-    if (inventoryBtn) {
-
-      inventoryBtn.addEventListener('click', () => this.handleInventory());
-
-    }
-
-
-
     const resetAllBtn = document.querySelector('.btn-reset-all');
 
     if (resetAllBtn) {
@@ -4345,7 +4335,7 @@ class App {
 
 
 
-    if (window.ARLocator) {
+    if (window.ARLocatorModule) {
       const batchList = selected.map(sel => {
         const itemObj = sel.payload ? sel.payload : sel;
         const isMold = itemObj.type === 'mold' || typeof itemObj.MoldID !== 'undefined';
@@ -4362,7 +4352,11 @@ class App {
           normId: String(isMold ? itemObj.MoldID : itemObj.CutterID)
         };
       });
-      window.ARLocator.open('batch', batchList);
+      if (typeof window.ARLocatorModule.createBatchSessionAndOpen === 'function') {
+        window.ARLocatorModule.createBatchSessionAndOpen(batchList);
+      } else {
+        window.ARLocatorModule.open('batch', batchList);
+      }
     } else {
       alert('AR Locator (AR探索) モジュールがロードされていません / Chưa nạp module AR Locator');
     }

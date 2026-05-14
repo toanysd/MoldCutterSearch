@@ -438,6 +438,50 @@
       if (window.ViewManager) window.ViewManager.switchView('ar-locator');
     },
 
+    createBatchSessionAndOpen(batchList) {
+      if (!this.state.isOpen) {
+        this.open('batch');
+      }
+      this.state.mode = 'batch';
+      
+      const sessionItems = batchList.map(b => ({
+          line_id: this.generateUUID(),
+          code: b.code,
+          kind: b.kind,
+          item: b.item,
+          normCode: b.normCode,
+          checked: false,
+          scanStatus: 'PENDING',
+          isManual: false,
+          isLoggedToDb: false
+      }));
+
+      const newId = this.generateUUID();
+      const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+      const timeStr = new Date().toTimeString().slice(0, 5).replace(/:/g, '');
+      const empId = window.app?.currentUser?.EmployeeID || '1';
+      const employees = window.DataManager?.data?.employees || [];
+      const empData = employees.find(e => String(e.EmployeeID) === String(empId));
+      const empName = empData ? (empData.EmployeeNameShort || empData.EmployeeName || empId) : empId;
+      
+      const finalName = `棚卸_${dateStr}_${timeStr}_${empName}`;
+      
+      this.state.sessions.unshift({
+        id: newId,
+        createdAt: new Date().toISOString(),
+        name: finalName,
+        type: 'BATCH_LIST',
+        status: 'IN_PROGRESS',
+        employeeId: empId,
+        items: sessionItems
+      });
+      
+      this.state.activeSessionId = newId;
+      this.saveSessions(newId);
+      this.renderBody();
+      if (window.showToast) window.showToast('success', '', 'Tạo phiên kiểm kê mới thành công!');
+    },
+
     close() {
       this.state.isOpen = false;
       this.closeCamera();
@@ -473,10 +517,10 @@
           <button class="arl-main-close" id="arl-main-close-btn">&times;</button>
         </div>
         <div class="arl-tabbar">
-          <button class="arl-tab active" data-mode="single"><i class="fas fa-crosshairs"></i> 特定検索</button>
-          <button class="arl-tab" data-mode="multi_search"><i class="fas fa-search-plus"></i> リスト検索</button>
-          <button class="arl-tab" data-mode="batch"><i class="fas fa-list-check"></i> リスト棚卸</button>
-          <button class="arl-tab" data-mode="location"><i class="fas fa-map-marker-alt"></i> 棚実査</button>
+          <button class="arl-tab ${this.state.mode === 'single' ? 'active' : ''}" data-mode="single"><i class="fas fa-crosshairs"></i> 特定検索</button>
+          <button class="arl-tab ${this.state.mode === 'multi_search' ? 'active' : ''}" data-mode="multi_search"><i class="fas fa-search-plus"></i> リスト検索</button>
+          <button class="arl-tab ${this.state.mode === 'batch' ? 'active' : ''}" data-mode="batch"><i class="fas fa-list-check"></i> リスト棚卸</button>
+          <button class="arl-tab ${this.state.mode === 'location' ? 'active' : ''}" data-mode="location"><i class="fas fa-map-marker-alt"></i> 棚実査</button>
         </div>
         <div class="arl-body" id="arl-body" style="flex:1;"></div>
         <div id="arl-camera-root"></div>

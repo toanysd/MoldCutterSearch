@@ -264,13 +264,23 @@
           var notify = window.NotificationModule || window.notify;
           if (notify && notify.show) {
             notify.show('位置変更を保存しました / Location moved successfully', 'success');
-          
+          } else {
+            alert('位置変更を保存しました / Location moved successfully');
+          }
+
+          if (global.app && typeof global.app.applyFilters === 'function') {
+            global.app.applyFilters();
+          } else {
+            document.dispatchEvent(new CustomEvent('data-manager:ready'));
+          }
+          closeModal();
+        });
   }
 
   // --- Headless API for other modules (e.g. AR Locator) ---
   RackRelocation.apiMoveRackLayer = function(item, layerId, empId, note) {
     if (!item || !layerId || !empId) {
-      console.warn('RackRelocation.apiMoveRackLayer: Missing required parameters', {item, layerId, empId});
+      console.warn('RackRelocation.apiMoveRackLayer: Missing required parameters', {item: item, layerId: layerId, empId: empId});
       return Promise.reject('Missing required parameters');
     }
 

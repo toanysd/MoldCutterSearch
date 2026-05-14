@@ -495,9 +495,9 @@
             if (window.notify) window.notify.info('Đang xóa bản ghi qua API...', 'Trạng thái');
 
             var endpoint = resolveApiUrl('/api/csv/upsert');
-            var employee = '1';
+            var employee = '9';
             try {
-                if (window.app && window.app.currentUser) employee = window.app.currentUser.EmployeeID || '1';
+                if (window.app && window.app.currentUser) employee = window.app.currentUser.EmployeeID || '9';
             } catch (e) { }
 
             var deleteReq = fetch(endpoint, {
@@ -596,6 +596,7 @@
                         };
                         if (global.DataManager && global.DataManager.data) {
                             global.DataManager.data.shiplog.unshift(memPayload);
+                            var oldKeeper = isMold ? (self.currentItem.KeeperCompany || '') : (self.currentItem.KeeperCompany || '');
                             if (isMold) {
                                 var moldArr = global.DataManager.data.molds;
                                 for (var w = 0; w < moldArr.length; w++) {
@@ -610,6 +611,28 @@
                                         cutterArr[w].KeeperCompany = payload.ToCompanyID; break;
                                     }
                                 }
+                            }
+
+                            // ADD LOCAL STATUSLOG UPDATE
+                            var ysdId = '2'; // hardcode YSD
+                            var generatedStatus = '';
+                            var destId = String(payload.ToCompanyID).trim();
+                            if (destId === '6') generatedStatus = 'RETURNED';
+                            else if (String(oldKeeper) === ysdId && destId !== ysdId) generatedStatus = 'OUT';
+                            else if (String(oldKeeper) !== ysdId && destId === ysdId) generatedStatus = 'IN';
+
+                            if (generatedStatus && global.DataManager.data.statuslogs) {
+                                global.DataManager.data.statuslogs.unshift({
+                                    StatusLogID: 'WEB_SL_TEMP_' + Date.now(),
+                                    MoldID: isMold ? (payload.MoldID || '') : '',
+                                    CutterID: !isMold ? (payload.CutterID || '') : '',
+                                    ItemType: isMold ? 'mold' : 'cutter',
+                                    Status: generatedStatus,
+                                    Timestamp: payload.ShipDate || new Date().toISOString(),
+                                    EmployeeID: payload.EmployeeID,
+                                    DestinationID: payload.ToCompanyID,
+                                    Notes: payload.ShipNotes || 'Auto-generated from Shipment'
+                                });
                             }
                         }
                     } catch (e) { }

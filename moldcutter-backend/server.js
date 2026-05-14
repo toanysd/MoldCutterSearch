@@ -43,11 +43,36 @@ const supabaseServerClient = (SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY) ? creat
 
 // RAM Cache Proxy Data
 const proxyFileCache = new Map();
+let serverStartTime = Date.now();
+let globalDataVersion = serverStartTime;
+let _hasEvictedChanges = false;
+
+// =============== DELTA SYNC ENGINE ===============
+const recentChanges = [];
+const MAX_CHANGES = 1000;
+function pushDeltaEvent(filename, idField, idValue, payload) {
+  const table = String(filename || '').replace(/\.csv$/i, '');
+  recentChanges.push({
+    version: Date.now(),
+    table,
+    idField,
+    idValue,
+    payload
+  });
+  if (recentChanges.length > MAX_CHANGES) {
+    recentChanges.shift();
+    _hasEvictedChanges = true;
+  }
+}
+// =================================================
+
 function invalidateDataCache() { proxyFileCache.clear(); console.log('[Cache] Data Cache Invalidated'); }
 
 async function jwtAuthMiddleware(req, res, next) {
-  // 1. Pass health checks
-  if (req.path.startsWith('/health')) return next();
+  // 1. Pass public endpoints
+  if (req.path.startsWith('/health') || req.path.startsWith('/csv/read/') || (req.path.startsWith('/sync/') && req.method === 'GET')) {
+    return next();
+  }
 
   // 2. Kiểm tra format token
   const authHeader = req.headers.authorization;
@@ -101,6 +126,32 @@ async function jwtAuthMiddleware(req, res, next) {
 
 // KHÓA TOÀN BỘ API 
 app.use('/api', jwtAuthMiddleware);
+
+// ENDPOINT: Background Sync Check
+app.get('/api/sync/check-version', (req, res) => {
+  return res.json({ version: globalDataVersion });
+});
+
+// ENDPOINT: Force Clear Backend Cache
+app.post('/api/sync/clear-cache', (req, res) => {
+  invalidateDataCache();
+  return res.json({ success: true, message: 'Backend proxy cache cleared' });
+});
+
+// ENDPOINT: Delta Sync API
+app.get('/api/sync/delta', (req, res) => {
+  try {
+    const since = parseInt(req.query.since || '0', 10);
+    // Nếu since = 0, hoặc server mới restart, hoặc mảng bị tràn (mất bớt delta cũ)
+    if (!since || since === 0 || since < serverStartTime || (_hasEvictedChanges && recentChanges.length > 0 && since < recentChanges[0].version)) {
+      return res.json({ fullReload: true, version: globalDataVersion, changes: [] });
+    }
+    const changes = recentChanges.filter(c => c.version > since);
+    return res.json({ fullReload: false, version: globalDataVersion, changes });
+  } catch (e) {
+    return res.json({ fullReload: true, version: globalDataVersion, changes: [] });
+  }
+});
 
 // ENDPOINT: Nấp (Proxy) GitHub Caching
 app.get('/api/csv/read/:filename', async (req, res) => {
@@ -172,7 +223,7 @@ const FILE_HEADERS = {
     'MoldID', 'MoldName', 'MoldCode', 'CustomerID', 'TrayID', 'MoldDesignID',
     'KeeperCompany', 'RackLayerID', 'ItemTypeID',
     'MoldLengthModified', 'MoldWidthModified', 'MoldHeightModified',
-    'MoldWeightModified', 'MoldNotes', 'MoldUsageStatus', 'MoldOnCheckList',
+    'MoldWeight', 'MoldNotes', 'MoldUsageStatus', 'MoldOnCheckList',
     'JobID', 'MoldReturning', 'MoldReturnedDate', 'MoldDisposing',
     'MoldDisposedDate', 'MoldEntry'
   ],
@@ -476,7 +527,13 @@ function parseCsvText(csvText) {
 
     const readableStream = stream.Readable.from(csvText);
     readableStream
-      .pipe(csvParser({ mapHeaders: ({ header }) => String(header || '').trim() }))
+      .pipe(csvParser({
+        mapHeaders: ({ header }) => {
+          let h = String(header || '').trim();
+          if (h === 'MoldWeightModified') return 'MoldWeight';
+          return h;
+        }
+      }))
       .on('data', (data) => results.push(data))
       .on('end', () => resolve(results))
       .on('error', (error) => reject(error));
@@ -573,6 +630,10 @@ async function getGitHubFile(filePath) {
 async function updateGitHubFile(filePath, content, sha, message) {
   try {
     console.log(`[SERVER] Updating: ${filePath}`);
+    const fn = filePath.replace('data/', '');
+    proxyFileCache.delete(fn);
+    console.log(`[SERVER] Removed Cache for: ${fn}`);
+
     await octokit.repos.createOrUpdateFileContents({
       owner,
       repo,
@@ -582,7 +643,8 @@ async function updateGitHubFile(filePath, content, sha, message) {
       sha,
       branch
     });
-    console.log(`[SERVER] ✅ Updated: ${filePath}`);
+    globalDataVersion = Date.now();
+    console.log(`[SERVER] ✅ Updated: ${filePath} (New GlobalVersion: ${globalDataVersion})`);
   } catch (error) {
     console.error(`[SERVER] Error updating file:`, error && error.message ? error.message : error);
     throw error;
@@ -990,6 +1052,10 @@ app.post('/api/csv/upsert', async (req, res) => {
     );
 
 
+    // TRỢ LỰC DELTA SYNC
+    if (opMode !== 'delete') {
+      pushDeltaEvent(fn, idF, idV, updates);
+    }
     res.json({ success: true, message: 'CSV upsert OK', filename: fn, attempt: result.attempt });
   } catch (error) {
     const st = getHttpStatus(error);
@@ -1289,6 +1355,14 @@ app.post('/api/process-scrap', async (req, res) => {
       }, { maxRetry: 4, requireExisting: false });
     }
 
+    // TRỢ LỰC DELTA SYNC
+    if (action === 'delete') {
+      pushDeltaEvent('scraplog.csv', 'ScrapLogID', scrapId, { _delete: true });
+    } else {
+      pushDeltaEvent('scraplog.csv', 'ScrapLogID', scrapId, normalizedEntry);
+    }
+    pushDeltaEvent(mainCsv, idField, itemId, { _refresh: true }); // Mồi báo refresh vì logic scrap khá phức tạp
+
     res.json({ success: true, message: action === 'delete' ? 'Scrap workflow deleted' : 'Scrap processed correctly' });
   } catch (error) {
     console.error(`[SERVER] Error in process-scrap:`, error);
@@ -1332,6 +1406,9 @@ app.post('/api/add-log', async (req, res) => {
       },
       { maxRetry: 4 }
     );
+
+    // TRỢ LỰC DELTA SYNC
+    pushDeltaEvent(targetFilename, idField, incomingId, normalizedEntry);
 
     res.json({ success: true, message: `Log entry added to ${filename}` });
   } catch (error) {
@@ -1407,7 +1484,8 @@ app.post('/api/update-item', async (req, res) => {
       { maxRetry: 4, requireExisting: true }
     );
 
-
+    // TRỢ LỰC DELTA SYNC
+    pushDeltaEvent(safeTargetFilename, itemIdField, itemIdValue, updates);
 
     res.json({ success: true, message: `Item updated in ${filename}` });
   } catch (error) {
@@ -1450,6 +1528,8 @@ app.post('/api/add-comment', async (req, res) => {
       { maxRetry: 4, requireExisting: true }
     );
 
+    // TRỢ LỰC DELTA SYNC
+    pushDeltaEvent(filename, 'UserCommentID', newId, normalizedComment);
 
     res.json({ success: true, message: 'Comment added', commentId: newId });
   } catch (error) {
@@ -1639,8 +1719,17 @@ app.post('/api/add-shiplog', async (req, res) => {
 
     // 8. Generate IN / OUT log if transitioning between YSD and Out
     const destToCompanyID = String(ToCompanyID).trim();
-    if ((oldKeeper === ysdId && destToCompanyID !== ysdId) || (oldKeeper !== ysdId && destToCompanyID === ysdId)) {
-      const generatedStatus = (oldKeeper === ysdId && destToCompanyID !== ysdId) ? 'OUT' : 'IN';
+    let generatedStatus = '';
+    if (destToCompanyID === '6') {
+      generatedStatus = 'RETURNED';
+    } else if (oldKeeper === ysdId && destToCompanyID !== ysdId) {
+      generatedStatus = 'OUT';
+    } else if (oldKeeper !== ysdId && destToCompanyID === ysdId) {
+      generatedStatus = 'IN';
+    }
+
+    let generatedStatusLog = null;
+    if (generatedStatus) {
       const stLogId = genId('WEB_SL_');
       const stEntry = {
         StatusLogID: stLogId,
@@ -1654,6 +1743,7 @@ app.post('/api/add-shiplog', async (req, res) => {
         Notes: ShipNotes || 'Auto-generated from Shipment',
         AuditDate: '', AuditType: '', SessionID: '', SessionName: '', SessionMode: ''
       };
+      generatedStatusLog = stEntry;
 
       try {
         await updateCsvFileDynamicWithRetry('statuslogs.csv', `Add statuslog ${stLogId} from shiplog`,
@@ -1696,6 +1786,13 @@ app.post('/api/add-shiplog', async (req, res) => {
       } catch (ee) {
         console.error('[SERVER] Failed generating auto StatusLog:', ee);
       }
+    }
+
+    // TRỢ LỰC DELTA SYNC
+    pushDeltaEvent('shiplog.csv', 'ShipID', newId, normalizedEntry);
+    pushDeltaEvent(targetFile, idField, dchId, { KeeperCompany: ToCompanyID, UpdatedAt: getJSTTimestamp(), UpdatedBy: EmployeeID });
+    if (generatedStatusLog) {
+      pushDeltaEvent('statuslogs.csv', 'StatusLogID', generatedStatusLog.StatusLogID, generatedStatusLog);
     }
 
     res.json({ success: true, message: 'Shipment recorded successfully', ShipID: newId, FromCompanyID: oldKeeper });
@@ -1779,6 +1876,9 @@ app.post('/api/checklog', async (req, res) => {
           if ((headers || []).includes('UpdatedBy') && (!row.UpdatedBy || !String(row.UpdatedBy).trim())) row.UpdatedBy = String(EmployeeID || '');
 
           records.unshift(row);
+
+          // TRỢ LỰC DELTA SYNC CHO BẢNG STATUSLOGS
+          pushDeltaEvent(filename, 'StatusLogID', newId, row);
         }
 
         return { records };
@@ -1887,6 +1987,12 @@ app.post('/api/locationlog', async (req, res) => {
     );
 
     await updateRackLayerTargetWithRetry(targetMeta, newRack, actorId);
+
+    // TRỢ LỰC DELTA SYNC
+    pushDeltaEvent('locationlog.csv', 'LocationLogID', locId, locEntry);
+    if (targetMeta && targetMeta.filename) {
+      pushDeltaEvent(targetMeta.filename, targetMeta.idField, targetMeta.idValue, { RackLayerID: newRack, UpdatedAt: nowTs, UpdatedBy: actorId });
+    }
 
     try {
       await appendLocationHistoryEntry(
@@ -2180,6 +2286,11 @@ app.delete('/api/locationlog/:id', async (req, res) => {
       { maxRetry: 4, requireExisting: true }
     );
 
+    // TRỢ LỰC DELTA SYNC
+    if (idParam) {
+      pushDeltaEvent('locationlog.csv', 'LocationLogID', idParam, { _delete: true });
+    }
+
     res.json({ success: true, message: 'Location log deleted' });
   } catch (error) {
     const st = getHttpStatus(error);
@@ -2218,6 +2329,8 @@ app.post('/api/delete-log', async (req, res) => {
       { maxRetry: 4, requireExisting: true }
     );
 
+    // TRỢ LỰC DELTA SYNC
+    pushDeltaEvent(targetFilename, idField, delId, { _delete: true });
 
     res.json({ success: true, message: `Log entry deleted from ${filename}`, deletedId: delId });
   } catch (error) {

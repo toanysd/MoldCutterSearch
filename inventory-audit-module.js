@@ -68,10 +68,12 @@
             if (sidebarBtn) {
 
                 sidebarBtn.addEventListener('click', (e) => {
-
                     e.preventDefault();
-
-                    this.startWorkflow();
+                    if (window.app && typeof window.app.handleInventory === 'function') {
+                        window.app.handleInventory();
+                    } else {
+                        this.startWorkflow();
+                    }
 
                     const sb = document.getElementById('sidebar');
 
@@ -90,20 +92,6 @@
             }
 
 
-
-            const topBtn = document.getElementById('topInventoryAuditBtn');
-
-            if (topBtn) {
-
-                topBtn.addEventListener('click', (e) => {
-
-                    e.preventDefault();
-
-                    this.startWorkflow();
-
-                });
-
-            }
 
         }
 
@@ -252,9 +240,9 @@
 
                 suggestedName: `棚卸 (${detectedType === 'cutter' ? '抜型' : '金型'}) ${defaultDate}`,
 
-                users: window.usersData || [{ ID: '1', Name: 'Admin' }],
+                users: window.usersData || [{ ID: '9', Name: 'Admin' }],
 
-                currentUser: window.currentUser || { ID: '1', Name: 'User' }
+                currentUser: window.currentUser || { ID: '9', Name: 'User' }
 
             };
 

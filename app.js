@@ -4221,13 +4221,13 @@ class App {
 
       case 'move':
 
-        if (window.LocationMove && typeof window.LocationMove.open === 'function') {
+        if (window.RackRelocation && typeof window.RackRelocation.open === 'function') {
 
-          window.LocationMove.open(item);
+          window.RackRelocation.open(item);
 
         } else {
 
-          alert('Chưa nạp module LocationMove (location-move-v8.5.2-1.js)');
+          alert('Chưa nạp module RackRelocation (rack-relocation.js)');
 
         }
 

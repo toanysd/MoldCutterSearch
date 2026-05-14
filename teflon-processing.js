@@ -1609,8 +1609,8 @@
                 var dp = window.detailPanel || window.DetailPanel || (window.App && window.App.detailPanel);
                 if (dp && dp.refreshCurrentTab) dp.refreshCurrentTab();
 
-                if (shouldPromptLocation && window.LocationMove && typeof window.LocationMove.open === 'function') {
-                    setTimeout(function () { window.LocationMove.open(self.currentMold); }, 400);
+                if (shouldPromptLocation && window.RackRelocation && typeof window.RackRelocation.open === 'function') {
+                    setTimeout(function () { window.RackRelocation.open(self.currentMold); }, 400);
                 }
             }
         });

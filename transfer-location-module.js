@@ -611,6 +611,29 @@
                                     }
                                 }
                             }
+
+                            // ADD LOCAL STATUSLOG UPDATE
+                            var oldKeeper = isMold ? (self.currentItem.KeeperCompany || '') : (self.currentItem.KeeperCompany || '');
+                            var ysdId = '2'; // hardcode YSD
+                            var generatedStatus = '';
+                            var destId = String(payload.ToCompanyID).trim();
+                            if (destId === '6') generatedStatus = 'RETURNED';
+                            else if (String(oldKeeper) === ysdId && destId !== ysdId) generatedStatus = 'OUT';
+                            else if (String(oldKeeper) !== ysdId && destId === ysdId) generatedStatus = 'IN';
+
+                            if (generatedStatus && global.DataManager.data.statuslogs) {
+                                global.DataManager.data.statuslogs.unshift({
+                                    StatusLogID: 'WEB_SL_TEMP_' + Date.now(),
+                                    MoldID: isMold ? (payload.MoldID || '') : '',
+                                    CutterID: !isMold ? (payload.CutterID || '') : '',
+                                    ItemType: isMold ? 'mold' : 'cutter',
+                                    Status: generatedStatus,
+                                    Timestamp: payload.ShipDate || new Date().toISOString(),
+                                    EmployeeID: payload.EmployeeID,
+                                    DestinationID: payload.ToCompanyID,
+                                    Notes: payload.ShipNotes || 'Auto-generated from Shipment'
+                                });
+                            }
                         }
                     } catch (e) { }
                 }).catch(e => {

@@ -1,4 +1,5 @@
 StatusLogID,MoldID,CutterID,ItemType,Status,Timestamp,EmployeeID,DestinationID,Notes,AuditDate,AuditType,SessionID,SessionName,SessionMode,AuditSessionID,UpdatedAt,UpdatedBy
+WEB_SL_1778728540531_cse72l3zy,5781,,mold,OUT,2026-05-13,9,1540,金型・プラグ・抜型,,,,,,,2026-05-14T12:15:40.679Z,9
 7,3192,,,,,9,13,台車,,,,,,,,
 8,5604,,,,,10,9,Viet,,,,,,,,
 11,3331,,,,,9,13,,,,,,,,,

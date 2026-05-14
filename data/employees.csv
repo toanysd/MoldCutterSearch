@@ -1,5 +1,5 @@
 EmployeeID,EmployeeName,EmployeeNameShort,DivisionID,JoiningDate,Birthday,Address,Tel,EmployeeOrderCode,UpdatedAt,UpdatedBy
-1,吉田 義裕,吉田社長,M,,,,,,M01,,
+1,吉田 義裕,吉田,M,,,,,,M01,,
 2,小比類巻 充,小比類巻,M,,,,,,M02,,
 3,谷口 幸靖,谷口,M,,,,,,M03,,
 4,小林 一弘,小林,M,,,,,,M04,,

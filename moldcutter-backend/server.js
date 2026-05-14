@@ -1728,6 +1728,7 @@ app.post('/api/add-shiplog', async (req, res) => {
       generatedStatus = 'IN';
     }
 
+    let generatedStatusLog = null;
     if (generatedStatus) {
       const stLogId = genId('WEB_SL_');
       const stEntry = {
@@ -1742,6 +1743,7 @@ app.post('/api/add-shiplog', async (req, res) => {
         Notes: ShipNotes || 'Auto-generated from Shipment',
         AuditDate: '', AuditType: '', SessionID: '', SessionName: '', SessionMode: ''
       };
+      generatedStatusLog = stEntry;
 
       try {
         await updateCsvFileDynamicWithRetry('statuslogs.csv', `Add statuslog ${stLogId} from shiplog`,
@@ -1789,6 +1791,9 @@ app.post('/api/add-shiplog', async (req, res) => {
     // TRỢ LỰC DELTA SYNC
     pushDeltaEvent('shiplog.csv', 'ShipID', newId, normalizedEntry);
     pushDeltaEvent(targetFile, idField, dchId, { KeeperCompany: ToCompanyID, UpdatedAt: getJSTTimestamp(), UpdatedBy: EmployeeID });
+    if (generatedStatusLog) {
+      pushDeltaEvent('statuslogs.csv', 'StatusLogID', generatedStatusLog.StatusLogID, generatedStatusLog);
+    }
 
     res.json({ success: true, message: 'Shipment recorded successfully', ShipID: newId, FromCompanyID: oldKeeper });
   } catch (error) {

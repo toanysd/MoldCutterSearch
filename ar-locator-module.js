@@ -15,7 +15,8 @@
       facingMode: 'environment',
       foundImage: null, // For single mode found result
       searchKind: 'all', // all, mold, cutter
-      sessions: [], activeSessionId: null
+      sessions: [], activeSessionId: null,
+      scanEngine: localStorage.getItem('mcs_arl_engine') || 'multi'
     },
 
     getSupabaseClient() {
@@ -115,7 +116,7 @@
           session_name: s.name,
           session_type: s.type,
           status: s.status,
-          created_by: s.employeeId || window.app?.currentUser?.EmployeeID || '1',
+          created_by: s.employeeId || window.app?.currentUser?.EmployeeID || '9',
           reference_id: s.referenceId || null,
           notes: s.notes || null,
           completed_at: s.completedAt || null,
@@ -459,7 +460,7 @@
       const newId = this.generateUUID();
       const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
       const timeStr = new Date().toTimeString().slice(0, 5).replace(/:/g, '');
-      const empId = window.app?.currentUser?.EmployeeID || '1';
+      const empId = window.app?.currentUser?.EmployeeID || '9';
       const employees = window.DataManager?.data?.employees || [];
       const empData = employees.find(e => String(e.EmployeeID) === String(empId));
       const empName = empData ? (empData.EmployeeNameShort || empData.EmployeeName || empId) : empId;
@@ -900,7 +901,7 @@
       }
 
       const employees = window.DataManager?.data?.employees || [];
-      const defaultEmpId = window.app?.currentUser?.EmployeeID || '1';
+      const defaultEmpId = window.app?.currentUser?.EmployeeID || '9';
       const empOptions = employees.map(e => `<option value="${e.EmployeeID}" ${e.EmployeeID === defaultEmpId ? 'selected' : ''}>${e.EmployeeName}</option>`).join('');
 
       body.innerHTML = `
@@ -987,7 +988,7 @@
         const timeStr = new Date().toTimeString().slice(0, 5).replace(/:/g, '');
         const employees = window.DataManager?.data?.employees || [];
         const empData = employees.find(e => String(e.EmployeeID) === String(this.state.tempBatchEmpId));
-        const empName = empData ? (empData.EmployeeNameShort || empData.EmployeeName || this.state.tempBatchEmpId) : (this.state.tempBatchEmpId || '1');
+        const empName = empData ? (empData.EmployeeNameShort || empData.EmployeeName || this.state.tempBatchEmpId) : (this.state.tempBatchEmpId || '9');
 
         let finalName = this.state.batchDraftName ? this.state.batchDraftName.trim() : `棚卸_${dateStr}_${timeStr}_${empName}`;
 
@@ -997,7 +998,7 @@
           name: finalName,
           type: 'BATCH_LIST',
           status: 'IN_PROGRESS',
-          employeeId: this.state.tempBatchEmpId || window.app?.currentUser?.EmployeeID || '1',
+          employeeId: this.state.tempBatchEmpId || window.app?.currentUser?.EmployeeID || '9',
           items: this.state.batchDraftItems
         });
         this.state.activeSessionId = newId;
@@ -1626,7 +1627,7 @@
       }
 
       const employees = window.DataManager?.data?.employees || [];
-      const defaultEmpId = window.app?.currentUser?.EmployeeID || '1';
+      const defaultEmpId = window.app?.currentUser?.EmployeeID || '9';
       const empOptions = employees.map(e => `<option value="${e.EmployeeID}" ${e.EmployeeID === defaultEmpId ? 'selected' : ''}>${e.EmployeeName}</option>`).join('');
 
       body.innerHTML = `
@@ -1902,7 +1903,7 @@
 
         const employees = window.DataManager?.data?.employees || [];
         const empData = employees.find(e => String(e.EmployeeID) === String(this.state.tempLocEmpId));
-        const empName = empData ? (empData.EmployeeNameShort || empData.EmployeeName || this.state.tempLocEmpId) : (this.state.tempLocEmpId || '1');
+        const empName = empData ? (empData.EmployeeNameShort || empData.EmployeeName || this.state.tempLocEmpId) : (this.state.tempLocEmpId || '9');
 
         let finalName = this.state.locDraftName ? this.state.locDraftName.trim() : `実査_${sessionNameRef}`;
 
@@ -1913,7 +1914,7 @@
           type: 'LOCATION_CHECK',
           referenceId: targetLayerIds.join(','),
           status: 'IN_PROGRESS',
-          employeeId: this.state.tempLocEmpId || window.app?.currentUser?.EmployeeID || '1',
+          employeeId: this.state.tempLocEmpId || window.app?.currentUser?.EmployeeID || '9',
           items: expected.map(ex => ({
             line_id: this.generateUUID(),
             code: ex.code,
@@ -2261,7 +2262,7 @@
           const idVal = isMold ? (scItem.item.MoldID || scItem.item.MoldCode) : (scItem.item.CutterID || scItem.item.CutterNo);
           if (window.showToast) window.showToast('info', '', 'Đang cập nhật vị trí...');
 
-          const employeeId = (window.app && window.app.currentUser && window.app.currentUser.EmployeeID) ? window.app.currentUser.EmployeeID : '1';
+          const employeeId = (window.app && window.app.currentUser && window.app.currentUser.EmployeeID) ? window.app.currentUser.EmployeeID : '9';
 
           if (window.LocationMove && window.LocationMove.apiMoveRackLayer) {
             window.LocationMove.apiMoveRackLayer(scItem.item, s.currentLayer, employeeId, 'Update from AR Locator')
@@ -2601,6 +2602,7 @@
             </div>
             <div style="display:flex; gap:6px; align-items:center;">
               <select id="arl-camera-select" style="max-width:110px; font-size:12px; padding:4px; border-radius:4px; display:none;"></select>
+              <button id="arl-cam-engine" style="border:1px solid #3b82f6; background:#eff6ff; color:#2563eb; padding:4px 8px; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer;" title="Chuyển đổi chế độ quét"><i class="fas fa-bolt"></i> <span id="arl-cam-engine-lbl">${this.state.scanEngine === 'single' ? 'Quét Đơn' : 'Quét Đa'}</span></button>
               <button id="arl-cam-swap" style="border:1px solid #ccc; background:#f5f5f5; padding:4px 10px; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer;">切替</button>
               <button id="arl-cam-pause" style="background:#f59e0b; color:#fff; border:none; padding:4px 10px; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer;"><i class="fas fa-pause"></i> 一時停止 (Tạm dừng / Xem kết quả)</button>
             </div>
@@ -2627,6 +2629,17 @@
 
       document.getElementById('arl-cam-close').addEventListener('click', () => this.closeCamera());
       document.getElementById('arl-cam-swap').addEventListener('click', () => this.toggleCamera());
+      
+      const btnEngine = document.getElementById('arl-cam-engine');
+      if (btnEngine) {
+        btnEngine.addEventListener('click', () => {
+          this.state.scanEngine = this.state.scanEngine === 'single' ? 'multi' : 'single';
+          localStorage.setItem('mcs_arl_engine', this.state.scanEngine);
+          document.getElementById('arl-cam-engine-lbl').textContent = this.state.scanEngine === 'single' ? 'Quét Đơn' : 'Quét Đa';
+          if (window.showToast) window.showToast('info', '', 'Đã chuyển sang chế độ: ' + (this.state.scanEngine === 'single' ? 'Quét Đơn lẻ (Siêu tốc)' : 'Quét Đa (Nhiều mã)'));
+        });
+      }
+
       document.getElementById('arl-cam-pause')?.addEventListener('click', () => {
         if (confirm('カメラを一時停止して結果に戻りますか？ / Tạm dừng và quay lại xem kết quả?')) {
           this.closeCamera();
@@ -2730,18 +2743,26 @@
         const cw = this.state.video.videoWidth, ch = this.state.video.videoHeight;
         if (this.state.canvas.width !== cw) { this.state.canvas.width = cw; this.state.canvas.height = ch; }
         this.state.ctx.drawImage(this.state.video, 0, 0, cw, ch);
-        if (window.MCSMultiQRScanner) {
-          // Áp dụng Multi-region scanning cho TẤT CẢ các chế độ (Single, Batch, Location)
-          // Giúp tìm ra 1 khuôn mục tiêu giữa hàng chục mã QR khác một cách nhanh nhất.
-          const hits = window.MCSMultiQRScanner.scanRegions(this.state.canvas, this.state.ctx);
-          if (hits && hits.length) {
-            hits.forEach(hit => this.handleCamQR(hit));
-          }
-        } else if (typeof window.jsQR === 'function') {
-          // Fallback: Quét toàn khung hình 1 lần nếu không có module MultiQR
+
+        let hits = [];
+        if (this.state.scanEngine === 'single' && typeof window.jsQR === 'function') {
           const imgData = this.state.ctx.getImageData(0, 0, cw, ch);
           const code = window.jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: 'dontInvert' });
-          if (code) this.handleCamQR(code);
+          if (code) hits.push(code);
+        } else if (window.MCSMultiQRScanner) {
+          hits = window.MCSMultiQRScanner.scanRegions(this.state.canvas, this.state.ctx);
+        } else if (typeof window.jsQR === 'function') {
+          const imgData = this.state.ctx.getImageData(0, 0, cw, ch);
+          const code = window.jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: 'dontInvert' });
+          if (code) hits.push(code);
+        }
+
+        if (hits && hits.length) {
+          for (let hit of hits) {
+            if (this.state.scanning) {
+              this.handleCamQR(hit);
+            }
+          }
         }
       }
       if (this.state.scanning) requestAnimationFrame(() => this.camTick());
@@ -2856,7 +2877,7 @@
               const btnUpdate = document.getElementById('ms-btn-update');
               if (btnUpdate) {
                 btnUpdate.onclick = () => {
-                  const employeeId = (window.app && window.app.currentUser && window.app.currentUser.EmployeeID) ? window.app.currentUser.EmployeeID : '1';
+                  const employeeId = (window.app && window.app.currentUser && window.app.currentUser.EmployeeID) ? window.app.currentUser.EmployeeID : '9';
                   if (window.LocationMove && window.LocationMove.apiMoveRackLayer) {
                     if (window.showToast) window.showToast('info', '', 'Đang cập nhật...');
                     window.LocationMove.apiMoveRackLayer(foundTarget.item, currentLayer, employeeId, 'AR Locator Multi-Search Update')

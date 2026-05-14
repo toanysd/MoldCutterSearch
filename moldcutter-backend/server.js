@@ -1719,8 +1719,16 @@ app.post('/api/add-shiplog', async (req, res) => {
 
     // 8. Generate IN / OUT log if transitioning between YSD and Out
     const destToCompanyID = String(ToCompanyID).trim();
-    if ((oldKeeper === ysdId && destToCompanyID !== ysdId) || (oldKeeper !== ysdId && destToCompanyID === ysdId)) {
-      const generatedStatus = (oldKeeper === ysdId && destToCompanyID !== ysdId) ? 'OUT' : 'IN';
+    let generatedStatus = '';
+    if (destToCompanyID === '6') {
+      generatedStatus = 'RETURNED';
+    } else if (oldKeeper === ysdId && destToCompanyID !== ysdId) {
+      generatedStatus = 'OUT';
+    } else if (oldKeeper !== ysdId && destToCompanyID === ysdId) {
+      generatedStatus = 'IN';
+    }
+
+    if (generatedStatus) {
       const stLogId = genId('WEB_SL_');
       const stEntry = {
         StatusLogID: stLogId,

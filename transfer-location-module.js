@@ -495,9 +495,9 @@
             if (window.notify) window.notify.info('Đang xóa bản ghi qua API...', 'Trạng thái');
 
             var endpoint = resolveApiUrl('/api/csv/upsert');
-            var employee = '1';
+            var employee = '9';
             try {
-                if (window.app && window.app.currentUser) employee = window.app.currentUser.EmployeeID || '1';
+                if (window.app && window.app.currentUser) employee = window.app.currentUser.EmployeeID || '9';
             } catch (e) { }
 
             var deleteReq = fetch(endpoint, {
@@ -596,6 +596,7 @@
                         };
                         if (global.DataManager && global.DataManager.data) {
                             global.DataManager.data.shiplog.unshift(memPayload);
+                            var oldKeeper = isMold ? (self.currentItem.KeeperCompany || '') : (self.currentItem.KeeperCompany || '');
                             if (isMold) {
                                 var moldArr = global.DataManager.data.molds;
                                 for (var w = 0; w < moldArr.length; w++) {
@@ -613,7 +614,6 @@
                             }
 
                             // ADD LOCAL STATUSLOG UPDATE
-                            var oldKeeper = isMold ? (self.currentItem.KeeperCompany || '') : (self.currentItem.KeeperCompany || '');
                             var ysdId = '2'; // hardcode YSD
                             var generatedStatus = '';
                             var destId = String(payload.ToCompanyID).trim();

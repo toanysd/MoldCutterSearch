@@ -98,7 +98,7 @@
       try { localStorage.setItem('mcs_ar_audit_sessions', JSON.stringify(this.state.sessions)); } catch (e) { }
     },
 
-    async saveSessions(syncSessionId = null) {
+    saveSessions(syncSessionId = null) {
       this.saveSessionsLocalOnly();
 
       const targetId = syncSessionId || this.state.activeSessionId || (this.state.locationSession ? this.state.locationSession.id : null);
@@ -110,7 +110,9 @@
       const sb = this.getSupabaseClient();
       if (!sb) return;
 
-      try {
+      if (this.state.saveTimeout) clearTimeout(this.state.saveTimeout);
+      this.state.saveTimeout = setTimeout(async () => {
+        try {
         const sessionPayload = {
           session_id: s.id,
           session_name: s.name,
@@ -147,10 +149,11 @@
           s.items.forEach(i => i.isLoggedToDb = true);
           this.saveSessionsLocalOnly();
         }
-      } catch (e) {
-        console.error('Supabase Sync Session Error:');
-        console.error(JSON.stringify(e, null, 2));
-      }
+        } catch (e) {
+          console.error('Supabase Sync Session Error:');
+          console.error(JSON.stringify(e, null, 2));
+        }
+      }, 1000);
     },
 
     exportSessionReport(session, isPrint = false) {
@@ -460,7 +463,7 @@
       const newId = this.generateUUID();
       const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
       const timeStr = new Date().toTimeString().slice(0, 5).replace(/:/g, '');
-      const empId = window.app?.currentUser?.EmployeeID || '9';
+      const empId = '9'; // window.app?.currentUser?.EmployeeID || '9';
       const employees = window.DataManager?.data?.employees || [];
       const empData = employees.find(e => String(e.EmployeeID) === String(empId));
       const empName = empData ? (empData.EmployeeNameShort || empData.EmployeeName || empId) : empId;
@@ -901,8 +904,8 @@
       }
 
       const employees = window.DataManager?.data?.employees || [];
-      const defaultEmpId = window.app?.currentUser?.EmployeeID || '9';
-      const empOptions = employees.map(e => `<option value="${e.EmployeeID}" ${e.EmployeeID === defaultEmpId ? 'selected' : ''}>${e.EmployeeName}</option>`).join('');
+      const defaultEmpId = '9'; // window.app?.currentUser?.EmployeeID || '9';
+      const empOptions = employees.map(e => `<option value="${e.EmployeeID}" ${String(e.EmployeeID) === String(defaultEmpId) ? 'selected' : ''}>${e.EmployeeName}</option>`).join('');
 
       body.innerHTML = `
         <div class="arl-hint">
@@ -1627,8 +1630,8 @@
       }
 
       const employees = window.DataManager?.data?.employees || [];
-      const defaultEmpId = window.app?.currentUser?.EmployeeID || '9';
-      const empOptions = employees.map(e => `<option value="${e.EmployeeID}" ${e.EmployeeID === defaultEmpId ? 'selected' : ''}>${e.EmployeeName}</option>`).join('');
+      const defaultEmpId = '9'; // window.app?.currentUser?.EmployeeID || '9';
+      const empOptions = employees.map(e => `<option value="${e.EmployeeID}" ${String(e.EmployeeID) === String(defaultEmpId) ? 'selected' : ''}>${e.EmployeeName}</option>`).join('');
 
       body.innerHTML = `
         <div class="arl-hint">
@@ -2676,7 +2679,7 @@
         }
 
         const constraints = {
-          video: deviceId ? { deviceId: { exact: deviceId } } : (isRetry ? true : { facingMode: this.state.facingMode, width: { ideal: 640 }, height: { ideal: 480 } }),
+          video: deviceId ? { deviceId: { exact: deviceId }, width: { ideal: 1280 }, height: { ideal: 720 }, advanced: [{ focusMode: 'continuous' }] } : (isRetry ? true : { facingMode: this.state.facingMode, width: { ideal: 1280 }, height: { ideal: 720 }, advanced: [{ focusMode: 'continuous' }] }),
           audio: false
         };
         this.state.stream = await navigator.mediaDevices.getUserMedia(constraints);

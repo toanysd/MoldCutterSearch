@@ -38,7 +38,7 @@
         step: 1, /* For PLAN/SCRAP multi-step */
 
         state: {
-            employeeId: '1',
+            employeeId: '9',
             dateStr: '',
             notes: '',
             scrapMethod: '自社で廃棄',
@@ -55,7 +55,7 @@
             var dyStr = today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
             
             this.state = {
-                employeeId: localStorage.getItem('lastCheckinEmp') || '1',
+                employeeId: localStorage.getItem('lastCheckinEmp') || '9',
                 dateStr: dyStr,
                 notes: '',
                 scrapMethod: '自社で廃棄',

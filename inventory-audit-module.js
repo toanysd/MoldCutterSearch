@@ -240,9 +240,9 @@
 
                 suggestedName: `棚卸 (${detectedType === 'cutter' ? '抜型' : '金型'}) ${defaultDate}`,
 
-                users: window.usersData || [{ ID: '1', Name: 'Admin' }],
+                users: window.usersData || [{ ID: '9', Name: 'Admin' }],
 
-                currentUser: window.currentUser || { ID: '1', Name: 'User' }
+                currentUser: window.currentUser || { ID: '9', Name: 'User' }
 
             };
 

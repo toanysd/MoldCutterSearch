@@ -1,7 +1,6 @@
 ShipID,CustomerID,ItemTypeID,ShipItemName,ShipDate,ToCompanyID,FromCompanyID,ShipItemType,ShipStatus,FromCompany,ToCompany,MoldID,CutterID,FrameID,OtherEquipID,WaterBaseID,ShipNotes,DateEntry,handler,EmployeeID,UpdatedAt,UpdatedBy
 WEB_SHIP_1778884208041_q6uhv97pg,,,,2026-05-15,1,,,Vận chuyển,,,,3110,,,,,2026-05-15T22:30:08.041Z,,9,,
 WEB_SHIP_1778852049145_q798hb8z6,,,,2026-05-15,1,,,Vận chuyển,,,,3110,,,,,2026-05-15T13:34:09.145Z,,9,,
-WEB_SHIP_1778851828057_igxdby69y,,,,2026-05-15,1,,,Vận chuyển,,,,3110,,,,金型·プラグ・抜型,2026-05-15T13:30:28.057Z,,9,,
 WEB_SHIP_1778832901154_mzxw8k6pb,,,,2026-05-15,1,,,Vận chuyển,,,5805,,,,,金型・プラグ・抜型,2026-05-15T08:15:01.154Z,,9,,
 WEB_SHIP_1778831626152_sf4jyubl7,,,,2026-05-15,1,,,Vận chuyển,,,5804,,,,,金型・プラグ・抜型　,2026-05-15T07:53:46.152Z,,9,,
 SHIP206025,,,,2026-05-15,7,2,,,,,5789,,,,,Teflon,,,1,,

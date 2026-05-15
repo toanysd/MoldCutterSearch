@@ -1,4 +1,5 @@
 DataChangeID,TableName,RecordID,RecordIDField,FieldName,OldValue,NewValue,ChangedAt,ChangedBy,BaseValueAtEdit,BaseCommitID,BaseCommitAt,ChangeSource,ChangeNote,IsConflict,ResolvedValue,ResolvedAt,ResolvedBy
+DCH1778838384997_jvvnm73hx,Cutters,3110,CutterID,KeeperCompany,,1,2026-05-15,9,,,,api/add-shiplog,金型・プラグ・抜型,FALSE,,,
 DCH1778832905607_sdubsbx6q,shiplog.csv,WEB_SHIP_1778832901154_mzxw8k6pb,ShipID,ShipID,,WEB_SHIP_1778832901154_mzxw8k6pb,2026-05-15,9,,,,api/add-shiplog,New shipment,FALSE,,,
 DCH1778832903646_sy55yabvl,Molds,5805,MoldID,KeeperCompany,,1,2026-05-15,9,,,,api/add-shiplog,金型・プラグ・抜型,FALSE,,,
 DCH1778831936637_gj9nyukjd,shiplog.csv,WEB_SHIP_1778831933050_kaywlphej,ShipID,ShipID,,WEB_SHIP_1778831933050_kaywlphej,2026-05-15,9,,,,api/add-shiplog,New shipment,FALSE,,,

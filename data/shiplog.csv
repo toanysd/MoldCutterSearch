@@ -1,4 +1,5 @@
 ShipID,CustomerID,ItemTypeID,ShipItemName,ShipDate,ToCompanyID,FromCompanyID,ShipItemType,ShipStatus,FromCompany,ToCompany,MoldID,CutterID,FrameID,OtherEquipID,WaterBaseID,ShipNotes,DateEntry,handler,EmployeeID,UpdatedAt,UpdatedBy
+WEB_SHIP_1778851828057_igxdby69y,,,,2026-05-15,1,,,Vận chuyển,,,,3110,,,,金型·プラグ・抜型,2026-05-15T13:30:28.057Z,,9,,
 WEB_SHIP_1778838826950_ojktg4mja,,,,2026-05-15,1,,,Vận chuyển,,,,3110,,,,金型・プラグ・抜型,2026-05-15T09:53:46.950Z,,9,,
 WEB_SHIP_1778838382752_cuz0q4cb9,,,,2026-05-15,1,,,Vận chuyển,,,,3110,,,,金型・プラグ・抜型,2026-05-15T09:46:22.752Z,,9,,
 WEB_SHIP_1778832901154_mzxw8k6pb,,,,2026-05-15,1,,,Vận chuyển,,,5805,,,,,金型・プラグ・抜型,2026-05-15T08:15:01.154Z,,9,,

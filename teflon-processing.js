@@ -42,7 +42,8 @@
                     });
                     var jRes = await res.json().catch(function () { });
                     if (!res.ok || (jRes && jRes.success === false)) {
-                        throw new Error(jRes ? jRes.message : 'API Http ' + res.status);
+                        var extra = (jRes && jRes.unknownFields) ? (' (' + JSON.stringify(jRes.unknownFields) + ')') : '';
+                        throw new Error(jRes ? (jRes.message + extra) : 'API Http ' + res.status);
                     }
                 }
                 if (global.notify && !item.hideSuccessInfo) {

@@ -1,4 +1,4 @@
-// v9.0.2
+// v9.1.43-GoldenRuleOUT
 /* ============================================================================
    transfer-location-module.js
    Module Vận chuyển
@@ -605,32 +605,32 @@
                         };
                         if (global.DataManager && global.DataManager.data) {
                             global.DataManager.data.shiplog.unshift(memPayload);
-                            var oldKeeper = isMold ? (self.currentItem.KeeperCompany || '') : (self.currentItem.KeeperCompany || '');
+                            
+                            // 3D Location Golden Rule: Vận chuyển rời giá -> OUT
+                            var generatedStatus = 'OUT';
+
                             if (isMold) {
                                 var moldArr = global.DataManager.data.molds;
                                 for (var w = 0; w < moldArr.length; w++) {
                                     if (moldArr[w].MoldID == payload.MoldID) {
-                                        moldArr[w].KeeperCompany = payload.ToCompanyID; break;
+                                        moldArr[w].KeeperCompany = payload.ToCompanyID;
+                                        moldArr[w].Status = generatedStatus;
+                                        break;
                                     }
                                 }
                             } else {
                                 var cutterArr = global.DataManager.data.cutters;
                                 for (var w = 0; w < cutterArr.length; w++) {
                                     if (cutterArr[w].CutterID == payload.CutterID) {
-                                        cutterArr[w].KeeperCompany = payload.ToCompanyID; break;
+                                        cutterArr[w].KeeperCompany = payload.ToCompanyID;
+                                        cutterArr[w].Status = generatedStatus;
+                                        break;
                                     }
                                 }
                             }
 
                             // ADD LOCAL STATUSLOG UPDATE
-                            var ysdId = '2'; // hardcode YSD
-                            var generatedStatus = '';
-                            var destId = String(payload.ToCompanyID).trim();
-                            if (destId === '6') generatedStatus = 'RETURNED';
-                            else if (String(oldKeeper) === ysdId && destId !== ysdId) generatedStatus = 'OUT';
-                            else if (String(oldKeeper) !== ysdId && destId === ysdId) generatedStatus = 'IN';
-
-                            if (generatedStatus && global.DataManager.data.statuslogs) {
+                            if (global.DataManager.data.statuslogs) {
                                 global.DataManager.data.statuslogs.unshift({
                                     StatusLogID: 'WEB_SL_TEMP_' + Date.now(),
                                     MoldID: isMold ? (payload.MoldID || '') : '',
@@ -643,6 +643,10 @@
                                     Notes: payload.ShipNotes || 'Auto-generated from Shipment'
                                 });
                             }
+                            
+                            // Re-render UI
+                            document.dispatchEvent(new CustomEvent('mcs-data-sync', { detail: { forceReload: true } }));
+                            
                         }
                     } catch (e) { }
                 }).catch(e => {

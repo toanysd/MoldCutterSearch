@@ -55,7 +55,7 @@
             var dyStr = today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
             
             this.state = {
-                employeeId: localStorage.getItem('lastCheckinEmp') || '9',
+                employeeId: localStorage.getItem('cio_default_employee_id') || '9',
                 dateStr: dyStr,
                 notes: '',
                 scrapMethod: '自社で廃棄',
@@ -261,7 +261,11 @@
         },
         
         renderGridEmployees: function() {
-            var emps = this.getEmployees();
+            var emps = this.getEmployees().slice().sort(function(a, b) {
+                var sA = ['1', '2', '3'].indexOf(String(a.EmployeeID || '').trim()) >= 0 ? 1 : 0;
+                var sB = ['1', '2', '3'].indexOf(String(b.EmployeeID || '').trim()) >= 0 ? 1 : 0;
+                return sA - sB;
+            });
             var curr = String(this.state.employeeId);
             var cName = this.resolveEmployeeName(curr);
 
@@ -563,7 +567,7 @@
             eg.forEach(function(el) {
                 el.addEventListener('click', function() {
                     self.state.employeeId = this.getAttribute('data-id');
-                    localStorage.setItem('lastCheckinEmp', self.state.employeeId);
+                    try { localStorage.setItem('cio_default_employee_id', self.state.employeeId); } catch(e){}
                     self.updateUI();
                 });
             });
@@ -643,7 +647,7 @@
                         var pickVal = this.getAttribute('data-val');
                         var pickLbl = this.getAttribute('data-lbl');
                         self.state[stateField] = pickVal;
-                        if(stateField === 'employeeId') localStorage.setItem('lastCheckinEmp', pickVal);
+                        if(stateField === 'employeeId') { try { localStorage.setItem('cio_default_employee_id', pickVal); } catch(e){} }
                         inp.value = pickLbl;
                         sugg.style.display = 'none';
                         self.updateUI();

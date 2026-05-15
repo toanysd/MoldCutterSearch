@@ -12,8 +12,10 @@
   /* ──────────────────────────────────────────────────────────
      CONSTANTS
   ────────────────────────────────────────────────────────── */
-  var DEFAULT_SENDER_ID = '1';
-  var DEFAULT_SENDER_NAME = 'toan';
+  var defEmpStore = '';
+  try { defEmpStore = localStorage.getItem('cio_default_employee_id'); } catch(e){}
+  var DEFAULT_SENDER_ID = defEmpStore || '9';
+  var DEFAULT_SENDER_NAME = 'トアン';
   var DEFAULT_TO_MAIL = 'toan.ysd@gmail.com'; /* hidden, logic only */
   var EDGE_FN_NAME = 'send-photo-audit';
 
@@ -2294,6 +2296,12 @@
         this._employees = rows.map(function (r) {
           return { id: String(r.EmployeeID || r.id || ''), name: r.EmployeeName || r.name || '' };
         });
+        // Sort to put 1, 2, 3 at the bottom
+        this._employees.sort(function(a, b) {
+          var sA = ['1', '2', '3'].indexOf(a.id) >= 0 ? 1 : 0;
+          var sB = ['1', '2', '3'].indexOf(b.id) >= 0 ? 1 : 0;
+          return sA - sB;
+        });
       }
     }
     this._populateSenderSelect();
@@ -2329,7 +2337,10 @@
     } else {
       if (mr) mr.classList.add('pu-hidden');
       if (ms) ms.value = '';
-      if (hidId) hidId.value = val;
+      if (hidId) {
+        hidId.value = val;
+        try { localStorage.setItem('cio_default_employee_id', val); } catch(e){}
+      }
       this._showFieldBadge('puSenderBadge', 'puSenderBadgeM', true, false);
     }
   };

@@ -59,7 +59,11 @@
             this.currentMode = 'TRANSFER'; // force transfer mode only
             this.step = 1;
             this.historyLocked = true;
-            this.state = { employeeId: '', companyId: '', notes: '', shipDate: getTodayString() };
+            var defEmp = '';
+            try { defEmp = localStorage.getItem('cio_default_employee_id'); } catch(e){}
+            if (!defEmp) defEmp = '9'; // Mặc định là Toan
+
+            this.state = { employeeId: defEmp, companyId: '', notes: '', shipDate: getTodayString() };
 
             var bd = document.getElementById('tl-backdrop');
             if (!bd) {
@@ -217,7 +221,11 @@
 
                 html += '<div style="font-size:12px; font-weight:bold; color:#64748b; margin-bottom:8px;">よく使う担当者 / Truy cập nhanh:</div>';
                 html += '<div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;" id="tl-emp-list">';
-                var emps = this.getEmployees().slice(0, 12);
+                var emps = this.getEmployees().slice().sort(function(a, b) {
+                    var sA = ['1', '2', '3'].indexOf(String(a.EmployeeID || '').trim()) >= 0 ? 1 : 0;
+                    var sB = ['1', '2', '3'].indexOf(String(b.EmployeeID || '').trim()) >= 0 ? 1 : 0;
+                    return sA - sB;
+                }).slice(0, 12);
                 for (var i = 0; i < emps.length; i++) {
                     var isS = String(this.state.employeeId) === String(emps[i].EmployeeID);
                     var bg = isS ? '#dbeafe' : '#f8fafc';
@@ -399,6 +407,7 @@
                 ePicks.forEach(function (e) {
                     e.addEventListener('click', function () {
                         self.state.employeeId = this.getAttribute('data-val');
+                        try { localStorage.setItem('cio_default_employee_id', self.state.employeeId); } catch(e){}
                         var dtInput = document.getElementById('tl-date-input');
                         if (dtInput) self.state.shipDate = dtInput.value;
                         advanceStep();

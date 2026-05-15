@@ -175,7 +175,8 @@ Ghi chú:
   function getDefaultEmpId() {
     var v = storageGet(STORAGEKEY_DEFAULT_EMP);
     if (v && String(v).trim()) return String(v).trim();
-    return _mem.defaultEmpId ? String(_mem.defaultEmpId).trim() : '';
+    if (_mem.defaultEmpId) return String(_mem.defaultEmpId).trim();
+    return '9'; // Mặc định là Toan (9)
   }
 
   function setDefaultEmpId(id) {
@@ -543,7 +544,11 @@ Ghi chú:
   }
 
   function getQuickEmployees(limit) {
-    var emps = getEmployees();
+    var emps = getEmployees().slice().sort(function(a, b) {
+      var sA = ['1', '2', '3'].indexOf(String(a.EmployeeID || '').trim()) >= 0 ? 1 : 0;
+      var sB = ['1', '2', '3'].indexOf(String(b.EmployeeID || '').trim()) >= 0 ? 1 : 0;
+      return sA - sB;
+    });
     return buildFreqTop(emps, 'EmployeeID', function (id) {
       return { short: getEmployeeShortName(id), full: getEmployeeName(id) }; // short = EmployeeNameShort
     }, limit);
@@ -860,7 +865,20 @@ Ghi chú:
     });
   }
 
-  // ----------------------------- Picker -----------------------------
+  // ----------------------------- Pickers -----------------------------
+  function openEmpPicker(onSelect) {
+    var employees = getEmployees().slice().sort(function(a, b) {
+      var sA = ['1', '2', '3'].indexOf(String(a.EmployeeID || '').trim()) >= 0 ? 1 : 0;
+      var sB = ['1', '2', '3'].indexOf(String(b.EmployeeID || '').trim()) >= 0 ? 1 : 0;
+      return sA - sB;
+    });
+    picker.kind = '';
+    picker.fromAction = '';
+    picker.onSelected = null;
+    picker.onCancel = null;
+    // ... (rest of logic)
+  }
+
   function closePicker() {
     picker.open = false;
     picker.kind = '';
@@ -2350,6 +2368,25 @@ Ghi chú:
 
   // ----------------------------- Integration: quick-action -----------------------------
   function bindQuickActionCapture() {
+    try {
+      if (document.body && document.body.dataset && document.body.dataset.cioGlobalBound) return;
+      if (document.body && document.body.dataset) document.body.dataset.cioGlobalBound = '1';
+    } catch (e0) { }
+
+    // Auto-refresh History when Data Manager syncs new Delta
+    document.addEventListener('data-manager-updated', function () {
+      var p = document.getElementById('cio-panel');
+      if (p && !p.classList.contains('hidden') && currentItem) {
+        renderHistoryNow();
+      }
+    });
+
+    document.addEventListener('mcs-data-sync', function (e) {
+      var p = document.getElementById('cio-panel');
+      if (p && !p.classList.contains('hidden') && currentItem) {
+        renderHistoryNow();
+      }
+    });
     try {
       if (document.body && document.body.dataset && document.body.dataset.cioQuickBound) return;
       if (document.body && document.body.dataset) document.body.dataset.cioQuickBound = '1';

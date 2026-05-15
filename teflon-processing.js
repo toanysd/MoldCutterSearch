@@ -363,7 +363,9 @@
 
         var endpoint = this.resolveApiUrl('/api/csv/upsert');
 
-        var employee = '1';
+        var defEmp = '';
+        try { defEmp = localStorage.getItem('cio_default_employee_id'); } catch(e){}
+        var employee = defEmp || '9';
 
 
 
@@ -495,7 +497,11 @@
         if (!tLog) return;
 
         var companies = (this.dataCache && this.dataCache.companies) || [];
-        var employees = (this.dataCache && this.dataCache.employees) || [];
+        var employees = ((this.dataCache && this.dataCache.employees) || []).slice().sort(function(a, b) {
+            var sA = ['1', '2', '3'].indexOf(String(a.EmployeeID || '').trim()) >= 0 ? 1 : 0;
+            var sB = ['1', '2', '3'].indexOf(String(b.EmployeeID || '').trim()) >= 0 ? 1 : 0;
+            return sA - sB;
+        });
 
         var empOpts = '<option value="">-- Chọn --</option><option value="1">システム (System)</option>';
         employees.forEach(function (e) { empOpts += '<option value="' + self.escapeHtml(e.EmployeeID) + '">' + self.escapeHtml(e.EmployeeName || e.Name) + '</option>'; });
@@ -695,7 +701,11 @@
 
         var companies = (this.dataCache && this.dataCache.companies) || [];
 
-        var employees = (this.dataCache && this.dataCache.employees) || [];
+        var employees = ((this.dataCache && this.dataCache.employees) || []).slice().sort(function(a, b) {
+            var sA = ['1', '2', '3'].indexOf(String(a.EmployeeID || '').trim()) >= 0 ? 1 : 0;
+            var sB = ['1', '2', '3'].indexOf(String(b.EmployeeID || '').trim()) >= 0 ? 1 : 0;
+            return sA - sB;
+        });
 
         var self = this;
 
@@ -1289,7 +1299,9 @@
 
         var today = this.getTodayISO();
 
-        var employee = document.getElementById('tefp_emp') ? document.getElementById('tefp_emp').value : '1';
+        var defEmp = '';
+        try { defEmp = localStorage.getItem('cio_default_employee_id'); } catch(e){}
+        var employee = document.getElementById('tefp_emp') ? document.getElementById('tefp_emp').value : (defEmp || '9');
 
 
 

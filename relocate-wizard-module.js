@@ -85,8 +85,12 @@
         openModal: function (item) {
             this.currentItem = item;
             this.step = 1;
+            var defEmp = '';
+            try { defEmp = localStorage.getItem('cio_default_employee_id'); } catch(e){}
+            if (!defEmp) defEmp = '9'; // Mặc định là Toan
+
             this.state = {
-                employeeId: '',
+                employeeId: defEmp,
                 dateStr: getTodayString(),
                 rackId: '',
                 layerId: '',
@@ -232,7 +236,11 @@
 
                 html += '<div style="font-size:12px; font-weight:bold; color:#64748b; margin-bottom:8px;">よく使う担当者 / Truy cập nhanh:</div>';
                 html += '<div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;" id="rw-emp-list">';
-                var emps = this.getEmployees().slice(0, 12);
+                var emps = this.getEmployees().slice().sort(function(a, b) {
+                    var sA = ['1', '2', '3'].indexOf(String(a.EmployeeID || '').trim()) >= 0 ? 1 : 0;
+                    var sB = ['1', '2', '3'].indexOf(String(b.EmployeeID || '').trim()) >= 0 ? 1 : 0;
+                    return sA - sB;
+                }).slice(0, 12);
                 for (var i = 0; i < emps.length; i++) {
                     var isS = String(this.state.employeeId) === String(emps[i].EmployeeID);
                     var bg = isS ? '#dbeafe' : '#f8fafc';
@@ -314,7 +322,13 @@
                 html += '<div><span style="color:#64748b;font-weight:bold;">備考 (Ghi chú):</span> ' + escapeHtml(this.state.notes || '---') + '</div>';
                 html += '</div>';
 
-                html += '<button id="rw-submit" style="width:100%; background:#3b82f6; color:#fff; border:none; padding:12px 0; border-radius:8px; cursor:pointer;"><i class="fas fa-save" style="margin-bottom:4px;"></i>' + JV('位置変更と同時にチェックイン', 'ĐỔI VỊ TRÍ & CHECK-IN') + '</button>';
+                // Thêm checkbox xác nhận Check-In
+                html += '<div style="margin-bottom:16px; display:flex; align-items:center; gap:12px; background:#e0f2fe; padding:12px; border-radius:8px; border:1px solid #bae6fd;">';
+                html += '<input type="checkbox" id="rw-checkin-chk" checked style="width:20px; height:20px; cursor:pointer; accent-color:#0284c7;" />';
+                html += '<label for="rw-checkin-chk" style="cursor:pointer; flex:1;">' + JV('同時にチェックイン(IN)状態にする', 'Đồng thời cập nhật trạng thái kho thành [IN]') + '</label>';
+                html += '</div>';
+
+                html += '<button id="rw-submit" style="width:100%; background:#3b82f6; color:#fff; border:none; padding:12px 0; border-radius:8px; cursor:pointer; font-size:15px; font-weight:bold; box-shadow:0 2px 4px rgba(59,130,246,0.3); transition:all 0.2s;"><i class="fas fa-save" style="margin-right:6px;"></i>' + JV('実行', 'XÁC NHẬN THỰC HIỆN') + '</button>';
 
                 html += '<div style="margin-top:24px; text-align:left;">';
                 html += '<button id="rw-prev" style="' + secondaryBtnStyle + ' width:100%;"><div>修正する</div><div style="font-size:11px;font-weight:normal;"><i class="fas fa-arrow-left"></i> Quay lại sửa</div></button>';
@@ -379,6 +393,7 @@
                         suggEmp.querySelectorAll('.sugg-row').forEach(function (row) {
                             row.addEventListener('click', function () {
                                 self.state.employeeId = this.getAttribute('data-val');
+                                try { localStorage.setItem('cio_default_employee_id', self.state.employeeId); } catch(e){}
                                 inpEmp.value = self.state.employeeId;
                                 suggEmp.style.display = 'none';
                                 advanceStep();
@@ -392,6 +407,7 @@
                 ePicks.forEach(function (e) {
                     e.addEventListener('click', function () {
                         self.state.employeeId = this.getAttribute('data-val');
+                        try { localStorage.setItem('cio_default_employee_id', self.state.employeeId); } catch(e){}
                         var dtInput = document.getElementById('rw-date-input');
                         if (dtInput) self.state.dateStr = dtInput.value;
                         advanceStep();
@@ -549,6 +565,16 @@
         },
 
         submitRelocate: function () {
+            var btnSubmit = document.getElementById('rw-submit');
+            if (btnSubmit) {
+                btnSubmit.disabled = true;
+                btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right:6px;"></i> Đang xử lý...';
+            }
+
+            var doCheckIn = false;
+            var chkCheckIn = document.getElementById('rw-checkin-chk');
+            if (chkCheckIn) doCheckIn = chkCheckIn.checked;
+
             var dtStr = this.state.dateStr;
             var payload = {
                 filename: 'statuslogs.csv',
@@ -567,17 +593,25 @@
             else if (isTray) payload.TrayID = this.currentItem.TrayID;
 
             var self = this;
-            fetch(API_CHECKLOG, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
-                .then(res => res.json())
-                .then(res => {
-                    if (window.notify) window.notify.success('Cập nhật Đổi Vị Trí nội bộ thành công!');
+            
+            // Đóng modal ngay lập tức để người dùng không bấm 2 lần
+            self.close();
+            if (window.showToast) window.showToast('info', '', 'Đang cập nhật vị trí chạy ngầm...', 2000);
 
-                    try {
-                        payload.StatusLogID = res.StatusLogID || res.logId || ('T_' + Date.now());
-                        if (global.DataManager && global.DataManager.data) {
-                            global.DataManager.data.statuslogs.unshift(payload);
-                        }
-                    } catch (e) { }
+            var promises = [];
+
+            if (doCheckIn) {
+                promises.push(
+                    fetch(API_CHECKLOG, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+                    .then(res => res.json())
+                );
+            } else {
+                promises.push(Promise.resolve({ success: true, skippedCheckIn: true }));
+            }
+
+            Promise.all(promises).then(() => {
+                if (window.showToast) window.showToast('success', 'Thành công', 'Cập nhật Vị trí nội bộ thành công!', 3000);
+                else if (window.notify) window.notify.success('Cập nhật Vị trí nội bộ thành công!');
 
                     var locPayload = {
                         DateEntry: payload.Timestamp,
@@ -609,11 +643,35 @@
                     }).catch(function (e) { console.warn('Upsert RackLayerID failed', e); });
 
                     // Update local item immediately
-                    if (self.currentItem) self.currentItem.RackLayerID = self.state.layerId;
+                    if (self.currentItem) {
+                        self.currentItem.RackLayerID = self.state.layerId;
+                        self.currentItem.rackNo = self.state.layerId; // Alias
+                        var locName = self.getRackInfo(self.state.layerId);
+                        self.currentItem.displayRackLocation = locName;
+                        self.currentItem.displayLocation = locName;
+                        self.currentItem.location = locName;
 
-                    self.close();
+                        var layers = (global.DataManager && global.DataManager.data && global.DataManager.data.racklayers) ? global.DataManager.data.racklayers : [];
+                        var racks = (global.DataManager && global.DataManager.data && global.DataManager.data.racks) ? global.DataManager.data.racks : [];
+                        var dr = layers.find(function(x) { return String(x.RackLayerID) === String(self.state.layerId); });
+                        if (dr) {
+                            self.currentItem.rackLayerInfo = dr;
+                            var rack = racks.find(function(x) { return String(x.RackID) === String(dr.RackID); });
+                            if (rack) self.currentItem.rackInfo = rack;
+                        }
+                        
+                        // Ép buộc tải lại dữ liệu trên giao diện đang gọi đến nó (DetailPanel) lập tức
+                        if (window.dispatchEvent) {
+                            var itemId = self.currentItem.MoldID || self.currentItem.CutterID || self.currentItem.TrayID;
+                            window.dispatchEvent(new CustomEvent('mcs-data-sync', { detail: { idValue: itemId, trigger: 'RelocateWizard' } }));
+                        }
+                    }
                 }).catch(e => {
-                    alert('Lỗi: ' + e.message);
+                    if (window.showToast) {
+                        window.showToast('error', 'Lỗi', 'Không thể đổi vị trí: ' + e.message, 0); // timeout 0 để user tự đóng
+                    } else {
+                        alert('Lỗi: ' + e.message);
+                    }
                 });
         }
     };

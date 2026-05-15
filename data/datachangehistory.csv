@@ -1,4 +1,5 @@
 DataChangeID,TableName,RecordID,RecordIDField,FieldName,OldValue,NewValue,ChangedAt,ChangedBy,BaseValueAtEdit,BaseCommitID,BaseCommitAt,ChangeSource,ChangeNote,IsConflict,ResolvedValue,ResolvedAt,ResolvedBy
+DCH1778884242842ixyz4,shiplog.csv,WEB_SHIP_1778838382752_cuz0q4cb9,ShipID,ShipStatus,ACTIVE,DELETED,2026-05-15T22:30:42.842Z,9,,,,transfer_module_delete,User trigger deletion,FALSE,,,
 DCH1778884211869_4co0z3wd0,shiplog.csv,WEB_SHIP_1778884208041_q6uhv97pg,ShipID,ShipID,,WEB_SHIP_1778884208041_q6uhv97pg,2026-05-15,9,,,,api/add-shiplog,New shipment,FALSE,,,
 DCH1778884210202_hmf5ds1at,Cutters,3110,CutterID,KeeperCompany,,1,2026-05-15,9,,,,api/add-shiplog,,FALSE,,,
 DCH1778852052681_sdbbxwn3y,shiplog.csv,WEB_SHIP_1778852049145_q798hb8z6,ShipID,ShipID,,WEB_SHIP_1778852049145_q798hb8z6,2026-05-15,9,,,,api/add-shiplog,New shipment,FALSE,,,

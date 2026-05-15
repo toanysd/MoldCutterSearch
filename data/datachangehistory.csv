@@ -1,4 +1,5 @@
 DataChangeID,TableName,RecordID,RecordIDField,FieldName,OldValue,NewValue,ChangedAt,ChangedBy,BaseValueAtEdit,BaseCommitID,BaseCommitAt,ChangeSource,ChangeNote,IsConflict,ResolvedValue,ResolvedAt,ResolvedBy
+DCH1778831630615_nniemr1gm,shiplog.csv,WEB_SHIP_1778831626152_sf4jyubl7,ShipID,ShipID,,WEB_SHIP_1778831626152_sf4jyubl7,2026-05-15,9,,,,api/add-shiplog,New shipment,FALSE,,,
 DCH1778831628852_ngthg37wq,Molds,5804,MoldID,KeeperCompany,,1,2026-05-15,9,,,,api/add-shiplog,金型・プラグ・抜型　,FALSE,,,
 DCH1778817206025h08ng,molds,5789,MoldID,KeeperCompany,,7,2026-05-15T03:53:26.025Z,1,,,,teflon_wizard,Keeper Update,FALSE,,,
 DCH1778817206025b2ams,teflonlog,TL183817,TeflonLogID,TeflonStatus,Approved,Sent,2026-05-15T03:53:26.025Z,1,,,,teflon_wizard,Wizard Update,FALSE,,,

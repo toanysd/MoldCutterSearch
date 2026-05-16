@@ -317,18 +317,21 @@
 
       const check = (list, kind) => {
         if (!Array.isArray(list)) return;
+        const normQ = this.normalizeCode(query).toLowerCase();
         for (const item of list) {
           const code = kind === 'mold' ? (item.MoldCode || '') : (item.CutterCode || item.CutterNo || '');
           const name = kind === 'mold' ? (item.MoldName || '') : (item.CutterName || '');
           const dCode = item.displayCode || '';
+          const normC = this.normalizeCode(code).toLowerCase();
+          const normD = this.normalizeCode(dCode).toLowerCase();
 
-          if (code.toLowerCase().includes(q) || name.toLowerCase().includes(q) || dCode.toLowerCase().includes(q)) {
+          if (code.toLowerCase().includes(q) || name.toLowerCase().includes(q) || dCode.toLowerCase().includes(q) || normC.includes(normQ) || normD.includes(normQ)) {
             results.push({
               code: dCode || code,
               kind: kind,
               item: item,
               normCode: this.normalizeCode(dCode || code),
-              normId: item.normId || (kind === 'mold' ? item.MoldID : item.CutterID)
+              normId: String(item.normId || (kind === 'mold' ? item.MoldID : item.CutterID) || '')
             });
             if (results.length >= 20) return true; // max 20
           }
@@ -2793,8 +2796,8 @@
         if (!qrNorm) return false;
         if (qrKind && target.kind && target.kind !== qrKind) return false; // Match kind if provided
 
-        const targetNorm = target.normCode;
-        const targetId = target.normId;
+        const targetNorm = String(target.normCode || '');
+        const targetId = String(target.normId || '');
 
         if (targetNorm === qrNorm || targetId === qrNorm) return true;
         if (qrNorm.length >= 3) {
@@ -2890,6 +2893,7 @@
                         camRoot.removeChild(overlay);
                         this.state.searchList = this.state.searchList.filter(t => t.normCode !== foundTarget.normCode);
                         this.state.scanning = true;
+                        requestAnimationFrame(() => this.camTick());
                       });
                   } else {
                     // Fallback
@@ -2900,6 +2904,7 @@
                     camRoot.removeChild(overlay);
                     this.state.searchList = this.state.searchList.filter(t => t.normCode !== foundTarget.normCode);
                     this.state.scanning = true;
+                    requestAnimationFrame(() => this.camTick());
                   }
                 };
               }
@@ -2907,12 +2912,14 @@
               document.getElementById('ms-btn-continue').onclick = () => {
                 camRoot.removeChild(overlay);
                 this.state.scanning = true;
+                requestAnimationFrame(() => this.camTick());
               };
 
               document.getElementById('ms-btn-remove').onclick = () => {
                 this.state.searchList = this.state.searchList.filter(t => t.normCode !== foundTarget.normCode);
                 camRoot.removeChild(overlay);
                 this.state.scanning = true;
+                requestAnimationFrame(() => this.camTick());
               };
             }
           };
@@ -3074,6 +3081,7 @@
                   document.getElementById('btn-next-layer').onclick = () => {
                     camRoot.removeChild(overlay);
                     this.state.scanning = true;
+                    requestAnimationFrame(() => this.camTick());
                   };
                   document.getElementById('btn-view-stats').onclick = () => {
                     this.closeCamera();

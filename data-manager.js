@@ -1435,9 +1435,9 @@
             // Fix legacy FieldName map from datachangehistory.csv
             if (fieldName === 'MoldWeightModified') fieldName = 'MoldWeight';
 
-            // [V10 Patch] Không cho phép DataChangeHistory ảo ghi đè lên các trường Vị trí & Destination
-            // Nguyên nhân: Wizard ghi trực tiếp thông số xịn vào Molds.csv thông qua Delta Sync. Nếu không block, lịch sử cũ của Extended Editor sẽ đè nát số liệu mới.
-            if (fieldName === 'RackLayerID' || fieldName === 'KeeperCompany') return;
+            // [V10 Patch] Xóa block cứng Vị trí & Destination.
+            // Thay vào đó, hàm overlayRowByHistory sẽ kiểm tra Timestamp.
+            // if (fieldName === 'RackLayerID' || fieldName === 'KeeperCompany') return;
 
             var changedAt = normHistoryValue(row.ChangedAt)
 
@@ -1480,21 +1480,17 @@
 
 
         base.forEach(function (baseRow) {
-
             var row = Object.assign({}, baseRow)
-
             var recordId = normHistoryValue(baseRow && baseRow[idField])
-
             var fieldOverlay = buildHistoryFieldOverlay(tableName, recordId, idField)
-
-
-
-
+            var baseRowTime = getRowTimeForMerge(baseRow);
 
             Object.keys(fieldOverlay).forEach(function (fieldName) {
-
-                row[fieldName] = fieldOverlay[fieldName].NewValue
-
+                var historyTime = Date.parse(fieldOverlay[fieldName].ChangedAt) || 0;
+                // [V10 Fix] Only overlay if history is strictly newer than the base row's latest update
+                if (!baseRowTime || historyTime >= baseRowTime) {
+                    row[fieldName] = fieldOverlay[fieldName].NewValue;
+                }
             })
 
 

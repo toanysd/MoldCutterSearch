@@ -441,6 +441,10 @@
       if (window.ViewManager?.currentView && window.ViewManager.currentView !== 'ar-locator') {
         this.state.prevView = window.ViewManager.currentView;
       }
+      // Sync sessions from Supabase on open + poll every 30s for cross-device sync
+      this.loadSessions();
+      if (this.state.syncInterval) clearInterval(this.state.syncInterval);
+      this.state.syncInterval = setInterval(() => { if (this.state.isOpen) this.loadSessions(); }, 30000);
       this.render();
       if (window.ViewManager) window.ViewManager.switchView('ar-locator');
     },
@@ -492,6 +496,7 @@
     close() {
       this.state.isOpen = false;
       this.closeCamera();
+      if (this.state.syncInterval) { clearInterval(this.state.syncInterval); this.state.syncInterval = null; }
 
       if (window.SwipeHistoryTrap) window.SwipeHistoryTrap.remove('arlOverlay');
 
@@ -1561,7 +1566,8 @@
               dm.molds.forEach(m => {
                 const rId = String(m.RackLayerID || '');
                 if (targetLayerIds.includes(rId)) {
-                  expected.push({ code: m.displayCode || m.MoldCode, kind: 'mold', item: m, normCode: this.normalizeCode(m.displayCode || m.MoldCode) });
+                  const mc = m.displayCode || m.MoldCode;
+                  expected.push({ code: mc, kind: 'mold', item: m, normCode: this.normalizeCode(mc), normId: String(m.MoldID || '') });
                 }
               });
             }
@@ -1569,7 +1575,8 @@
               dm.cutters.forEach(c => {
                 const rId = String(c.RackLayerID || '');
                 if (targetLayerIds.includes(rId)) {
-                  expected.push({ code: c.displayCode || c.CutterCode || c.CutterNo, kind: 'cutter', item: c, normCode: this.normalizeCode(c.displayCode || c.CutterCode || c.CutterNo) });
+                  const cc = c.displayCode || c.CutterCode || c.CutterNo;
+                  expected.push({ code: cc, kind: 'cutter', item: c, normCode: this.normalizeCode(cc), normId: String(c.CutterID || '') });
                 }
               });
             }
@@ -2595,17 +2602,21 @@
       } else if (this.state.mode === 'multi_search') {
         targetInfo = `複数検索: ${targets.length}件`;
       } else if (this.state.mode === 'batch') {
-        targetInfo = targets.length > 0 ? `${targets.filter(t => !t.checked).length} 件未確認` : '全QRコードをスキャン';
-        if (targets.length > 0) {
-          const itemsHtml = targets.map(t => `<div class="arl-mini-item ${t.checked ? 'checked' : ''}" id="mini-${t.normCode}"><span>${t.code}</span></div>`).join('');
+        const uncheckedTargets = targets.filter(t => !t.checked);
+        targetInfo = uncheckedTargets.length > 0 ? `${uncheckedTargets.length} 件未確認` : '全QRコードをスキャン';
+        if (uncheckedTargets.length > 0) {
+          const itemsHtml = uncheckedTargets.map(t => `<div class="arl-mini-item" id="mini-${t.normCode}"><span>${t.code}</span></div>`).join('');
           miniListHtml = `<div class="arl-camera-minilist" id="arl-cam-minilist">${itemsHtml}</div>`;
         }
       } else {
         // Location mode
-        targetInfo = `位置: ${this.state.locationSession ? this.state.locationSession.locCode : ''} (Free Scan)`;
+        targetInfo = `位置: ${this.state.locationSession ? (this.state.locationSession.currentLayer || '') : ''}`;
         if (targets.length > 0) {
-          const itemsHtml = targets.map(t => `<div class="arl-mini-item ${t.checked ? 'checked' : ''}" id="mini-${t.normCode}"><span>${t.code}</span></div>`).join('');
-          miniListHtml = `<div class="arl-camera-minilist" id="arl-cam-minilist">${itemsHtml}</div>`;
+          const uncheckedLoc = targets.filter(t => !t.checked);
+          if (uncheckedLoc.length > 0) {
+            const itemsHtml = uncheckedLoc.map(t => `<div class="arl-mini-item" id="mini-${t.normCode}"><span>${t.code}</span></div>`).join('');
+            miniListHtml = `<div class="arl-camera-minilist" id="arl-cam-minilist">${itemsHtml}</div>`;
+          }
         }
       }
 
@@ -2840,137 +2851,57 @@
         }
         if (isMatch && foundTarget) {
           this.beep();
-          this.state.scanning = false; // Pause camera to show alert
+          this.state.scanning = false;
 
+          // Vẽ khung xanh
           const pad = 20;
-          const w = (loc.bottomRightCorner.x - loc.topLeftCorner.x) + pad * 2;
-          const h = (loc.bottomRightCorner.y - loc.topLeftCorner.y) + pad * 2;
-          const x = loc.topLeftCorner.x - pad;
-          const y = loc.topLeftCorner.y - pad;
-
-          ctx.strokeStyle = "#22c55e";
-          ctx.lineWidth = 4;
-          ctx.strokeRect(x, y, w, h);
+          const bw = (loc.bottomRightCorner.x - loc.topLeftCorner.x) + pad * 2;
+          const bh = (loc.bottomRightCorner.y - loc.topLeftCorner.y) + pad * 2;
+          const bx = loc.topLeftCorner.x - pad;
+          const by = loc.topLeftCorner.y - pad;
+          ctx.strokeStyle = '#22c55e'; ctx.lineWidth = 4;
+          ctx.strokeRect(bx, by, bw, bh);
           ctx.font = 'bold 24px Arial'; ctx.fillStyle = '#22c55e';
-          ctx.shadowColor = "black"; ctx.shadowBlur = 6;
-          ctx.fillText('✓ ' + displayCode, x, y - 10);
+          ctx.shadowColor = 'black'; ctx.shadowBlur = 6;
+          ctx.fillText('✓ ' + displayCode, bx, by - 10);
           ctx.shadowBlur = 0;
 
-          const originalLayer = foundTarget.item.RackLayerID || 'N/A';
+          const sysLayer = foundTarget.item.RackLayerID || 'N/A';
 
-          const showResultOverlay = (currentLayer) => {
-            const overlay = document.createElement('div');
-            overlay.style.cssText = 'position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:999; display:flex; flex-direction:column; justify-content:center; align-items:center; color:#fff; text-align:center; padding:20px;';
+          // Tạo overlay kết quả trực tiếp (position:fixed để luôn hiển thị)
+          const msOverlay = document.createElement('div');
+          msOverlay.style.cssText = 'position:fixed; inset:0; z-index:999999; background:rgba(0,0,0,0.92); display:flex; flex-direction:column; justify-content:center; align-items:center; color:#fff; text-align:center; padding:20px;';
+          msOverlay.innerHTML = `
+            <div style="font-size:56px; margin-bottom:16px; color:#22c55e;"><i class="fas fa-check-circle"></i></div>
+            <h2 style="margin:0 0 8px 0; font-size:22px;">発見 (Đã tìm thấy)</h2>
+            <p style="font-size:20px; font-weight:bold; color:#facc15; margin-bottom:8px;">${displayCode}</p>
+            <p style="font-size:13px; color:#94a3b8; margin-bottom:28px;">システム位置 (DB): <b style="color:#fff;">${sysLayer}</b></p>
+            <div style="display:flex; gap:16px; width:100%; max-width:340px;">
+              <button id="ms-overlay-continue" style="flex:1; padding:16px; font-size:16px; font-weight:bold; border-radius:10px; border:none; background:#22c55e; color:#fff; cursor:pointer;"><i class="fas fa-play"></i> 続行 (Tiếp)</button>
+              <button id="ms-overlay-done" style="flex:1; padding:16px; font-size:16px; font-weight:bold; border-radius:10px; border:none; background:#ef4444; color:#fff; cursor:pointer;"><i class="fas fa-check"></i> 完了 (Xong)</button>
+            </div>
+          `;
+          document.body.appendChild(msOverlay);
 
-            let alertHtml = `<div style="font-size:48px; margin-bottom:16px; color:#22c55e;"><i class="fas fa-check-circle"></i></div>
-                                  <h2 style="margin:0 0 8px 0;">発見 (Đã tìm thấy)</h2>
-                                  <p style="font-size:18px; font-weight:bold; color:#facc15; margin-bottom:24px;">${displayCode}</p>`;
-
-            if (currentLayer && String(originalLayer) !== String(currentLayer)) {
-              alertHtml += `<div style="background:rgba(239,68,68,0.2); border:1px solid #ef4444; padding:12px; border-radius:8px; margin-bottom:24px; text-align:left;">
-                                      <div style="color:#f87171; font-weight:bold; margin-bottom:8px;"><i class="fas fa-exclamation-triangle"></i> 誤配置 (Sai vị trí)</div>
-                                      <div style="font-size:14px;">システム (DB): <b style="color:#fff;">${originalLayer}</b></div>
-                                      <div style="font-size:14px;">現在地 (Thực tế): <b style="color:#fff;">${currentLayer}</b></div>
-                                    </div>
-                                    <div style="display:flex; gap:12px; width:100%; max-width:300px; margin-bottom:12px;">
-                                       <button id="ms-btn-update" class="arl-btn arl-btn-primary" style="flex:1; padding:12px; font-size:14px;"><i class="fas fa-sync-alt"></i> 位置更新 (Cập nhật)</button>
-                                    </div>`;
-            } else if (currentLayer && String(originalLayer) === String(currentLayer)) {
-              alertHtml += `<div style="color:#22c55e; margin-bottom:24px; font-weight:bold; font-size:16px;"><i class="fas fa-check"></i> 位置一致 (Đúng vị trí ${currentLayer})</div>`;
-            } else {
-              alertHtml += `<div style="color:#94a3b8; margin-bottom:24px; font-size:14px;">システム: ${originalLayer} (Không cập nhật vị trí)</div>`;
-            }
-
-            alertHtml += `<div style="display:flex; gap:12px; width:100%; max-width:300px;">
-                                  <button id="ms-btn-continue" class="arl-btn" style="flex:1; padding:12px; font-size:14px; background:#f1f5f9; color:#333; border:none;"><i class="fas fa-play"></i> 探索続行 (Tiếp tục)</button>
-                                  <button id="ms-btn-remove" class="arl-btn" style="flex:1; padding:12px; font-size:14px; background:#fee2e2; color:#ef4444; border:none;"><i class="fas fa-trash"></i> リストから削除</button>
-                                </div>`;
-
-            overlay.innerHTML = alertHtml;
-            const camRoot = document.getElementById('arl-camera-root');
-            if (camRoot) {
-              camRoot.appendChild(overlay);
-
-              const btnUpdate = document.getElementById('ms-btn-update');
-              if (btnUpdate) {
-                btnUpdate.onclick = () => {
-                  const employeeId = (window.app && window.app.currentUser && window.app.currentUser.EmployeeID) ? window.app.currentUser.EmployeeID : '9';
-                  if (window.LocationMove && window.LocationMove.apiMoveRackLayer) {
-                    if (window.showToast) window.showToast('info', '', 'Đang cập nhật...');
-                    window.LocationMove.apiMoveRackLayer(foundTarget.item, currentLayer, employeeId, 'AR Locator Multi-Search Update')
-                      .then(() => {
-                        if (window.showToast) window.showToast('success', '', 'Đã cập nhật vị trí');
-                        foundTarget.item.RackLayerID = currentLayer;
-                        camRoot.removeChild(overlay);
-                        this.state.searchList = this.state.searchList.filter(t => t.normCode !== foundTarget.normCode);
-                        this.state.scanning = true;
-                        requestAnimationFrame(() => this.camTick());
-                      });
-                  } else {
-                    // Fallback
-                    const idVal = (foundTarget.kind === 'mold' ? foundTarget.item.MoldID : foundTarget.item.CutterID);
-                    document.dispatchEvent(new CustomEvent('mcs-data-sync', { detail: { idValue: idVal, payload: { RackLayerID: parseInt(currentLayer, 10) } } }));
-                    if (window.showToast) window.showToast('success', '', 'Đã cập nhật vị trí');
-                    foundTarget.item.RackLayerID = currentLayer;
-                    camRoot.removeChild(overlay);
-                    this.state.searchList = this.state.searchList.filter(t => t.normCode !== foundTarget.normCode);
-                    this.state.scanning = true;
-                    requestAnimationFrame(() => this.camTick());
-                  }
-                };
-              }
-
-              document.getElementById('ms-btn-continue').onclick = () => {
-                camRoot.removeChild(overlay);
-                this.state.scanning = true;
-                requestAnimationFrame(() => this.camTick());
-              };
-
-              document.getElementById('ms-btn-remove').onclick = () => {
-                this.state.searchList = this.state.searchList.filter(t => t.normCode !== foundTarget.normCode);
-                camRoot.removeChild(overlay);
-                this.state.scanning = true;
-                requestAnimationFrame(() => this.camTick());
-              };
-            }
+          const resumeScan = () => {
+            if (msOverlay.parentNode) document.body.removeChild(msOverlay);
+            this.state.scanning = true;
+            requestAnimationFrame(() => this.camTick());
           };
 
-          const camRoot = document.getElementById('arl-camera-root');
-          if (camRoot) {
-            const promptOverlay = document.createElement('div');
-            promptOverlay.style.cssText = 'position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:999; display:flex; flex-direction:column; justify-content:center; align-items:center; color:#fff; text-align:center; padding:20px;';
-
-            const sysLayer = foundTarget.item.RackLayerID || 'N/A';
-            const promptHtml = `<div style="font-size:48px; margin-bottom:16px; color:#22c55e;"><i class="fas fa-check-circle"></i></div>
-                                  <h2 style="margin:0 0 8px 0;">発見 (Đã tìm thấy)</h2>
-                                  <p style="font-size:18px; font-weight:bold; color:#facc15; margin-bottom:12px;">${displayCode}</p>
-                                  <p style="font-size:13px; color:#94a3b8; margin-bottom:24px;">システム位置 (Vị trí DB): <b style="color:#fff;">${sysLayer}</b></p>
-                                  <div style="display:flex; gap:12px; width:100%; max-width:320px; flex-wrap:wrap;">
-                                      <button id="ms-prompt-skip" class="arl-btn" style="flex:1; min-width:120px; background:#22c55e; color:#fff; border:none; padding:14px; font-size:15px; font-weight:bold; border-radius:8px;"><i class="fas fa-play"></i> 探索続行 (Tiếp tục tìm)</button>
-                                      <button id="ms-prompt-remove" class="arl-btn" style="flex:1; min-width:120px; background:#fee2e2; color:#ef4444; border:none; padding:14px; font-size:15px; font-weight:bold; border-radius:8px;"><i class="fas fa-check"></i> 完了 (Xong, xóa khỏi DS)</button>
-                                  </div>`;
-            promptOverlay.innerHTML = promptHtml;
-            camRoot.appendChild(promptOverlay);
-
-            document.getElementById('ms-prompt-skip').onclick = () => {
-              camRoot.removeChild(promptOverlay);
+          document.getElementById('ms-overlay-continue').onclick = () => resumeScan();
+          document.getElementById('ms-overlay-done').onclick = () => {
+            this.state.searchList = this.state.searchList.filter(t => t.normCode !== foundTarget.normCode);
+            if (msOverlay.parentNode) document.body.removeChild(msOverlay);
+            if (this.state.searchList.length === 0) {
+              if (window.showToast) window.showToast('success', '完了', 'Đã tìm xong toàn bộ danh sách!');
+              this.closeCamera();
+            } else {
               this.state.scanning = true;
               requestAnimationFrame(() => this.camTick());
-            };
-            document.getElementById('ms-prompt-remove').onclick = () => {
-              this.state.searchList = this.state.searchList.filter(t => t.normCode !== foundTarget.normCode);
-              camRoot.removeChild(promptOverlay);
-              if (this.state.searchList.length === 0) {
-                if (window.showToast) window.showToast('success', '完了', 'Đã tìm xong toàn bộ danh sách!');
-                this.closeCamera();
-              } else {
-                this.state.scanning = true;
-                requestAnimationFrame(() => this.camTick());
-              }
-            };
-          }
-          return; // Dừng việc vẽ khung mặc định vì đã overlay
-        }
+            }
+          };
+          return;
       } else if (this.state.mode === 'location') {
         // Location Mode: Free scan
         const s = this.state.locationSession;
@@ -3051,6 +2982,10 @@
         }
       } else {
         // Batch Mode
+        // Bỏ qua nếu mã này đã quét rồi (tránh báo match liên tục)
+        const alreadyDone = targets.find(t => t.checked && isMatchFound(t, parsedNorm, parsed?.kind));
+        if (alreadyDone) return; // Im lặng bỏ qua mã đã quét
+
         const found = targets.find(t => !t.checked && isMatchFound(t, parsedNorm, parsed?.kind));
         if (found) {
           isMatch = true;
@@ -3061,10 +2996,11 @@
 
           this.saveSessions();
 
+          // Xóa item khỏi mini-list preview để chỉ hiện mã còn lại
           const miniItem = document.getElementById('mini-' + found.normCode);
-          if (miniItem) miniItem.classList.add('checked');
+          if (miniItem) miniItem.remove();
 
-          // Cập nhật lại mini-list badge
+          // Cập nhật lại badge
           const unconfirmed = targets.filter(t => !t.checked).length;
           const badge = document.getElementById('arl-cam-badge');
           if (badge) badge.innerText = unconfirmed > 0 ? `${unconfirmed} 件未確認` : '完了 (Đã xong toàn bộ)';
@@ -3107,14 +3043,8 @@
               }
             }
           }
-        } else {
-          // Đã quét rồi thì thôi, không báo lỗi liên tục
-          const alreadyChecked = targets.find(t => t.checked && isMatchFound(t, parsedNorm, parsed?.kind));
-          if (alreadyChecked) {
-            isMatch = true; // Cho xanh lá luôn cho đẹp, ko bip
-            displayCode = alreadyChecked.code;
-          }
         }
+        // Lưu ý: mã đã quét được bỏ qua hoàn toàn ở đầu (return sớm)
       }
 
       // Draw bounding box

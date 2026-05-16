@@ -2254,7 +2254,10 @@
       document.getElementById('arl-loc-scan')?.addEventListener('click', () => {
         const mappedTargets = expectedForCurrent.map(ex => ({
           code: ex.code,
+          kind: ex.kind,
+          item: ex.item,
           normCode: ex.normCode,
+          normId: ex.normId || String((ex.kind === 'mold' ? (ex.item && ex.item.MoldID) : (ex.item && ex.item.CutterID)) || ''),
           checked: scannedForCurrent.some(sc => sc.normCode === ex.normCode)
         }));
         this.openCamera(mappedTargets);
@@ -2437,33 +2440,41 @@
 
                 if (dm && dm.molds) dm.molds.forEach(m => {
                   if (String(m.RackLayerID || '') === layerCode) {
-                    locSession.expected.push({ code: m.displayCode || m.MoldCode, kind: 'mold', item: m, normCode: this.normalizeCode(m.displayCode || m.MoldCode) });
+                    const mCode = m.displayCode || m.MoldCode;
+                    const mNorm = this.normalizeCode(mCode);
+                    const mNormId = String(m.MoldID || '');
+                    locSession.expected.push({ code: mCode, kind: 'mold', item: m, normCode: mNorm, normId: mNormId });
                     dbSess.items.push({
                       line_id: this.generateUUID(),
-                      code: m.displayCode || m.MoldCode,
+                      code: mCode,
                       kind: 'mold',
                       expectedLoc: layerCode,
                       scanStatus: 'PENDING',
                       isManual: false,
                       checked: false,
                       isLoggedToDb: false,
-                      normCode: this.normalizeCode(m.displayCode || m.MoldCode)
+                      normCode: mNorm,
+                      normId: mNormId
                     });
                   }
                 });
                 if (dm && dm.cutters) dm.cutters.forEach(c => {
                   if (String(c.RackLayerID || '') === layerCode) {
-                    locSession.expected.push({ code: c.displayCode || c.CutterCode || c.CutterNo, kind: 'cutter', item: c, normCode: this.normalizeCode(c.displayCode || c.CutterCode || c.CutterNo) });
+                    const cCode = c.displayCode || c.CutterCode || c.CutterNo;
+                    const cNorm = this.normalizeCode(cCode);
+                    const cNormId = String(c.CutterID || '');
+                    locSession.expected.push({ code: cCode, kind: 'cutter', item: c, normCode: cNorm, normId: cNormId });
                     dbSess.items.push({
                       line_id: this.generateUUID(),
-                      code: c.displayCode || c.CutterCode || c.CutterNo,
+                      code: cCode,
                       kind: 'cutter',
                       expectedLoc: layerCode,
                       scanStatus: 'PENDING',
                       isManual: false,
                       checked: false,
                       isLoggedToDb: false,
-                      normCode: this.normalizeCode(c.displayCode || c.CutterCode || c.CutterNo)
+                      normCode: cNorm,
+                      normId: cNormId
                     });
                   }
                 });
@@ -2929,49 +2940,34 @@
             const promptOverlay = document.createElement('div');
             promptOverlay.style.cssText = 'position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:999; display:flex; flex-direction:column; justify-content:center; align-items:center; color:#fff; text-align:center; padding:20px;';
 
+            const sysLayer = foundTarget.item.RackLayerID || 'N/A';
             const promptHtml = `<div style="font-size:48px; margin-bottom:16px; color:#22c55e;"><i class="fas fa-check-circle"></i></div>
                                   <h2 style="margin:0 0 8px 0;">発見 (Đã tìm thấy)</h2>
-                                  <p style="font-size:18px; font-weight:bold; color:#facc15; margin-bottom:24px;">${displayCode}</p>
-                                  <div style="background:#fff; color:#333; padding:16px; border-radius:8px; width:100%; max-width:320px; margin-bottom:16px; position:relative;">
-                                      <div style="font-weight:bold; margin-bottom:8px; font-size:14px; text-align:left;">現在地のRackLayerID (Vị trí hiện tại):</div>
-                                      <input type="text" id="ms-prompt-rl" style="width:100%; padding:10px; font-size:16px; border:1px solid #ccc; border-radius:4px; margin-bottom:12px; font-family:monospace;" placeholder="例: 1001" autocomplete="off">
-                                      <div style="display:flex; gap:8px;">
-                                          <button id="ms-prompt-skip" class="arl-btn" style="flex:1; background:#f1f5f9; color:#333; border:none; padding:10px;">スキップ (Bỏ qua)</button>
-                                          <button id="ms-prompt-ok" class="arl-btn arl-btn-primary" style="flex:1; padding:10px;">確認 (Xác nhận)</button>
-                                      </div>
+                                  <p style="font-size:18px; font-weight:bold; color:#facc15; margin-bottom:12px;">${displayCode}</p>
+                                  <p style="font-size:13px; color:#94a3b8; margin-bottom:24px;">システム位置 (Vị trí DB): <b style="color:#fff;">${sysLayer}</b></p>
+                                  <div style="display:flex; gap:12px; width:100%; max-width:320px; flex-wrap:wrap;">
+                                      <button id="ms-prompt-skip" class="arl-btn" style="flex:1; min-width:120px; background:#22c55e; color:#fff; border:none; padding:14px; font-size:15px; font-weight:bold; border-radius:8px;"><i class="fas fa-play"></i> 探索続行 (Tiếp tục tìm)</button>
+                                      <button id="ms-prompt-remove" class="arl-btn" style="flex:1; min-width:120px; background:#fee2e2; color:#ef4444; border:none; padding:14px; font-size:15px; font-weight:bold; border-radius:8px;"><i class="fas fa-check"></i> 完了 (Xong, xóa khỏi DS)</button>
                                   </div>`;
             promptOverlay.innerHTML = promptHtml;
             camRoot.appendChild(promptOverlay);
 
-            const inpRl = document.getElementById('ms-prompt-rl');
-
-            const applyRl = () => {
-              const val = inpRl.value.trim().toUpperCase();
-              camRoot.removeChild(promptOverlay);
-              showResultOverlay(val);
-            };
-
-            document.getElementById('ms-prompt-ok').onclick = applyRl;
             document.getElementById('ms-prompt-skip').onclick = () => {
               camRoot.removeChild(promptOverlay);
-              showResultOverlay(null);
+              this.state.scanning = true;
+              requestAnimationFrame(() => this.camTick());
             };
-
-            if (window.VirtualKeyboardModule && window.innerWidth <= 768) {
-              inpRl.addEventListener('click', (e) => {
-                e.preventDefault();
-                inpRl.blur();
-                window.VirtualKeyboardModule.open(inpRl, { numeric: true, onSubmit: applyRl });
-              });
-              inpRl.addEventListener('focus', (e) => {
-                e.preventDefault();
-                inpRl.blur();
-                window.VirtualKeyboardModule.open(inpRl, { numeric: true, onSubmit: applyRl });
-              });
-            } else {
-              setTimeout(() => inpRl.focus(), 50);
-              inpRl.addEventListener('keydown', (e) => { if (e.key === 'Enter') applyRl(); });
-            }
+            document.getElementById('ms-prompt-remove').onclick = () => {
+              this.state.searchList = this.state.searchList.filter(t => t.normCode !== foundTarget.normCode);
+              camRoot.removeChild(promptOverlay);
+              if (this.state.searchList.length === 0) {
+                if (window.showToast) window.showToast('success', '完了', 'Đã tìm xong toàn bộ danh sách!');
+                this.closeCamera();
+              } else {
+                this.state.scanning = true;
+                requestAnimationFrame(() => this.camTick());
+              }
+            };
           }
           return; // Dừng việc vẽ khung mặc định vì đã overlay
         }
@@ -2979,12 +2975,30 @@
         // Location Mode: Free scan
         const s = this.state.locationSession;
         if (s) {
-          // Tìm thiết bị trong DataManager
-          const devices = this.searchDevices(parsedNorm);
+          const locCurrentLayer = s.currentLayer || '';
+
+          // Trước tiên, thử match với danh sách target trước (nếu có)
           let foundItem = null;
-          if (devices.length > 0) {
-            // Ưu tiên cái khớp mã
-            foundItem = devices.find(d => d.normCode === parsedNorm) || devices[0];
+          if (targets.length > 0) {
+            const matchedTarget = targets.find(t => !t.checked && isMatchFound(t, parsedNorm, parsed?.kind));
+            if (matchedTarget) {
+              foundItem = { code: matchedTarget.code, kind: matchedTarget.kind, item: matchedTarget.item, normCode: matchedTarget.normCode, normId: matchedTarget.normId };
+              matchedTarget.checked = true;
+              // Cập nhật mini-list
+              const miniItem = document.getElementById('mini-' + matchedTarget.normCode);
+              if (miniItem) miniItem.classList.add('checked');
+              const unconfirmed = targets.filter(t => !t.checked).length;
+              const badge = document.getElementById('arl-cam-badge');
+              if (badge) badge.innerText = unconfirmed > 0 ? `${unconfirmed} 件未確認` : '完了 (Đã xong toàn bộ)';
+            }
+          }
+
+          // Fallback: tìm trong DataManager nếu không match target list
+          if (!foundItem) {
+            const devices = this.searchDevices(parsedNorm);
+            if (devices.length > 0) {
+              foundItem = devices.find(d => d.normCode === parsedNorm) || devices[0];
+            }
           }
 
           if (foundItem) {
@@ -2993,7 +3007,9 @@
 
             // Chỉ thêm nếu chưa có
             if (!s.scanned.find(sc => sc.normCode === foundItem.normCode)) {
-              s.scanned.unshift(foundItem);
+              // Thêm actualLoc vào kết quả quét
+              const scannedEntry = Object.assign({}, foundItem, { actualLoc: locCurrentLayer });
+              s.scanned.unshift(scannedEntry);
 
               const dbSess = this.state.sessions.find(x => x.id === s.id);
               if (dbSess) {
@@ -3001,7 +3017,7 @@
                 const isExpected = s.expected.some(e => e.normCode === foundItem.normCode);
                 if (line) {
                   line.scanStatus = isExpected ? 'MATCHED' : 'WRONG_LOCATION';
-                  line.actualLoc = currentLayer;
+                  line.actualLoc = locCurrentLayer;
                   line.scannedAt = new Date().toISOString();
                   line.checked = true;
                 } else {
@@ -3009,14 +3025,15 @@
                     line_id: this.generateUUID(),
                     code: foundItem.code,
                     kind: foundItem.kind,
-                    expectedLoc: foundItem.item.RackLayerID || foundItem.item.Location || '',
-                    actualLoc: currentLayer,
-                    scanStatus: 'WRONG_LOCATION',
+                    expectedLoc: (foundItem.item && (foundItem.item.RackLayerID || foundItem.item.Location)) || '',
+                    actualLoc: locCurrentLayer,
+                    scanStatus: isExpected ? 'MATCHED' : 'WRONG_LOCATION',
                     isManual: false,
                     scannedAt: new Date().toISOString(),
                     checked: true,
                     isLoggedToDb: false,
-                    normCode: foundItem.normCode
+                    normCode: foundItem.normCode,
+                    normId: foundItem.normId || ''
                   });
                 }
                 this.saveSessions(s.id);
@@ -3024,7 +3041,7 @@
 
               if (Date.now() - this.state.lastBeepTime > 1000) {
                 this.beep();
-                if (window.showToast) window.showToast('info', '', `Đã quét: ${displayCode}`);
+                if (window.showToast) window.showToast('info', '', `✓ ${displayCode}`);
               }
             } else {
               // Đã quét rồi

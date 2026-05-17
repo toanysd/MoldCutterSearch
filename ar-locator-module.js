@@ -63,21 +63,40 @@
             completedAt: row.completed_at,
             employeeId: row.created_by,
             notes: row.notes,
-            items: (row.inventory_session_lines || []).map(line => ({
-              line_id: line.line_id,
-              code: line.item_code,
-              kind: line.item_kind,
-              expectedLoc: line.expected_location,
-              actualLoc: line.actual_location,
-              scanStatus: line.scan_status,
-              isManual: line.is_manual_check,
-              isManualAddition: line.is_manual_addition || false,
-              scannedAt: line.scanned_at,
-              scannedBy: line.scanned_by,
-              checked: line.scan_status !== 'PENDING',
-              isLoggedToDb: true,
-              normCode: this.normalizeCode(line.item_code)
-            }))
+            items: (row.inventory_session_lines || []).map(line => {
+              const nc = this.normalizeCode(line.item_code);
+              const kind = line.item_kind || 'mold';
+              // Hydrate item reference from DataManager for matching
+              const dm = window.DataManager?.data;
+              let hydratedItem = null;
+              let hydratedNormId = '';
+              if (dm) {
+                if (kind === 'mold' && dm.molds) {
+                  const m = dm.molds.find(x => this.normalizeCode(x.displayCode || x.MoldCode) === nc);
+                  if (m) { hydratedItem = m; hydratedNormId = String(m.MoldID || ''); }
+                } else if (kind === 'cutter' && dm.cutters) {
+                  const c = dm.cutters.find(x => this.normalizeCode(x.displayCode || x.CutterCode || x.CutterNo) === nc);
+                  if (c) { hydratedItem = c; hydratedNormId = String(c.CutterID || ''); }
+                }
+              }
+              return {
+                line_id: line.line_id,
+                code: line.item_code,
+                kind: kind,
+                expectedLoc: line.expected_location,
+                actualLoc: line.actual_location,
+                scanStatus: line.scan_status,
+                isManual: line.is_manual_check,
+                isManualAddition: line.is_manual_addition || false,
+                scannedAt: line.scanned_at,
+                scannedBy: line.scanned_by,
+                checked: line.scan_status !== 'PENDING',
+                isLoggedToDb: true,
+                normCode: nc,
+                normId: hydratedNormId,
+                item: hydratedItem
+              };
+            })
           }));
           this.saveSessionsLocalOnly();
 
@@ -2816,12 +2835,15 @@
       // Flexible Match function
       const isMatchFound = (target, qrNorm, qrKind) => {
         if (!qrNorm) return false;
-        if (qrKind && target.kind && target.kind !== qrKind) return false; // Match kind if provided
+        if (qrKind && target.kind && target.kind !== qrKind) return false;
 
         const targetNorm = String(target.normCode || '');
-        const targetId = String(target.normId || '');
+        // Guard: normId must be a real value, not 'undefined' or empty
+        const rawId = target.normId;
+        const targetId = (rawId !== undefined && rawId !== null && String(rawId) !== 'undefined' && String(rawId) !== '') ? String(rawId) : '';
 
-        if (targetNorm === qrNorm || targetId === qrNorm) return true;
+        if (targetNorm && targetNorm === qrNorm) return true;
+        if (targetId && targetId === qrNorm) return true;
         if (qrNorm.length >= 3) {
           if (targetNorm && targetNorm.includes(qrNorm)) return true;
           if (targetNorm && qrNorm.includes(targetNorm)) return true;

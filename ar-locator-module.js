@@ -2902,6 +2902,7 @@
             }
           };
           return;
+        }
       } else if (this.state.mode === 'location') {
         // Location Mode: Free scan
         const s = this.state.locationSession;

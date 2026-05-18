@@ -67,6 +67,7 @@
           .limit(50);
         if (error) throw error;
         if (data) {
+          const currentLocalSessions = this.state.sessions || [];
           this.state.sessions = data.map(row => ({
             id: row.session_id,
             name: row.session_name,
@@ -112,6 +113,13 @@
               };
             })
           }));
+          // Merge: Giữ lại các session mới tạo ở local chưa kịp sync lên Supabase
+          const fetchedIds = new Set(this.state.sessions.map(s => s.id));
+          const localOnlySessions = currentLocalSessions.filter(s => !fetchedIds.has(s.id));
+          
+          this.state.sessions = [...localOnlySessions, ...this.state.sessions];
+          this.state.sessions.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+
           this.saveSessionsLocalOnly();
 
           // Cập nhật lại list đã scan trong locationSession nếu có
@@ -532,7 +540,7 @@
         items: sessionItems
       });
       
-      this.state.activeSessionId = newId;
+      this.state.activeSessionId = null; // Show the session dashboard so the user sees the newly created session
       this.saveSessions(newId);
       this.renderBody();
       if (window.showToast) window.showToast('success', '', 'Tạo phiên kiểm kê mới thành công!');
@@ -847,7 +855,7 @@
             </div>
         </div>
         
-        <div style="flex:1; overflow-y:auto; margin-top:12px; border:1px solid #e2e6ea; border-radius:8px; padding:8px;">
+        <div id="arl-ms-list-container" style="flex:1; overflow-y:auto; margin-top:12px; border:1px solid #e2e6ea; border-radius:8px; padding:8px;">
             ${listHtml}
         </div>
         
@@ -1063,17 +1071,6 @@
         if (window.showToast) window.showToast('success', '', 'Lưu phiên thành công!');
       };
     },
-
-    renderSessionDetail(body, session) {
-
-      body.querySelectorAll('.arl-session-card').forEach(card => {
-        card.addEventListener('click', () => {
-          this.state.activeSessionId = card.dataset.id;
-          this.renderBody();
-        });
-      });
-    },
-
     renderSessionDetail(body, session) {
       const total = session.items.length;
       const checked = session.items.filter(b => b.checked).length;
@@ -1269,14 +1266,16 @@
         Object.keys(grouped).sort().forEach(loc => { listHtml += renderGroup(loc, grouped[loc], false); });
         if (unassigned.length > 0) { listHtml += renderGroup('手動入力 (Nhập thủ công)', unassigned, true); }
 
-        modal.innerHTML = `
+        const isUpdate = !!modal.querySelector('#arl-lm-list-container');
+        if (!isUpdate) {
+            modal.innerHTML = `
               <div style="background:var(--mcs-bg); width:100%; max-width:800px; height:100%; max-height:800px; border-radius:12px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,0.3);">
                 <div style="display:flex; align-items:center; justify-content:space-between; padding:16px; border-bottom:1px solid var(--mcs-border); background:var(--mcs-surface); box-shadow:0 2px 4px rgba(0,0,0,0.05);">
                    <div style="display:flex; align-items:center; gap:8px;">
                       <button id="arl-lm-close" style="background:none; border:none; font-size:18px; color:var(--mcs-text); cursor:pointer;"><i class="fas fa-times"></i></button>
                       <h3 style="margin:0; font-size:16px;">リスト管理 (Quản lý danh sách)</h3>
                    </div>
-                   <span style="font-size:12px; font-weight:bold; color:#64748b;">${session.items.length}件</span>
+                   <span id="arl-lm-count-span" style="font-size:12px; font-weight:bold; color:#64748b;">${session.items.length}件</span>
                 </div>
                 
                 <div style="padding:16px; border-bottom:1px solid var(--mcs-border); background:var(--mcs-surface);">
@@ -1295,15 +1294,24 @@
                     <div style="display:flex; gap:8px; margin-top:12px;">
                         <button class="arl-btn" id="arl-batch-import-rack" style="flex:1; padding:10px 16px; border-radius:6px; border:1px solid var(--mcs-border); background:#f8fafc; color:var(--mcs-primary); font-weight:bold; white-space:nowrap;"><i class="fas fa-layer-group"></i> ラック追加 (Thêm từ Giá)</button>
                         <button class="arl-btn" id="arl-batch-collapse" style="padding:10px 16px; border-radius:6px; border:1px solid var(--mcs-border); background:transparent; color:var(--mcs-text); font-weight:bold; white-space:nowrap;" title="Thu gọn/Mở rộng danh sách"><i class="fas fa-compress-alt"></i></button>
-                        ${session.items.length > 0 ? `<button class="arl-btn" id="arl-batch-reset" style="padding:10px 16px; border-radius:6px; border:1px solid #ef4444; background:transparent; color:#ef4444; font-weight:bold; white-space:nowrap;" title="Xóa toàn bộ"><i class="fas fa-trash"></i></button>` : ''}
+                        <button class="arl-btn" id="arl-batch-reset" style="display:${session.items.length > 0 ? 'inline-block' : 'none'}; padding:10px 16px; border-radius:6px; border:1px solid #ef4444; background:transparent; color:#ef4444; font-weight:bold; white-space:nowrap;" title="Xóa toàn bộ"><i class="fas fa-trash"></i></button>
                     </div>
                 </div>
                 
-                <div style="flex:1; overflow-y:auto; padding:16px; background:#f8fafc;">
+                <div id="arl-lm-list-container" style="flex:1; overflow-y:auto; padding:16px; background:#f8fafc;">
                    ${listHtml || '<div style="text-align:center; padding:40px 20px; color:#aaa;"><i class="fas fa-box-open" style="font-size:32px; margin-bottom:12px; display:block;"></i>リストは空です (Danh sách trống)</div>'}
                 </div>
               </div>
             `;
+        } else {
+            modal.querySelector('#arl-lm-list-container').innerHTML = listHtml || '<div style="text-align:center; padding:40px 20px; color:#aaa;"><i class="fas fa-box-open" style="font-size:32px; margin-bottom:12px; display:block;"></i>リストは空です (Danh sách trống)</div>';
+            const countSpan = modal.querySelector('#arl-lm-count-span');
+            if (countSpan) countSpan.innerText = session.items.length + '件';
+            const resetBtn = modal.querySelector('#arl-batch-reset');
+            if (resetBtn) resetBtn.style.display = session.items.length > 0 ? 'inline-block' : 'none';
+        }
+
+        if (!isUpdate) {
 
         const closeBtn = modal.querySelector('#arl-lm-close');
         if (closeBtn) {
@@ -1531,11 +1539,10 @@
               this.saveSessions();
               if (window.showToast) window.showToast('success', '', `Đã thêm ${sel.code}`);
               
-              // Cập nhật số lượng hiển thị (nếu có)
-              const countSpan = modal.querySelector('span[style*="#64748b"]');
-              if (countSpan && countSpan.innerText.includes('件')) {
-                countSpan.innerText = session.items.length + '件';
-              }
+              const countSpan = modal.querySelector('#arl-lm-count-span');
+              if (countSpan) countSpan.innerText = session.items.length + '件';
+              const resetBtn = modal.querySelector('#arl-batch-reset');
+              if (resetBtn) resetBtn.style.display = session.items.length > 0 ? 'inline-block' : 'none';
             }
 
             // KHÔNG đóng dropdown, KHÔNG xoá input để người dùng có thể click chọn liên tiếp các thiết bị trùng mã
@@ -1546,6 +1553,9 @@
                 // Focus out and in on mobile might be disruptive, so we just keep state
               }
             }
+            
+            // Dispatch event to update list only!
+            document.dispatchEvent(new Event('mcs-arl-modal-update'));
           };
 
           bInp.addEventListener('keydown', (e) => {
@@ -1572,6 +1582,7 @@
           clr.addEventListener('click', () => { bInp.value = ''; clr.classList.remove('visible'); dd.classList.remove('open'); bInp.focus(); });
           setTimeout(() => { if (window.innerWidth > 768) bInp.focus(); }, 100);
         }
+        } // END if (!isUpdate)
 
         if (focusLoc) {
           setTimeout(() => {
@@ -2590,11 +2601,39 @@
             if (!this.state.searchList.find(t => t.normCode === sel.normCode && t.kind === sel.kind)) {
               this.state.searchList.push({ code: sel.code, kind: sel.kind, item: sel.item, normCode: sel.normCode, normId: sel.normId });
             }
-            const inp = document.getElementById('arl-ms-input');
-            if (inp) inp.value = '';
-            dd.classList.remove('open');
-            this.renderBody();
-            setTimeout(() => document.getElementById('arl-ms-input')?.focus(), 50);
+            if (window.showToast) window.showToast('success', '', `Đã thêm ${sel.code}`);
+
+            // KHÔNG clear input, KHÔNG remove open, KHÔNG gọi renderBody
+            const container = document.getElementById('arl-ms-list-container');
+            if (container) {
+              let listHtml = '';
+              if (this.state.searchList.length > 0) {
+                listHtml = this.state.searchList.map((t, i) => `
+                      <div class="arl-batch-item" style="border-radius:4px; padding:8px; margin-bottom:4px; border:1px solid #e2e6ea;">
+                          <div style="flex:1;">
+                              <div class="arl-batch-code">${t.code}</div>
+                              <div class="arl-batch-type ${t.kind}" style="font-size:11px; padding:0; background:none;">${t.kind === 'mold' ? '金型' : '抜型'} - RackLayerID: ${t.item.RackLayerID || 'N/A'}</div>
+                          </div>
+                          <button class="arl-batch-remove" data-idx="${i}" style="color:#ef4444; border:none; background:none; font-size:20px;">&times;</button>
+                      </div>
+                  `).join('');
+              } else {
+                listHtml = `<div style="text-align:center; padding:20px; color:#aaa; font-size:12px;">リストが空です / Danh sách trống</div>`;
+              }
+              container.innerHTML = listHtml;
+              container.querySelectorAll('.arl-batch-remove').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                  const idx = parseInt(e.currentTarget.dataset.idx, 10);
+                  this.state.searchList.splice(idx, 1);
+                  this.renderBody(); // Re-render whole body on remove is acceptable
+                });
+              });
+            }
+            const scanBtn = document.getElementById('arl-ms-scan');
+            if (scanBtn) {
+               if (this.state.searchList.length === 0) scanBtn.setAttribute('disabled', 'true');
+               else scanBtn.removeAttribute('disabled');
+            }
           } else {
             const session = this.state.activeSessionId ? this.state.sessions.find(s => s.id === this.state.activeSessionId) : null;
             if (session) {
@@ -2605,10 +2644,9 @@
               }
             }
             // KHÔNG clear thẻ input và đóng dropdown
-            const inp = document.getElementById('arl-batch-input');
             
-            // Cập nhật ngầm danh sách nền (tránh re-render toàn bộ modal làm mất focus)
-            this.renderBody();
+            // Dispatch event to update the modal
+            document.dispatchEvent(new Event('mcs-arl-modal-update'));
             
             const modal = document.getElementById('arl-list-manager-modal');
             if (modal && session) {

@@ -546,6 +546,130 @@
       if (window.showToast) window.showToast('success', '', 'Tạo phiên kiểm kê mới thành công!');
     },
 
+    openBridge() {
+        this.state.bridgeMode = this.state.mode;
+        
+        if (this.state.mode === 'batch' && !this.state.activeSessionId) {
+            this.state.bridgeSessionId = 'BATCH_BUILDER';
+        } else {
+            this.state.bridgeSessionId = this.state.activeSessionId;
+        }
+
+        this.close();
+        if (window.ViewManager) window.ViewManager.switchView('mold');
+        
+        // Reset selection before starting bridge mode
+        if (window.App && window.App.cardRenderer && typeof window.App.cardRenderer.clearSelection === 'function') window.App.cardRenderer.clearSelection();
+        if (window.App && window.App.tableRenderer && typeof window.App.tableRenderer.clearSelection === 'function') window.App.tableRenderer.clearSelection();
+        
+        const topBar = document.querySelector('.topbar');
+        let banner = document.getElementById('mcs-arl-bridge-banner');
+        if (!banner) {
+            banner = document.createElement('div');
+            banner.id = 'mcs-arl-bridge-banner';
+            banner.style.cssText = 'background:var(--mcs-warning, #f59e0b); color:#000; padding:12px; font-weight:bold; position:sticky; top:0; z-index:999999; box-shadow:0 4px 6px rgba(0,0,0,0.3); display:flex; flex-direction:column; gap:10px; border-bottom:4px solid #b45309;';
+            banner.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                   <div style="display:flex; align-items:center; gap:8px; font-size:15px;">
+                      <i class="fas fa-search-plus" style="font-size:20px;"></i>
+                      <span><b>AR監査モード</b><br><span style="font-size:12px; font-weight:normal;">(Đang chọn thiết bị cho Kiểm kê AR)</span></span>
+                   </div>
+                   <button id="mcs-arl-bridge-cancel" style="background:rgba(0,0,0,0.1); border:none; color:#000; padding:6px 12px; border-radius:4px; cursor:pointer; font-weight:bold;"><i class="fas fa-times"></i> Hủy</button>
+                </div>
+                <button id="mcs-arl-bridge-confirm" style="background:#16a34a; color:#fff; border:none; border-radius:6px; padding:12px; font-size:16px; font-weight:bold; cursor:pointer; box-shadow:0 2px 4px rgba(0,0,0,0.2);"><i class="fas fa-check-circle"></i> 選択した項目を追加 (Thêm các mục đã chọn)</button>
+            `;
+            
+            if (topBar && topBar.parentNode) {
+                topBar.parentNode.insertBefore(banner, topBar.nextSibling);
+            } else {
+                document.body.prepend(banner);
+            }
+            
+            document.getElementById('mcs-arl-bridge-cancel').onclick = () => {
+                banner.remove();
+                if (window.ARLocatorModule) {
+                    const returnMode = window.ARLocatorModule.state.bridgeMode;
+                    window.ARLocatorModule.state.bridgeMode = null;
+                    window.ARLocatorModule.open(returnMode);
+                }
+            };
+
+            document.getElementById('mcs-arl-bridge-confirm').onclick = () => {
+                const invBtn = document.getElementById('topInventoryAuditBtn');
+                if (invBtn) {
+                   invBtn.click();
+                } else {
+                   if (window.showToast) window.showToast('error', 'Lỗi', 'Không tìm thấy nút Kiểm Kê hệ thống.');
+                }
+            };
+        }
+    },
+
+    bridgeFromTable(batchList) {
+       const banner = document.getElementById('mcs-arl-bridge-banner');
+       if (banner) banner.remove();
+       
+       this.open();
+       if (this.state.bridgeMode === 'single') {
+           this.state.mode = 'single';
+           if (batchList.length > 0) {
+              const sel = batchList[0];
+              this.state.singleTarget = { code: sel.code, kind: sel.kind, item: sel.item, normCode: sel.normCode, normId: sel.normId, isLoggedToDb: false };
+           }
+       } else if (this.state.bridgeMode === 'multi_search') {
+           this.state.mode = 'multi_search';
+           if (!this.state.searchList) this.state.searchList = [];
+           batchList.forEach(sel => {
+               if (!this.state.searchList.find(t => t.normCode === sel.normCode && t.kind === sel.kind)) {
+                 this.state.searchList.push({ code: sel.code, kind: sel.kind, item: sel.item, normCode: sel.normCode, normId: sel.normId });
+               }
+           });
+       } else if (this.state.bridgeMode === 'batch') {
+           this.state.mode = 'batch';
+           if (this.state.bridgeSessionId === 'BATCH_BUILDER') {
+               if (!this.state.batchDraftItems) this.state.batchDraftItems = [];
+               batchList.forEach(sel => {
+                  if (!this.state.batchDraftItems.find(t => t.normCode === sel.normCode && t.kind === sel.kind)) {
+                      this.state.batchDraftItems.unshift({ code: sel.code, kind: sel.kind, item: sel.item, checked: false, isLoggedToDb: false, normCode: sel.normCode, normId: sel.normId, isManualAddition: true });
+                  }
+               });
+               this.state.activeSessionId = 'BATCH_BUILDER';
+           } else if (this.state.bridgeSessionId) {
+               const session = this.state.sessions.find(s => s.id === this.state.bridgeSessionId);
+               if (session) {
+                   batchList.forEach(sel => {
+                      if (!session.items.find(b => b.normCode === sel.normCode && b.kind === sel.kind)) {
+                         session.items.unshift({ code: sel.code, kind: sel.kind, item: sel.item, checked: false, scanStatus: 'PENDING', isLoggedToDb: false, normCode: sel.normCode, normId: sel.normId, isManualAddition: true, line_id: this.generateUUID() });
+                      }
+                   });
+                   this.saveSessions(session.id);
+                   this.state.activeSessionId = session.id;
+               }
+           }
+       }
+       this.state.bridgeMode = null;
+       this.state.bridgeSessionId = null;
+       this.renderBody();
+       
+       // Reset selection after confirming items
+       if (window.App && window.App.cardRenderer && typeof window.App.cardRenderer.clearSelection === 'function') window.App.cardRenderer.clearSelection();
+       if (window.App && window.App.tableRenderer && typeof window.App.tableRenderer.clearSelection === 'function') window.App.tableRenderer.clearSelection();
+       
+       if (this.state.bridgeOpenedFromListManager) {
+           this.state.bridgeOpenedFromListManager = false;
+           setTimeout(() => {
+               if (this.state.activeSessionId === 'BATCH_BUILDER') {
+                   document.getElementById('arl-batch-builder-manage')?.click();
+               } else if (this.state.activeSessionId) {
+                   document.getElementById('arl-session-manage')?.click();
+               }
+           }, 100);
+       }
+
+       if (window.showToast) window.showToast('success', '', `Đã thêm ${batchList.length} thiết bị.`);
+
+    },
+
     close() {
       this.state.isOpen = false;
       this.closeCamera();
@@ -745,6 +869,9 @@
               <div class="arl-dropdown" id="arl-single-dropdown"></div>
             </div>
           </div>
+          <div style="margin-top:12px;">
+             <button class="arl-btn" id="arl-single-bridge" style="width:100%; padding:12px; border-radius:6px; border:1px dashed var(--mcs-primary); background:#f0fdf4; color:var(--mcs-primary); font-weight:bold;"><i class="fas fa-search-plus"></i> 詳細検索から選択 (Tìm nâng cao từ danh sách chính)</button>
+          </div>
         `}
       `;
 
@@ -761,6 +888,10 @@
         const dd = document.getElementById('arl-single-dropdown');
         const clr = document.getElementById('arl-single-clear');
         const kindSelect = document.getElementById('arl-single-kind-select');
+
+        document.getElementById('arl-single-bridge')?.addEventListener('click', () => {
+            this.openBridge();
+        });
 
         kindSelect.addEventListener('change', (e) => {
           this.state.searchKind = e.target.value;
@@ -853,6 +984,7 @@
               <button class="arl-search-clear" id="arl-ms-clear" style="display:none;">&times;</button>
               <div class="arl-dropdown" id="arl-ms-dropdown"></div>
             </div>
+            <button class="arl-btn" id="arl-ms-bridge" style="padding:10px 14px; border-radius:6px; border:1px dashed var(--mcs-primary); background:#f0fdf4; color:var(--mcs-primary); font-weight:bold; white-space:nowrap;"><i class="fas fa-search-plus"></i></button>
         </div>
         
         <div id="arl-ms-list-container" style="flex:1; overflow-y:auto; margin-top:12px; border:1px solid #e2e6ea; border-radius:8px; padding:8px;">
@@ -874,6 +1006,10 @@
 
       document.getElementById('arl-ms-scan').addEventListener('click', () => {
         this.openCamera(this.state.searchList);
+      });
+
+      document.getElementById('arl-ms-bridge')?.addEventListener('click', () => {
+        this.openBridge();
       });
 
       const inp = document.getElementById('arl-ms-input');
@@ -1293,6 +1429,7 @@
                     </div>
                     <div style="display:flex; gap:8px; margin-top:12px;">
                         <button class="arl-btn" id="arl-batch-import-rack" style="flex:1; padding:10px 16px; border-radius:6px; border:1px solid var(--mcs-border); background:#f8fafc; color:var(--mcs-primary); font-weight:bold; white-space:nowrap;"><i class="fas fa-layer-group"></i> ラック追加 (Thêm từ Giá)</button>
+                        <button class="arl-btn" id="arl-batch-bridge" style="padding:10px 16px; border-radius:6px; border:1px dashed var(--mcs-primary); background:#f0fdf4; color:var(--mcs-primary); font-weight:bold; white-space:nowrap;" title="詳細検索から追加 (Thêm từ danh sách chính)"><i class="fas fa-search-plus"></i></button>
                         <button class="arl-btn" id="arl-batch-collapse" style="padding:10px 16px; border-radius:6px; border:1px solid var(--mcs-border); background:transparent; color:var(--mcs-text); font-weight:bold; white-space:nowrap;" title="Thu gọn/Mở rộng danh sách"><i class="fas fa-compress-alt"></i></button>
                         <button class="arl-btn" id="arl-batch-reset" style="display:${session.items.length > 0 ? 'inline-block' : 'none'}; padding:10px 16px; border-radius:6px; border:1px solid #ef4444; background:transparent; color:#ef4444; font-weight:bold; white-space:nowrap;" title="Xóa toàn bộ"><i class="fas fa-trash"></i></button>
                     </div>
@@ -1321,6 +1458,13 @@
             document.removeEventListener('mcs-arl-modal-update', renderModalContent);
           };
         }
+
+        document.getElementById('arl-batch-bridge')?.addEventListener('click', () => {
+            this.state.bridgeOpenedFromListManager = true;
+            document.body.removeChild(modal);
+            document.removeEventListener('mcs-arl-modal-update', renderModalContent);
+            this.openBridge();
+        });
 
         modal.querySelectorAll('.arl-layer-delete-btn').forEach(btn => {
           btn.addEventListener('click', (e) => {

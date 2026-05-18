@@ -130,7 +130,17 @@
     saveSessionsLocalOnly() {
       if (this._saveSessionTimeout) clearTimeout(this._saveSessionTimeout);
       this._saveSessionTimeout = setTimeout(() => {
-        try { localStorage.setItem('mcs_ar_audit_sessions', JSON.stringify(this.state.sessions)); } catch (e) { }
+        try { 
+          // Optimize: Do not save the full 'item' DataManager object to local storage to prevent UI freezing
+          const miniSessions = this.state.sessions.map(s => ({
+            ...s,
+            items: s.items ? s.items.map(i => {
+              const { item, ...rest } = i;
+              return rest;
+            }) : []
+          }));
+          localStorage.setItem('mcs_ar_audit_sessions', JSON.stringify(miniSessions)); 
+        } catch (e) { }
       }, 500);
     },
 
@@ -3074,32 +3084,10 @@
               if (!this.state.completedLayers) this.state.completedLayers = new Set();
               if (!this.state.completedLayers.has(layerId)) {
                 this.state.completedLayers.add(layerId);
-                this.state.scanning = false; // Tạm dừng quét
-
-                const overlay = document.createElement('div');
-                overlay.style.cssText = 'position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:999; display:flex; flex-direction:column; justify-content:center; align-items:center; color:#fff; text-align:center; padding:20px;';
-                overlay.innerHTML = `
-                            <div style="font-size:48px; margin-bottom:16px; animation: scaleUp 0.5s ease-out;">🎉</div>
-                            <h2 style="margin:0 0 8px 0; color:#22c55e;">完了 (Hoàn thành)</h2>
-                            <p style="font-size:16px; margin-bottom:24px;">段 (Tầng): <b>${layerId}</b> (${layerItems.length} デバイス/thiết bị)</p>
-                            <div style="display:flex; gap:12px; width:100%; max-width:300px;">
-                               <button id="btn-next-layer" class="arl-btn arl-btn-primary" style="flex:1; padding:12px; font-size:14px;"><i class="fas fa-play"></i> 次へ (Tiếp tục)</button>
-                               <button id="btn-view-stats" class="arl-btn" style="flex:1; padding:12px; font-size:14px; background:#f1f5f9; color:#333; border:none;"><i class="fas fa-chart-pie"></i> 結果 (Kết quả)</button>
-                            </div>
-                          `;
-
-                const camRoot = document.getElementById('arl-camera-root');
-                if (camRoot) {
-                  camRoot.appendChild(overlay);
-
-                  document.getElementById('btn-next-layer').onclick = () => {
-                    camRoot.removeChild(overlay);
-                    this.state.scanning = true;
-                    requestAnimationFrame(() => this.camTick());
-                  };
-                  document.getElementById('btn-view-stats').onclick = () => {
-                    this.closeCamera();
-                  };
+                
+                // Non-blocking notification for faster workflow
+                if (window.showToast) {
+                   window.showToast('success', '完了 (Hoàn thành Tầng)', `Đã quét đủ ${layerItems.length} thiết bị tại Tầng ${layerId}`);
                 }
               }
             }

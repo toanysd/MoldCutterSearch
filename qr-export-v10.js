@@ -273,27 +273,21 @@
           <div>
             <img src="${jpgUrl}" alt="QR">
           </div>
+          <script>
+            window.onload = () => { setTimeout(() => window.print(), 500); };
+          </script>
         </body>
         </html>
       `;
 
-      const iframe = document.createElement('iframe');
-      iframe.style.position = 'absolute';
-      iframe.style.width = '0px';
-      iframe.style.height = '0px';
-      iframe.style.border = 'none';
-      document.body.appendChild(iframe);
-
-      const doc = iframe.contentWindow.document;
-      doc.open();
-      doc.write(html);
-      doc.close();
-
-      setTimeout(() => {
-        iframe.contentWindow.focus();
-        iframe.contentWindow.print();
-        setTimeout(() => { document.body.removeChild(iframe); }, 1000);
-      }, 500);
+      const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const win = window.open(url, '_blank', 'noopener,noreferrer');
+      if (!win) {
+        alert('ポップアップがブロックされています。 / Vui lòng cho phép mở popup để in tem QR.');
+      } else {
+        setTimeout(() => URL.revokeObjectURL(url), 120000);
+      }
     }
 
     // --- MASS EXPORT ---
@@ -507,13 +501,14 @@
         </body>
         </html>
       `;
-      const win = window.open('', '_blank');
-      if (win) {
-        win.document.open();
-        win.document.write(html);
-        win.document.close();
+      const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const win = window.open(url, '_blank', 'noopener,noreferrer');
+      if (!win) {
+        alert('ポップアップがブロックされています。 / Vui lòng cho phép mở popup để in tem QR.');
       } else {
-        alert('Vui lòng cho phép mở popup để in tem QR.');
+        // Thu hồi URL sau 2 phút để tránh rò rỉ bộ nhớ
+        setTimeout(() => URL.revokeObjectURL(url), 120000);
       }
     }
 

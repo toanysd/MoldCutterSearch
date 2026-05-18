@@ -4352,7 +4352,9 @@ class App {
           normId: String(isMold ? itemObj.MoldID : itemObj.CutterID)
         };
       });
-      if (typeof window.ARLocatorModule.createBatchSessionAndOpen === 'function') {
+      if (window.ARLocatorModule.state && window.ARLocatorModule.state.bridgeMode) {
+        window.ARLocatorModule.bridgeFromTable(batchList);
+      } else if (typeof window.ARLocatorModule.createBatchSessionAndOpen === 'function') {
         window.ARLocatorModule.createBatchSessionAndOpen(batchList);
       } else {
         window.ARLocatorModule.open('batch', batchList);

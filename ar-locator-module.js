@@ -116,7 +116,7 @@
           // Merge: Giữ lại các session mới tạo ở local chưa kịp sync lên Supabase
           const fetchedIds = new Set(this.state.sessions.map(s => s.id));
           const localOnlySessions = currentLocalSessions.filter(s => !fetchedIds.has(s.id));
-          
+
           this.state.sessions = [...localOnlySessions, ...this.state.sessions];
           this.state.sessions.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
 
@@ -138,7 +138,7 @@
     saveSessionsLocalOnly() {
       if (this._saveSessionTimeout) clearTimeout(this._saveSessionTimeout);
       this._saveSessionTimeout = setTimeout(() => {
-        try { 
+        try {
           // Optimize: Do not save the full 'item' DataManager object to local storage to prevent UI freezing
           const miniSessions = this.state.sessions.map(s => ({
             ...s,
@@ -147,7 +147,7 @@
               return rest;
             }) : []
           }));
-          localStorage.setItem('mcs_ar_audit_sessions', JSON.stringify(miniSessions)); 
+          localStorage.setItem('mcs_ar_audit_sessions', JSON.stringify(miniSessions));
         } catch (e) { }
       }, 500);
     },
@@ -167,42 +167,42 @@
       if (this.state.saveTimeout) clearTimeout(this.state.saveTimeout);
       this.state.saveTimeout = setTimeout(async () => {
         try {
-        const sessionPayload = {
-          session_id: s.id,
-          session_name: s.name,
-          session_type: s.type,
-          status: s.status,
-          created_by: s.employeeId || window.app?.currentUser?.EmployeeID || '9',
-          reference_id: s.referenceId || null,
-          notes: s.notes || null,
-          completed_at: s.completedAt || null,
-          created_at: s.createdAt
-        };
-        const { error: sErr } = await sb.from('inventory_sessions').upsert(sessionPayload);
-        if (sErr) throw sErr;
+          const sessionPayload = {
+            session_id: s.id,
+            session_name: s.name,
+            session_type: s.type,
+            status: s.status,
+            created_by: s.employeeId || window.app?.currentUser?.EmployeeID || '9',
+            reference_id: s.referenceId || null,
+            notes: s.notes || null,
+            completed_at: s.completedAt || null,
+            created_at: s.createdAt
+          };
+          const { error: sErr } = await sb.from('inventory_sessions').upsert(sessionPayload);
+          if (sErr) throw sErr;
 
-        if (s.items && s.items.length > 0) {
-          const linesPayload = s.items.map(i => {
-            if (!i.line_id) i.line_id = this.generateUUID();
-            return {
-              line_id: i.line_id,
-              session_id: s.id,
-              item_code: i.code,
-              item_kind: i.kind,
-              expected_location: i.expectedLoc || null,
-              actual_location: i.actualLoc || null,
-              scan_status: i.scanStatus || (i.checked ? 'MATCHED' : 'PENDING'),
-              is_manual_check: i.isManual || false,
-              is_manual_addition: i.isManualAddition || false,
-              scanned_at: i.scannedAt || (i.checked ? new Date().toISOString() : null),
-              scanned_by: i.scannedBy || s.employeeId || null
-            };
-          });
-          const { error: lErr } = await sb.from('inventory_session_lines').upsert(linesPayload);
-          if (lErr) throw lErr;
-          s.items.forEach(i => i.isLoggedToDb = true);
-          this.saveSessionsLocalOnly();
-        }
+          if (s.items && s.items.length > 0) {
+            const linesPayload = s.items.map(i => {
+              if (!i.line_id) i.line_id = this.generateUUID();
+              return {
+                line_id: i.line_id,
+                session_id: s.id,
+                item_code: i.code,
+                item_kind: i.kind,
+                expected_location: i.expectedLoc || null,
+                actual_location: i.actualLoc || null,
+                scan_status: i.scanStatus || (i.checked ? 'MATCHED' : 'PENDING'),
+                is_manual_check: i.isManual || false,
+                is_manual_addition: i.isManualAddition || false,
+                scanned_at: i.scannedAt || (i.checked ? new Date().toISOString() : null),
+                scanned_by: i.scannedBy || s.employeeId || null
+              };
+            });
+            const { error: lErr } = await sb.from('inventory_session_lines').upsert(linesPayload);
+            if (lErr) throw lErr;
+            s.items.forEach(i => i.isLoggedToDb = true);
+            this.saveSessionsLocalOnly();
+          }
         } catch (e) {
           console.error('Supabase Sync Session Error:');
           console.error(JSON.stringify(e, null, 2));
@@ -507,17 +507,17 @@
         this.open('batch');
       }
       this.state.mode = 'batch';
-      
+
       const sessionItems = batchList.map(b => ({
-          line_id: this.generateUUID(),
-          code: b.code,
-          kind: b.kind,
-          item: b.item,
-          normCode: b.normCode,
-          checked: false,
-          scanStatus: 'PENDING',
-          isManual: false,
-          isLoggedToDb: false
+        line_id: this.generateUUID(),
+        code: b.code,
+        kind: b.kind,
+        item: b.item,
+        normCode: b.normCode,
+        checked: false,
+        scanStatus: 'PENDING',
+        isManual: false,
+        isLoggedToDb: false
       }));
 
       const newId = this.generateUUID();
@@ -527,9 +527,9 @@
       const employees = window.DataManager?.data?.employees || [];
       const empData = employees.find(e => String(e.EmployeeID) === String(empId));
       const empName = empData ? (empData.EmployeeNameShort || empData.EmployeeName || empId) : empId;
-      
+
       const finalName = `棚卸_${dateStr}_${timeStr}_${empName}`;
-      
+
       this.state.sessions.unshift({
         id: newId,
         createdAt: new Date().toISOString(),
@@ -539,7 +539,7 @@
         employeeId: empId,
         items: sessionItems
       });
-      
+
       this.state.activeSessionId = null; // Show the session dashboard so the user sees the newly created session
       this.saveSessions(newId);
       this.renderBody();
@@ -547,28 +547,28 @@
     },
 
     openBridge() {
-        this.state.bridgeMode = this.state.mode;
-        
-        if (this.state.mode === 'batch' && !this.state.activeSessionId) {
-            this.state.bridgeSessionId = 'BATCH_BUILDER';
-        } else {
-            this.state.bridgeSessionId = this.state.activeSessionId;
-        }
+      this.state.bridgeMode = this.state.mode;
 
-        this.close();
-        if (window.ViewManager) window.ViewManager.switchView('mold');
-        
-        // Reset selection before starting bridge mode
-        if (window.App && window.App.cardRenderer && typeof window.App.cardRenderer.clearSelection === 'function') window.App.cardRenderer.clearSelection();
-        if (window.App && window.App.tableRenderer && typeof window.App.tableRenderer.clearSelection === 'function') window.App.tableRenderer.clearSelection();
-        
-        const topBar = document.querySelector('.topbar');
-        let banner = document.getElementById('mcs-arl-bridge-banner');
-        if (!banner) {
-            banner = document.createElement('div');
-            banner.id = 'mcs-arl-bridge-banner';
-            banner.style.cssText = 'background:var(--mcs-warning, #f59e0b); color:#000; padding:12px; font-weight:bold; position:sticky; top:0; z-index:999999; box-shadow:0 4px 6px rgba(0,0,0,0.3); display:flex; flex-direction:column; gap:10px; border-bottom:4px solid #b45309;';
-            banner.innerHTML = `
+      if (this.state.mode === 'batch' && !this.state.activeSessionId) {
+        this.state.bridgeSessionId = 'BATCH_BUILDER';
+      } else {
+        this.state.bridgeSessionId = this.state.activeSessionId;
+      }
+
+      this.close();
+      if (window.ViewManager) window.ViewManager.switchView('mold');
+
+      // Reset selection before starting bridge mode
+      if (window.App && window.App.cardRenderer && typeof window.App.cardRenderer.clearSelection === 'function') window.App.cardRenderer.clearSelection();
+      if (window.App && window.App.tableRenderer && typeof window.App.tableRenderer.clearSelection === 'function') window.App.tableRenderer.clearSelection();
+
+      const topBar = document.querySelector('.topbar');
+      let banner = document.getElementById('mcs-arl-bridge-banner');
+      if (!banner) {
+        banner = document.createElement('div');
+        banner.id = 'mcs-arl-bridge-banner';
+        banner.style.cssText = 'background:var(--mcs-warning, #f59e0b); color:#000; padding:12px; font-weight:bold; position:sticky; top:0; z-index:999999; box-shadow:0 4px 6px rgba(0,0,0,0.3); display:flex; flex-direction:column; gap:10px; border-bottom:4px solid #b45309;';
+        banner.innerHTML = `
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                    <div style="display:flex; align-items:center; gap:8px; font-size:15px;">
                       <i class="fas fa-search-plus" style="font-size:20px;"></i>
@@ -578,95 +578,111 @@
                 </div>
                 <button id="mcs-arl-bridge-confirm" style="background:#16a34a; color:#fff; border:none; border-radius:6px; padding:12px; font-size:16px; font-weight:bold; cursor:pointer; box-shadow:0 2px 4px rgba(0,0,0,0.2);"><i class="fas fa-check-circle"></i> 選択した項目を追加 (Thêm các mục đã chọn)</button>
             `;
-            
-            if (topBar && topBar.parentNode) {
-                topBar.parentNode.insertBefore(banner, topBar.nextSibling);
-            } else {
-                document.body.prepend(banner);
-            }
-            
-            document.getElementById('mcs-arl-bridge-cancel').onclick = () => {
-                banner.remove();
-                if (window.ARLocatorModule) {
-                    const returnMode = window.ARLocatorModule.state.bridgeMode;
-                    window.ARLocatorModule.state.bridgeMode = null;
-                    window.ARLocatorModule.open(returnMode);
-                }
-            };
 
-            document.getElementById('mcs-arl-bridge-confirm').onclick = () => {
-                const invBtn = document.getElementById('topInventoryAuditBtn');
-                if (invBtn) {
-                   invBtn.click();
-                } else {
-                   if (window.showToast) window.showToast('error', 'Lỗi', 'Không tìm thấy nút Kiểm Kê hệ thống.');
-                }
-            };
+        if (topBar && topBar.parentNode) {
+          topBar.parentNode.insertBefore(banner, topBar.nextSibling);
+        } else {
+          document.body.prepend(banner);
         }
+
+        document.getElementById('mcs-arl-bridge-cancel').onclick = () => {
+          banner.remove();
+          if (window.ARLocatorModule) {
+            const returnMode = window.ARLocatorModule.state.bridgeMode;
+            
+            window.ARLocatorModule.state.bridgeMode = null;
+            window.ARLocatorModule.state.bridgeSessionId = null;
+            
+            window.ARLocatorModule.state.isOpen = true;
+            window.ARLocatorModule.state.mode = returnMode;
+            window.ARLocatorModule.render();
+            
+            document.getElementById('ar-locator-modal')?.classList.add('open');
+            document.getElementById('backdrop')?.classList.add('show');
+          }
+        };
+
+        document.getElementById('mcs-arl-bridge-confirm').onclick = () => {
+          const invBtn = document.getElementById('topInventoryAuditBtn');
+          if (invBtn) {
+            invBtn.click();
+          } else {
+            if (window.showToast) window.showToast('error', 'Lỗi', 'Không tìm thấy nút Kiểm Kê hệ thống.');
+          }
+        };
+      }
     },
 
     bridgeFromTable(batchList) {
        const banner = document.getElementById('mcs-arl-bridge-banner');
        if (banner) banner.remove();
+
+       const returnMode = this.state.bridgeMode;
        
-       this.open();
-       if (this.state.bridgeMode === 'single') {
-           this.state.mode = 'single';
-           if (batchList.length > 0) {
-              const sel = batchList[0];
-              this.state.singleTarget = { code: sel.code, kind: sel.kind, item: sel.item, normCode: sel.normCode, normId: sel.normId, isLoggedToDb: false };
-           }
-       } else if (this.state.bridgeMode === 'multi_search') {
+       this.state.isOpen = true;
+       this.state.mode = returnMode;
+       this.render();
+       
+       document.getElementById('ar-locator-modal')?.classList.add('open');
+       document.getElementById('backdrop')?.classList.add('show');
+
+       if (returnMode === 'single') {
+        this.state.mode = 'single';
+        if (batchList.length > 0) {
+          const sel = batchList[0];
+          this.state.singleTarget = { code: sel.code, kind: sel.kind, item: sel.item, normCode: sel.normCode, normId: sel.normId, isLoggedToDb: false };
+        }
+      } else if (returnMode === 'multi_search') {
            this.state.mode = 'multi_search';
            if (!this.state.searchList) this.state.searchList = [];
            batchList.forEach(sel => {
-               if (!this.state.searchList.find(t => t.normCode === sel.normCode && t.kind === sel.kind)) {
+              if (!this.state.searchList.find(t => t.normCode === sel.normCode && t.kind === sel.kind)) {
                  this.state.searchList.push({ code: sel.code, kind: sel.kind, item: sel.item, normCode: sel.normCode, normId: sel.normId });
-               }
+              }
            });
-       } else if (this.state.bridgeMode === 'batch') {
-           this.state.mode = 'batch';
-           if (this.state.bridgeSessionId === 'BATCH_BUILDER') {
-               if (!this.state.batchDraftItems) this.state.batchDraftItems = [];
-               batchList.forEach(sel => {
-                  if (!this.state.batchDraftItems.find(t => t.normCode === sel.normCode && t.kind === sel.kind)) {
-                      this.state.batchDraftItems.unshift({ code: sel.code, kind: sel.kind, item: sel.item, checked: false, isLoggedToDb: false, normCode: sel.normCode, normId: sel.normId, isManualAddition: true });
-                  }
-               });
-               this.state.activeSessionId = 'BATCH_BUILDER';
-           } else if (this.state.bridgeSessionId) {
-               const session = this.state.sessions.find(s => s.id === this.state.bridgeSessionId);
-               if (session) {
-                   batchList.forEach(sel => {
-                      if (!session.items.find(b => b.normCode === sel.normCode && b.kind === sel.kind)) {
-                         session.items.unshift({ code: sel.code, kind: sel.kind, item: sel.item, checked: false, scanStatus: 'PENDING', isLoggedToDb: false, normCode: sel.normCode, normId: sel.normId, isManualAddition: true, line_id: this.generateUUID() });
-                      }
-                   });
-                   this.saveSessions(session.id);
-                   this.state.activeSessionId = session.id;
-               }
-           }
-       }
-       this.state.bridgeMode = null;
-       this.state.bridgeSessionId = null;
-       this.renderBody();
-       
-       // Reset selection after confirming items
-       if (window.App && window.App.cardRenderer && typeof window.App.cardRenderer.clearSelection === 'function') window.App.cardRenderer.clearSelection();
-       if (window.App && window.App.tableRenderer && typeof window.App.tableRenderer.clearSelection === 'function') window.App.tableRenderer.clearSelection();
-       
-       if (this.state.bridgeOpenedFromListManager) {
-           this.state.bridgeOpenedFromListManager = false;
-           setTimeout(() => {
-               if (this.state.activeSessionId === 'BATCH_BUILDER') {
-                   document.getElementById('arl-batch-builder-manage')?.click();
-               } else if (this.state.activeSessionId) {
-                   document.getElementById('arl-session-manage')?.click();
-               }
-           }, 100);
-       }
+       } else if (returnMode === 'batch') {
+        this.state.mode = 'batch';
+        if (this.state.bridgeSessionId === 'BATCH_BUILDER') {
+          if (!this.state.batchDraftItems) this.state.batchDraftItems = [];
+          batchList.forEach(sel => {
+            if (!this.state.batchDraftItems.find(t => t.normCode === sel.normCode && t.kind === sel.kind)) {
+              this.state.batchDraftItems.unshift({ code: sel.code, kind: sel.kind, item: sel.item, checked: false, isLoggedToDb: false, normCode: sel.normCode, normId: sel.normId, isManualAddition: true });
+            }
+          });
+          this.state.activeSessionId = 'BATCH_BUILDER';
+        } else if (this.state.bridgeSessionId) {
+          const session = this.state.sessions.find(s => s.id === this.state.bridgeSessionId);
+          if (session) {
+            batchList.forEach(sel => {
+              if (!session.items.find(b => b.normCode === sel.normCode && b.kind === sel.kind)) {
+                session.items.unshift({ code: sel.code, kind: sel.kind, item: sel.item, checked: false, scanStatus: 'PENDING', isLoggedToDb: false, normCode: sel.normCode, normId: sel.normId, isManualAddition: true, line_id: this.generateUUID() });
+              }
+            });
+            this.saveSessions(session.id);
+            this.state.activeSessionId = session.id;
+          }
+        }
+      }
+      this.state.bridgeMode = null;
+      this.state.bridgeSessionId = null;
+      this.renderBody();
 
-       if (window.showToast) window.showToast('success', '', `Đã thêm ${batchList.length} thiết bị.`);
+      // Reset selection after confirming items
+      if (window.App && window.App.cardRenderer && typeof window.App.cardRenderer.clearSelection === 'function') window.App.cardRenderer.clearSelection();
+      if (window.App && window.App.tableRenderer && typeof window.App.tableRenderer.clearSelection === 'function') window.App.tableRenderer.clearSelection();
+
+      if (this.state.bridgeOpenedFromListManager) {
+        this.state.bridgeOpenedFromListManager = false;
+        setTimeout(() => {
+          if (this.state.activeSessionId === 'BATCH_BUILDER') {
+            document.getElementById('arl-batch-builder-manage')?.click();
+          } else if (this.state.activeSessionId) {
+            document.getElementById('arl-session-manage')?.click();
+          }
+        }, 100);
+      }
+
+      if (window.showToast) window.showToast('success', '', `Đã thêm ${batchList.length} thiết bị.`);
 
     },
 
@@ -890,7 +906,7 @@
         const kindSelect = document.getElementById('arl-single-kind-select');
 
         document.getElementById('arl-single-bridge')?.addEventListener('click', () => {
-            this.openBridge();
+          this.openBridge();
         });
 
         kindSelect.addEventListener('change', (e) => {
@@ -1404,7 +1420,7 @@
 
         const isUpdate = !!modal.querySelector('#arl-lm-list-container');
         if (!isUpdate) {
-            modal.innerHTML = `
+          modal.innerHTML = `
               <div style="background:var(--mcs-bg); width:100%; max-width:800px; height:100%; max-height:800px; border-radius:12px; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,0.3);">
                 <div style="display:flex; align-items:center; justify-content:space-between; padding:16px; border-bottom:1px solid var(--mcs-border); background:var(--mcs-surface); box-shadow:0 2px 4px rgba(0,0,0,0.05);">
                    <div style="display:flex; align-items:center; gap:8px;">
@@ -1441,104 +1457,104 @@
               </div>
             `;
         } else {
-            modal.querySelector('#arl-lm-list-container').innerHTML = listHtml || '<div style="text-align:center; padding:40px 20px; color:#aaa;"><i class="fas fa-box-open" style="font-size:32px; margin-bottom:12px; display:block;"></i>リストは空です (Danh sách trống)</div>';
-            const countSpan = modal.querySelector('#arl-lm-count-span');
-            if (countSpan) countSpan.innerText = session.items.length + '件';
-            const resetBtn = modal.querySelector('#arl-batch-reset');
-            if (resetBtn) resetBtn.style.display = session.items.length > 0 ? 'inline-block' : 'none';
+          modal.querySelector('#arl-lm-list-container').innerHTML = listHtml || '<div style="text-align:center; padding:40px 20px; color:#aaa;"><i class="fas fa-box-open" style="font-size:32px; margin-bottom:12px; display:block;"></i>リストは空です (Danh sách trống)</div>';
+          const countSpan = modal.querySelector('#arl-lm-count-span');
+          if (countSpan) countSpan.innerText = session.items.length + '件';
+          const resetBtn = modal.querySelector('#arl-batch-reset');
+          if (resetBtn) resetBtn.style.display = session.items.length > 0 ? 'inline-block' : 'none';
         }
 
         if (!isUpdate) {
 
-        const closeBtn = modal.querySelector('#arl-lm-close');
-        if (closeBtn) {
-          closeBtn.onclick = () => {
-            document.body.removeChild(modal);
-            this.renderBody(); // Update stats in main view
-            document.removeEventListener('mcs-arl-modal-update', renderModalContent);
-          };
-        }
+          const closeBtn = modal.querySelector('#arl-lm-close');
+          if (closeBtn) {
+            closeBtn.onclick = () => {
+              document.body.removeChild(modal);
+              this.renderBody(); // Update stats in main view
+              document.removeEventListener('mcs-arl-modal-update', renderModalContent);
+            };
+          }
 
-        document.getElementById('arl-batch-bridge')?.addEventListener('click', () => {
+          modal.querySelector('#arl-batch-bridge')?.addEventListener('click', () => {
             this.state.bridgeOpenedFromListManager = true;
             document.body.removeChild(modal);
             document.removeEventListener('mcs-arl-modal-update', renderModalContent);
             this.openBridge();
-        });
-
-        modal.querySelectorAll('.arl-layer-delete-btn').forEach(btn => {
-          btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            setTimeout(() => {
-              const loc = btn.dataset.loc;
-              if (confirm(`Bạn có chắc muốn xóa TOÀN BỘ khuôn của vị trí ${loc} khỏi phiên kiểm kê này?`)) {
-                if (loc === '手動入力 (Nhập thủ công)') {
-                  session.items = session.items.filter(b => !(b.isManualAddition || b.isManual) && b.item && b.item.RackLayerID);
-                } else {
-                  session.items = session.items.filter(b => (b.isManualAddition || b.isManual) || !(b.item && b.item.RackLayerID === loc));
-                }
-                this.saveSessions();
-                renderModalContent();
-              }
-            }, 50);
           });
-        });
 
-        modal.querySelectorAll('.arl-batch-info').forEach(btn => btn.addEventListener('click', () => {
-          const item = session.items[parseInt(btn.dataset.idx)];
-          if (item && window.DetailPanel) window.DetailPanel.open(item.item, item.kind === 'mold' ? 'mold' : 'cutter');
-        }));
+          modal.querySelectorAll('.arl-layer-delete-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              setTimeout(() => {
+                const loc = btn.dataset.loc;
+                if (confirm(`Bạn có chắc muốn xóa TOÀN BỘ khuôn của vị trí ${loc} khỏi phiên kiểm kê này?`)) {
+                  if (loc === '手動入力 (Nhập thủ công)') {
+                    session.items = session.items.filter(b => !(b.isManualAddition || b.isManual) && b.item && b.item.RackLayerID);
+                  } else {
+                    session.items = session.items.filter(b => (b.isManualAddition || b.isManual) || !(b.item && b.item.RackLayerID === loc));
+                  }
+                  this.saveSessions();
+                  renderModalContent();
+                }
+              }, 50);
+            });
+          });
 
-        modal.querySelectorAll('.arl-batch-manual').forEach(btn => btn.addEventListener('click', () => {
-          const item = session.items[parseInt(btn.dataset.idx)];
-          if (item && !item.checked) {
-            item.checked = true;
-            if (!item.isLoggedToDb) {
-              this.syncAuditLog(item);
-              item.isLoggedToDb = true;
+          modal.querySelectorAll('.arl-batch-info').forEach(btn => btn.addEventListener('click', () => {
+            const item = session.items[parseInt(btn.dataset.idx)];
+            if (item && window.DetailPanel) window.DetailPanel.open(item.item, item.kind === 'mold' ? 'mold' : 'cutter');
+          }));
+
+          modal.querySelectorAll('.arl-batch-manual').forEach(btn => btn.addEventListener('click', () => {
+            const item = session.items[parseInt(btn.dataset.idx)];
+            if (item && !item.checked) {
+              item.checked = true;
+              if (!item.isLoggedToDb) {
+                this.syncAuditLog(item);
+                item.isLoggedToDb = true;
+              }
+              this.saveSessions();
+              renderModalContent();
+              if (window.showToast) window.showToast('success', '', `Đã đánh dấu tay: ${item.code}`);
             }
+          }));
+
+          modal.querySelectorAll('.arl-batch-remove').forEach(btn => btn.addEventListener('click', () => {
+            session.items.splice(parseInt(btn.dataset.idx), 1);
             this.saveSessions();
             renderModalContent();
-            if (window.showToast) window.showToast('success', '', `Đã đánh dấu tay: ${item.code}`);
+          }));
+
+          const resetBtn = modal.querySelector('#arl-batch-reset');
+          if (resetBtn) {
+            resetBtn.addEventListener('click', () => {
+              setTimeout(() => {
+                if (confirm('リストをクリアしますか？ / Bạn có chắc muốn xóa toàn bộ danh sách?')) {
+                  session.items = [];
+                  this.saveSessions();
+                  renderModalContent();
+                }
+              }, 50);
+            });
           }
-        }));
 
-        modal.querySelectorAll('.arl-batch-remove').forEach(btn => btn.addEventListener('click', () => {
-          session.items.splice(parseInt(btn.dataset.idx), 1);
-          this.saveSessions();
-          renderModalContent();
-        }));
+          const importRackBtn = modal.querySelector('#arl-batch-import-rack');
+          if (importRackBtn) {
+            importRackBtn.addEventListener('click', () => {
+              const dm = window.DataManager?.data;
+              let rackOpts = '', layerOpts = '';
+              if (dm && dm.racks) rackOpts = dm.racks.map(r => `<option value="${r.RackID}">${r.RackName || ''}</option>`).join('');
+              if (dm && dm.racklayers) layerOpts = dm.racklayers.map(l => `<option value="${l.RackLayerID}">${l.RackLayerID}</option>`).join('');
 
-        const resetBtn = modal.querySelector('#arl-batch-reset');
-        if (resetBtn) {
-          resetBtn.addEventListener('click', () => {
-            setTimeout(() => {
-              if (confirm('リストをクリアしますか？ / Bạn có chắc muốn xóa toàn bộ danh sách?')) {
-                session.items = [];
-                this.saveSessions();
-                renderModalContent();
-              }
-            }, 50);
-          });
-        }
+              const rackModal = document.createElement('div');
+              rackModal.style.position = 'fixed';
+              rackModal.style.top = '0'; rackModal.style.left = '0'; rackModal.style.width = '100vw'; rackModal.style.height = '100vh';
+              rackModal.style.backgroundColor = 'rgba(0,0,0,0.6)';
+              rackModal.style.zIndex = '9999999';
+              rackModal.style.display = 'flex'; rackModal.style.justifyContent = 'center'; rackModal.style.alignItems = 'center';
+              rackModal.style.padding = '16px';
 
-        const importRackBtn = modal.querySelector('#arl-batch-import-rack');
-        if (importRackBtn) {
-          importRackBtn.addEventListener('click', () => {
-            const dm = window.DataManager?.data;
-            let rackOpts = '', layerOpts = '';
-            if (dm && dm.racks) rackOpts = dm.racks.map(r => `<option value="${r.RackID}">${r.RackName || ''}</option>`).join('');
-            if (dm && dm.racklayers) layerOpts = dm.racklayers.map(l => `<option value="${l.RackLayerID}">${l.RackLayerID}</option>`).join('');
-
-            const rackModal = document.createElement('div');
-            rackModal.style.position = 'fixed';
-            rackModal.style.top = '0'; rackModal.style.left = '0'; rackModal.style.width = '100vw'; rackModal.style.height = '100vh';
-            rackModal.style.backgroundColor = 'rgba(0,0,0,0.6)';
-            rackModal.style.zIndex = '9999999';
-            rackModal.style.display = 'flex'; rackModal.style.justifyContent = 'center'; rackModal.style.alignItems = 'center';
-            rackModal.style.padding = '16px';
-
-            rackModal.innerHTML = `
+              rackModal.innerHTML = `
                   <div style="background:var(--mcs-surface); width:100%; max-width:400px; border-radius:12px; overflow:hidden; box-shadow:0 10px 25px rgba(0,0,0,0.2);">
                      <div style="background:var(--mcs-primary); color:#fff; padding:16px; font-weight:bold; font-size:16px;">
                        <i class="fas fa-layer-group"></i> ラック・段から一括追加 (Thêm từ Giá/Tầng)
@@ -1565,167 +1581,167 @@
                   </div>
                 `;
 
-            document.body.appendChild(rackModal);
-            const inp = document.getElementById('arl-import-val');
-            const dl = document.getElementById('arl-import-datalist');
-            const kbdBtn = document.getElementById('arl-import-kbd');
+              document.body.appendChild(rackModal);
+              const inp = document.getElementById('arl-import-val');
+              const dl = document.getElementById('arl-import-datalist');
+              const kbdBtn = document.getElementById('arl-import-kbd');
 
-            if (kbdBtn) kbdBtn.addEventListener('click', () => { inp.focus(); });
+              if (kbdBtn) kbdBtn.addEventListener('click', () => { inp.focus(); });
 
-            const radios = rackModal.querySelectorAll('input[name="arl-import-type"]');
-            radios.forEach(r => r.addEventListener('change', () => {
-              dl.innerHTML = r.value === 'rack' ? rackOpts : layerOpts;
-              inp.value = '';
-              inp.focus();
-            }));
+              const radios = rackModal.querySelectorAll('input[name="arl-import-type"]');
+              radios.forEach(r => r.addEventListener('change', () => {
+                dl.innerHTML = r.value === 'rack' ? rackOpts : layerOpts;
+                inp.value = '';
+                inp.focus();
+              }));
 
-            setTimeout(() => inp.focus(), 100);
+              setTimeout(() => inp.focus(), 100);
 
-            const submitImport = () => {
-              const val = inp.value.trim();
-              if (!val) return;
-              const type = document.querySelector('input[name="arl-import-type"]:checked').value;
+              const submitImport = () => {
+                const val = inp.value.trim();
+                if (!val) return;
+                const type = document.querySelector('input[name="arl-import-type"]:checked').value;
 
-              let targetLayerIds = [];
-              if (type === 'rack') {
-                if (dm && dm.racklayers) {
-                  targetLayerIds = dm.racklayers.filter(l => String(l.RackID) === val).map(l => String(l.RackLayerID));
-                }
-                if (targetLayerIds.length === 0) targetLayerIds = [val]; // Fallback
-              } else {
-                targetLayerIds = [val];
-              }
-
-              let added = 0;
-              const processList = (list, kind) => {
-                if (!list) return;
-                list.forEach(item => {
-                  const rId = String(item.RackLayerID || '');
-                  if (targetLayerIds.includes(rId)) {
-                    const code = kind === 'mold' ? (item.displayCode || item.MoldCode) : (item.displayCode || item.CutterNo || item.CutterCode);
-                    const norm = this.normalizeCode(code);
-                    if (!session.items.find(b => b.normCode === norm)) {
-                      session.items.unshift({ code: code, kind: kind, item: item, checked: false, isLoggedToDb: false, normCode: norm, normId: (kind === 'mold' ? item.MoldID : item.CutterID), isManualAddition: false });
-                      added++;
-                    }
+                let targetLayerIds = [];
+                if (type === 'rack') {
+                  if (dm && dm.racklayers) {
+                    targetLayerIds = dm.racklayers.filter(l => String(l.RackID) === val).map(l => String(l.RackLayerID));
                   }
-                });
+                  if (targetLayerIds.length === 0) targetLayerIds = [val]; // Fallback
+                } else {
+                  targetLayerIds = [val];
+                }
+
+                let added = 0;
+                const processList = (list, kind) => {
+                  if (!list) return;
+                  list.forEach(item => {
+                    const rId = String(item.RackLayerID || '');
+                    if (targetLayerIds.includes(rId)) {
+                      const code = kind === 'mold' ? (item.displayCode || item.MoldCode) : (item.displayCode || item.CutterNo || item.CutterCode);
+                      const norm = this.normalizeCode(code);
+                      if (!session.items.find(b => b.normCode === norm)) {
+                        session.items.unshift({ code: code, kind: kind, item: item, checked: false, isLoggedToDb: false, normCode: norm, normId: (kind === 'mold' ? item.MoldID : item.CutterID), isManualAddition: false });
+                        added++;
+                      }
+                    }
+                  });
+                };
+
+                if (dm) {
+                  if (this.state.searchKind === 'all' || this.state.searchKind === 'mold') processList(dm.molds, 'mold');
+                  if (this.state.searchKind === 'all' || this.state.searchKind === 'cutter') processList(dm.cutters, 'cutter');
+                }
+                if (added > 0) {
+                  if (window.showToast) {
+                    const msgJP = `${val}から${added}件追加しました`;
+                    const msgVN = `Đã thêm ${added} thiết bị từ ${type === 'rack' ? 'giá' : 'tầng'} ${val}`;
+                    window.showToast('success', '', `${msgJP} (${msgVN})`);
+                  }
+                  this.saveSessions();
+                  renderModalContent();
+                } else {
+                  if (window.showToast) {
+                    const msgJP = `該当するデータが見つかりません`;
+                    const msgVN = `Không tìm thấy thiết bị nào ở ${type === 'rack' ? 'giá' : 'tầng'} ${val}`;
+                    window.showToast('warning', '', `${msgJP} (${msgVN})`);
+                  }
+                }
+
+                inp.value = '';
+                inp.focus();
               };
 
-              if (dm) {
-                if (this.state.searchKind === 'all' || this.state.searchKind === 'mold') processList(dm.molds, 'mold');
-                if (this.state.searchKind === 'all' || this.state.searchKind === 'cutter') processList(dm.cutters, 'cutter');
-              }
-              if (added > 0) {
-                if (window.showToast) {
-                  const msgJP = `${val}から${added}件追加しました`;
-                  const msgVN = `Đã thêm ${added} thiết bị từ ${type === 'rack' ? 'giá' : 'tầng'} ${val}`;
-                  window.showToast('success', '', `${msgJP} (${msgVN})`);
-                }
-                this.saveSessions();
-                renderModalContent();
-              } else {
-                if (window.showToast) {
-                  const msgJP = `該当するデータが見つかりません`;
-                  const msgVN = `Không tìm thấy thiết bị nào ở ${type === 'rack' ? 'giá' : 'tầng'} ${val}`;
-                  window.showToast('warning', '', `${msgJP} (${msgVN})`);
-                }
-              }
-
-              inp.value = '';
-              inp.focus();
-            };
-
-            document.getElementById('arl-import-cancel').onclick = () => document.body.removeChild(rackModal);
-            document.getElementById('arl-import-confirm').onclick = submitImport;
-            inp.addEventListener('keydown', (e) => {
-              if (e.key === 'Enter') { e.preventDefault(); submitImport(); }
-            });
-          });
-        }
-
-        const bInp = modal.querySelector('#arl-batch-input');
-        const dd = modal.querySelector('#arl-batch-dropdown');
-        const clr = modal.querySelector('#arl-batch-clear');
-        const kindSelect = modal.querySelector('#arl-batch-kind-select');
-
-        if (bInp) {
-          if (kindSelect) {
-            kindSelect.addEventListener('change', (e) => {
-              this.state.searchKind = e.target.value;
-              if (bInp.value.trim().length >= 2) {
-                this.state.dropdownItems = this.searchDevices(bInp.value.trim());
-                this.state.highlightIdx = this.state.dropdownItems.length > 0 ? 0 : -1;
-                this.renderDropdown(dd, bInp.value.trim());
-              }
+              document.getElementById('arl-import-cancel').onclick = () => document.body.removeChild(rackModal);
+              document.getElementById('arl-import-confirm').onclick = submitImport;
+              inp.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') { e.preventDefault(); submitImport(); }
+              });
             });
           }
 
-          bInp.addEventListener('input', () => {
-            const q = bInp.value.trim();
-            clr.classList.toggle('visible', q.length > 0);
-            if (q.length < 2) { dd.classList.remove('open'); this.state.dropdownItems = []; return; }
-            this.state.dropdownItems = this.searchDevices(q);
-            this.state.highlightIdx = this.state.dropdownItems.length > 0 ? 0 : -1;
-            this.renderDropdown(dd, q);
-          });
+          const bInp = modal.querySelector('#arl-batch-input');
+          const dd = modal.querySelector('#arl-batch-dropdown');
+          const clr = modal.querySelector('#arl-batch-clear');
+          const kindSelect = modal.querySelector('#arl-batch-kind-select');
 
-          const submitBatch = () => {
-            let sel = null;
-            if (this.state.highlightIdx >= 0 && this.state.dropdownItems[this.state.highlightIdx]) {
-              sel = this.state.dropdownItems[this.state.highlightIdx];
-            } else if (this.state.dropdownItems.length > 0) {
-              sel = this.state.dropdownItems[0];
-            }
-
-            if (sel && !session.items.find(b => this.normalizeCode(b.code) === sel.normCode && b.kind === sel.kind)) {
-              session.items.unshift({ code: sel.code, kind: sel.kind, item: sel.item, checked: false, isLoggedToDb: false, normCode: sel.normCode, normId: sel.normId, isManualAddition: true });
-              this.saveSessions();
-              if (window.showToast) window.showToast('success', '', `Đã thêm ${sel.code}`);
-              
-              const countSpan = modal.querySelector('#arl-lm-count-span');
-              if (countSpan) countSpan.innerText = session.items.length + '件';
-              const resetBtn = modal.querySelector('#arl-batch-reset');
-              if (resetBtn) resetBtn.style.display = session.items.length > 0 ? 'inline-block' : 'none';
-            }
-
-            // KHÔNG đóng dropdown, KHÔNG xoá input để người dùng có thể click chọn liên tiếp các thiết bị trùng mã
-            if (bInp) {
-              if (window.innerWidth > 768) {
-                bInp.focus();
-              } else if (window.VirtualKeyboardModule && !bInp.readOnly) {
-                // Focus out and in on mobile might be disruptive, so we just keep state
-              }
-            }
-            
-            // Dispatch event to update list only!
-            document.dispatchEvent(new Event('mcs-arl-modal-update'));
-          };
-
-          bInp.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowDown') { e.preventDefault(); this.state.highlightIdx = Math.min(this.state.highlightIdx + 1, this.state.dropdownItems.length - 1); this.renderDropdown(dd, bInp.value.trim()); }
-            else if (e.key === 'ArrowUp') { e.preventDefault(); this.state.highlightIdx = Math.max(this.state.highlightIdx - 1, 0); this.renderDropdown(dd, bInp.value.trim()); }
-            else if (e.key === 'Enter') {
-              e.preventDefault();
-              submitBatch();
-            }
-          });
-
-          const handleMobileKeyboardBatch = (e) => {
-            if (window.innerWidth <= 768 && window.VirtualKeyboardModule && !bInp.readOnly) {
-              e.preventDefault();
-              bInp.blur();
-              window.VirtualKeyboardModule.open(bInp, {
-                onSubmit: () => submitBatch()
+          if (bInp) {
+            if (kindSelect) {
+              kindSelect.addEventListener('change', (e) => {
+                this.state.searchKind = e.target.value;
+                if (bInp.value.trim().length >= 2) {
+                  this.state.dropdownItems = this.searchDevices(bInp.value.trim());
+                  this.state.highlightIdx = this.state.dropdownItems.length > 0 ? 0 : -1;
+                  this.renderDropdown(dd, bInp.value.trim());
+                }
               });
             }
-          };
-          bInp.addEventListener('click', handleMobileKeyboardBatch);
-          bInp.addEventListener('focus', handleMobileKeyboardBatch);
 
-          clr.addEventListener('click', () => { bInp.value = ''; clr.classList.remove('visible'); dd.classList.remove('open'); bInp.focus(); });
-          setTimeout(() => { if (window.innerWidth > 768) bInp.focus(); }, 100);
-        }
+            bInp.addEventListener('input', () => {
+              const q = bInp.value.trim();
+              clr.classList.toggle('visible', q.length > 0);
+              if (q.length < 2) { dd.classList.remove('open'); this.state.dropdownItems = []; return; }
+              this.state.dropdownItems = this.searchDevices(q);
+              this.state.highlightIdx = this.state.dropdownItems.length > 0 ? 0 : -1;
+              this.renderDropdown(dd, q);
+            });
+
+            const submitBatch = () => {
+              let sel = null;
+              if (this.state.highlightIdx >= 0 && this.state.dropdownItems[this.state.highlightIdx]) {
+                sel = this.state.dropdownItems[this.state.highlightIdx];
+              } else if (this.state.dropdownItems.length > 0) {
+                sel = this.state.dropdownItems[0];
+              }
+
+              if (sel && !session.items.find(b => this.normalizeCode(b.code) === sel.normCode && b.kind === sel.kind)) {
+                session.items.unshift({ code: sel.code, kind: sel.kind, item: sel.item, checked: false, isLoggedToDb: false, normCode: sel.normCode, normId: sel.normId, isManualAddition: true });
+                this.saveSessions();
+                if (window.showToast) window.showToast('success', '', `Đã thêm ${sel.code}`);
+
+                const countSpan = modal.querySelector('#arl-lm-count-span');
+                if (countSpan) countSpan.innerText = session.items.length + '件';
+                const resetBtn = modal.querySelector('#arl-batch-reset');
+                if (resetBtn) resetBtn.style.display = session.items.length > 0 ? 'inline-block' : 'none';
+              }
+
+              // KHÔNG đóng dropdown, KHÔNG xoá input để người dùng có thể click chọn liên tiếp các thiết bị trùng mã
+              if (bInp) {
+                if (window.innerWidth > 768) {
+                  bInp.focus();
+                } else if (window.VirtualKeyboardModule && !bInp.readOnly) {
+                  // Focus out and in on mobile might be disruptive, so we just keep state
+                }
+              }
+
+              // Dispatch event to update list only!
+              document.dispatchEvent(new Event('mcs-arl-modal-update'));
+            };
+
+            bInp.addEventListener('keydown', (e) => {
+              if (e.key === 'ArrowDown') { e.preventDefault(); this.state.highlightIdx = Math.min(this.state.highlightIdx + 1, this.state.dropdownItems.length - 1); this.renderDropdown(dd, bInp.value.trim()); }
+              else if (e.key === 'ArrowUp') { e.preventDefault(); this.state.highlightIdx = Math.max(this.state.highlightIdx - 1, 0); this.renderDropdown(dd, bInp.value.trim()); }
+              else if (e.key === 'Enter') {
+                e.preventDefault();
+                submitBatch();
+              }
+            });
+
+            const handleMobileKeyboardBatch = (e) => {
+              if (window.innerWidth <= 768 && window.VirtualKeyboardModule && !bInp.readOnly) {
+                e.preventDefault();
+                bInp.blur();
+                window.VirtualKeyboardModule.open(bInp, {
+                  onSubmit: () => submitBatch()
+                });
+              }
+            };
+            bInp.addEventListener('click', handleMobileKeyboardBatch);
+            bInp.addEventListener('focus', handleMobileKeyboardBatch);
+
+            clr.addEventListener('click', () => { bInp.value = ''; clr.classList.remove('visible'); dd.classList.remove('open'); bInp.focus(); });
+            setTimeout(() => { if (window.innerWidth > 768) bInp.focus(); }, 100);
+          }
         } // END if (!isUpdate)
 
         if (focusLoc) {
@@ -2059,9 +2075,7 @@
           }
         };
 
-        document.getElementById('arl-loc-import-cancel').onclick = () => {
-          document.body.removeChild(rackModal);
-        };
+        document.getElementById('arl-loc-import-cancel').onclick = () => document.body.removeChild(rackModal);
         document.getElementById('arl-loc-import-confirm').onclick = submitImport;
         inp.addEventListener('keydown', (e) => {
           if (e.key === 'Enter') { e.preventDefault(); submitImport(); }
@@ -2231,9 +2245,9 @@
 
       document.getElementById('arl-loc-start-first')?.addEventListener('click', () => {
         if (s.targetLayers.length > 0) {
-           s.currentLayer = s.targetLayers[0];
-           s.viewMode = 'detail';
-           this.renderBody();
+          s.currentLayer = s.targetLayers[0];
+          s.viewMode = 'detail';
+          this.renderBody();
         }
       });
 
@@ -2253,8 +2267,8 @@
             s.targetLayers = s.targetLayers.filter(l => l !== lId);
             const dbSess = this.state.sessions.find(db => db.id === s.id);
             if (dbSess) {
-               dbSess.referenceId = s.targetLayers.join(',');
-               this.saveSessions(s.id);
+              dbSess.referenceId = s.targetLayers.join(',');
+              this.saveSessions(s.id);
             }
             this.renderBody();
           }
@@ -2266,7 +2280,7 @@
       if (list) {
         let dragEl = null;
 
-        const handleDragStart = function(e) {
+        const handleDragStart = function (e) {
           dragEl = this;
           dragEl.style.opacity = '0.4';
           if (e.dataTransfer) {
@@ -2275,14 +2289,14 @@
           }
         };
 
-        const handleDragOver = function(e) {
+        const handleDragOver = function (e) {
           if (e.preventDefault) e.preventDefault();
           if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
           const target = e.target.closest('.arl-loc-layer-card');
           if (target && target !== dragEl) {
-             const rect = target.getBoundingClientRect();
-             const next = (e.clientY - rect.top) / (rect.bottom - rect.top) > 0.5;
-             list.insertBefore(dragEl, next ? target.nextSibling : target);
+            const rect = target.getBoundingClientRect();
+            const next = (e.clientY - rect.top) / (rect.bottom - rect.top) > 0.5;
+            list.insertBefore(dragEl, next ? target.nextSibling : target);
           }
           return false;
         };
@@ -2291,11 +2305,11 @@
           if (dragEl) dragEl.style.opacity = '1';
           const newOrder = Array.from(list.querySelectorAll('.arl-loc-layer-card')).map(c => c.getAttribute('data-layer'));
           s.targetLayers = newOrder;
-          
+
           const dbSess = this.state.sessions.find(db => db.id === s.id);
           if (dbSess) {
-             dbSess.referenceId = newOrder.join(',');
-             this.saveSessions(s.id);
+            dbSess.referenceId = newOrder.join(',');
+            this.saveSessions(s.id);
           }
         };
 
@@ -2303,7 +2317,7 @@
           card.addEventListener('dragstart', handleDragStart, false);
           card.addEventListener('dragover', handleDragOver, false);
           card.addEventListener('dragend', handleDragEnd, false);
-          
+
           // Touch events for mobile dragging
           card.addEventListener('touchstart', (e) => {
             if (e.target.closest('.arl-drag-handle')) {
@@ -2311,27 +2325,27 @@
               dragEl.style.opacity = '0.6';
               dragEl.style.transform = 'scale(0.98)';
             }
-          }, {passive: true});
-          
+          }, { passive: true });
+
           card.addEventListener('touchmove', (e) => {
             if (!dragEl) return;
             e.preventDefault(); // Prevent scrolling
             const touch = e.touches[0];
             const target = document.elementFromPoint(touch.clientX, touch.clientY)?.closest('.arl-loc-layer-card');
             if (target && target !== dragEl) {
-               const rect = target.getBoundingClientRect();
-               const next = (touch.clientY - rect.top) / (rect.bottom - rect.top) > 0.5;
-               list.insertBefore(dragEl, next ? target.nextSibling : target);
+              const rect = target.getBoundingClientRect();
+              const next = (touch.clientY - rect.top) / (rect.bottom - rect.top) > 0.5;
+              list.insertBefore(dragEl, next ? target.nextSibling : target);
             }
-          }, {passive: false});
-          
+          }, { passive: false });
+
           card.addEventListener('touchend', (e) => {
             if (!dragEl) return;
             dragEl.style.opacity = '1';
             dragEl.style.transform = '';
             dragEl = null;
             handleDragEnd();
-          }, {passive: true});
+          }, { passive: true });
         });
       }
     },
@@ -2431,7 +2445,7 @@
         }
       });
 
-      document.getElementById('arl-loc-back-to-master')?.addEventListener('click', () => {
+      document.getElementById('arl-back-to-master')?.addEventListener('click', () => {
         s.viewMode = 'master';
         this.renderBody();
       });
@@ -2775,8 +2789,8 @@
             }
             const scanBtn = document.getElementById('arl-ms-scan');
             if (scanBtn) {
-               if (this.state.searchList.length === 0) scanBtn.setAttribute('disabled', 'true');
-               else scanBtn.removeAttribute('disabled');
+              if (this.state.searchList.length === 0) scanBtn.setAttribute('disabled', 'true');
+              else scanBtn.removeAttribute('disabled');
             }
           } else {
             const session = this.state.activeSessionId ? this.state.sessions.find(s => s.id === this.state.activeSessionId) : null;
@@ -2788,10 +2802,10 @@
               }
             }
             // KHÔNG clear thẻ input và đóng dropdown
-            
+
             // Dispatch event to update the modal
             document.dispatchEvent(new Event('mcs-arl-modal-update'));
-            
+
             const modal = document.getElementById('arl-list-manager-modal');
             if (modal && session) {
               // Chỉ cập nhật con số đếm trên modal thay vì re-render toàn bộ
@@ -2913,7 +2927,7 @@
 
       document.getElementById('arl-cam-close').addEventListener('click', () => this.closeCamera());
       document.getElementById('arl-cam-swap').addEventListener('click', () => this.toggleCamera());
-      
+
       // Scan engine is now auto-determined by mode (no manual toggle)
 
       document.getElementById('arl-cam-pause')?.addEventListener('click', () => {
@@ -3038,7 +3052,7 @@
             this.state.ctx.shadowColor = "black"; this.state.ctx.shadowBlur = 5;
             this.state.ctx.lineWidth = 2; this.state.ctx.strokeStyle = 'white'; this.state.ctx.stroke();
             this.state.ctx.shadowBlur = 0;
-            
+
             if (isMatch && displayCode) {
               this.state.ctx.font = 'bold 24px Arial'; this.state.ctx.fillStyle = color;
               this.state.ctx.shadowColor = "black"; this.state.ctx.shadowBlur = 6;
@@ -3083,11 +3097,11 @@
           // Full-frame mode: quét toàn bộ frame hoặc chia vùng nếu MCSMultiQRScanner khả dụng
           if (window.MCSMultiQRScanner) {
             hits = window.MCSMultiQRScanner.scanRegions(this.state.canvas, this.state.ctx, {
-               regions: [
-                  { key: 'full', x: 0.00, y: 0.00, w: 1.00, h: 1.00 },
-                  { key: 'center', x: 0.20, y: 0.20, w: 0.60, h: 0.60 },
-                  { key: 'bottom', x: 0.15, y: 0.50, w: 0.70, h: 0.50 }
-               ]
+              regions: [
+                { key: 'full', x: 0.00, y: 0.00, w: 1.00, h: 1.00 },
+                { key: 'center', x: 0.20, y: 0.20, w: 0.60, h: 0.60 },
+                { key: 'bottom', x: 0.15, y: 0.50, w: 0.70, h: 0.50 }
+              ]
             });
           } else {
             const imgData = this.state.ctx.getImageData(0, 0, cw, ch);
@@ -3337,10 +3351,10 @@
                 if (!this.state.completedLayers) this.state.completedLayers = new Set();
                 if (!this.state.completedLayers.has(layerId)) {
                   this.state.completedLayers.add(layerId);
-                  
+
                   // Non-blocking notification for faster workflow
                   if (window.showToast) {
-                     window.showToast('success', '完了 (Hoàn thành Tầng)', `Đã quét đủ ${layerItems.length} thiết bị tại Tầng ${layerId}`);
+                    window.showToast('success', '完了 (Hoàn thành Tầng)', `Đã quét đủ ${layerItems.length} thiết bị tại Tầng ${layerId}`);
                   }
                 }
               }
@@ -3365,7 +3379,7 @@
         ctx.shadowBlur = 5;
         ctx.lineWidth = 2; ctx.strokeStyle = 'white'; ctx.stroke();
         ctx.shadowBlur = 0; // reset
-        
+
         // Save to state to persist across 60fps video frames
         this.state.lastMatchBox = { loc, isMatch, displayCode, time: Date.now() };
       }

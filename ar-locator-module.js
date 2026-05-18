@@ -2822,7 +2822,7 @@
       this.renderBody();
     },
 
-    camTick() {
+    async camTick() {
       if (!this.state.scanning || !this.state.video) return;
       requestAnimationFrame(() => this.camTick());
 
@@ -2831,30 +2831,63 @@
         if (this.state.canvas.width !== cw) { this.state.canvas.width = cw; this.state.canvas.height = ch; }
         this.state.ctx.drawImage(this.state.video, 0, 0, cw, ch);
 
-        // Throttle QR scanning engine to ~6 FPS (150ms) to prevent heavy CPU freeze
+        // Throttle QR scanning engine to prevent heavy CPU freeze
         const now = Date.now();
-        if (now - (this.state.lastScanTime || 0) < 150) return;
+        if (now - (this.state.lastScanTime || 0) < 200 || this.state.isScanningQR) return;
         this.state.lastScanTime = now;
+        this.state.isScanningQR = true;
 
-        let hits = [];
-        if (this.state.scanEngine === 'single' && typeof window.jsQR === 'function') {
-          const imgData = this.state.ctx.getImageData(0, 0, cw, ch);
-          const code = window.jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: 'dontInvert' });
-          if (code) hits.push(code);
-        } else if (window.MCSMultiQRScanner) {
-          hits = window.MCSMultiQRScanner.scanRegions(this.state.canvas, this.state.ctx);
-        } else if (typeof window.jsQR === 'function') {
-          const imgData = this.state.ctx.getImageData(0, 0, cw, ch);
-          const code = window.jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: 'dontInvert' });
-          if (code) hits.push(code);
-        }
-
-        if (hits && hits.length) {
-          for (let hit of hits) {
-            if (this.state.scanning) {
-              this.handleCamQR(hit);
+        try {
+          let hits = [];
+          
+          if (window.BarcodeDetector) {
+            if (!this._barcodeDetector) {
+              this._barcodeDetector = new BarcodeDetector({ formats: ['qr_code'] });
+            }
+            try {
+              const barcodes = await this._barcodeDetector.detect(this.state.canvas);
+              if (barcodes && barcodes.length > 0) {
+                hits = barcodes.map(b => {
+                  const pts = b.cornerPoints;
+                  let location = null;
+                  if (pts && pts.length === 4) {
+                    location = { topLeftCorner: pts[0], topRightCorner: pts[1], bottomRightCorner: pts[2], bottomLeftCorner: pts[3] };
+                  }
+                  return { data: b.rawValue, location };
+                });
+              }
+            } catch (e) {
+               // Fallback if BarcodeDetector fails
             }
           }
+
+          if (hits.length === 0) {
+            // Yield to main thread to allow paint before sync heavy tasks
+            await new Promise(r => setTimeout(r, 0));
+            if (!this.state.scanning) return; // double check after yield
+            
+            if (this.state.scanEngine === 'single' && typeof window.jsQR === 'function') {
+              const imgData = this.state.ctx.getImageData(0, 0, cw, ch);
+              const code = window.jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: 'dontInvert' });
+              if (code) hits.push(code);
+            } else if (window.MCSMultiQRScanner) {
+              hits = window.MCSMultiQRScanner.scanRegions(this.state.canvas, this.state.ctx);
+            } else if (typeof window.jsQR === 'function') {
+              const imgData = this.state.ctx.getImageData(0, 0, cw, ch);
+              const code = window.jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: 'dontInvert' });
+              if (code) hits.push(code);
+            }
+          }
+
+          if (hits && hits.length) {
+            for (let hit of hits) {
+              if (this.state.scanning) {
+                this.handleCamQR(hit);
+              }
+            }
+          }
+        } finally {
+          this.state.isScanningQR = false;
         }
       }
     },

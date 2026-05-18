@@ -77,9 +77,12 @@
       }
     }
 
-    buildPayload(type, id) {
+    buildPayload(type, id, format = 'raw') {
       const typeCode = type === 'mold' ? 'M' : (type === 'tray' ? 'T' : 'C');
       const safeId = (id || '').replace(/\s+/g, '');
+      if (format === 'raw') {
+        return `${typeCode}${safeId}`;
+      }
       // BẮT BUỘC dùng domain thực tế để QR có thể quét được bằng điện thoại, mở web tương thích
       return `https://ysd-pack.pages.dev/?q=${typeCode}${encodeURIComponent(safeId)}`;
     }
@@ -141,7 +144,8 @@
     openSingleModal(typeInfo) {
       this.closeModal('qrSingleModal');
 
-      const payload = this.buildPayload(typeInfo.type, typeInfo.id);
+      // Default is 'raw' now
+      const payload = this.buildPayload(typeInfo.type, typeInfo.id, 'raw');
       const defaultSize = 300;
       let currentDataUrl = this.generateLocalQR(payload, defaultSize);
 
@@ -171,6 +175,18 @@
             </div>
 
             <div class="qre-controls">
+              <label>形式 / Định dạng:</label>
+              <div style="margin-bottom: 12px; display:flex; gap:12px; font-size:14px; background:#f8fafc; padding:8px; border-radius:6px; border:1px solid #e2e8f0;">
+                 <label style="cursor:pointer; display:flex; align-items:center;">
+                   <input type="radio" name="qrSingleFormat" value="raw" checked style="margin-right:6px; width:16px; height:16px; accent-color:#2563eb;">
+                   <span>Tem dán (Mã ngắn)</span>
+                 </label>
+                 <label style="cursor:pointer; display:flex; align-items:center;">
+                   <input type="radio" name="qrSingleFormat" value="url" style="margin-right:6px; width:16px; height:16px; accent-color:#2563eb;">
+                   <span>Tài liệu (URL)</span>
+                 </label>
+              </div>
+
               <label>サイズ / Kích thước (px):</label>
               <select id="qrSingleSize">
                 <option value="150">150 x 150</option>
@@ -203,20 +219,27 @@
       const imgEl = document.getElementById('qrSingleImg');
       const downloadEl = document.getElementById('qrSingleDownload');
 
-      sizeSelect.addEventListener('change', (e) => {
-        const newSize = parseInt(e.target.value, 10);
-        currentDataUrl = this.generateLocalQR(payload, newSize);
+      const updateSingleQR = () => {
+        const newSize = parseInt(sizeSelect.value, 10);
+        const format = document.querySelector('input[name="qrSingleFormat"]:checked').value;
+        const newPayload = this.buildPayload(typeInfo.type, typeInfo.id, format);
+        currentDataUrl = this.generateLocalQR(newPayload, newSize);
         imgEl.src = currentDataUrl;
         downloadEl.href = currentDataUrl;
-        downloadEl.download = `MCQR_${typeCode}_${typeInfo.id}_${typeInfo.code}_${newSize}.png`;
-      });
+        downloadEl.download = `MCQR_${typeCode}_${typeInfo.id}_${typeInfo.code}_${newSize}_${format}.png`;
+      };
+
+      sizeSelect.addEventListener('change', updateSingleQR);
+      document.querySelectorAll('input[name="qrSingleFormat"]').forEach(el => el.addEventListener('change', updateSingleQR));
 
       document.getElementById('qrSingleCopy').addEventListener('click', () => {
         this.copyQRToClipboard(currentDataUrl);
       });
 
       document.getElementById('qrSinglePrint').addEventListener('click', () => {
-        this.printSingle(typeInfo, payload, sizeSelect.value);
+        const format = document.querySelector('input[name="qrSingleFormat"]:checked').value;
+        const newPayload = this.buildPayload(typeInfo.type, typeInfo.id, format);
+        this.printSingle(typeInfo, newPayload, sizeSelect.value);
       });
 
       if (window.SwipeHistoryTrap) {
@@ -322,6 +345,19 @@
                 </select>
               </div>
               <div class="qre-config-item">
+                <label>形式 / Định dạng mã QR:</label>
+                <div style="display:flex; gap:12px; font-size:14px; margin-top:4px; margin-bottom:8px;">
+                   <label style="cursor:pointer; display:flex; align-items:center;">
+                     <input type="radio" name="qrMassFormat" value="raw" checked style="margin-right:6px; width:16px; height:16px; accent-color:#2563eb;">
+                     <span>Tem dán (Mã siêu ngắn)</span>
+                   </label>
+                   <label style="cursor:pointer; display:flex; align-items:center;">
+                     <input type="radio" name="qrMassFormat" value="url" style="margin-right:6px; width:16px; height:16px; accent-color:#2563eb;">
+                     <span>Tài liệu (URL Web)</span>
+                   </label>
+                </div>
+              </div>
+              <div class="qre-config-item">
                 <label>用紙サイズ / Khổ giấy:</label>
                 <select id="qrMassPaper" disabled>
                   <option value="A4">A4 (210 x 297 mm)</option>
@@ -363,7 +399,8 @@
         const sizeMm = parseInt(document.getElementById('qrMassSize').value, 10);
         const showCode = document.getElementById('qrMassShowCode').checked;
         const showName = document.getElementById('qrMassShowName').checked;
-        this.printMass(validItems, sizeMm, showCode, showName);
+        const format = document.querySelector('input[name="qrMassFormat"]:checked').value;
+        this.printMass(validItems, sizeMm, showCode, showName, format);
       });
 
       if (window.SwipeHistoryTrap) {
@@ -371,11 +408,11 @@
       }
     }
 
-    printMass(validItems, sizeMm, showCode, showName) {
+    printMass(validItems, sizeMm, showCode, showName, format = 'raw') {
       // Render từng thẻ
       let labelsHtml = '';
       validItems.forEach(item => {
-        const payload = this.buildPayload(item.type, item.id);
+        const payload = this.buildPayload(item.type, item.id, format);
         const dataUrl = this.generateLocalQR(payload, 300);
 
         let typePrefix = item.type === 'mold' ? '[金型]' : '[抜型]';
@@ -470,9 +507,14 @@
         </body>
         </html>
       `;
-      win.document.open();
-      win.document.write(html);
-      win.document.close();
+      const win = window.open('', '_blank');
+      if (win) {
+        win.document.open();
+        win.document.write(html);
+        win.document.close();
+      } else {
+        alert('Vui lòng cho phép mở popup để in tem QR.');
+      }
     }
 
     // --- COMMON ---

@@ -444,14 +444,25 @@
       } catch (e) { }
 
       const parts = text.split('|');
-      if (parts.length < 4) return null;
-      if (parts[0].toUpperCase() !== 'MCQR') return null;
-      const typePart = (parts[1] || '').toUpperCase();
-      if (typePart !== 'MOLD' && typePart !== 'CUTTER') return null;
-      const id = (parts[2] || '').trim();
-      const code = (parts[3] || '').trim();
-      if (!id || !code) return null;
-      return { raw: text, kind: typePart === 'MOLD' ? 'mold' : 'cutter', id, code };
+      if (parts.length >= 4 && parts[0].toUpperCase() === 'MCQR') {
+        const typePart = (parts[1] || '').toUpperCase();
+        if (typePart === 'MOLD' || typePart === 'CUTTER') {
+          const id = (parts[2] || '').trim();
+          const code = (parts[3] || '').trim();
+          if (id && code) {
+            return { raw: text, kind: typePart === 'MOLD' ? 'mold' : 'cutter', id, code };
+          }
+        }
+      }
+
+      // Minimalist QR: M230 or C1234
+      if (/^[MC][A-Z0-9\-]+$/i.test(text)) {
+        const typeCode = text.charAt(0).toUpperCase();
+        const idCode = text.substring(1).trim().toUpperCase();
+        return { raw: text, kind: typeCode === 'M' ? 'mold' : 'cutter', id: idCode, code: idCode };
+      }
+
+      return null;
     },
 
     findExactRecord(list, parsed) {

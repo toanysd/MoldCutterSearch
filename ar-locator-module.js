@@ -114,7 +114,10 @@
     },
 
     saveSessionsLocalOnly() {
-      try { localStorage.setItem('mcs_ar_audit_sessions', JSON.stringify(this.state.sessions)); } catch (e) { }
+      if (this._saveSessionTimeout) clearTimeout(this._saveSessionTimeout);
+      this._saveSessionTimeout = setTimeout(() => {
+        try { localStorage.setItem('mcs_ar_audit_sessions', JSON.stringify(this.state.sessions)); } catch (e) { }
+      }, 500);
     },
 
     saveSessions(syncSessionId = null) {
@@ -353,14 +356,12 @@
               normCode: this.normalizeCode(dCode || code),
               normId: String(item.normId || (kind === 'mold' ? item.MoldID : item.CutterID) || '')
             });
-            if (results.length >= 20) return true; // max 20
           }
         }
-        return false;
       };
 
       if ((searchKind === 'all' || searchKind === 'mold') && dm.molds) check(dm.molds, 'mold');
-      if (results.length < 20 && (searchKind === 'all' || searchKind === 'cutter') && dm.cutters) check(dm.cutters, 'cutter');
+      if ((searchKind === 'all' || searchKind === 'cutter') && dm.cutters) check(dm.cutters, 'cutter');
       return results.slice(0, 20);
     },
 
@@ -3141,7 +3142,7 @@
           if (Date.now() - this.state.lastBeepTime > 1000) {
             this.beep();
             this.updateCamBadge();
-            if (window.showToast) window.showToast('success', '', `Đã quét: ${displayCode}`);
+            // if (window.showToast) window.showToast('success', '', `Đã quét: ${displayCode}`);
 
             // Auto-close if all targets are checked
             const allDone = targets.length > 0 && targets.every(t => t.checked);

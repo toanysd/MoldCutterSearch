@@ -89,6 +89,9 @@ class ResultsCardRenderer {
             const zoomBtn = e.target.closest('.image-zoom-btn') || e.target.closest('.card-thumbnail');
             if (!zoomBtn) return;
 
+            // KIỂM TRA SELECTION MODE: Nếu đang chọn, không mở popup ảnh
+            if (this.selectedItems && this.selectedItems.size > 0) return;
+
             e.preventDefault();
             e.stopPropagation();
 
@@ -414,7 +417,10 @@ class ResultsCardRenderer {
                         img.onerror = () => {
                             container.innerHTML = `<div style="padding:40px; text-align:center; color:#94a3b8;"><i class="fas fa-image fa-3x" style="margin-bottom:8px;"></i><p style="margin:0; font-size:12px; font-weight:600;">画像なし <span style="font-weight:400;">/ Không có ảnh</span></p></div>`;
                         };
-                        img.onclick = () => { if (window.openGlobalPhotoZoom) window.openGlobalPhotoZoom(img.src); };
+                        img.onclick = (e) => { 
+                            if (this.selectedItems && this.selectedItems.size > 0) return; // Prevent zooming when selecting
+                            if (window.openGlobalPhotoZoom) window.openGlobalPhotoZoom(img.src); 
+                        };
                         img.src = fullUrl;
                         container.appendChild(img);
                     } else {

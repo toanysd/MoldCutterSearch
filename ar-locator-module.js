@@ -2704,16 +2704,16 @@
                 <defs>
                   <mask id="vf-mask">
                     <rect width="100%" height="100%" fill="white"/>
-                    <rect x="25%" y="20%" width="50%" height="60%" rx="12" fill="black"/>
+                    <rect x="50%" y="50%" width="220" height="220" transform="translate(-110, -110)" rx="16" fill="black"/>
                   </mask>
                 </defs>
-                <rect width="100%" height="100%" fill="rgba(0,0,0,0.45)" mask="url(#vf-mask)"/>
-                <rect x="25%" y="20%" width="50%" height="60%" rx="12" fill="none" stroke="#22c55e" stroke-width="3" stroke-dasharray="12 6">
+                <rect width="100%" height="100%" fill="rgba(0,0,0,0.55)" mask="url(#vf-mask)"/>
+                <rect x="50%" y="50%" width="220" height="220" transform="translate(-110, -110)" rx="16" fill="none" stroke="#22c55e" stroke-width="3" stroke-dasharray="12 6">
                   <animate attributeName="stroke-dashoffset" values="0;36" dur="1.5s" repeatCount="indefinite"/>
                 </rect>
               </svg>
-              <div style="position:absolute; bottom:12%; left:0; right:0; text-align:center; color:#fff; font-size:12px; text-shadow:0 1px 4px rgba(0,0,0,0.8);">
-                QRコードを枠に合わせてください / Đưa mã QR vào khung
+              <div style="position:absolute; top:calc(50% + 130px); left:0; right:0; text-align:center; color:#fff; font-size:13px; font-weight:bold; text-shadow:0 1px 4px rgba(0,0,0,0.8);">
+                QRコードを枠に合わせてください<br/><span style="font-size:11px; font-weight:normal;">Đưa mã QR vào khung</span>
               </div>
             </div>` : ''}
           </div>
@@ -2839,6 +2839,25 @@
         const cw = this.state.video.videoWidth, ch = this.state.video.videoHeight;
         if (this.state.canvas.width !== cw) { this.state.canvas.width = cw; this.state.canvas.height = ch; }
         this.state.ctx.drawImage(this.state.video, 0, 0, cw, ch);
+
+        // --- PERSISTENT BOUNDING BOX (60FPS) ---
+        // Prevents the box from flickering / disappearing when throttle skips QR decode
+        if (this.state.lastMatchBox && Date.now() - this.state.lastMatchBox.time < 250) {
+          const { loc, isMatch } = this.state.lastMatchBox;
+          if (loc && loc.topLeftCorner) {
+            const color = isMatch ? '#00FF00' : '#FF3333';
+            this.state.ctx.beginPath();
+            this.state.ctx.moveTo(loc.topLeftCorner.x, loc.topLeftCorner.y);
+            this.state.ctx.lineTo(loc.topRightCorner.x, loc.topRightCorner.y);
+            this.state.ctx.lineTo(loc.bottomRightCorner.x, loc.bottomRightCorner.y);
+            this.state.ctx.lineTo(loc.bottomLeftCorner.x, loc.bottomLeftCorner.y);
+            this.state.ctx.closePath();
+            this.state.ctx.lineWidth = 6; this.state.ctx.strokeStyle = color; this.state.ctx.stroke();
+            this.state.ctx.shadowColor = "black"; this.state.ctx.shadowBlur = 5;
+            this.state.ctx.lineWidth = 2; this.state.ctx.strokeStyle = 'white'; this.state.ctx.stroke();
+            this.state.ctx.shadowBlur = 0;
+          }
+        }
 
         // Throttle QR decode to ~6.6 FPS (150ms) to balance speed vs CPU
         const now = Date.now();
@@ -3084,47 +3103,51 @@
         }
       } else {
         // Batch Mode
-        // Bỏ qua nếu mã này đã quét rồi (tránh báo match liên tục)
+        let isNewMatch = false;
+
         const alreadyDone = targets.find(t => t.checked && isMatchFound(t, parsedNorm, parsedId, parsed?.kind));
-        if (alreadyDone) return; // Im lặng bỏ qua mã đã quét
-
-        const found = targets.find(t => !t.checked && isMatchFound(t, parsedNorm, parsedId, parsed?.kind));
-        if (found) {
+        if (alreadyDone) {
           isMatch = true;
-          found.checked = true;
-          found.scanStatus = 'MATCHED';
-          found.scannedAt = new Date().toISOString();
-          displayCode = found.code;
+          displayCode = alreadyDone.code;
+        } else {
+          const found = targets.find(t => !t.checked && isMatchFound(t, parsedNorm, parsedId, parsed?.kind));
+          if (found) {
+            isMatch = true;
+            isNewMatch = true;
+            found.checked = true;
+            found.scanStatus = 'MATCHED';
+            found.scannedAt = new Date().toISOString();
+            displayCode = found.code;
 
-          this.saveSessions();
+            this.saveSessions();
 
-          // Xóa item khỏi mini-list preview để chỉ hiện mã còn lại
-          const miniItem = document.getElementById('mini-' + found.normCode);
-          if (miniItem) miniItem.remove();
+            // Xóa item khỏi mini-list preview để chỉ hiện mã còn lại
+            const miniItem = document.getElementById('mini-' + found.normCode);
+            if (miniItem) miniItem.remove();
 
-          // Cập nhật lại badge
-          const unconfirmed = targets.filter(t => !t.checked).length;
-          const badge = document.getElementById('arl-cam-badge');
-          if (badge) badge.innerText = unconfirmed > 0 ? `${unconfirmed} 件未確認` : '完了 (Đã xong toàn bộ)';
+            // Cập nhật lại badge
+            const unconfirmed = targets.filter(t => !t.checked).length;
+            const badge = document.getElementById('arl-cam-badge');
+            if (badge) badge.innerText = unconfirmed > 0 ? `${unconfirmed} 件未確認` : '完了 (Đã xong toàn bộ)';
 
-          // PHASE 3: LAYER COMPLETION OVERLAY
-          const layerId = found.item && found.item.RackLayerID;
-          if (layerId) {
-            const layerItems = targets.filter(t => t.item && t.item.RackLayerID === layerId);
-            if (layerItems.length > 0 && layerItems.every(t => t.checked)) {
-              if (!this.state.completedLayers) this.state.completedLayers = new Set();
-              if (!this.state.completedLayers.has(layerId)) {
-                this.state.completedLayers.add(layerId);
-                
-                // Non-blocking notification for faster workflow
-                if (window.showToast) {
-                   window.showToast('success', '完了 (Hoàn thành Tầng)', `Đã quét đủ ${layerItems.length} thiết bị tại Tầng ${layerId}`);
+            // PHASE 3: LAYER COMPLETION OVERLAY
+            const layerId = found.item && found.item.RackLayerID;
+            if (layerId) {
+              const layerItems = targets.filter(t => t.item && t.item.RackLayerID === layerId);
+              if (layerItems.length > 0 && layerItems.every(t => t.checked)) {
+                if (!this.state.completedLayers) this.state.completedLayers = new Set();
+                if (!this.state.completedLayers.has(layerId)) {
+                  this.state.completedLayers.add(layerId);
+                  
+                  // Non-blocking notification for faster workflow
+                  if (window.showToast) {
+                     window.showToast('success', '完了 (Hoàn thành Tầng)', `Đã quét đủ ${layerItems.length} thiết bị tại Tầng ${layerId}`);
+                  }
                 }
               }
             }
           }
         }
-        // Lưu ý: mã đã quét được bỏ qua hoàn toàn ở đầu (return sớm)
       }
 
       // Draw bounding box (guard against null location)
@@ -3143,6 +3166,9 @@
         ctx.shadowBlur = 5;
         ctx.lineWidth = 2; ctx.strokeStyle = 'white'; ctx.stroke();
         ctx.shadowBlur = 0; // reset
+        
+        // Save to state to persist across 60fps video frames
+        this.state.lastMatchBox = { loc, isMatch, time: Date.now() };
       }
 
       if (isMatch) {

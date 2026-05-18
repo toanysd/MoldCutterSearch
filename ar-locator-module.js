@@ -75,7 +75,7 @@
                   const m = dm.molds.find(x => this.normalizeCode(x.displayCode || x.MoldCode) === nc);
                   if (m) { hydratedItem = m; hydratedNormId = String(m.MoldID || ''); }
                 } else if (kind === 'cutter' && dm.cutters) {
-                  const c = dm.cutters.find(x => this.normalizeCode(x.displayCode || x.CutterCode || x.CutterNo) === nc);
+                  const c = dm.cutters.find(x => this.normalizeCode(x.displayCode || x.CutterNo || x.CutterCode) === nc);
                   if (c) { hydratedItem = c; hydratedNormId = String(c.CutterID || ''); }
                 }
               }
@@ -338,13 +338,14 @@
         if (!Array.isArray(list)) return;
         const normQ = this.normalizeCode(query).toLowerCase();
         for (const item of list) {
-          const code = kind === 'mold' ? (item.MoldCode || '') : (item.CutterCode || item.CutterNo || '');
+          const code = kind === 'mold' ? (item.MoldCode || '') : (item.CutterNo || item.CutterCode || '');
           const name = kind === 'mold' ? (item.MoldName || '') : (item.CutterName || '');
           const dCode = item.displayCode || '';
           const normC = this.normalizeCode(code).toLowerCase();
           const normD = this.normalizeCode(dCode).toLowerCase();
+          const itemId = String(kind === 'mold' ? (item.MoldID || '') : (item.CutterID || '')).toLowerCase();
 
-          if (code.toLowerCase().includes(q) || name.toLowerCase().includes(q) || dCode.toLowerCase().includes(q) || normC.includes(normQ) || normD.includes(normQ)) {
+          if (code.toLowerCase().includes(q) || name.toLowerCase().includes(q) || dCode.toLowerCase().includes(q) || normC.includes(normQ) || normD.includes(normQ) || (itemId && itemId === q)) {
             results.push({
               code: dCode || code,
               kind: kind,
@@ -1424,7 +1425,7 @@
                 list.forEach(item => {
                   const rId = String(item.RackLayerID || '');
                   if (targetLayerIds.includes(rId)) {
-                    const code = kind === 'mold' ? (item.displayCode || item.MoldCode) : (item.displayCode || item.CutterCode || item.CutterNo);
+                    const code = kind === 'mold' ? (item.displayCode || item.MoldCode) : (item.displayCode || item.CutterNo || item.CutterCode);
                     const norm = this.normalizeCode(code);
                     if (!session.items.find(b => b.normCode === norm)) {
                       session.items.unshift({ code: code, kind: kind, item: item, checked: false, isLoggedToDb: false, normCode: norm, normId: (kind === 'mold' ? item.MoldID : item.CutterID), isManualAddition: false });
@@ -1594,7 +1595,7 @@
               dm.cutters.forEach(c => {
                 const rId = String(c.RackLayerID || '');
                 if (targetLayerIds.includes(rId)) {
-                  const cc = c.displayCode || c.CutterCode || c.CutterNo;
+                  const cc = c.displayCode || c.CutterNo || c.CutterCode;
                   expected.push({ code: cc, kind: 'cutter', item: c, normCode: this.normalizeCode(cc), normId: String(c.CutterID || '') });
                 }
               });
@@ -1916,7 +1917,7 @@
           dm.cutters.forEach(c => {
             const rId = String(c.RackLayerID || '');
             if (targetLayerIds.includes(rId)) {
-              expected.push({ code: c.displayCode || c.CutterCode || c.CutterNo, kind: 'cutter', item: c, normCode: this.normalizeCode(c.displayCode || c.CutterCode || c.CutterNo) });
+              expected.push({ code: c.displayCode || c.CutterNo || c.CutterCode, kind: 'cutter', item: c, normCode: this.normalizeCode(c.displayCode || c.CutterNo || c.CutterCode) });
             }
           });
         }
@@ -2486,7 +2487,7 @@
                 });
                 if (dm && dm.cutters) dm.cutters.forEach(c => {
                   if (String(c.RackLayerID || '') === layerCode) {
-                    const cCode = c.displayCode || c.CutterCode || c.CutterNo;
+                    const cCode = c.displayCode || c.CutterNo || c.CutterCode;
                     const cNorm = this.normalizeCode(cCode);
                     const cNormId = String(c.CutterID || '');
                     locSession.expected.push({ code: cCode, kind: 'cutter', item: c, normCode: cNorm, normId: cNormId });
@@ -2819,22 +2820,24 @@
       const rawText = String(code.data).trim();
       const parsed = window.QRScanSearch?.parsePayload?.(rawText);
       let parsedNorm = '';
-      if (parsed && parsed.code) {
-        parsedNorm = this.normalizeCode(parsed.code);
+      let parsedId = '';
+      if (parsed) {
+        if (parsed.id) parsedId = String(parsed.id).trim();
+        if (parsed.code) parsedNorm = this.normalizeCode(parsed.code);
       } else {
         // Fallback cho mã in đơn giản
         parsedNorm = this.normalizeCode(rawText);
       }
 
-      if (!parsedNorm) return;
+      if (!parsedNorm && !parsedId) return;
 
       const loc = code.location;
       const ctx = this.state.ctx;
       const targets = this.state.cameraTargets || [];
 
       // Flexible Match function
-      const isMatchFound = (target, qrNorm, qrKind) => {
-        if (!qrNorm) return false;
+      const isMatchFound = (target, qrNorm, qrId, qrKind) => {
+        if (!qrNorm && !qrId) return false;
         if (qrKind && target.kind && target.kind !== qrKind) return false;
 
         const targetNorm = String(target.normCode || '');
@@ -2842,9 +2845,10 @@
         const rawId = target.normId;
         const targetId = (rawId !== undefined && rawId !== null && String(rawId) !== 'undefined' && String(rawId) !== '') ? String(rawId) : '';
 
-        if (targetNorm && targetNorm === qrNorm) return true;
-        if (targetId && targetId === qrNorm) return true;
-        if (qrNorm.length >= 3) {
+        if (qrId && targetId && targetId === qrId) return true;
+        if (qrNorm && targetNorm && targetNorm === qrNorm) return true;
+        if (qrNorm && targetId && targetId === qrNorm) return true;
+        if (qrNorm && qrNorm.length >= 3) {
           if (targetNorm && targetNorm.includes(qrNorm)) return true;
           if (targetNorm && qrNorm.includes(targetNorm)) return true;
           if (targetId && targetId.includes(qrNorm)) return true;
@@ -2857,14 +2861,14 @@
       let displayCode = parsed ? parsed.code : rawText;
 
       if (this.state.mode === 'single') {
-        if (targets.length > 0 && isMatchFound(targets[0], parsedNorm, parsed?.kind)) {
+        if (targets.length > 0 && isMatchFound(targets[0], parsedNorm, parsedId, parsed?.kind)) {
           isMatch = true;
           displayCode = targets[0].code;
         }
       } else if (this.state.mode === 'multi_search') {
         let foundTarget = null;
         for (const t of targets) {
-          if (isMatchFound(t, parsedNorm, parsed?.kind)) {
+          if (isMatchFound(t, parsedNorm, parsedId, parsed?.kind)) {
             isMatch = true;
             displayCode = t.code;
             foundTarget = t;
@@ -2934,7 +2938,7 @@
           // Trước tiên, thử match với danh sách target trước (nếu có)
           let foundItem = null;
           if (targets.length > 0) {
-            const matchedTarget = targets.find(t => !t.checked && isMatchFound(t, parsedNorm, parsed?.kind));
+            const matchedTarget = targets.find(t => !t.checked && isMatchFound(t, parsedNorm, parsedId, parsed?.kind));
             if (matchedTarget) {
               foundItem = { code: matchedTarget.code, kind: matchedTarget.kind, item: matchedTarget.item, normCode: matchedTarget.normCode, normId: matchedTarget.normId };
               matchedTarget.checked = true;
@@ -2949,9 +2953,10 @@
 
           // Fallback: tìm trong DataManager nếu không match target list
           if (!foundItem) {
-            const devices = this.searchDevices(parsedNorm);
+            const searchVal = parsedId || parsedNorm;
+            const devices = this.searchDevices(searchVal);
             if (devices.length > 0) {
-              foundItem = devices.find(d => d.normCode === parsedNorm) || devices[0];
+              foundItem = devices.find(d => (parsedId && d.normId === parsedId) || (parsedNorm && d.normCode === parsedNorm)) || devices[0];
             }
           }
 
@@ -3006,10 +3011,10 @@
       } else {
         // Batch Mode
         // Bỏ qua nếu mã này đã quét rồi (tránh báo match liên tục)
-        const alreadyDone = targets.find(t => t.checked && isMatchFound(t, parsedNorm, parsed?.kind));
+        const alreadyDone = targets.find(t => t.checked && isMatchFound(t, parsedNorm, parsedId, parsed?.kind));
         if (alreadyDone) return; // Im lặng bỏ qua mã đã quét
 
-        const found = targets.find(t => !t.checked && isMatchFound(t, parsedNorm, parsed?.kind));
+        const found = targets.find(t => !t.checked && isMatchFound(t, parsedNorm, parsedId, parsed?.kind));
         if (found) {
           isMatch = true;
           found.checked = true;

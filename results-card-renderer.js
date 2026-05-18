@@ -54,6 +54,9 @@ class ResultsCardRenderer {
 
                 if (!item) return;
 
+                // Nếu đang ở chế độ chọn, bỏ qua action menu để card handler xử lý chọn thẻ
+                if (this.selectedItems.size > 0) return;
+
                 this.openCardActionMenu(actionBtn, item, e);
             }
         }, true);
@@ -62,6 +65,9 @@ class ResultsCardRenderer {
         document.addEventListener('contextmenu', (e) => {
             const card = e.target.closest('.result-card');
             if (card) {
+                // Nếu đang ở chế độ chọn, bỏ qua chuột phải
+                if (this.selectedItems.size > 0) return;
+
                 e.preventDefault(); // Chặn menu mặc định của trình duyệt
 
                 const itemId = String(card.dataset.id || '').trim();
@@ -496,22 +502,11 @@ class ResultsCardRenderer {
                 return;
             }
 
-            // Không mở chi tiết khi bấm vào các phần tương tác
-            if (
-                e.target.closest('.image-zoom-btn') ||
-                e.target.closest('.card-thumbnail') ||
-                e.target.closest('.location-link') ||
-                e.target.closest('.meta-item.status') ||
-                e.target.closest('.card-action-btn') ||
-                e.target.closest('.card-action-menu-v8')
-            ) {
-                return;
-            }
-
-            e.preventDefault();
-
-            // 🌟 KIỂM TRA SELECTION MODE: Nếu đang có phần tử chọn -> Tự động toggle thay vì mở Panel
+            // 🌟 KIỂM TRA SELECTION MODE: Nếu đang có phần tử chọn -> Tự động toggle thay vì mở Panel/ảnh
             if (this.selectedItems.size > 0) {
+                e.preventDefault();
+                e.stopImmediatePropagation(); // Ngăn các sự kiện click khác trên document (như phóng to ảnh)
+                
                 const isChecking = !this.selectedItems.has(uid);
 
                 if (e.shiftKey && this._lastCheckedUid) {
@@ -526,6 +521,20 @@ class ResultsCardRenderer {
                 }
                 return;
             }
+
+            // Không mở chi tiết khi bấm vào các phần tương tác
+            if (
+                e.target.closest('.image-zoom-btn') ||
+                e.target.closest('.card-thumbnail') ||
+                e.target.closest('.location-link') ||
+                e.target.closest('.meta-item.status') ||
+                e.target.closest('.card-action-btn') ||
+                e.target.closest('.card-action-menu-v8')
+            ) {
+                return;
+            }
+
+            e.preventDefault();
 
             if (this.onItemClick) {
                 const item = this.items.find(it => {
@@ -1368,10 +1377,13 @@ class ResultsCardRenderer {
 
         const statusStr = String(latest.Status || latest.Action || '').trim();
         let extractedDest = '';
+        let baseStatus = statusStr;
         const parenMatch = statusStr.match(/^(.*?)\s*[\(\（](.*?)[\)\）]$/);
         if (parenMatch) {
+            baseStatus = parenMatch[1].trim();
             extractedDest = parenMatch[2].trim();
         } else if (statusStr.toUpperCase().startsWith('OUT ') && statusStr.length > 4) {
+            baseStatus = 'OUT';
             extractedDest = statusStr.substring(4).trim();
         }
 
@@ -1392,7 +1404,7 @@ class ResultsCardRenderer {
         }
 
         return {
-            status: latest.Status || null,
+            status: baseStatus || null,
             date: latest.Timestamp || null,
             notes: latest.Notes || '',
             outDestName: outDestName

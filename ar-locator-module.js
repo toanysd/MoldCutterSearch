@@ -42,15 +42,29 @@
     async loadSessions() {
       try {
         const stored = localStorage.getItem('mcs_ar_audit_sessions');
-        if (stored) this.state.sessions = JSON.parse(stored);
-        else this.state.sessions = [];
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          // Prune sessions older than 30 days
+          const thirtyDaysAgo = new Date();
+          thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+          this.state.sessions = parsed.filter(s => {
+            if (!s.createdAt) return true;
+            return new Date(s.createdAt) > thirtyDaysAgo;
+          });
+        } else {
+          this.state.sessions = [];
+        }
       } catch (e) { this.state.sessions = []; }
 
       const sb = this.getSupabaseClient();
       if (!sb) return;
 
       try {
-        const { data, error } = await sb.from('inventory_sessions').select('*, inventory_session_lines(*)').order('created_at', { ascending: false });
+        const thirtyDaysAgoStr = new Date(new Date().setDate(new Date().getDate() - 30)).toISOString();
+        const { data, error } = await sb.from('inventory_sessions').select('*, inventory_session_lines(*)')
+          .gte('created_at', thirtyDaysAgoStr)
+          .order('created_at', { ascending: false })
+          .limit(50);
         if (error) throw error;
         if (data) {
           this.state.sessions = data.map(row => ({
@@ -864,7 +878,7 @@
         } else if (this.state.dropdownItems.length > 0) {
           sel = this.state.dropdownItems[0];
         }
-        if (sel && !this.state.searchList.find(t => t.normCode === sel.normCode)) {
+        if (sel && !this.state.searchList.find(t => t.normCode === sel.normCode && t.kind === sel.kind)) {
           this.state.searchList.push({ code: sel.code, kind: sel.kind, item: sel.item, normCode: sel.normCode, normId: sel.normId });
           inp.value = ''; clr.style.display = 'none'; dd.classList.remove('open');
           this.renderBody();
@@ -1505,19 +1519,23 @@
             if (sel && !session.items.find(b => this.normalizeCode(b.code) === sel.normCode && b.kind === sel.kind)) {
               session.items.unshift({ code: sel.code, kind: sel.kind, item: sel.item, checked: false, isLoggedToDb: false, normCode: sel.normCode, normId: sel.normId, isManualAddition: true });
               this.saveSessions();
-            }
-            bInp.value = ''; clr.classList.remove('visible'); dd.classList.remove('open');
-            renderModalContent();
-
-            setTimeout(() => {
-              const newInp = modal.querySelector('#arl-batch-input');
-              if (!newInp) return;
-              if (window.innerWidth > 768) {
-                newInp.focus();
-              } else if (window.VirtualKeyboardModule && !newInp.readOnly) {
-                window.VirtualKeyboardModule.open(newInp, { onSubmit: submitBatch });
+              if (window.showToast) window.showToast('success', '', `Đã thêm ${sel.code}`);
+              
+              // Cập nhật số lượng hiển thị (nếu có)
+              const countSpan = modal.querySelector('span[style*="#64748b"]');
+              if (countSpan && countSpan.innerText.includes('件')) {
+                countSpan.innerText = session.items.length + '件';
               }
-            }, 100);
+            }
+
+            // KHÔNG đóng dropdown, KHÔNG xoá input để người dùng có thể click chọn liên tiếp các thiết bị trùng mã
+            if (bInp) {
+              if (window.innerWidth > 768) {
+                bInp.focus();
+              } else if (window.VirtualKeyboardModule && !bInp.readOnly) {
+                // Focus out and in on mobile might be disruptive, so we just keep state
+              }
+            }
           };
 
           bInp.addEventListener('keydown', (e) => {
@@ -2559,7 +2577,7 @@
             this.renderBody();
           } else if (this.state.mode === 'multi_search') {
             if (!this.state.searchList) this.state.searchList = [];
-            if (!this.state.searchList.find(t => t.normCode === sel.normCode)) {
+            if (!this.state.searchList.find(t => t.normCode === sel.normCode && t.kind === sel.kind)) {
               this.state.searchList.push({ code: sel.code, kind: sel.kind, item: sel.item, normCode: sel.normCode, normId: sel.normId });
             }
             const inp = document.getElementById('arl-ms-input');
@@ -2573,14 +2591,22 @@
               if (!session.items.find(b => this.normalizeCode(b.code) === sel.normCode && b.kind === sel.kind)) {
                 session.items.unshift({ code: sel.code, kind: sel.kind, item: sel.item, checked: false, isLoggedToDb: false, normCode: sel.normCode, normId: sel.normId, isManualAddition: true });
                 this.saveSessions();
+                if (window.showToast) window.showToast('success', '', `Đã thêm ${sel.code}`);
               }
             }
+            // KHÔNG clear thẻ input và đóng dropdown
             const inp = document.getElementById('arl-batch-input');
-            if (inp) inp.value = '';
-            dd.classList.remove('open');
+            
+            // Cập nhật ngầm danh sách nền (tránh re-render toàn bộ modal làm mất focus)
             this.renderBody();
-            if (document.getElementById('arl-list-manager-modal')) {
-              document.dispatchEvent(new CustomEvent('mcs-arl-modal-update'));
+            
+            const modal = document.getElementById('arl-list-manager-modal');
+            if (modal && session) {
+              // Chỉ cập nhật con số đếm trên modal thay vì re-render toàn bộ
+              const countSpan = modal.querySelector('span[style*="#64748b"]');
+              if (countSpan && countSpan.innerText.includes('件')) {
+                countSpan.innerText = session.items.length + '件';
+              }
             }
             setTimeout(() => document.getElementById('arl-batch-input')?.focus(), 50);
           }
@@ -2788,10 +2814,17 @@
 
     camTick() {
       if (!this.state.scanning || !this.state.video) return;
+      requestAnimationFrame(() => this.camTick());
+
       if (this.state.video.readyState === this.state.video.HAVE_ENOUGH_DATA) {
         const cw = this.state.video.videoWidth, ch = this.state.video.videoHeight;
         if (this.state.canvas.width !== cw) { this.state.canvas.width = cw; this.state.canvas.height = ch; }
         this.state.ctx.drawImage(this.state.video, 0, 0, cw, ch);
+
+        // Throttle QR scanning engine to ~6 FPS (150ms) to prevent heavy CPU freeze
+        const now = Date.now();
+        if (now - (this.state.lastScanTime || 0) < 150) return;
+        this.state.lastScanTime = now;
 
         let hits = [];
         if (this.state.scanEngine === 'single' && typeof window.jsQR === 'function') {
@@ -2814,7 +2847,6 @@
           }
         }
       }
-      if (this.state.scanning) requestAnimationFrame(() => this.camTick());
     },
 
     handleCamQR(code) {

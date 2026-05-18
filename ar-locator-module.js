@@ -2708,7 +2708,7 @@
                   </mask>
                 </defs>
                 <rect width="100%" height="100%" fill="rgba(0,0,0,0.55)" mask="url(#vf-mask)"/>
-                <rect x="50%" y="50%" width="220" height="220" transform="translate(-110, -110)" rx="16" fill="none" stroke="#22c55e" stroke-width="3" stroke-dasharray="12 6">
+                <rect x="50%" y="50%" width="220" height="220" transform="translate(-110, -110)" rx="16" fill="none" stroke="#9ca3af" stroke-width="3" stroke-dasharray="12 6">
                   <animate attributeName="stroke-dashoffset" values="0;36" dur="1.5s" repeatCount="indefinite"/>
                 </rect>
               </svg>
@@ -2843,7 +2843,7 @@
         // --- PERSISTENT BOUNDING BOX (60FPS) ---
         // Prevents the box from flickering / disappearing when throttle skips QR decode
         if (this.state.lastMatchBox && Date.now() - this.state.lastMatchBox.time < 250) {
-          const { loc, isMatch } = this.state.lastMatchBox;
+          const { loc, isMatch, displayCode } = this.state.lastMatchBox;
           if (loc && loc.topLeftCorner) {
             const color = isMatch ? '#00FF00' : '#FF3333';
             this.state.ctx.beginPath();
@@ -2856,6 +2856,13 @@
             this.state.ctx.shadowColor = "black"; this.state.ctx.shadowBlur = 5;
             this.state.ctx.lineWidth = 2; this.state.ctx.strokeStyle = 'white'; this.state.ctx.stroke();
             this.state.ctx.shadowBlur = 0;
+            
+            if (isMatch && displayCode) {
+              this.state.ctx.font = 'bold 24px Arial'; this.state.ctx.fillStyle = color;
+              this.state.ctx.shadowColor = "black"; this.state.ctx.shadowBlur = 6;
+              this.state.ctx.fillText('✓ ' + displayCode, loc.topLeftCorner.x, loc.topLeftCorner.y - 10);
+              this.state.ctx.shadowBlur = 0;
+            }
           }
         }
 
@@ -2876,7 +2883,7 @@
           const cropW = Math.floor(cw * 0.50);
           const cropH = Math.floor(ch * 0.60);
           const imgData = this.state.ctx.getImageData(cropX, cropY, cropW, cropH);
-          const code = window.jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: 'dontInvert' });
+          const code = window.jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: 'attemptBoth' });
           if (code) {
             // Remap location coordinates from cropped region back to full canvas
             if (code.location) {
@@ -2891,10 +2898,20 @@
             hits.push(code);
           }
         } else {
-          // Full-frame mode: quét toàn bộ frame cho single/multi_search
-          const imgData = this.state.ctx.getImageData(0, 0, cw, ch);
-          const code = window.jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: 'dontInvert' });
-          if (code) hits.push(code);
+          // Full-frame mode: quét toàn bộ frame hoặc chia vùng nếu MCSMultiQRScanner khả dụng
+          if (window.MCSMultiQRScanner) {
+            hits = window.MCSMultiQRScanner.scanRegions(this.state.canvas, this.state.ctx, {
+               regions: [
+                  { key: 'full', x: 0.00, y: 0.00, w: 1.00, h: 1.00 },
+                  { key: 'center', x: 0.20, y: 0.20, w: 0.60, h: 0.60 },
+                  { key: 'bottom', x: 0.15, y: 0.50, w: 0.70, h: 0.50 }
+               ]
+            });
+          } else {
+            const imgData = this.state.ctx.getImageData(0, 0, cw, ch);
+            const code = window.jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: 'attemptBoth' });
+            if (code) hits.push(code);
+          }
         }
 
         if (hits.length) {
@@ -3168,7 +3185,7 @@
         ctx.shadowBlur = 0; // reset
         
         // Save to state to persist across 60fps video frames
-        this.state.lastMatchBox = { loc, isMatch, time: Date.now() };
+        this.state.lastMatchBox = { loc, isMatch, displayCode, time: Date.now() };
       }
 
       if (isMatch) {

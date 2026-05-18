@@ -2687,7 +2687,6 @@
             </div>
             <div style="display:flex; gap:6px; align-items:center;">
               <select id="arl-camera-select" style="max-width:110px; font-size:12px; padding:4px; border-radius:4px; display:none;"></select>
-              <button id="arl-cam-engine" style="border:1px solid #3b82f6; background:#eff6ff; color:#2563eb; padding:4px 8px; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer;" title="Chuyển đổi chế độ quét"><i class="fas fa-bolt"></i> <span id="arl-cam-engine-lbl">${this.state.scanEngine === 'single' ? 'Quét Đơn' : 'Quét Đa'}</span></button>
               <button id="arl-cam-swap" style="border:1px solid #ccc; background:#f5f5f5; padding:4px 10px; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer;">切替</button>
               <button id="arl-cam-pause" style="background:#f59e0b; color:#fff; border:none; padding:4px 10px; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer;"><i class="fas fa-pause"></i> 一時停止 (Tạm dừng / Xem kết quả)</button>
             </div>
@@ -2695,13 +2694,31 @@
           <div style="background:rgba(0,0,0,0.5); padding:4px 10px; text-align:center;">
              <span class="arl-camera-target-badge" id="arl-cam-badge" style="${this.state.mode === 'single' ? 'background:rgba(13,109,110,0.5)' : ''}">${targetInfo}</span>
           </div>
-          <div class="arl-camera-canvas-wrap">
+          <div class="arl-camera-canvas-wrap" style="position:relative;">
             ${miniListHtml}
             <video id="arl-video" playsinline></video>
             <canvas id="arl-canvas"></canvas>
+            ${(this.state.mode === 'batch' || this.state.mode === 'location') ? `
+            <div id="arl-viewfinder" style="position:absolute; inset:0; pointer-events:none; z-index:10;">
+              <svg width="100%" height="100%" style="position:absolute; inset:0;">
+                <defs>
+                  <mask id="vf-mask">
+                    <rect width="100%" height="100%" fill="white"/>
+                    <rect x="25%" y="20%" width="50%" height="60%" rx="12" fill="black"/>
+                  </mask>
+                </defs>
+                <rect width="100%" height="100%" fill="rgba(0,0,0,0.45)" mask="url(#vf-mask)"/>
+                <rect x="25%" y="20%" width="50%" height="60%" rx="12" fill="none" stroke="#22c55e" stroke-width="3" stroke-dasharray="12 6">
+                  <animate attributeName="stroke-dashoffset" values="0;36" dur="1.5s" repeatCount="indefinite"/>
+                </rect>
+              </svg>
+              <div style="position:absolute; bottom:12%; left:0; right:0; text-align:center; color:#fff; font-size:12px; text-shadow:0 1px 4px rgba(0,0,0,0.8);">
+                QRコードを枠に合わせてください / Đưa mã QR vào khung
+              </div>
+            </div>` : ''}
           </div>
           <div class="arl-camera-bottombar">
-            <div class="arl-camera-info"><span class="ja">QRコードをカメラに映してください</span></div>
+            <div class="arl-camera-info"><span class="ja">${(this.state.mode === 'batch' || this.state.mode === 'location') ? 'QRコードを中央の枠に合わせてスキャン' : 'QRコードをカメラに映してください'}</span></div>
           </div>
         </div>
       `;
@@ -2715,15 +2732,7 @@
       document.getElementById('arl-cam-close').addEventListener('click', () => this.closeCamera());
       document.getElementById('arl-cam-swap').addEventListener('click', () => this.toggleCamera());
       
-      const btnEngine = document.getElementById('arl-cam-engine');
-      if (btnEngine) {
-        btnEngine.addEventListener('click', () => {
-          this.state.scanEngine = this.state.scanEngine === 'single' ? 'multi' : 'single';
-          localStorage.setItem('mcs_arl_engine', this.state.scanEngine);
-          document.getElementById('arl-cam-engine-lbl').textContent = this.state.scanEngine === 'single' ? 'Quét Đơn' : 'Quét Đa';
-          if (window.showToast) window.showToast('info', '', 'Đã chuyển sang chế độ: ' + (this.state.scanEngine === 'single' ? 'Quét Đơn lẻ (Siêu tốc)' : 'Quét Đa (Nhiều mã)'));
-        });
-      }
+      // Scan engine is now auto-determined by mode (no manual toggle)
 
       document.getElementById('arl-cam-pause')?.addEventListener('click', () => {
         if (confirm('カメラを一時停止して結果に戻りますか？ / Tạm dừng và quay lại xem kết quả?')) {
@@ -2822,7 +2831,7 @@
       this.renderBody();
     },
 
-    async camTick() {
+    camTick() {
       if (!this.state.scanning || !this.state.video) return;
       requestAnimationFrame(() => this.camTick());
 
@@ -2831,63 +2840,50 @@
         if (this.state.canvas.width !== cw) { this.state.canvas.width = cw; this.state.canvas.height = ch; }
         this.state.ctx.drawImage(this.state.video, 0, 0, cw, ch);
 
-        // Throttle QR scanning engine to prevent heavy CPU freeze
+        // Throttle QR decode to ~6.6 FPS (150ms) to balance speed vs CPU
         const now = Date.now();
-        if (now - (this.state.lastScanTime || 0) < 200 || this.state.isScanningQR) return;
+        if (now - (this.state.lastScanTime || 0) < 150) return;
         this.state.lastScanTime = now;
-        this.state.isScanningQR = true;
 
-        try {
-          let hits = [];
-          
-          if (window.BarcodeDetector) {
-            if (!this._barcodeDetector) {
-              this._barcodeDetector = new BarcodeDetector({ formats: ['qr_code'] });
+        if (typeof window.jsQR !== 'function') return;
+
+        let hits = [];
+        const useCenterCrop = (this.state.mode === 'batch' || this.state.mode === 'location');
+
+        if (useCenterCrop) {
+          // Viewfinder mode: chỉ quét vùng giữa (50% rộng × 60% cao) → nhanh, chính xác
+          const cropX = Math.floor(cw * 0.25);
+          const cropY = Math.floor(ch * 0.20);
+          const cropW = Math.floor(cw * 0.50);
+          const cropH = Math.floor(ch * 0.60);
+          const imgData = this.state.ctx.getImageData(cropX, cropY, cropW, cropH);
+          const code = window.jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: 'dontInvert' });
+          if (code) {
+            // Remap location coordinates from cropped region back to full canvas
+            if (code.location) {
+              const remap = (pt) => ({ x: pt.x + cropX, y: pt.y + cropY });
+              code.location = {
+                topLeftCorner: remap(code.location.topLeftCorner),
+                topRightCorner: remap(code.location.topRightCorner),
+                bottomRightCorner: remap(code.location.bottomRightCorner),
+                bottomLeftCorner: remap(code.location.bottomLeftCorner)
+              };
             }
-            try {
-              const barcodes = await this._barcodeDetector.detect(this.state.canvas);
-              if (barcodes && barcodes.length > 0) {
-                hits = barcodes.map(b => {
-                  const pts = b.cornerPoints;
-                  let location = null;
-                  if (pts && pts.length === 4) {
-                    location = { topLeftCorner: pts[0], topRightCorner: pts[1], bottomRightCorner: pts[2], bottomLeftCorner: pts[3] };
-                  }
-                  return { data: b.rawValue, location };
-                });
-              }
-            } catch (e) {
-               // Fallback if BarcodeDetector fails
+            hits.push(code);
+          }
+        } else {
+          // Full-frame mode: quét toàn bộ frame cho single/multi_search
+          const imgData = this.state.ctx.getImageData(0, 0, cw, ch);
+          const code = window.jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: 'dontInvert' });
+          if (code) hits.push(code);
+        }
+
+        if (hits.length) {
+          for (const hit of hits) {
+            if (this.state.scanning) {
+              this.handleCamQR(hit);
             }
           }
-
-          if (hits.length === 0) {
-            // Yield to main thread to allow paint before sync heavy tasks
-            await new Promise(r => setTimeout(r, 0));
-            if (!this.state.scanning) return; // double check after yield
-            
-            if (this.state.scanEngine === 'single' && typeof window.jsQR === 'function') {
-              const imgData = this.state.ctx.getImageData(0, 0, cw, ch);
-              const code = window.jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: 'dontInvert' });
-              if (code) hits.push(code);
-            } else if (window.MCSMultiQRScanner) {
-              hits = window.MCSMultiQRScanner.scanRegions(this.state.canvas, this.state.ctx);
-            } else if (typeof window.jsQR === 'function') {
-              const imgData = this.state.ctx.getImageData(0, 0, cw, ch);
-              const code = window.jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: 'dontInvert' });
-              if (code) hits.push(code);
-            }
-          }
-
-          if (hits && hits.length) {
-            for (let hit of hits) {
-              if (this.state.scanning) {
-                this.handleCamQR(hit);
-              }
-            }
-          }
-        } finally {
-          this.state.isScanningQR = false;
         }
       }
     },
@@ -2955,18 +2951,20 @@
           this.beep();
           this.state.scanning = false;
 
-          // Vẽ khung xanh
-          const pad = 20;
-          const bw = (loc.bottomRightCorner.x - loc.topLeftCorner.x) + pad * 2;
-          const bh = (loc.bottomRightCorner.y - loc.topLeftCorner.y) + pad * 2;
-          const bx = loc.topLeftCorner.x - pad;
-          const by = loc.topLeftCorner.y - pad;
-          ctx.strokeStyle = '#22c55e'; ctx.lineWidth = 4;
-          ctx.strokeRect(bx, by, bw, bh);
-          ctx.font = 'bold 24px Arial'; ctx.fillStyle = '#22c55e';
-          ctx.shadowColor = 'black'; ctx.shadowBlur = 6;
-          ctx.fillText('✓ ' + displayCode, bx, by - 10);
-          ctx.shadowBlur = 0;
+          // Vẽ khung xanh (guard against null location)
+          if (loc && loc.topLeftCorner && loc.bottomRightCorner) {
+            const pad = 20;
+            const bw = (loc.bottomRightCorner.x - loc.topLeftCorner.x) + pad * 2;
+            const bh = (loc.bottomRightCorner.y - loc.topLeftCorner.y) + pad * 2;
+            const bx = loc.topLeftCorner.x - pad;
+            const by = loc.topLeftCorner.y - pad;
+            ctx.strokeStyle = '#22c55e'; ctx.lineWidth = 4;
+            ctx.strokeRect(bx, by, bw, bh);
+            ctx.font = 'bold 24px Arial'; ctx.fillStyle = '#22c55e';
+            ctx.shadowColor = 'black'; ctx.shadowBlur = 6;
+            ctx.fillText('✓ ' + displayCode, bx, by - 10);
+            ctx.shadowBlur = 0;
+          }
 
           const sysLayer = foundTarget.item.RackLayerID || 'N/A';
 
@@ -3129,33 +3127,23 @@
         // Lưu ý: mã đã quét được bỏ qua hoàn toàn ở đầu (return sớm)
       }
 
-      // Draw bounding box
-      const color = isMatch ? '#00FF00' : '#FF3333';
-      ctx.beginPath();
-      ctx.moveTo(loc.topLeftCorner.x, loc.topLeftCorner.y);
-      ctx.lineTo(loc.topRightCorner.x, loc.topRightCorner.y);
-      ctx.lineTo(loc.bottomRightCorner.x, loc.bottomRightCorner.y);
-      ctx.lineTo(loc.bottomLeftCorner.x, loc.bottomLeftCorner.y);
-      ctx.closePath();
-      ctx.lineWidth = 6; ctx.strokeStyle = color; ctx.stroke();
+      // Draw bounding box (guard against null location)
+      if (loc && loc.topLeftCorner && loc.topRightCorner && loc.bottomRightCorner && loc.bottomLeftCorner) {
+        const color = isMatch ? '#00FF00' : '#FF3333';
+        ctx.beginPath();
+        ctx.moveTo(loc.topLeftCorner.x, loc.topLeftCorner.y);
+        ctx.lineTo(loc.topRightCorner.x, loc.topRightCorner.y);
+        ctx.lineTo(loc.bottomRightCorner.x, loc.bottomRightCorner.y);
+        ctx.lineTo(loc.bottomLeftCorner.x, loc.bottomLeftCorner.y);
+        ctx.closePath();
+        ctx.lineWidth = 6; ctx.strokeStyle = color; ctx.stroke();
 
-      // Shadow box để dễ nhìn hơn
-      ctx.shadowColor = "black";
-      ctx.shadowBlur = 5;
-      ctx.lineWidth = 2; ctx.strokeStyle = 'white'; ctx.stroke();
-      ctx.shadowBlur = 0; // reset
-
-      // DEBUG OUTPUT ON CANVAS
-      ctx.fillStyle = "rgba(0,0,0,0.7)";
-      ctx.fillRect(10, 10, 380, 80);
-      ctx.fillStyle = "white";
-      ctx.font = "12px Courier";
-      ctx.fillText(`Raw: ${rawText.substring(0, 40)}`, 15, 25);
-      ctx.fillText(`NormQR: ${parsedNorm}`, 15, 40);
-      if (targets[0]) {
-        ctx.fillText(`TargetCode: ${targets[0].normCode} | TargetId: ${targets[0].normId}`, 15, 55);
+        // Shadow box để dễ nhìn hơn
+        ctx.shadowColor = "black";
+        ctx.shadowBlur = 5;
+        ctx.lineWidth = 2; ctx.strokeStyle = 'white'; ctx.stroke();
+        ctx.shadowBlur = 0; // reset
       }
-      ctx.fillText(`Match: ${isMatch} | ParseFail: ${!parsed}`, 15, 70);
 
       if (isMatch) {
         if (this.state.mode === 'single') {
@@ -3163,22 +3151,24 @@
           this.state.scanning = false; // Stop scanning immediately
 
           // --- GREEN BORDER EFFECT (NO DIMMING) ---
-          const pad = 20;
-          const w = (loc.bottomRightCorner.x - loc.topLeftCorner.x) + pad * 2;
-          const h = (loc.bottomRightCorner.y - loc.topLeftCorner.y) + pad * 2;
-          const x = loc.topLeftCorner.x - pad;
-          const y = loc.topLeftCorner.y - pad;
+          if (loc && loc.topLeftCorner && loc.bottomRightCorner) {
+            const pad = 20;
+            const w = (loc.bottomRightCorner.x - loc.topLeftCorner.x) + pad * 2;
+            const h = (loc.bottomRightCorner.y - loc.topLeftCorner.y) + pad * 2;
+            const x = loc.topLeftCorner.x - pad;
+            const y = loc.topLeftCorner.y - pad;
 
-          // Vẽ viền xanh lá nhấn mạnh trên nền sáng
-          ctx.strokeStyle = "#22c55e"; // L0 Industrial Green
-          ctx.lineWidth = 4;
-          ctx.strokeRect(x, y, w, h);
+            // Vẽ viền xanh lá nhấn mạnh trên nền sáng
+            ctx.strokeStyle = "#22c55e"; // L0 Industrial Green
+            ctx.lineWidth = 4;
+            ctx.strokeRect(x, y, w, h);
 
-          // Vẽ text
-          ctx.font = 'bold 24px Arial'; ctx.fillStyle = '#22c55e';
-          ctx.shadowColor = "black"; ctx.shadowBlur = 6;
-          ctx.fillText('✓ ' + displayCode, x, y - 10);
-          ctx.shadowBlur = 0;
+            // Vẽ text
+            ctx.font = 'bold 24px Arial'; ctx.fillStyle = '#22c55e';
+            ctx.shadowColor = "black"; ctx.shadowBlur = 6;
+            ctx.fillText('✓ ' + displayCode, x, y - 10);
+            ctx.shadowBlur = 0;
+          }
 
           // Lấy frame hiện tại làm ảnh (chụp toàn cảnh đủ sáng)
           const dataUrl = this.state.canvas.toDataURL('image/jpeg', 0.9);

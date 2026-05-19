@@ -152,7 +152,7 @@
             </div>
             <div style="display:flex; border-top:1px solid var(--border-color); background:var(--bg-surface);">
                 <button onclick="document.getElementById('data-refresh-modal').style.display='none';" style="flex:1; padding:16px; border:none; background:transparent; font-size:15px; font-weight:600; color:var(--mcs-text-secondary); cursor:pointer; border-right:1px solid var(--border-color);">キャンセル / Hủy</button>
-                <button onclick="document.getElementById('data-refresh-modal').style.display='none'; var cleanReload = function() { window.location.href = window.location.origin + window.location.pathname; }; if(window.DataManager && window.DataManager.forceClearCacheAndReload) { window.DataManager.forceClearCacheAndReload().then(cleanReload).catch(cleanReload); } else { cleanReload(); }" style="flex:1; padding:16px; border:none; background:transparent; font-size:15px; font-weight:700; color:var(--mcs-primary); cursor:pointer;">取得 / Cập nhật</button>
+                <button onclick="document.getElementById('data-refresh-modal').style.display='none'; var cleanReload = function() { sessionStorage.removeItem('moldSearchQuery_v8'); sessionStorage.removeItem('moldSearchCategory_v8'); window.location.href = window.location.origin + window.location.pathname; }; if(window.DataManager && window.DataManager.forceClearCacheAndReload) { window.DataManager.forceClearCacheAndReload().then(cleanReload).catch(cleanReload); } else { cleanReload(); }" style="flex:1; padding:16px; border:none; background:transparent; font-size:15px; font-weight:700; color:var(--mcs-primary); cursor:pointer;">取得 / Cập nhật</button>
             </div>
         </div>
     </div>

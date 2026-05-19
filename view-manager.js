@@ -88,7 +88,7 @@
             if (searchDivider) searchDivider.classList.add('mcs-hidden');
         } else if (viewName === 'tray') {
             if (scopePill) scopePill.classList.add('mcs-hidden');
-            if (searchInput) searchInput.placeholder = 'Khay, thông số...';
+            if (searchInput) searchInput.placeholder = 'トレイ、パラメータ... / Khay, thông số...';
             if (moduleIcon) moduleIcon.innerHTML = '<i class="fas fa-box"></i>';
             if (moduleLabelJa) moduleLabelJa.textContent = 'トレイ管理';
             if (moduleLabelVi) moduleLabelVi.textContent = 'Quản lý Khay';
@@ -120,7 +120,7 @@
             if (searchDivider) searchDivider.classList.add('mcs-hidden');
         } else if (viewName === 'sact') {
             if (scopePill) { scopePill.classList.add('mcs-hidden'); }
-            if (searchInput) searchInput.placeholder = 'SACT / Mã chiến dịch...';
+            if (searchInput) searchInput.placeholder = 'SACT / キャンペーンコード... / SACT / Mã chiến dịch...';
             if (moduleIcon) moduleIcon.innerHTML = '<i class="fas fa-clipboard-check"></i>';
             if (moduleLabelJa) moduleLabelJa.innerHTML = 'SACT モニター';
             if (moduleLabelVi) moduleLabelVi.textContent = 'Điểm danh khuôn SACT';
@@ -129,7 +129,7 @@
         } else {
             // mold
             if (scopePill) scopePill.classList.add('mcs-hidden');
-            if (searchInput) searchInput.placeholder = 'Mã, tên, vị trí, công ty...';
+            if (searchInput) searchInput.placeholder = 'コード・名称検索... / Mã, tên, vị trí, công ty...';
             if (moduleIcon) moduleIcon.innerHTML = '<i class="fas fa-search"></i>';
             if (moduleLabelJa) moduleLabelJa.innerHTML = '金型・抜型 検索';
             if (moduleLabelVi) moduleLabelVi.textContent = 'Tìm kiếm Khuôn / Dao cắt';

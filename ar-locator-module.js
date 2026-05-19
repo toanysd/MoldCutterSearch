@@ -559,25 +559,33 @@
       if (window.ViewManager) window.ViewManager.switchView('mold');
 
       // Reset selection before starting bridge mode
-      if (window.App && window.App.cardRenderer && typeof window.App.cardRenderer.clearSelection === 'function') window.App.cardRenderer.clearSelection();
-      if (window.App && window.App.tableRenderer && typeof window.App.tableRenderer.clearSelection === 'function') window.App.tableRenderer.clearSelection();
+      if (window.app && window.app.cardRenderer && typeof window.app.cardRenderer.clearSelection === 'function') window.app.cardRenderer.clearSelection();
+      if (window.app && window.app.tableRenderer && typeof window.app.tableRenderer.clearSelection === 'function') window.app.tableRenderer.clearSelection();
 
       const topBar = document.querySelector('.topbar');
       let banner = document.getElementById('mcs-arl-bridge-banner');
       if (!banner) {
         banner = document.createElement('div');
         banner.id = 'mcs-arl-bridge-banner';
-        banner.style.cssText = 'background:var(--mcs-warning, #f59e0b); color:#000; padding:12px; font-weight:bold; position:sticky; top:0; z-index:999999; box-shadow:0 4px 6px rgba(0,0,0,0.3); display:flex; flex-direction:column; gap:10px; border-bottom:4px solid #b45309;';
+        banner.style.cssText = 'background:var(--mcs-warning, #d97706); color:#fff; padding:8px 12px; font-weight:bold; position:sticky; top:0; z-index:999999; box-shadow:0 2px 4px rgba(0,0,0,0.2); display:flex; justify-content:space-between; align-items:center; gap:8px;';
         banner.innerHTML = `
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                   <div style="display:flex; align-items:center; gap:8px; font-size:15px;">
-                      <i class="fas fa-search-plus" style="font-size:20px;"></i>
-                      <span><b>AR監査モード</b><br><span style="font-size:12px; font-weight:normal;">(Đang chọn thiết bị cho Kiểm kê AR)</span></span>
-                   </div>
-                   <button id="mcs-arl-bridge-cancel" style="background:rgba(0,0,0,0.1); border:none; color:#000; padding:6px 12px; border-radius:4px; cursor:pointer; font-weight:bold;"><i class="fas fa-times"></i> Hủy</button>
-                </div>
-                <button id="mcs-arl-bridge-confirm" style="background:#16a34a; color:#fff; border:none; border-radius:6px; padding:12px; font-size:16px; font-weight:bold; cursor:pointer; box-shadow:0 2px 4px rgba(0,0,0,0.2);"><i class="fas fa-check-circle"></i> 選択した項目を追加 (Thêm các mục đã chọn)</button>
-            `;
+          <div style="display:flex; align-items:center; gap:6px; font-size:12px; line-height:1.1; flex:1;">
+            <i class="fas fa-crosshairs" style="font-size:16px;"></i>
+            <div>
+              <div style="font-size:13px;">AR監査</div>
+              <div style="font-weight:normal; font-size:10px;">(Đang chọn)</div>
+            </div>
+          </div>
+          
+          <div style="display:flex; gap:6px; align-items:center;">
+            <button id="mcs-arl-bridge-confirm" style="background:#16a34a; color:#fff; border:none; border-radius:4px; padding:6px 12px; font-size:12px; font-weight:bold; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.2); white-space:nowrap;">
+              <i class="fas fa-check"></i> 追加
+            </button>
+            <button id="mcs-arl-bridge-cancel" style="background:transparent; border:none; color:#fff; padding:6px; cursor:pointer; font-size:16px;">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        `;
 
         if (topBar && topBar.parentNode) {
           topBar.parentNode.insertBefore(banner, topBar.nextSibling);
@@ -598,7 +606,6 @@
             window.ARLocatorModule.render();
             
             document.getElementById('ar-locator-modal')?.classList.add('open');
-            document.getElementById('backdrop')?.classList.add('show');
           }
         };
 
@@ -624,7 +631,6 @@
        this.render();
        
        document.getElementById('ar-locator-modal')?.classList.add('open');
-       document.getElementById('backdrop')?.classList.add('show');
 
        if (returnMode === 'single') {
         this.state.mode = 'single';
@@ -668,8 +674,8 @@
       this.renderBody();
 
       // Reset selection after confirming items
-      if (window.App && window.App.cardRenderer && typeof window.App.cardRenderer.clearSelection === 'function') window.App.cardRenderer.clearSelection();
-      if (window.App && window.App.tableRenderer && typeof window.App.tableRenderer.clearSelection === 'function') window.App.tableRenderer.clearSelection();
+      if (window.app && window.app.cardRenderer && typeof window.app.cardRenderer.clearSelection === 'function') window.app.cardRenderer.clearSelection();
+      if (window.app && window.app.tableRenderer && typeof window.app.tableRenderer.clearSelection === 'function') window.app.tableRenderer.clearSelection();
 
       if (this.state.bridgeOpenedFromListManager) {
         this.state.bridgeOpenedFromListManager = false;

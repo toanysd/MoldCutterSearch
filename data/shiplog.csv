@@ -1,4 +1,5 @@
 ShipID,CustomerID,ItemTypeID,ShipItemName,ShipDate,ToCompanyID,FromCompanyID,ShipItemType,ShipStatus,FromCompany,ToCompany,MoldID,CutterID,FrameID,OtherEquipID,WaterBaseID,ShipNotes,DateEntry,handler,EmployeeID,UpdatedAt,UpdatedBy
+WEB_SHIP_1779188494967_5bnau36im,,,,2026-05-19,1,,,Vận chuyển,,,5802,,,,,,2026-05-19T11:01:34.967Z,,9,,
 WEB_SHIP_1779186867173_wpggmcp9c,,,,2026-05-19,1,,,Vận chuyển,,,,3111,,,,,2026-05-19T10:34:27.173Z,,9,,
 WEB_SHIP_1779186307665_jrgdy53lf,,,,2026-05-19,1,,,Vận chuyển,,,5808,,,,,"MDS-008, MDS-009, KSP-213R1, 560x360セット",2026-05-19T10:25:07.665Z,,9,,
 WEB_SHIP_1778884208041_q6uhv97pg,,,,2026-05-15,1,,,Vận chuyển,,,,3110,,,,,2026-05-15T22:30:08.041Z,,9,,

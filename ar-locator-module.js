@@ -2860,6 +2860,10 @@
         targetInfo = `探索対象: ${targets[0].code}`;
       } else if (this.state.mode === 'multi_search') {
         targetInfo = `複数検索: ${targets.length}件`;
+        if (targets.length > 0) {
+          const itemsHtml = targets.map(t => `<div class="arl-mini-item" id="mini-ms-${t.normCode}" style="opacity:${t.found ? '0.4' : '1'}; text-decoration:${t.found ? 'line-through' : 'none'};"><span>${t.code}</span></div>`).join('');
+          miniListHtml = `<div class="arl-camera-minilist" id="arl-cam-ms-minilist">${itemsHtml}</div>`;
+        }
       } else if (this.state.mode === 'batch') {
         const uncheckedTargets = targets.filter(t => !t.checked);
         targetInfo = uncheckedTargets.length > 0 ? `${uncheckedTargets.length} 件未確認` : '全QRコードをスキャン';
@@ -3215,19 +3219,17 @@
             <h2 style="margin:0 0 4px 0; font-size:20px;">発見 (Đã tìm thấy)</h2>
             <p style="font-size:20px; font-weight:bold; color:#facc15; margin-bottom:4px;">${displayCode}</p>
             <p style="font-size:13px; color:#94a3b8; margin-bottom:16px;">システム位置 (DB): <b style="color:#fff;">${sysLayer}</b></p>
-            
-            <div style="position:relative; width:100%; max-width:340px; margin-bottom:16px; border-radius:12px; overflow:hidden; border:2px solid #22c55e; box-shadow:0 8px 16px rgba(0,0,0,0.3); background:#000;">
-              <img src="${dataUrl}" style="width:100%; display:block; object-fit:contain; max-height:300px;" />
-              <button id="ms-overlay-expand" style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.8); color:#fff; border:1px solid #22c55e; border-radius:6px; padding:8px 12px; font-size:14px; font-weight:bold; cursor:pointer; z-index:10; backdrop-filter:blur(4px); box-shadow:0 2px 8px rgba(0,0,0,0.5); animation: pulse 2s infinite;">
-                  <i class="fas fa-search-plus"></i> 画像を確認 (Bấm xem ảnh)
+
+            <div style="position:relative; width:100%; max-width:340px; margin-bottom:20px; border-radius:12px; overflow:hidden; border:2px solid #22c55e; box-shadow:0 8px 16px rgba(0,0,0,0.3); background:#000;">
+              <img src="${dataUrl}" style="width:100%; display:block; object-fit:contain; max-height:260px;" />
+              <button id="ms-overlay-expand" style="position:absolute; top:6px; right:6px; background:rgba(0,0,0,0.55); color:#fff; border:none; border-radius:4px; padding:4px 8px; font-size:12px; cursor:pointer; z-index:10; backdrop-filter:blur(4px);">
+                <i class="fas fa-expand"></i>
               </button>
             </div>
-            
-            <p id="ms-overlay-hint" style="font-size:12px; color:#facc15; margin-bottom:16px; font-weight:bold;"><i class="fas fa-exclamation-triangle"></i> ※ 写真を拡大して確認すると「確認して続行」ボタンが有効になります。(Bấm xem ảnh trước khi xác nhận)</p>
 
-            <div style="display:flex; gap:16px; width:100%; max-width:340px;">
-              <button id="ms-overlay-continue" style="flex:1; padding:14px; font-size:14px; font-weight:bold; border-radius:10px; border:1px solid #94a3b8; background:transparent; color:#fff; cursor:pointer;"><i class="fas fa-times"></i> スキップ (Bỏ qua)</button>
-              <button id="ms-overlay-done" disabled style="flex:2; padding:14px; font-size:15px; font-weight:bold; border-radius:10px; border:none; background:#475569; color:#94a3b8; cursor:not-allowed; transition: all 0.3s;"><i class="fas fa-check"></i> 確認して続行 (Xác nhận & Tìm tiếp)</button>
+            <div style="display:flex; gap:12px; width:100%; max-width:340px;">
+              <button id="ms-overlay-continue" style="flex:1; padding:13px; font-size:13px; font-weight:bold; border-radius:10px; border:1px solid #94a3b8; background:transparent; color:#fff; cursor:pointer;"><i class="fas fa-times"></i> スキップ (Bỏ qua)</button>
+              <button id="ms-overlay-done" style="flex:2; padding:13px; font-size:14px; font-weight:bold; border-radius:10px; border:none; background:#22c55e; color:#fff; cursor:pointer;"><i class="fas fa-check"></i> 確認して続行 (Xác nhận)</button>
             </div>
           `;
           document.body.appendChild(msOverlay);
@@ -3240,24 +3242,7 @@
                 <img src="${dataUrl}" style="max-width:100vw; max-height:100vh; object-fit:contain;" />
              `;
              document.body.appendChild(fsOverlay);
-             const closeFs = () => { 
-                if (fsOverlay.parentNode) document.body.removeChild(fsOverlay); 
-                // Unlock the confirm button after viewing the image
-                const doneBtn = document.getElementById('ms-overlay-done');
-                if (doneBtn) {
-                   doneBtn.disabled = false;
-                   doneBtn.style.background = '#22c55e';
-                   doneBtn.style.color = '#fff';
-                   doneBtn.style.cursor = 'pointer';
-                }
-                const hint = document.getElementById('ms-overlay-hint');
-                if (hint) {
-                   hint.style.color = '#22c55e';
-                   hint.innerHTML = '<i class="fas fa-check"></i> 画像確認済 (Đã xem ảnh)';
-                }
-                const expandBtn = document.getElementById('ms-overlay-expand');
-                if (expandBtn) expandBtn.style.animation = 'none';
-             };
+             const closeFs = () => { if (fsOverlay.parentNode) document.body.removeChild(fsOverlay); };
              document.getElementById('ms-fs-close').onclick = closeFs;
              fsOverlay.onclick = (e) => { if (e.target === fsOverlay) closeFs(); };
           };
@@ -3270,7 +3255,14 @@
 
           document.getElementById('ms-overlay-continue').onclick = () => resumeScan();
           document.getElementById('ms-overlay-done').onclick = () => {
+            // Mark as found in mini-list (strikethrough), then remove from searchList
+            foundTarget.found = true;
+            const miniItem = document.getElementById('mini-ms-' + foundTarget.normCode);
+            if (miniItem) { miniItem.style.opacity = '0.4'; miniItem.style.textDecoration = 'line-through'; }
             this.state.searchList = this.state.searchList.filter(t => t.normCode !== foundTarget.normCode);
+            // Update badge
+            const badge = document.getElementById('arl-cam-badge');
+            if (badge) badge.textContent = `複数検索: ${this.state.searchList.length}件`;
             if (msOverlay.parentNode) document.body.removeChild(msOverlay);
             if (this.state.searchList.length === 0) {
               if (window.showToast) window.showToast('success', '完了', 'Đã tìm xong toàn bộ danh sách!');

@@ -1,4 +1,5 @@
 DataChangeID,TableName,RecordID,RecordIDField,FieldName,OldValue,NewValue,ChangedAt,ChangedBy,BaseValueAtEdit,BaseCommitID,BaseCommitAt,ChangeSource,ChangeNote,IsConflict,ResolvedValue,ResolvedAt,ResolvedBy
+DCH1779254516970_72gjweap2,shiplog.csv,WEB_SHIP_1779254511902_z1e1biqif,ShipID,ShipID,,WEB_SHIP_1779254511902_z1e1biqif,2026-05-20,9,,,,api/add-shiplog,New shipment,FALSE,,,
 DCH1779254515027_ggo2c1jad,Molds,5809,MoldID,KeeperCompany,,1,2026-05-20,9,,,,api/add-shiplog,,FALSE,,,
 DCH17792514540327p51p,molds,5809,MoldID,MoldWeight,,14.3,2026-05-20T04:30:50.718Z,9,,,,quick_update_v4,Wizard Update v4,FALSE,,,
 DCH1779247700037a28ho,teflonlog,TL183817,TeflonLogID,TeflonStatus,Sent,Completed,2026-05-20T03:28:20.037Z,9,,,,teflon_wizard,Wizard Update,FALSE,,,

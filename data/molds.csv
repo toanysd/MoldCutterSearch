@@ -1,6 +1,6 @@
 MoldID,MoldName,MoldCode,CustomerID,TrayID,MoldDesignID,RackLayerID,ItemTypeID,MoldLengthModified,MoldWidthModified,MoldHeightModified,MoldWeight,MoldNotes,MoldUsageStatus,MoldOnCheckList,JobID,MoldReturning,MoldReturnedDate,MoldDisposing,MoldDisposedDate,MoldEntry,MoldRevisionID,DeviceStatus,KeeperCompany,UpdatedAt,UpdatedBy
 5809,,,,,,,,,,,14.3,,,,,,,,,,,,1,2026-05-20T14:21:53.205Z,9
-5797,,,,,,720,,,,,,,,,,,,,,,,,,2026-05-20T08:37:02.968Z,13
+5797,,,,,,233,,,,,,,,,,,,,,,,,,2026-05-20T17:57:41.793Z,9
 5799,,,,,,670,,,,,,,,,,,,,,,,,,2026-05-20T08:35:43.866Z,9
 10,TIH-014,TIH014,,2528,3018,12,2,,,,,,,TRUE,,,,,,,3072,,2,,
 12,TKO-009T,TKO009T,,2579,3078,11,2,,,,,,,TRUE,,,,,,,3119,,2,,

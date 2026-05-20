@@ -1,4 +1,5 @@
 TeflonLogID,MoldID,TeflonStatus,RequestedBy,RequestedDate,ApprovedDate,ApprovedBy,SentBy,SentDate,ExpectedDate,ReceivedDate,ReceivedBy,SupplierID,CoatingType,Reason,TeflonCost,Quality,TeflonNotes,CreatedDate,UpdatedBy,UpdatedAt
+TL428079,5797,Requested,1,2026-05-20,,,,,,,,7,,,,,,2026-05-20,,
 TL598605,5799,Requested,3,2026-05-20,,,,,,,,7,,,,,,2026-05-20,,
 TL750287,5796,Requested,8,2026-05-18,,,,,,,,7,,,,,,2026-05-18,,
 TL183817,5789,Completed,1,2026-05-15,2026-05-15,1,,2026-05-15,2026-05-22,2026-05-20,,7,,,,,,2026-05-15,,2026-05-20

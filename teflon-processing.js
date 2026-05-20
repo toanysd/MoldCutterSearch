@@ -623,7 +623,7 @@
             entry.TeflonNotes = document.getElementById('fe_TeflonNotes').value;
             entry.UpdatedAt = self.getTodayISO();
 
-            var allowed = ['TeflonLogID', 'MoldID', 'TeflonStatus', 'RequestedBy', 'RequestedDate', 'ApprovedBy', 'ApprovedDate', 'SentBy', 'SentDate', 'ExpectedDate', 'ReceivedDate', 'SupplierID', 'CoatingType', 'Reason', 'TeflonCost', 'Quality', 'TeflonNotes', 'CreatedDate', 'UpdatedBy', 'UpdatedAt'];
+            var allowed = ['TeflonLogID', 'MoldID', 'TeflonStatus', 'RequestedBy', 'RequestedDate', 'ApprovedBy', 'ApprovedDate', 'SentBy', 'SentDate', 'ExpectedDate', 'ReceivedDate', 'ReceivedBy', 'SupplierID', 'CoatingType', 'Reason', 'TeflonCost', 'Quality', 'TeflonNotes', 'CreatedDate', 'UpdatedBy', 'UpdatedAt'];
             var cleanEntry = {};
             for (var i = 0; i < allowed.length; i++) {
                 if (entry[allowed[i]] !== undefined) cleanEntry[allowed[i]] = entry[allowed[i]];
@@ -1424,7 +1424,7 @@
 
 
         // BỘ LỌC WHITELIST KHẮT KHE: NGĂN CHẶN 'UNKNOWN FIELDS'
-        var allowed = ['TeflonLogID', 'MoldID', 'TeflonStatus', 'RequestedBy', 'RequestedDate', 'ApprovedBy', 'ApprovedDate', 'SentBy', 'SentDate', 'ExpectedDate', 'ReceivedDate', 'SupplierID', 'CoatingType', 'Reason', 'TeflonCost', 'Quality', 'TeflonNotes', 'CreatedDate', 'UpdatedBy', 'UpdatedAt'];
+        var allowed = ['TeflonLogID', 'MoldID', 'TeflonStatus', 'RequestedBy', 'RequestedDate', 'ApprovedBy', 'ApprovedDate', 'SentBy', 'SentDate', 'ExpectedDate', 'ReceivedDate', 'ReceivedBy', 'SupplierID', 'CoatingType', 'Reason', 'TeflonCost', 'Quality', 'TeflonNotes', 'CreatedDate', 'UpdatedBy', 'UpdatedAt'];
         var cleanEntry = {};
         for (var i = 0; i < allowed.length; i++) {
             if (entry[allowed[i]] !== undefined) cleanEntry[allowed[i]] = entry[allowed[i]];
@@ -1477,120 +1477,33 @@
 
 
 
-        // 3. Ecosystem Cascading: WebMolds (Strict field enforcement: only KeeperCompany exists in target CSV!)
+        // 3. Ecosystem Cascading: Delegated to /api/add-shiplog
+        var shipPayload = null;
+        var supplierTargetStr = String(entry.SupplierID || '7');
+        var hasStatusChanged = (this.currentLog && entry.TeflonStatus !== this.currentLog.TeflonStatus) || !this.currentLog;
+        var isSaveAndClose = false;
+        var today = new Date().toISOString().split('T')[0];
 
-        if (entry.TeflonStatus === 'Sent' || entry.TeflonStatus === 'Completed') {
-
-            var mEntry = {};
-
-            var supplierTargetStr = String(entry.SupplierID || '7');
-
-
-
-            var hasStatusChanged = (this.currentLog && entry.TeflonStatus !== this.currentLog.TeflonStatus) || !this.currentLog;
-
-            if (entry.TeflonStatus === 'Sent' && (!this.isEditMode || hasStatusChanged)) {
-
-                mEntry.KeeperCompany = supplierTargetStr; // Out to Plater
-
-
-
-                // StatusLogs (Actual columns: StatusLogID, MoldID, Status, Timestamp, EmployeeID, Notes)
-
-                var outId = 'ST' + Date.now().toString().slice(-6);
-
-                batch.push({
-
-                    filename: 'statuslogs.csv', idField: 'StatusLogID', idValue: outId, mode: 'insert', updates: {
-
-                        StatusLogID: outId, MoldID: self.currentMold.MoldID, ItemType: 'mold', Status: 'OUT', Timestamp: new Date().toISOString(), EmployeeID: String(employee), DestinationID: supplierTargetStr, Notes: 'テフロン加工へ発送'
-
-                    }
-
-                });
-
-
-
-                // ShipLog (Actual columns: ShipID, MoldID, FromCompanyID, ToCompanyID, ShipDate, EmployeeID, ShipNotes)
-
-                var shipIdOut = 'SHIP' + Date.now().toString().slice(-6);
-
-                batch.push({
-
-                    filename: 'shiplog.csv', idField: 'ShipID', idValue: shipIdOut, mode: 'insert', updates: {
-
-                        ShipID: shipIdOut, MoldID: self.currentMold.MoldID, FromCompanyID: '2', ToCompanyID: supplierTargetStr, ShipDate: today, EmployeeID: String(employee), ShipNotes: 'Teflon'
-
-                    }
-
-                });
-
-            }
-
-            else if (entry.TeflonStatus === 'Completed' && (!this.isEditMode || hasStatusChanged)) {
-
-                mEntry.KeeperCompany = '2'; // In to YSD
-
-                var origSupStr = this.currentLog ? String(this.currentLog.SupplierID || '7') : '7';
-
-
-
-                var inId = 'ST' + Date.now().toString().slice(-6);
-
-                batch.push({
-
-                    filename: 'statuslogs.csv', idField: 'StatusLogID', idValue: inId, mode: 'insert', updates: {
-
-                        StatusLogID: inId, MoldID: self.currentMold.MoldID, ItemType: 'mold', Status: 'IN', Timestamp: new Date().toISOString(), EmployeeID: String(employee), DestinationID: '2', Notes: 'テフロン加工後受取'
-
-                    }
-
-                });
-
-
-
-                var shipIdIn = 'SHIP' + Date.now().toString().slice(-6);
-
-                batch.push({
-
-                    filename: 'shiplog.csv', idField: 'ShipID', idValue: shipIdIn, mode: 'insert', updates: {
-
-                        ShipID: shipIdIn, MoldID: self.currentMold.MoldID, FromCompanyID: origSupStr, ToCompanyID: '2', ShipDate: today, EmployeeID: String(employee), ShipNotes: 'Teflon'
-
-                    }
-
-                });
-
-            }
-
-
-
-            // Only append webmolds update if we actually change storage configuration
-
-            if (Object.keys(mEntry).length > 0) {
-
-                batch.push({ filename: 'molds.csv', idField: 'MoldID', idValue: self.currentMold.MoldID, updates: mEntry, mode: 'update' });
-
-                if (mEntry.KeeperCompany) {
-                    var dchMold = {
-                        DataChangeID: 'DCH' + Date.now().toString() + Math.random().toString(36).substr(2, 5),
-                        TableName: 'molds',
-                        RecordID: self.currentMold.MoldID, RecordIDField: 'MoldID', FieldName: 'KeeperCompany',
-                        OldValue: String(self.currentMold.KeeperCompany || ''), NewValue: String(mEntry.KeeperCompany),
-                        ChangedAt: new Date().toISOString(), ChangedBy: String(employee), ChangeSource: 'teflon_wizard', ChangeNote: 'Keeper Update', IsConflict: 'FALSE'
-                    };
-                    batch.push({ filename: 'datachangehistory.csv', idField: 'DataChangeID', idValue: dchMold.DataChangeID, updates: dchMold, mode: 'insert' });
-                }
-
-            }
-
+        if (entry.TeflonStatus === 'Sent' && (!this.isEditMode || hasStatusChanged)) {
+            shipPayload = {
+                MoldID: self.currentMold.MoldID,
+                ToCompanyID: supplierTargetStr,
+                EmployeeID: String(employee),
+                ShipNotes: 'テフロン加工へ発送',
+                ShipDate: today
+            };
+        } else if (entry.TeflonStatus === 'Completed' && (!this.isEditMode || hasStatusChanged)) {
+            shipPayload = {
+                MoldID: self.currentMold.MoldID,
+                ToCompanyID: '2',
+                EmployeeID: String(employee),
+                ShipNotes: 'テフロン加工後受取',
+                ShipDate: today
+            };
         }
-
-
 
         var upStatus = String(entry.TeflonStatus).toUpperCase();
         var shouldPromptLocation = false;
-
         var finalNextState = upStatus;
 
         if (upStatus === 'REQUESTED') finalNextState = 'REQUESTED';
@@ -1602,32 +1515,92 @@
             shouldPromptLocation = true;
         }
 
-        window.TeflonSyncQueue.push({
-            batch: batch,
-            hideSuccessInfo: false,
-            callback: function () {
-                var dataObj = window.DataManager ? window.DataManager.data : (window.ALL_DATA || {});
-                batch.forEach(function (b) {
-                    var tn = b.filename.replace('.csv', '');
-                    if (!dataObj[tn]) dataObj[tn] = [];
-                    if (b.mode === 'update') {
-                        var exId = dataObj[tn].findIndex(function (x) { return String(x[b.idField]) === String(b.idValue); });
-                        if (exId >= 0) dataObj[tn][exId] = b.updates;
-                        else dataObj[tn].push(b.updates);
-                    } else {
-                        dataObj[tn].push(b.updates);
+        var processMainBatch = function () {
+            window.TeflonSyncQueue.push({
+                batch: batch,
+                hideSuccessInfo: false,
+                callback: function () {
+                    var dataObj = window.DataManager ? window.DataManager.data : (window.ALL_DATA || {});
+                    batch.forEach(function (b) {
+                        var tn = b.filename.replace('.csv', '');
+                        if (!dataObj[tn]) dataObj[tn] = [];
+                        if (b.mode === 'update') {
+                            var exId = dataObj[tn].findIndex(function (x) { return String(x[b.idField]) === String(b.idValue); });
+                            if (exId >= 0) dataObj[tn][exId] = b.updates;
+                            else dataObj[tn].push(b.updates);
+                        } else {
+                            dataObj[tn].push(b.updates);
+                        }
+                    });
+
+                    var dp = window.detailPanel || window.DetailPanel || (window.App && window.App.detailPanel);
+                    if (dp && dp.refreshCurrentTab) dp.refreshCurrentTab();
+
+                    if (shouldPromptLocation && window.RackRelocation && typeof window.RackRelocation.open === 'function') {
+                        setTimeout(function () { window.RackRelocation.open(self.currentMold); }, 400);
                     }
-                });
-
-                var dp = window.detailPanel || window.DetailPanel || (window.App && window.App.detailPanel);
-                if (dp && dp.refreshCurrentTab) dp.refreshCurrentTab();
-
-                if (shouldPromptLocation && window.RackRelocation && typeof window.RackRelocation.open === 'function') {
-                    setTimeout(function () { window.RackRelocation.open(self.currentMold); }, 400);
                 }
-            }
-        });
-        if (typeof window.processTeflonQueue === 'function') window.processTeflonQueue();
+            });
+            if (typeof window.processTeflonQueue === 'function') window.processTeflonQueue();
+        };
+
+        if (shipPayload) {
+            if (window.notify) window.notify.info('Đang đồng bộ luân chuyển vận chuyển...');
+            fetch(API_BASE_URL + '/api/add-shiplog', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(shipPayload)
+            })
+            .then(function(res) { return res.json(); })
+            .then(function(resData) {
+                if (resData.success === false) throw new Error(resData.message);
+                
+                // Cập nhật local DataManager memory manually to reflect the changes
+                if (global.DataManager && global.DataManager.data) {
+                    var mIdx = global.DataManager.data.molds.findIndex(function(m) { return String(m.MoldID) === String(self.currentMold.MoldID); });
+                    if (mIdx >= 0) {
+                        global.DataManager.data.molds[mIdx].KeeperCompany = shipPayload.ToCompanyID;
+                        self.currentMold.KeeperCompany = shipPayload.ToCompanyID;
+                    }
+                    
+                    if (!global.DataManager.data.shiplog) global.DataManager.data.shiplog = [];
+                    global.DataManager.data.shiplog.unshift({
+                        ShipID: resData.ShipID || ('SHIP' + Date.now()),
+                        MoldID: shipPayload.MoldID,
+                        CutterID: '',
+                        ShipDate: shipPayload.ShipDate,
+                        ToCompanyID: shipPayload.ToCompanyID,
+                        FromCompanyID: resData.FromCompanyID || '',
+                        ShipNotes: shipPayload.ShipNotes,
+                        EmployeeID: shipPayload.EmployeeID
+                    });
+
+                    if (!global.DataManager.data.statuslogs) global.DataManager.data.statuslogs = [];
+                    var st = shipPayload.ToCompanyID === '2' ? 'IN' : 'OUT';
+                    global.DataManager.data.statuslogs.unshift({
+                        StatusLogID: 'ST' + Date.now(),
+                        MoldID: shipPayload.MoldID,
+                        CutterID: '',
+                        ItemType: 'mold',
+                        Status: st,
+                        Timestamp: new Date().toISOString(),
+                        DestinationID: shipPayload.ToCompanyID,
+                        EmployeeID: shipPayload.EmployeeID
+                    });
+                }
+                
+                processMainBatch();
+            })
+            .catch(function(err) {
+                console.error('ShipLog API Error:', err);
+                if (window.notify) window.notify.error('Lỗi khi vận chuyển luân chuyển: ' + err.message);
+                else alert('Lỗi vận chuyển luân chuyển: ' + err.message);
+                // Tiến hành ghi log Teflon mặc dù lỗi vận chuyển
+                processMainBatch();
+            });
+        } else {
+            processMainBatch();
+        }
 
         var dataObj = window.DataManager ? window.DataManager.data : (window.ALL_DATA || {});
         if (!dataObj.teflonlog) dataObj.teflonlog = [];

@@ -90,7 +90,7 @@ class ResultsCardRenderer {
             if (!zoomBtn) return;
 
             // KIỂM TRA SELECTION MODE: Nếu đang chọn, không mở popup ảnh
-            if (this.selectedItems && this.selectedItems.size > 0) return;
+            if (window.globalSelectionMode === true || (this.selectedItems && this.selectedItems.size > 0)) return;
 
             e.preventDefault();
             e.stopPropagation();
@@ -508,8 +508,8 @@ class ResultsCardRenderer {
                 return;
             }
 
-            // 🌟 KIỂM TRA SELECTION MODE: Nếu đang có phần tử chọn -> Tự động toggle thay vì mở Panel/ảnh
-            if (this.selectedItems.size > 0) {
+            // 🌟 KIỂM TRA SELECTION MODE: Nếu đang có phần tử chọn hoặc bật chế độ -> Tự động toggle thay vì mở Panel/ảnh
+            if (window.globalSelectionMode === true || this.selectedItems.size > 0) {
                 e.preventDefault();
                 e.stopImmediatePropagation(); // Ngăn các sự kiện click khác trên document (như phóng to ảnh)
                 
@@ -1521,33 +1521,48 @@ if (typeof module !== 'undefined' && module.exports) {
 // Bắt sóng mcs-data-sync cập nhật nháy DOM (V10)
 document.addEventListener('mcs-data-sync', function (e) {
     var d = e.detail;
-    if (!d || !d.payload) return;
+    // Thay vì chỉ cập nhật nhãn Status, ta Re-render lại toàn bộ thẻ (Card)
+    // để đồng bộ cả Tên Công ty, Vị trí và Status
+    if (!d || (!d.payload && !d.forceReload)) return;
 
-    // Phép vá: Nếu bảng là log (statuslogs, teflonlog) thì idValue là StatusLogID, nhưng Card sử dụng MoldID
-    var targetMoldId = d.payload.MoldID || d.payload.CutterID || d.idValue;
+    var targetMoldId = null;
+    if (d.payload) {
+        targetMoldId = d.payload.MoldID || d.payload.CutterID || d.idValue;
+    }
     if (!targetMoldId) return;
 
     var card = document.querySelector('.result-card[data-id="' + targetMoldId + '"]');
     if (!card) return;
 
-    if (d.payload.Status) {
-        var badge = card.querySelector('.status-badge');
-        if (badge) {
-            badge.innerText = d.payload.Status === 'IN' ? '入庫 IN' : (d.payload.Status === 'OUT' ? '出庫 OUT' : (d.payload.Status === 'RETURNED' ? '返却' : '棚卸 AUDIT'));
-            var statusClassRaw = String(d.payload.Status).toLowerCase();
-            var badgeClass = 'neutral';
-            if (statusClassRaw === 'in' || statusClassRaw === 'ok') badgeClass = 'active';
-            else if (statusClassRaw === 'out' || statusClassRaw === 'ng') badgeClass = 'error';
-            else if (statusClassRaw === 'returned' || statusClassRaw === 'warning') badgeClass = 'warning';
-            else if (statusClassRaw === 'audit') badgeClass = 'info';
-
-            // Clean các class active, error, warning... cũ và nạp class mới
-            badge.className = 'meta-item status status-badge ' + badgeClass;
-
-            // Effect nháy chớp nhoáng xịn
-            badge.style.transform = 'scale(1.2)';
-            badge.style.boxShadow = '0 0 12px rgba(16, 185, 129, 0.6)';
-            setTimeout(() => { badge.style.transform = 'scale(1)'; badge.style.boxShadow = ''; }, 300);
+    if (window.DataManager && window.DataManager.data && window.app && window.app.resultsCardRenderer) {
+        let item = null;
+        if (window.DataManager.data.molds) {
+            item = window.DataManager.data.molds.find(m => String(m.MoldID) === String(targetMoldId));
+            if (item) item.type = 'mold';
+        }
+        if (!item && window.DataManager.data.cutters) {
+            item = window.DataManager.data.cutters.find(c => String(c.CutterID) === String(targetMoldId));
+            if (item) item.type = 'cutter';
+        }
+        
+        if (item) {
+            // Giữ lại trạng thái chọn
+            var wasChecked = card.classList.contains('selected');
+            
+            var newCard = window.app.resultsCardRenderer.createCard(item);
+            if (wasChecked) {
+                newCard.classList.add('selected');
+                var cb = newCard.querySelector('.card-checkbox');
+                if (cb) cb.checked = true;
+            }
+            
+            card.replaceWith(newCard);
+            window.app.resultsCardRenderer.scheduleHydrateThumbnails();
+            
+            // Hiệu ứng nháy sáng V10 xịn
+            newCard.style.boxShadow = '0 0 15px rgba(16, 185, 129, 0.8)';
+            newCard.style.transition = 'box-shadow 0.5s';
+            setTimeout(function() { newCard.style.boxShadow = ''; }, 500);
         }
     }
 });

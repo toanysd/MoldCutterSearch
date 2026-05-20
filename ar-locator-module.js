@@ -3182,7 +3182,7 @@
       } else if (this.state.mode === 'multi_search') {
         let foundTarget = null;
         for (const t of targets) {
-          if (isMatchFound(t, parsedNorm, parsedId, parsed?.kind)) {
+          if (!t.found && isMatchFound(t, parsedNorm, parsedId, parsed?.kind)) {
             isMatch = true;
             displayCode = t.code;
             foundTarget = t;

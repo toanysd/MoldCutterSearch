@@ -14238,7 +14238,7 @@ Created: 2026-02-04
 
 
 
-          const id = this.normId(log?.MoldID ?? log?.CutterID ?? log?.MOLDID ?? log?.MoldCode ?? log?.CutterNo);
+          const id = this.normId(log?.MoldID ?? log?.MOLDID ?? log?.MoldCode);
 
 
 

@@ -1,4 +1,4 @@
-// v9.0.2
+// v9.1.43-GoldenRuleOUT
 /* ============================================================================
    transfer-location-module.js
    Module Vận chuyển
@@ -59,7 +59,11 @@
             this.currentMode = 'TRANSFER'; // force transfer mode only
             this.step = 1;
             this.historyLocked = true;
-            this.state = { employeeId: '', companyId: '', notes: '', shipDate: getTodayString() };
+            var defEmp = '';
+            try { defEmp = localStorage.getItem('cio_default_employee_id'); } catch (e) { }
+            if (!defEmp) defEmp = '9'; // Mặc định là Toan
+
+            this.state = { employeeId: defEmp, companyId: '', notes: '', shipDate: getTodayString() };
 
             var bd = document.getElementById('tl-backdrop');
             if (!bd) {
@@ -217,7 +221,11 @@
 
                 html += '<div style="font-size:12px; font-weight:bold; color:#64748b; margin-bottom:8px;">よく使う担当者 / Truy cập nhanh:</div>';
                 html += '<div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;" id="tl-emp-list">';
-                var emps = this.getEmployees().slice(0, 12);
+                var emps = this.getEmployees().slice().sort(function (a, b) {
+                    var sA = ['1', '2', '3'].indexOf(String(a.EmployeeID || '').trim()) >= 0 ? 1 : 0;
+                    var sB = ['1', '2', '3'].indexOf(String(b.EmployeeID || '').trim()) >= 0 ? 1 : 0;
+                    return sA - sB;
+                }).slice(0, 12);
                 for (var i = 0; i < emps.length; i++) {
                     var isS = String(this.state.employeeId) === String(emps[i].EmployeeID);
                     var bg = isS ? '#dbeafe' : '#f8fafc';
@@ -399,6 +407,7 @@
                 ePicks.forEach(function (e) {
                     e.addEventListener('click', function () {
                         self.state.employeeId = this.getAttribute('data-val');
+                        try { localStorage.setItem('cio_default_employee_id', self.state.employeeId); } catch (e) { }
                         var dtInput = document.getElementById('tl-date-input');
                         if (dtInput) self.state.shipDate = dtInput.value;
                         advanceStep();
@@ -434,7 +443,7 @@
         renderHistory: function () {
             var el = document.getElementById('tl-history-tbl');
             if (!el) return;
-            var isMold = Boolean(this.currentItem.MoldID);
+            var isMold = Boolean(this.currentItem && this.currentItem.MoldID && !this.currentItem.CutterID);
             var idToFind = isMold ? this.currentItem.MoldID : this.currentItem.CutterID;
 
             var allSh = this.getShiplogs() || [];
@@ -554,7 +563,7 @@
                 ShipNotes: this.state.notes,
                 ShipDate: this.state.shipDate
             };
-            var isMold = Boolean(this.currentItem && this.currentItem.MoldID);
+            var isMold = Boolean(this.currentItem && this.currentItem.MoldID && !this.currentItem.CutterID);
             if (isMold) payload.MoldID = this.currentItem.MoldID;
             else payload.CutterID = this.currentItem.CutterID;
 
@@ -596,31 +605,42 @@
                         };
                         if (global.DataManager && global.DataManager.data) {
                             global.DataManager.data.shiplog.unshift(memPayload);
-                            var oldKeeper = isMold ? (self.currentItem.KeeperCompany || '') : (self.currentItem.KeeperCompany || '');
+
+                            // 3D Location Golden Rule: Vận chuyển rời giá -> OUT (kèm điểm đến)
+                            var oldKeeper = String(self.currentItem.KeeperCompany || '').trim();
+                            var destIdStr = String(payload.ToCompanyID).trim();
+                            var destActionName = destIdStr === '6' ? '返却' : '出荷';
+
+                            var generatedStatus = '';
+                            if (destIdStr === '6') {
+                                generatedStatus = 'RETURNED';
+                            } else if (oldKeeper === '2' && destIdStr !== '2') {
+                                generatedStatus = 'OUT (' + destActionName + ')';
+                            } else if (oldKeeper !== '2' && destIdStr === '2') {
+                                generatedStatus = 'IN';
+                            }
+
                             if (isMold) {
                                 var moldArr = global.DataManager.data.molds;
                                 for (var w = 0; w < moldArr.length; w++) {
                                     if (moldArr[w].MoldID == payload.MoldID) {
-                                        moldArr[w].KeeperCompany = payload.ToCompanyID; break;
+                                        moldArr[w].KeeperCompany = payload.ToCompanyID;
+                                        if (generatedStatus) moldArr[w].Status = generatedStatus;
+                                        break;
                                     }
                                 }
                             } else {
                                 var cutterArr = global.DataManager.data.cutters;
                                 for (var w = 0; w < cutterArr.length; w++) {
                                     if (cutterArr[w].CutterID == payload.CutterID) {
-                                        cutterArr[w].KeeperCompany = payload.ToCompanyID; break;
+                                        cutterArr[w].KeeperCompany = payload.ToCompanyID;
+                                        if (generatedStatus) cutterArr[w].Status = generatedStatus;
+                                        break;
                                     }
                                 }
                             }
 
                             // ADD LOCAL STATUSLOG UPDATE
-                            var ysdId = '2'; // hardcode YSD
-                            var generatedStatus = '';
-                            var destId = String(payload.ToCompanyID).trim();
-                            if (destId === '6') generatedStatus = 'RETURNED';
-                            else if (String(oldKeeper) === ysdId && destId !== ysdId) generatedStatus = 'OUT';
-                            else if (String(oldKeeper) !== ysdId && destId === ysdId) generatedStatus = 'IN';
-
                             if (generatedStatus && global.DataManager.data.statuslogs) {
                                 global.DataManager.data.statuslogs.unshift({
                                     StatusLogID: 'WEB_SL_TEMP_' + Date.now(),
@@ -634,6 +654,20 @@
                                     Notes: payload.ShipNotes || 'Auto-generated from Shipment'
                                 });
                             }
+
+                            // Re-render UI
+                            document.dispatchEvent(new CustomEvent('mcs-data-sync', { 
+                                detail: { 
+                                    forceReload: true,
+                                    idValue: isMold ? payload.MoldID : payload.CutterID,
+                                    payload: {
+                                        MoldID: isMold ? payload.MoldID : '',
+                                        CutterID: !isMold ? payload.CutterID : '',
+                                        Status: generatedStatus
+                                    }
+                                }
+                            }));
+
                         }
                     } catch (e) { }
                 }).catch(e => {

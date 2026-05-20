@@ -525,7 +525,8 @@ function parseCsvText(csvText) {
       return;
     }
 
-    const readableStream = stream.Readable.from(csvText);
+    const cleanText = stripBom(String(csvText));
+    const readableStream = stream.Readable.from(cleanText);
     readableStream
       .pipe(csvParser({
         mapHeaders: ({ header }) => {

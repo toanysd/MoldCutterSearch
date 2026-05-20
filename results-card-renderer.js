@@ -54,6 +54,9 @@ class ResultsCardRenderer {
 
                 if (!item) return;
 
+                // Nếu đang ở chế độ chọn, bỏ qua action menu để card handler xử lý chọn thẻ
+                if (this.selectedItems.size > 0) return;
+
                 this.openCardActionMenu(actionBtn, item, e);
             }
         }, true);
@@ -62,6 +65,9 @@ class ResultsCardRenderer {
         document.addEventListener('contextmenu', (e) => {
             const card = e.target.closest('.result-card');
             if (card) {
+                // Nếu đang ở chế độ chọn, bỏ qua chuột phải
+                if (this.selectedItems.size > 0) return;
+
                 e.preventDefault(); // Chặn menu mặc định của trình duyệt
 
                 const itemId = String(card.dataset.id || '').trim();
@@ -82,6 +88,9 @@ class ResultsCardRenderer {
         document.addEventListener('click', async (e) => {
             const zoomBtn = e.target.closest('.image-zoom-btn') || e.target.closest('.card-thumbnail');
             if (!zoomBtn) return;
+
+            // KIỂM TRA SELECTION MODE: Nếu đang chọn, không mở popup ảnh
+            if (window.globalSelectionMode === true || (this.selectedItems && this.selectedItems.size > 0)) return;
 
             e.preventDefault();
             e.stopPropagation();
@@ -408,7 +417,10 @@ class ResultsCardRenderer {
                         img.onerror = () => {
                             container.innerHTML = `<div style="padding:40px; text-align:center; color:#94a3b8;"><i class="fas fa-image fa-3x" style="margin-bottom:8px;"></i><p style="margin:0; font-size:12px; font-weight:600;">画像なし <span style="font-weight:400;">/ Không có ảnh</span></p></div>`;
                         };
-                        img.onclick = () => { if (window.openGlobalPhotoZoom) window.openGlobalPhotoZoom(img.src); };
+                        img.onclick = (e) => { 
+                            if (this.selectedItems && this.selectedItems.size > 0) return; // Prevent zooming when selecting
+                            if (window.openGlobalPhotoZoom) window.openGlobalPhotoZoom(img.src); 
+                        };
                         img.src = fullUrl;
                         container.appendChild(img);
                     } else {
@@ -496,22 +508,11 @@ class ResultsCardRenderer {
                 return;
             }
 
-            // Không mở chi tiết khi bấm vào các phần tương tác
-            if (
-                e.target.closest('.image-zoom-btn') ||
-                e.target.closest('.card-thumbnail') ||
-                e.target.closest('.location-link') ||
-                e.target.closest('.meta-item.status') ||
-                e.target.closest('.card-action-btn') ||
-                e.target.closest('.card-action-menu-v8')
-            ) {
-                return;
-            }
-
-            e.preventDefault();
-
-            // 🌟 KIỂM TRA SELECTION MODE: Nếu đang có phần tử chọn -> Tự động toggle thay vì mở Panel
-            if (this.selectedItems.size > 0) {
+            // 🌟 KIỂM TRA SELECTION MODE: Nếu đang có phần tử chọn hoặc bật chế độ -> Tự động toggle thay vì mở Panel/ảnh
+            if (window.globalSelectionMode === true || this.selectedItems.size > 0) {
+                e.preventDefault();
+                e.stopImmediatePropagation(); // Ngăn các sự kiện click khác trên document (như phóng to ảnh)
+                
                 const isChecking = !this.selectedItems.has(uid);
 
                 if (e.shiftKey && this._lastCheckedUid) {
@@ -526,6 +527,20 @@ class ResultsCardRenderer {
                 }
                 return;
             }
+
+            // Không mở chi tiết khi bấm vào các phần tương tác
+            if (
+                e.target.closest('.image-zoom-btn') ||
+                e.target.closest('.card-thumbnail') ||
+                e.target.closest('.location-link') ||
+                e.target.closest('.meta-item.status') ||
+                e.target.closest('.card-action-btn') ||
+                e.target.closest('.card-action-menu-v8')
+            ) {
+                return;
+            }
+
+            e.preventDefault();
 
             if (this.onItemClick) {
                 const item = this.items.find(it => {
@@ -1231,8 +1246,8 @@ class ResultsCardRenderer {
      */
     getSelectedItems() {
         return this.items.filter(item => {
-            const id = item.type === 'mold' ? item.MoldID : item.CutterID;
-            return this.selectedItems.has(id);
+            const uid = (item.type === 'mold' ? 'M_' : 'C_') + (item.type === 'mold' ? item.MoldID : item.CutterID);
+            return this.selectedItems.has(uid);
         });
     }
 
@@ -1368,10 +1383,13 @@ class ResultsCardRenderer {
 
         const statusStr = String(latest.Status || latest.Action || '').trim();
         let extractedDest = '';
+        let baseStatus = statusStr;
         const parenMatch = statusStr.match(/^(.*?)\s*[\(\（](.*?)[\)\）]$/);
         if (parenMatch) {
+            baseStatus = parenMatch[1].trim();
             extractedDest = parenMatch[2].trim();
         } else if (statusStr.toUpperCase().startsWith('OUT ') && statusStr.length > 4) {
+            baseStatus = 'OUT';
             extractedDest = statusStr.substring(4).trim();
         }
 
@@ -1392,7 +1410,7 @@ class ResultsCardRenderer {
         }
 
         return {
-            status: latest.Status || null,
+            status: baseStatus || null,
             date: latest.Timestamp || null,
             notes: latest.Notes || '',
             outDestName: outDestName
@@ -1503,33 +1521,48 @@ if (typeof module !== 'undefined' && module.exports) {
 // Bắt sóng mcs-data-sync cập nhật nháy DOM (V10)
 document.addEventListener('mcs-data-sync', function (e) {
     var d = e.detail;
-    if (!d || !d.payload) return;
+    // Thay vì chỉ cập nhật nhãn Status, ta Re-render lại toàn bộ thẻ (Card)
+    // để đồng bộ cả Tên Công ty, Vị trí và Status
+    if (!d || (!d.payload && !d.forceReload)) return;
 
-    // Phép vá: Nếu bảng là log (statuslogs, teflonlog) thì idValue là StatusLogID, nhưng Card sử dụng MoldID
-    var targetMoldId = d.payload.MoldID || d.payload.CutterID || d.idValue;
+    var targetMoldId = null;
+    if (d.payload) {
+        targetMoldId = d.payload.MoldID || d.payload.CutterID || d.idValue;
+    }
     if (!targetMoldId) return;
 
     var card = document.querySelector('.result-card[data-id="' + targetMoldId + '"]');
     if (!card) return;
 
-    if (d.payload.Status) {
-        var badge = card.querySelector('.status-badge');
-        if (badge) {
-            badge.innerText = d.payload.Status === 'IN' ? '入庫 IN' : (d.payload.Status === 'OUT' ? '出庫 OUT' : (d.payload.Status === 'RETURNED' ? '返却' : '棚卸 AUDIT'));
-            var statusClassRaw = String(d.payload.Status).toLowerCase();
-            var badgeClass = 'neutral';
-            if (statusClassRaw === 'in' || statusClassRaw === 'ok') badgeClass = 'active';
-            else if (statusClassRaw === 'out' || statusClassRaw === 'ng') badgeClass = 'error';
-            else if (statusClassRaw === 'returned' || statusClassRaw === 'warning') badgeClass = 'warning';
-            else if (statusClassRaw === 'audit') badgeClass = 'info';
-
-            // Clean các class active, error, warning... cũ và nạp class mới
-            badge.className = 'meta-item status status-badge ' + badgeClass;
-
-            // Effect nháy chớp nhoáng xịn
-            badge.style.transform = 'scale(1.2)';
-            badge.style.boxShadow = '0 0 12px rgba(16, 185, 129, 0.6)';
-            setTimeout(() => { badge.style.transform = 'scale(1)'; badge.style.boxShadow = ''; }, 300);
+    if (window.DataManager && window.DataManager.data && window.app && window.app.resultsCardRenderer) {
+        let item = null;
+        if (window.DataManager.data.molds) {
+            item = window.DataManager.data.molds.find(m => String(m.MoldID) === String(targetMoldId));
+            if (item) item.type = 'mold';
+        }
+        if (!item && window.DataManager.data.cutters) {
+            item = window.DataManager.data.cutters.find(c => String(c.CutterID) === String(targetMoldId));
+            if (item) item.type = 'cutter';
+        }
+        
+        if (item) {
+            // Giữ lại trạng thái chọn
+            var wasChecked = card.classList.contains('selected');
+            
+            var newCard = window.app.resultsCardRenderer.createCard(item);
+            if (wasChecked) {
+                newCard.classList.add('selected');
+                var cb = newCard.querySelector('.card-checkbox');
+                if (cb) cb.checked = true;
+            }
+            
+            card.replaceWith(newCard);
+            window.app.resultsCardRenderer.scheduleHydrateThumbnails();
+            
+            // Hiệu ứng nháy sáng V10 xịn
+            newCard.style.boxShadow = '0 0 15px rgba(16, 185, 129, 0.8)';
+            newCard.style.transition = 'box-shadow 0.5s';
+            setTimeout(function() { newCard.style.boxShadow = ''; }, 500);
         }
     }
 });

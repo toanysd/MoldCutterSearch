@@ -1,2 +1,3 @@
 ShipID,CustomerID,ItemTypeID,ShipItemName,ShipDate,ToCompanyID,FromCompanyID,ShipItemType,ShipStatus,FromCompany,ToCompany,MoldID,CutterID,FrameID,OtherEquipID,WaterBaseID,ShipNotes,DateEntry,handler,EmployeeID,UpdatedAt,UpdatedBy
+WEB_SHIP_1779268859881_348u6o8sc,,,,2026-05-20,7,,,Vận chuyển,,,5754,,,,,テフロン加工へ発送,2026-05-20T09:20:59.881Z,,1,,
 396,,2,,4/9/2026,2,7,,テフロン加工受取,,,5765,,,,,テフロン加工済,4/27/2026,,9,,

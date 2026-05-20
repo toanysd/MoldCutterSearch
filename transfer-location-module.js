@@ -656,17 +656,7 @@
                             }
 
                             // Re-render UI
-                            document.dispatchEvent(new CustomEvent('mcs-data-sync', { 
-                                detail: { 
-                                    forceReload: true,
-                                    idValue: isMold ? payload.MoldID : payload.CutterID,
-                                    payload: {
-                                        MoldID: isMold ? payload.MoldID : '',
-                                        CutterID: !isMold ? payload.CutterID : '',
-                                        Status: generatedStatus
-                                    }
-                                }
-                            }));
+                            document.dispatchEvent(new CustomEvent('mcs-data-sync', { detail: { forceReload: true } }));
 
                         }
                     } catch (e) { }

@@ -489,8 +489,18 @@ class ResultsTableRenderer {
     });
 
     const latest = logs[0];
+    
+    const statusStr = String(latest.Status || latest.Action || '').trim();
+    let baseStatus = statusStr;
+    const parenMatch = statusStr.match(/^(.*?)\s*[\(\（](.*?)[\)\）]$/);
+    if (parenMatch) {
+        baseStatus = parenMatch[1].trim();
+    } else if (statusStr.toUpperCase().startsWith('OUT ') && statusStr.length > 4) {
+        baseStatus = 'OUT';
+    }
+
     return {
-      status: latest.Status || null,
+      status: baseStatus || null,
       date: latest.Timestamp || null
     };
   }

@@ -1,4 +1,5 @@
 StatusLogID,MoldID,CutterID,ItemType,Status,Timestamp,EmployeeID,DestinationID,Notes,AuditDate,AuditType,SessionID,SessionName,SessionMode,AuditSessionID,UpdatedAt,UpdatedBy
+WEB_SL_1779268798045_x6tczbf02,5808,,,OUT,2026-05-20T09:19:57.579Z,9,1,,,,,,,,2026-05-20T18:19:58.480Z,9
 WEB_SL_1779251827310_60oxdwqmo,5809,,,AUDIT,2026-05-20T04:37:06.582Z,9,,,,,,,,,2026-05-20T13:37:07.504Z,9
 ST700037,5789,,mold,IN,2026-05-20T03:28:20.037Z,9,2,テフロン加工後受取,,,,,,,,
 WEB_SL_1779233817406_tj9ft8x92,5797,,,IN,2026-05-19T23:36:57.340Z,13,720,,,,,,,,2026-05-20T08:36:57.668Z,13

@@ -3205,21 +3205,62 @@
           }
 
           const sysLayer = foundTarget.item.RackLayerID || 'N/A';
+          const dataUrl = this.state.canvas.toDataURL('image/jpeg', 0.9);
 
           // Tạo overlay kết quả trực tiếp (position:fixed để luôn hiển thị)
           const msOverlay = document.createElement('div');
-          msOverlay.style.cssText = 'position:fixed; inset:0; z-index:999999; background:rgba(0,0,0,0.92); display:flex; flex-direction:column; justify-content:center; align-items:center; color:#fff; text-align:center; padding:20px;';
+          msOverlay.style.cssText = 'position:fixed; inset:0; z-index:999999; background:rgba(0,0,0,0.92); display:flex; flex-direction:column; justify-content:center; align-items:center; color:#fff; text-align:center; padding:20px; box-sizing:border-box; overflow-y:auto;';
           msOverlay.innerHTML = `
-            <div style="font-size:56px; margin-bottom:16px; color:#22c55e;"><i class="fas fa-check-circle"></i></div>
-            <h2 style="margin:0 0 8px 0; font-size:22px;">発見 (Đã tìm thấy)</h2>
-            <p style="font-size:20px; font-weight:bold; color:#facc15; margin-bottom:8px;">${displayCode}</p>
-            <p style="font-size:13px; color:#94a3b8; margin-bottom:28px;">システム位置 (DB): <b style="color:#fff;">${sysLayer}</b></p>
+            <div style="font-size:48px; margin-bottom:12px; color:#22c55e;"><i class="fas fa-check-circle"></i></div>
+            <h2 style="margin:0 0 4px 0; font-size:20px;">発見 (Đã tìm thấy)</h2>
+            <p style="font-size:20px; font-weight:bold; color:#facc15; margin-bottom:4px;">${displayCode}</p>
+            <p style="font-size:13px; color:#94a3b8; margin-bottom:16px;">システム位置 (DB): <b style="color:#fff;">${sysLayer}</b></p>
+            
+            <div style="position:relative; width:100%; max-width:340px; margin-bottom:16px; border-radius:12px; overflow:hidden; border:2px solid #22c55e; box-shadow:0 8px 16px rgba(0,0,0,0.3); background:#000;">
+              <img src="${dataUrl}" style="width:100%; display:block; object-fit:contain; max-height:300px;" />
+              <button id="ms-overlay-expand" style="position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.8); color:#fff; border:1px solid #22c55e; border-radius:6px; padding:8px 12px; font-size:14px; font-weight:bold; cursor:pointer; z-index:10; backdrop-filter:blur(4px); box-shadow:0 2px 8px rgba(0,0,0,0.5); animation: pulse 2s infinite;">
+                  <i class="fas fa-search-plus"></i> 画像を確認 (Bấm xem ảnh)
+              </button>
+            </div>
+            
+            <p id="ms-overlay-hint" style="font-size:12px; color:#facc15; margin-bottom:16px; font-weight:bold;"><i class="fas fa-exclamation-triangle"></i> ※ 写真を拡大して確認すると「確認して続行」ボタンが有効になります。(Bấm xem ảnh trước khi xác nhận)</p>
+
             <div style="display:flex; gap:16px; width:100%; max-width:340px;">
-              <button id="ms-overlay-continue" style="flex:1; padding:16px; font-size:16px; font-weight:bold; border-radius:10px; border:none; background:#22c55e; color:#fff; cursor:pointer;"><i class="fas fa-play"></i> 続行 (Tiếp)</button>
-              <button id="ms-overlay-done" style="flex:1; padding:16px; font-size:16px; font-weight:bold; border-radius:10px; border:none; background:#ef4444; color:#fff; cursor:pointer;"><i class="fas fa-check"></i> 完了 (Xong)</button>
+              <button id="ms-overlay-continue" style="flex:1; padding:14px; font-size:14px; font-weight:bold; border-radius:10px; border:1px solid #94a3b8; background:transparent; color:#fff; cursor:pointer;"><i class="fas fa-times"></i> スキップ (Bỏ qua)</button>
+              <button id="ms-overlay-done" disabled style="flex:2; padding:14px; font-size:15px; font-weight:bold; border-radius:10px; border:none; background:#475569; color:#94a3b8; cursor:not-allowed; transition: all 0.3s;"><i class="fas fa-check"></i> 確認して続行 (Xác nhận & Tìm tiếp)</button>
             </div>
           `;
           document.body.appendChild(msOverlay);
+
+          document.getElementById('ms-overlay-expand').onclick = () => {
+             const fsOverlay = document.createElement('div');
+             fsOverlay.style.cssText = 'position:fixed; inset:0; z-index:1000000; background:rgba(0,0,0,0.95); display:flex; flex-direction:column; justify-content:center; align-items:center;';
+             fsOverlay.innerHTML = `
+                <button id="ms-fs-close" style="position:absolute; top:20px; right:20px; padding:12px 24px; background:rgba(255,255,255,0.2); color:#fff; border:1px solid rgba(255,255,255,0.4); border-radius:8px; font-size:16px; cursor:pointer; backdrop-filter:blur(4px); z-index:1000001;"><i class="fas fa-times"></i> 閉じる / Đóng</button>
+                <img src="${dataUrl}" style="max-width:100vw; max-height:100vh; object-fit:contain;" />
+             `;
+             document.body.appendChild(fsOverlay);
+             const closeFs = () => { 
+                if (fsOverlay.parentNode) document.body.removeChild(fsOverlay); 
+                // Unlock the confirm button after viewing the image
+                const doneBtn = document.getElementById('ms-overlay-done');
+                if (doneBtn) {
+                   doneBtn.disabled = false;
+                   doneBtn.style.background = '#22c55e';
+                   doneBtn.style.color = '#fff';
+                   doneBtn.style.cursor = 'pointer';
+                }
+                const hint = document.getElementById('ms-overlay-hint');
+                if (hint) {
+                   hint.style.color = '#22c55e';
+                   hint.innerHTML = '<i class="fas fa-check"></i> 画像確認済 (Đã xem ảnh)';
+                }
+                const expandBtn = document.getElementById('ms-overlay-expand');
+                if (expandBtn) expandBtn.style.animation = 'none';
+             };
+             document.getElementById('ms-fs-close').onclick = closeFs;
+             fsOverlay.onclick = (e) => { if (e.target === fsOverlay) closeFs(); };
+          };
 
           const resumeScan = () => {
             if (msOverlay.parentNode) document.body.removeChild(msOverlay);

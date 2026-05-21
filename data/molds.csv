@@ -1,7 +1,4 @@
 MoldID,MoldName,MoldCode,CustomerID,TrayID,MoldDesignID,RackLayerID,ItemTypeID,MoldLengthModified,MoldWidthModified,MoldHeightModified,MoldWeight,MoldNotes,MoldUsageStatus,MoldOnCheckList,JobID,MoldReturning,MoldReturnedDate,MoldDisposing,MoldDisposedDate,MoldEntry,MoldRevisionID,DeviceStatus,KeeperCompany,UpdatedAt,UpdatedBy
-5809,,,,,,,,,,,14.3,,,,,,,,,,,,1,2026-05-20T14:21:53.205Z,9
-5797,,,,,,233,,,,,,,,,,,,,,,,,,2026-05-20T17:57:41.793Z,9
-5799,,,,,,670,,,,,,,,,,,,,,,,,,2026-05-20T08:35:43.866Z,9
 10,TIH-014,TIH014,,2528,3018,12,2,,,,,,,TRUE,,,,,,,3072,,2,,
 12,TKO-009T,TKO009T,,2579,3078,11,2,,,,,,,TRUE,,,,,,,3119,,2,,
 13,TYJ-001,TYJ001,,2664,3172,11,2,,,,,,,TRUE,,,,,,,3213,,2,,
@@ -4682,4 +4679,3 @@ MoldID,MoldName,MoldCode,CustomerID,TrayID,MoldDesignID,RackLayerID,ItemTypeID,M
 5811,SMK-226,SMK226,71,5284,4809,2,700,0,,,,,,,FALSE,0,,,,,5/13/2026,,,,,
 5812,KOS-036,KOS036,195,5285,4810,2,700,0,,,,,,,FALSE,0,,,,,5/13/2026,,,,,
 5813,MDS-011,MDS011,210,5286,4811,2,700,0,,,,,,,FALSE,0,,,,,5/13/2026,,,,,
-",,,,,,,,,,,,,

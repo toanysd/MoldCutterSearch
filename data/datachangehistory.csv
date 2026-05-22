@@ -1,4 +1,5 @@
 DataChangeID,TableName,RecordID,RecordIDField,FieldName,OldValue,NewValue,ChangedAt,ChangedBy,BaseValueAtEdit,BaseCommitID,BaseCommitAt,ChangeSource,ChangeNote,IsConflict,ResolvedValue,ResolvedAt,ResolvedBy
+DCH1779422620789_5dgnwhb8t,molds,3034,MoldID,RackLayerID,,700,2026-05-22T13:03:40.789Z,9,,,,api/locationlog,Location change via /api/locationlog log=WEBLOC1779422615878_yul2ackew,FALSE,,,
 DCH1779422594121_ulxxecvnq,statuslogs.csv,WEB_SL_1779422592870_8911x545z,StatusLogID,Status,,IN,2026-05-22,9,,,,api/add-shiplog,Auto-generated status,FALSE,,,
 DCH1779422592071_nuftlx8jq,shiplog.csv,WEB_SHIP_1779422587597_iy9d34xwb,ShipID,ShipID,,WEB_SHIP_1779422587597_iy9d34xwb,2026-05-22,9,,,,api/add-shiplog,New shipment,FALSE,,,
 DCH1779422590014_65khrbvg4,Molds,3034,MoldID,KeeperCompany,3,2,2026-05-22,9,,,,api/add-shiplog,,FALSE,,,

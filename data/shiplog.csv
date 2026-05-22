@@ -1,2 +1,3 @@
 ShipID,CustomerID,ItemTypeID,ShipItemName,ShipDate,ToCompanyID,FromCompanyID,ShipItemType,ShipStatus,FromCompany,ToCompany,MoldID,CutterID,FrameID,OtherEquipID,WaterBaseID,ShipNotes,DateEntry,handler,EmployeeID,UpdatedAt,UpdatedBy
+WEB_SHIP_1779443744511_vsdgu2x5o,,,,2026-05-22,1,,,Vận chuyển,,,5813,,,,,金型・プラグ・抜型,2026-05-22T09:55:44.511Z,,9,,
 WEB_SHIP_1779422587597_iy9d34xwb,,,,2026-05-22,2,3,,Vận chuyển,,,3034,,,,,,2026-05-22T04:03:07.598Z,,9,,

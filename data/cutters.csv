@@ -1,4 +1,4 @@
-﻿CutterID,CutterNo,CutterName,CutterDesignCode,CutterCode,CustomerID,MoldDesignID,MoldShared,ItemTypeID,RackLayerID,KeeperCompany,CutterNote,CutterDetail,CutterManufactureDate,SatoCode,SatoCodeDate,Description,UsageStatus,BladeCount,CutterPresence,Pitch,PlasticCutType,PostCutLength,PostCutWidth,CutlineLength,CutlineWidth,CutterLength,CutterWidth,CutterHeight,CutterThickness,CutterCorner,CutterChamfer,CutterType,CutterDim,PPcushionUse,CutterEntry,CutterMasterID,UpdatedAt,UpdatedBy
+CutterID,CutterNo,CutterName,CutterDesignCode,CutterCode,CustomerID,MoldDesignID,MoldShared,ItemTypeID,RackLayerID,KeeperCompany,CutterNote,CutterDetail,CutterManufactureDate,SatoCode,SatoCodeDate,Description,UsageStatus,BladeCount,CutterPresence,Pitch,PlasticCutType,PostCutLength,PostCutWidth,CutlineLength,CutlineWidth,CutterLength,CutterWidth,CutterHeight,CutterThickness,CutterCorner,CutterChamfer,CutterType,CutterDim,PPcushionUse,CutterEntry,CutterMasterID,UpdatedAt,UpdatedBy
 175,340,YCM-038B,YCM038B,YCM038B,230,3233,,4,421,,,,,,,,,,TRUE,,,,,,,,,,,,,別抜き,,,,24,,
 176,359,NPR-002,NPR002,NPR002,271,1683,,4,421,,,,,,,,,,TRUE,,,,,,,,,,,,,別抜き,,,,25,,
 177,317,SSK-005,SSK005,SSK005,80,2212,,4,421,,,,,,,,,,TRUE,,,,,,,,,,,,,別抜き,,,,26,,
@@ -1709,5 +1709,5 @@
 3110,KSP211R6,KSP-211 R6,,KSP211R6,,4802,"KSP211R6, KSP214R1, KSP212R3, KSP213R1, KSP215R1, KSP216",,,1,KSP-211～KSP-218,,,,,,,1,TRUE,,PET,,,590,350,,,,1,4R15,,In-Line,590x350-4R15-,,5/13/2026,,2026-05-16T07:30:08.649Z,9
 3111,MDS008,MDS-008,,MDS008,,4800,MDS008,,,1,,,,,,,,2,TRUE,,PET,,,331,251,,,,1,4R20,,In-Line,331x251-4R20-,,5/13/2026,,2026-05-19T19:34:27.871Z,9
 3112,SMK226,SMK-226,,SMK226,,4809,SMK226,,,,,,,,,,,1,TRUE,,PET,,,367,245,,,,1,2R8,2C12,In-Line,367x245-2R8-2C12,,5/13/2026,,,
-3113,MDS011,MDS-011,,MDS011,,4811,MDS011,,,,,,,,,,,,TRUE,,PET 透明 0.8mm [640] 帯電防止無 シリコン付,,,325,247,,,,1,2R20,2C25,In-Line,325x247-2R20-2C25,,5/13/2026,,,
+3113,MDS011,MDS-011,,MDS011,,4811,MDS011,,,1,,,,,,,,,TRUE,,PET 透明 0.8mm [640] 帯電防止無 シリコン付,,,325,247,,,,1,2R20,2C25,In-Line,325x247-2R20-2C25,,5/13/2026,,2026-05-22T18:56:21.801Z,9
 3115,MTM191R5,MTM-191 R5,,MTM191R5,,4775,MTM191R5,,,,,,,,,,,,TRUE,,PET グレー 0.5mm [640] 導電印刷 （マルアイ　TB-APET）,,,245,200,,,,1,,,In-Line,245x200--,,5/13/2026,,,

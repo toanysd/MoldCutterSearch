@@ -1,4 +1,4 @@
-// v10.0.0-PubSub
+// v10.2.11-TeflonSchemaSync
 /**
 
  * teflon-processing.js - V2
@@ -1546,7 +1546,7 @@
 
         if (shipPayload) {
             if (window.notify) window.notify.info('Đang đồng bộ luân chuyển vận chuyển...');
-            fetch(API_BASE_URL + '/api/add-shiplog', {
+            fetch(self.resolveApiUrl('/api/add-shiplog'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(shipPayload)

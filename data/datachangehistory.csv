@@ -1,4 +1,5 @@
 DataChangeID,TableName,RecordID,RecordIDField,FieldName,OldValue,NewValue,ChangedAt,ChangedBy,BaseValueAtEdit,BaseCommitID,BaseCommitAt,ChangeSource,ChangeNote,IsConflict,ResolvedValue,ResolvedAt,ResolvedBy
+DCH1779430897669q0p13,molds,5815,MoldID,MoldWeight,,14.3,2026-05-22T06:21:34.747Z,9,,,,quick_update_v4,Wizard Update v4,FALSE,,,
 DCH17794257446187ZIH,molds,3034,MoldID,MoldDisposing,,FALSE,2026-05-22T04:55:41.040Z,,,,,extended_editor,batch=ACM1779425741040HCFY; op=update,FALSE,,,
 DCH17794257446187FSZ,molds,3034,MoldID,MoldReturning,,FALSE,2026-05-22T04:55:41.040Z,,,,,extended_editor,batch=ACM1779425741040HCFY; op=update,FALSE,,,
 DCH1779425744618K43R,molds,3034,MoldID,MoldNotes,坂田精文堂・図面確認依頼 | [旧RackLayer 703] 坂田精文堂,廃棄予定,2026-05-22T04:55:41.040Z,,坂田精文堂・図面確認依頼 | [旧RackLayer 703] 坂田精文堂,,,extended_editor,batch=ACM1779425741040HCFY; op=update,FALSE,,,

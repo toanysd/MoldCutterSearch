@@ -1,4 +1,5 @@
 DataChangeID,TableName,RecordID,RecordIDField,FieldName,OldValue,NewValue,ChangedAt,ChangedBy,BaseValueAtEdit,BaseCommitID,BaseCommitAt,ChangeSource,ChangeNote,IsConflict,ResolvedValue,ResolvedAt,ResolvedBy
+DCH1779425744618K43R,molds,3034,MoldID,MoldNotes,坂田精文堂・図面確認依頼 | [旧RackLayer 703] 坂田精文堂,廃棄予定,2026-05-22T04:55:41.040Z,,坂田精文堂・図面確認依頼 | [旧RackLayer 703] 坂田精文堂,,,extended_editor,batch=ACM1779425741040HCFY; op=update,FALSE,,,
 DCH1779425637488_1c9nfp8ks,molds,3034,MoldID,RackLayerID,,222,2026-05-22T13:53:57.488Z,9,,,,api/locationlog,Location change via /api/locationlog log=WEBLOC1779425632153_ickclhczj,FALSE,,,
 DCH1779422620789_5dgnwhb8t,molds,3034,MoldID,RackLayerID,,700,2026-05-22T13:03:40.789Z,9,,,,api/locationlog,Location change via /api/locationlog log=WEBLOC1779422615878_yul2ackew,FALSE,,,
 DCH1779422594121_ulxxecvnq,statuslogs.csv,WEB_SL_1779422592870_8911x545z,StatusLogID,Status,,IN,2026-05-22,9,,,,api/add-shiplog,Auto-generated status,FALSE,,,

@@ -612,11 +612,12 @@
                             var destActionName = destIdStr === '6' ? '返却' : '出荷';
 
                             var generatedStatus = '';
+                            var isOldYsd = (oldKeeper === '2' || oldKeeper === '');
                             if (destIdStr === '6') {
                                 generatedStatus = 'RETURNED';
-                            } else if (oldKeeper === '2' && destIdStr !== '2') {
-                                generatedStatus = 'OUT (' + destActionName + ')';
-                            } else if (oldKeeper !== '2' && destIdStr === '2') {
+                            } else if (isOldYsd && destIdStr !== '2') {
+                                generatedStatus = 'OUT';
+                            } else if (!isOldYsd && destIdStr === '2') {
                                 generatedStatus = 'IN';
                             }
 
@@ -656,8 +657,8 @@
                             }
 
                             // Re-render UI
-                            document.dispatchEvent(new CustomEvent('mcs-data-sync', { 
-                                detail: { 
+                            document.dispatchEvent(new CustomEvent('mcs-data-sync', {
+                                detail: {
                                     forceReload: true,
                                     idValue: isMold ? payload.MoldID : payload.CutterID,
                                     payload: {

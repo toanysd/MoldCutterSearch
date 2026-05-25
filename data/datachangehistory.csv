@@ -1,4 +1,5 @@
 DataChangeID,TableName,RecordID,RecordIDField,FieldName,OldValue,NewValue,ChangedAt,ChangedBy,BaseValueAtEdit,BaseCommitID,BaseCommitAt,ChangeSource,ChangeNote,IsConflict,ResolvedValue,ResolvedAt,ResolvedBy
+DCH1779700791947_ib0e3xps0,statuslogs.csv,WEB_SL_1779700790824_50o088ukm,StatusLogID,Status,,OUT,2026-05-25,9,,,,api/add-shiplog,Auto-generated status,FALSE,,,
 DCH1779700790006_pb1fq6gr9,shiplog.csv,WEB_SHIP_1779700785466_quz8yutz3,ShipID,ShipID,,WEB_SHIP_1779700785466_quz8yutz3,2026-05-25,9,,,,api/add-shiplog,New shipment,FALSE,,,
 DCH1779700788059_5hrs8b1rn,Molds,5817,MoldID,KeeperCompany,,1,2026-05-25,9,,,,api/add-shiplog,,FALSE,,,
 DCH1779698407337scclp,molds,5799,MoldID,MoldWeight,,4.45,2026-05-25T08:40:03.338Z,9,,,,quick_update_v4,Wizard Update v4,FALSE,,,

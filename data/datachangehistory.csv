@@ -1,4 +1,5 @@
 DataChangeID,TableName,RecordID,RecordIDField,FieldName,OldValue,NewValue,ChangedAt,ChangedBy,BaseValueAtEdit,BaseCommitID,BaseCommitAt,ChangeSource,ChangeNote,IsConflict,ResolvedValue,ResolvedAt,ResolvedBy
+DCH1779674308223_q5twh34er,Molds,5754,MoldID,KeeperCompany,2,7,2026-05-25,1,,,,api/add-shiplog,テフロン加工へ発送,FALSE,,,
 DCH1779674289301jca4s,teflonlog,TL215778,TeflonLogID,TeflonStatus,Requested,Approved,2026-05-25T01:58:09.301Z,1,,,,teflon_wizard,Wizard Update,FALSE,,,
 DCH1779443785138_yn9qyjxrl,shiplog.csv,WEB_SHIP_1779443780806_lxh7d98fb,ShipID,ShipID,,WEB_SHIP_1779443780806_lxh7d98fb,2026-05-22,9,,,,api/add-shiplog,New shipment,FALSE,,,
 DCH1779443783118_lyomh2nww,Cutters,3113,CutterID,KeeperCompany,,1,2026-05-22,9,,,,api/add-shiplog,金型・プラグ・抜型,FALSE,,,

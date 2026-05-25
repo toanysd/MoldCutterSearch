@@ -52,13 +52,15 @@ const recentChanges = [];
 const MAX_CHANGES = 1000;
 function pushDeltaEvent(filename, idField, idValue, payload) {
   const table = String(filename || '').replace(/\.csv$/i, '');
+  const now = Date.now();
   recentChanges.push({
-    version: Date.now(),
+    version: now,
     table,
     idField,
     idValue,
     payload
   });
+  globalDataVersion = now;
   if (recentChanges.length > MAX_CHANGES) {
     recentChanges.shift();
     _hasEvictedChanges = true;
@@ -525,8 +527,7 @@ function parseCsvText(csvText) {
       return;
     }
 
-    const cleanText = stripBom(String(csvText));
-    const readableStream = stream.Readable.from(cleanText);
+    const readableStream = stream.Readable.from(csvText);
     readableStream
       .pipe(csvParser({
         mapHeaders: ({ header }) => {
@@ -1573,7 +1574,7 @@ app.post('/api/add-shiplog', async (req, res) => {
       const tgFile = await getGitHubFile(`${DATA_PATH_PREFIX}${targetFile}`);
       const tRecords = await parseCsvText(tgFile.content);
       const match = tRecords.find(r => String(r[idField]).trim() === String(dchId).trim());
-      if (match) oldKeeper = String(match.KeeperCompany || '').trim();
+      if (match) oldKeeper = String(match.KeeperCompany || match.storage_company || '').trim();
     } catch (e) {
       console.warn('[SERVER] Failed to read old keeper:', e);
     }
@@ -1614,6 +1615,9 @@ app.post('/api/add-shiplog', async (req, res) => {
           for (let i = 0; i < records.length; i++) {
             if (String((records[i] && records[i][idField]) || '').trim() === String(dchId).trim()) {
               records[i].KeeperCompany = ToCompanyID;
+              if ('storage_company' in records[i] || targetFile === 'cutters.csv' || targetFile === 'molds.csv') {
+                records[i].storage_company = ToCompanyID;
+              }
               records[i].UpdatedAt = getJSTTimestamp();
               records[i].UpdatedBy = String(EmployeeID || '');
               updated = true;
@@ -1721,11 +1725,12 @@ app.post('/api/add-shiplog', async (req, res) => {
     // 8. Generate IN / OUT log if transitioning between YSD and Out
     const destToCompanyID = String(ToCompanyID).trim();
     let generatedStatus = '';
+    const isOldKeeperYsd = (oldKeeper === ysdId || oldKeeper === ''); // Treat empty as YSD
     if (destToCompanyID === '6') {
       generatedStatus = 'RETURNED';
-    } else if (oldKeeper === ysdId && destToCompanyID !== ysdId) {
+    } else if (isOldKeeperYsd && destToCompanyID !== ysdId) {
       generatedStatus = 'OUT';
-    } else if (oldKeeper !== ysdId && destToCompanyID === ysdId) {
+    } else if (!isOldKeeperYsd && destToCompanyID === ysdId) {
       generatedStatus = 'IN';
     }
 
@@ -1791,7 +1796,7 @@ app.post('/api/add-shiplog', async (req, res) => {
 
     // TRỢ LỰC DELTA SYNC
     pushDeltaEvent('shiplog.csv', 'ShipID', newId, normalizedEntry);
-    pushDeltaEvent(targetFile, idField, dchId, { KeeperCompany: ToCompanyID, UpdatedAt: getJSTTimestamp(), UpdatedBy: EmployeeID });
+    pushDeltaEvent(targetFile, idField, dchId, { KeeperCompany: ToCompanyID, storage_company: ToCompanyID, UpdatedAt: getJSTTimestamp(), UpdatedBy: EmployeeID });
     if (generatedStatusLog) {
       pushDeltaEvent('statuslogs.csv', 'StatusLogID', generatedStatusLog.StatusLogID, generatedStatusLog);
     }

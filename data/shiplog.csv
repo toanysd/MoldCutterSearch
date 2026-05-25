@@ -1,4 +1,5 @@
 ShipID,CustomerID,ItemTypeID,ShipItemName,ShipDate,ToCompanyID,FromCompanyID,ShipItemType,ShipStatus,FromCompany,ToCompany,MoldID,CutterID,FrameID,OtherEquipID,WaterBaseID,ShipNotes,DateEntry,handler,EmployeeID,UpdatedAt,UpdatedBy
+WEB_SHIP_1779700785466_quz8yutz3,,,,2026-05-25,1,,,Vận chuyển,,,5817,,,,,,2026-05-25T09:19:45.466Z,,9,,
 WEB_SHIP_1779698231177_487x96t3r,,,,2026-05-22,1,1,,Vận chuyển,,,5815,,,,,,2026-05-25T08:37:11.177Z,,9,,
 WEB_SHIP_1779696242729_duup90o88,,,,2026-05-22,1,,,Vận chuyển,,,5815,,,,,,2026-05-25T08:04:02.729Z,,9,,
 WEB_SHIP_1779674308629_k14zwnntf,,,,2026-05-25,2,7,,Vận chuyển,,,5754,,,,,テフロン加工後受取,2026-05-25T01:58:28.629Z,,1,,

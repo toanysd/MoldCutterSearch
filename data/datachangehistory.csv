@@ -1,4 +1,5 @@
 DataChangeID,TableName,RecordID,RecordIDField,FieldName,OldValue,NewValue,ChangedAt,ChangedBy,BaseValueAtEdit,BaseCommitID,BaseCommitAt,ChangeSource,ChangeNote,IsConflict,ResolvedValue,ResolvedAt,ResolvedBy
+DCH1779674302436t1iw2,teflonlog,TL215778,TeflonLogID,TeflonStatus,Approved,Sent,2026-05-25T01:58:22.436Z,1,,,,teflon_wizard,Wizard Update,FALSE,,,
 DCH1779674318727_jmacsbn0t,statuslogs.csv,WEB_SL_1779674315856_ajnq7iq51,StatusLogID,Status,,IN,2026-05-25,1,,,,api/add-shiplog,Auto-generated status,FALSE,,,
 DCH1779674316820_a972whciu,statuslogs.csv,WEB_SL_1779674311618_44p9jejuy,StatusLogID,Status,,OUT,2026-05-25,1,,,,api/add-shiplog,Auto-generated status,FALSE,,,
 DCH1779674315065_0sw9yh617,shiplog.csv,WEB_SHIP_1779674308629_k14zwnntf,ShipID,ShipID,,WEB_SHIP_1779674308629_k14zwnntf,2026-05-25,1,,,,api/add-shiplog,New shipment,FALSE,,,

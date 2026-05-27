@@ -1,6 +1,6 @@
 TeflonLogID,MoldID,TeflonStatus,RequestedBy,RequestedDate,ApprovedDate,ApprovedBy,SentBy,SentDate,ExpectedDate,ReceivedDate,ReceivedBy,SupplierID,CoatingType,Reason,TeflonCost,Quality,TeflonNotes,CreatedDate,UpdatedBy,UpdatedAt
 TL472839,5812,Requested,12,2026-05-22,,,,,,,,7,,,,,,2026-05-22,,
-TL322953,5810,Requested,1,2026-05-22,,,,,,,,7,,,,,,2026-05-22,,
+TL322953,5810,Requested,12,2026-05-22,,,,,,,,7,,,,,,2026-05-22,,
 1,261,テフロン加工済,,,,,,1/5/2024,,1/11/2024,,7,テフロン加工済,Historical Data,,,,9/26/2025,,12/10/2025
 2,263,テフロン加工済,,,,,,4/3/2023,,4/6/2023,,7,テフロン加工済,Historical Data,,,,9/26/2025,,12/10/2025
 3,284,テフロン加工済,,,,,,9/5/2023,,9/8/2023,,7,テフロン加工済,Historical Data,,,,9/26/2025,,12/10/2025

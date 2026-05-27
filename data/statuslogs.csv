@@ -1,4 +1,5 @@
 StatusLogID,MoldID,CutterID,ItemType,Status,Timestamp,EmployeeID,DestinationID,Notes,AuditDate,AuditType,SessionID,SessionName,SessionMode,AuditSessionID,UpdatedAt,UpdatedBy
+WEB_SL_1779854017073_bm7ym5o88,5787,,,IN,2026-05-27T03:53:36.111Z,8,175,,,,,,,,2026-05-27T12:53:37.342Z,8
 WEB_SL_1779774551961_dc104r57e,5788,,,OUT,2026-05-26T05:49:10.962Z,8,6,,,,,,,,2026-05-26T14:49:12.282Z,8
 WEB_SL_1779700790824_50o088ukm,5817,,mold,OUT,2026-05-25,9,1,Auto-generated from Shipment,,,,,,,2026-05-25T18:19:51.014Z,9
 WEB_SL_1779698266994_8q5x1vcrq,5815,,,OUT,2026-05-25T08:37:45.336Z,9,1,,,,,,,,2026-05-25T17:37:47.373Z,9

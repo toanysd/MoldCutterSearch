@@ -274,8 +274,7 @@
                 var val = this.wizardState.fields[targetKey] || '';
 
                 if (!val && targetKey === 'MoldWeight' && this.currentItem && this.currentItem.designInfo && this.currentItem.designInfo.MoldDesignWeight) {
-                    val = String(this.currentItem.designInfo.MoldDesignWeight);
-                    this.wizardState.fields[targetKey] = val;
+                    // Xóa fallback DesignWeight ở đây
                 }
 
                 var targetName = targetKey === 'MoldWeight' ? '金型重量 / Khối lượng Khuôn' : 'トレイ重量 / Khối lượng Khay';

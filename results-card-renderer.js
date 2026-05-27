@@ -417,9 +417,9 @@ class ResultsCardRenderer {
                         img.onerror = () => {
                             container.innerHTML = `<div style="padding:40px; text-align:center; color:#94a3b8;"><i class="fas fa-image fa-3x" style="margin-bottom:8px;"></i><p style="margin:0; font-size:12px; font-weight:600;">画像なし <span style="font-weight:400;">/ Không có ảnh</span></p></div>`;
                         };
-                        img.onclick = (e) => { 
+                        img.onclick = (e) => {
                             if (this.selectedItems && this.selectedItems.size > 0) return; // Prevent zooming when selecting
-                            if (window.openGlobalPhotoZoom) window.openGlobalPhotoZoom(img.src); 
+                            if (window.openGlobalPhotoZoom) window.openGlobalPhotoZoom(img.src);
                         };
                         img.src = fullUrl;
                         container.appendChild(img);
@@ -512,7 +512,7 @@ class ResultsCardRenderer {
             if (window.globalSelectionMode === true || this.selectedItems.size > 0) {
                 e.preventDefault();
                 e.stopImmediatePropagation(); // Ngăn các sự kiện click khác trên document (như phóng to ảnh)
-                
+
                 const isChecking = !this.selectedItems.has(uid);
 
                 if (e.shiftKey && this._lastCheckedUid) {
@@ -861,6 +861,51 @@ class ResultsCardRenderer {
 
         const dimensions = item.dimensions || 'N/A';
 
+        // Lấy trạng thái Teflon (TeflonStatus) từ bảng teflonlog
+        let teflonBadgeHtml = '';
+        if (item.type === 'mold') {
+            let rawStatus = '';
+            if (window.DataManager && window.DataManager.data && window.DataManager.data.teflonlog) {
+                const tLogs = window.DataManager.data.teflonlog.filter(l => String(l.MoldID) === String(itemId) && l.TeflonStatus && l.TeflonStatus.toLowerCase() !== 'deleted');
+                if (tLogs.length > 0) {
+                    tLogs.sort((a, b) => {
+                        const idA = parseInt(String(a.TeflonLogID).replace(/\D/g, '')) || 0;
+                        const idB = parseInt(String(b.TeflonLogID).replace(/\D/g, '')) || 0;
+                        return idB - idA;
+                    });
+                    rawStatus = String(tLogs[0].TeflonStatus || '').trim();
+                }
+            }
+
+            let displayStatus = '未確認';
+            let badgeStyle = 'background:#ffffff; color:#334155; border:1px solid #cbd5e1;'; // Chưa xác nhận mặc định
+
+            if (rawStatus.includes('加工済') || rawStatus === '完了' || rawStatus.toLowerCase() === 'completed') {
+                displayStatus = '完了';
+                badgeStyle = 'background:#dcfce7; color:#047857; border:1px solid #bbf7d0;'; // Hoàn thành (Xanh lá)
+            } else if (rawStatus.includes('加工中') || rawStatus.includes('発送') || rawStatus.toLowerCase() === 'processing') {
+                displayStatus = '加工中';
+                badgeStyle = 'background:#dbeafe; color:#1d4ed8; border:1px solid #bfdbfe;'; // Đang mạ (Xanh lam)
+            } else if (rawStatus.includes('手配') || rawStatus.includes('承認済') || rawStatus.toLowerCase() === 'approved' || rawStatus.includes('確認済')) {
+                displayStatus = '手配中';
+                badgeStyle = 'background:#ffedd5; color:#c2410c; border:1px solid #fdba74;'; // Đã xác nhận / Cần gửi (Cam)
+            } else if (rawStatus.includes('依頼') || rawStatus.includes('承認待') || rawStatus.toLowerCase() === 'requested' || rawStatus.toLowerCase() === 'pending') {
+                displayStatus = '依頼中';
+                badgeStyle = 'background:#fef3c7; color:#b45309; border:1px solid #fde68a;'; // Yêu cầu (Vàng)
+            } else if (rawStatus !== '' && rawStatus !== '未確認') {
+                displayStatus = rawStatus;
+                badgeStyle = 'background:#f3f4f6; color:#475569; border:1px solid #e2e8f0;'; // Khác (Xám nhạt)
+            }
+
+            teflonBadgeHtml = `
+            <div style="display:flex; align-items:center; gap:4px; font-size:10px; font-weight:700;" title="Trạng thái gốc: ${rawStatus || 'Chưa có thông tin'}">
+                <span style="color:#64748b;">テフロン</span>
+                <div style="padding:2px 6px; border-radius:4px; ${badgeStyle}">
+                    ${displayStatus}
+                </div>
+            </div>`;
+        }
+
         // Lấy vị trí theo format RackID-LayerNumber
         const rackLocation = this.getRackLocation(item);
         const location = rackLocation.display;
@@ -939,19 +984,25 @@ class ResultsCardRenderer {
                 <!-- ID Label -->
                 <div class="item-id">ID: ${itemId}</div>
                 
-                <!-- Code - Bold -->
-                <div class="item-code">${code}</div>
+                <!-- Code & Dimensions -->
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:4px;">
+                    <div class="item-code" style="margin-bottom:4px;">${code}</div>
+                    <div class="item-dimensions" style="margin-bottom:0; font-size:11px; white-space:nowrap; flex-shrink:0;">
+                        <i class="fas fa-ruler-combined"></i> ${dimensions}
+                    </div>
+                </div>
                 
                 <!-- Product Name -->
                 <div class="item-name">${productName}</div>
                 
-                <!-- Dimensions + Weight -->
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
-                    <div class="item-dimensions" style="margin-bottom:0;">
-                        <i class="fas fa-ruler-combined"></i>
-                        ${dimensions}
+                <!-- Teflon Status + Weight -->
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px; min-height: 20px;">
+                    <div style="display:flex; align-items:center;">
+                        ${teflonBadgeHtml}
                     </div>
-                    ${item.MoldWeight ? `<div style="font-size:12px; font-weight:700; color:#1e3a8a;"><i class="fas fa-weight-hanging" style="margin-right:2px;"></i> ${item.MoldWeight}kg</div>` : (item.designInfo && item.designInfo.MoldDesignWeight ? `<div style="font-size:12px; font-weight:700; color:#64748b;" title="Khối lượng Thiết kế"><i class="fas fa-weight-hanging" style="margin-right:2px;"></i> ~${item.designInfo.MoldDesignWeight}kg</div>` : '')}
+                    ${item.MoldWeight
+                ? `<div style="font-size:12px; font-weight:700; color:#1e3a8a; white-space:nowrap; flex-shrink:0;"><i class="fas fa-weight-hanging" style="margin-right:2px;"></i> ${item.MoldWeight}kg</div>`
+                : `<div style="font-size:12px; font-weight:500; color:#94a3b8; white-space:nowrap; flex-shrink:0;"><i class="fas fa-weight-hanging" style="margin-right:2px;"></i> -- kg</div>`}
                 </div>
                 
                 <!-- Meta Info Group: 2 Rows Layout -->
@@ -1544,25 +1595,25 @@ document.addEventListener('mcs-data-sync', function (e) {
             item = window.DataManager.data.cutters.find(c => String(c.CutterID) === String(targetMoldId));
             if (item) item.type = 'cutter';
         }
-        
+
         if (item) {
             // Giữ lại trạng thái chọn
             var wasChecked = card.classList.contains('selected');
-            
+
             var newCard = window.app.resultsCardRenderer.createCard(item);
             if (wasChecked) {
                 newCard.classList.add('selected');
                 var cb = newCard.querySelector('.card-checkbox');
                 if (cb) cb.checked = true;
             }
-            
+
             card.replaceWith(newCard);
             window.app.resultsCardRenderer.scheduleHydrateThumbnails();
-            
+
             // Hiệu ứng nháy sáng V10 xịn
             newCard.style.boxShadow = '0 0 15px rgba(16, 185, 129, 0.8)';
             newCard.style.transition = 'box-shadow 0.5s';
-            setTimeout(function() { newCard.style.boxShadow = ''; }, 500);
+            setTimeout(function () { newCard.style.boxShadow = ''; }, 500);
         }
     }
 });

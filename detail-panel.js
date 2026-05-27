@@ -14615,7 +14615,7 @@ Created: 2026-02-04
 
 
 
-        const weightRaw = item.MoldWeight ?? this.pick(design, ['MoldDesignWeight']) ?? design?.DesignWeight ?? item.Weight;
+        const weightRaw = item.MoldWeight ?? item.Weight;
 
 
 
@@ -15578,7 +15578,7 @@ Created: 2026-02-04
 
 
 
-      const weightRaw = mold?.MoldWeight ?? this.pick(design, ['MoldDesignWeight']) ?? design?.DesignWeight ?? mold?.Weight;
+      const weightRaw = mold?.MoldWeight ?? mold?.Weight;
 
 
 
@@ -16138,7 +16138,7 @@ Created: 2026-02-04
 
 
 
-      const weightRaw = mold?.MoldWeight ?? design?.MoldDesignWeight ?? design?.DesignWeight ?? mold?.Weight;
+      const weightRaw = mold?.MoldWeight ?? mold?.Weight;
 
 
 
@@ -17434,7 +17434,7 @@ Created: 2026-02-04
 
 
 
-      const weightRaw = mold?.MoldWeight ?? this.pick(design, ['MoldDesignWeight']) ?? design?.DesignWeight ?? mold?.Weight;
+      const weightRaw = mold?.MoldWeight ?? mold?.Weight;
 
 
 
@@ -17994,7 +17994,7 @@ Created: 2026-02-04
 
 
 
-      const weightRaw = mold?.MoldWeight ?? design?.MoldDesignWeight ?? design?.DesignWeight ?? mold?.Weight;
+      const weightRaw = mold?.MoldWeight ?? mold?.Weight;
 
 
 

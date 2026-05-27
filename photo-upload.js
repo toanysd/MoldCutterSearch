@@ -946,7 +946,7 @@
         if (_m) { 
           dimsFromDM = _it.displayDimensions || _it.dimensions || ''; 
           if (d.type === 'mold') {
-            weightFromDM = _it.MoldWeight || (_it.designInfo ? _it.designInfo.MoldDesignWeight : '') || '';
+            weightFromDM = _it.MoldWeight || '';
             if (!weightFromDM) {
               this._missingWeightItem = _it;
               this._missingWeightType = 'mold';

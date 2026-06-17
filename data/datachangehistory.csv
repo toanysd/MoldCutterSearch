@@ -1,4 +1,5 @@
 DataChangeID,TableName,RecordID,RecordIDField,FieldName,OldValue,NewValue,ChangedAt,ChangedBy,BaseValueAtEdit,BaseCommitID,BaseCommitAt,ChangeSource,ChangeNote,IsConflict,ResolvedValue,ResolvedAt,ResolvedBy
+DCH1781671900172t5xn7,trays,617,TrayID,TrayWeight,,49,2026-06-17T04:51:36.830Z,,,,,quick_update_v4,Wizard Update v4,FALSE,,,
 DCH1781585171784a355d,trays,1701,TrayID,TrayWeight,,71,2026-06-16T04:46:09.128Z,,,,,quick_update_v4,Wizard Update v4,FALSE,,,
 DCH1781328918509_5ri8qiwmj,molds,3311,MoldID,RackLayerID,,613,2026-06-13T14:35:18.509Z,9,,,,api/locationlog,Location change via /api/locationlog log=WEBLOC1781328911850_17v2g6qd8,FALSE,,,
 DCH1781327397579_2fvvp8c6x,molds,4679,MoldID,RackLayerID,,112,2026-06-13T14:09:57.579Z,9,,,,api/locationlog,Location change via /api/locationlog log=WEBLOC1781327392860_m8sdj3tzj,FALSE,,,

@@ -1,4 +1,4 @@
-﻿IDMay,TenMay,LoaiMay,ViTriDatMay,NguoiPhuTrach,GhiChuMay,UpdatedAt,UpdatedBy
+﻿MachineID,MachineName,MachineType,MachineLocation,MachineManager,MachineNotes,UpdatedAt,UpdatedBy
 1,1号機,成形,2F,谷口,,,
 2,2号機,成形,2F,谷口,,,
 3,3号機,成形,2F,谷口,,,

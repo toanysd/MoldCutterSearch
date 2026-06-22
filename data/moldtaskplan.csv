@@ -1,0 +1,9 @@
+﻿TaskID,MoldID,TaskName,ProcessingCodeID,PredecessorTaskID,EstimatedHours,PlannedStart,PlannedEnd,ActualStart,ActualEnd,Status,MachineID,EmployeeID,IsOT_Applied,OTHours,ActualHours
+17,5845,Lap trinh CAM & Thiet lap may,10,,2,6/11/2026,6/11/2026,,,Chua bat dau,,,TRUE,,
+18,5845,"CNC Mat sau (Khoan lo moi, ranh, ren)",14,17,4,6/11/2026,6/12/2026,,,Chua bat dau,,,TRUE,,
+19,5845,CNC Mat truoc (Pocket long khuon),15,18,18,6/12/2026,6/12/2026,,,Chua bat dau,,,TRUE,,
+20,5845,Khoan lo chan khong,11,19,3,6/12/2026,6/12/2026,,,Chua bat dau,,,TRUE,,
+21,5845,Danh bong khuon,12,20,2,6/12/2026,6/12/2026,,,Chua bat dau,,,TRUE,,
+22,5845,"Rua, rung khuon sieu am",55,21,0.75,6/12/2026,6/12/2026,,,Chua bat dau,,,TRUE,,
+23,5845,Gia cong CNC Plug (May chuyen dung),31,17,2.5,6/11/2026,6/11/2026,,,Chua bat dau,,,TRUE,,
+24,5845,Dan Nel (nel hari) cho Plug,13,23,3,6/11/2026,6/12/2026,,,Chua bat dau,,,TRUE,,

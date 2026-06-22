@@ -1,0 +1,1 @@
+﻿ScheduleID,JobID,MoldID,MachineID,EstimatedHours,StartTime,EndTime,MoldReadyDate,TargetTrayDate,DeliveryDate,StatusCheck

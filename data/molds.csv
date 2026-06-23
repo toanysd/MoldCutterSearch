@@ -1,4 +1,4 @@
-﻿MoldID,MoldName,MoldCode,CustomerID,TrayID,MoldDesignID,RackLayerID,ItemTypeID,MoldLengthModified,MoldWidthModified,MoldHeightModified,MoldWeight,MoldNotes,MoldUsageStatus,MoldOnCheckList,JobID,MoldReturning,MoldReturnedDate,MoldDisposing,MoldDisposedDate,MoldEntry,MoldRevisionID,DeviceStatus,KeeperCompany,UpdatedAt,UpdatedBy
+MoldID,MoldName,MoldCode,CustomerID,TrayID,MoldDesignID,RackLayerID,ItemTypeID,MoldLengthModified,MoldWidthModified,MoldHeightModified,MoldWeight,MoldNotes,MoldUsageStatus,MoldOnCheckList,JobID,MoldReturning,MoldReturnedDate,MoldDisposing,MoldDisposedDate,MoldEntry,MoldRevisionID,DeviceStatus,KeeperCompany,UpdatedAt,UpdatedBy
 10,TIH-014,TIH014,,2528,3018,12,2,,,,,,,TRUE,,,,,,,3072,,2,,
 12,TKO-009T,TKO009T,,2579,3078,11,2,,,,,,,TRUE,,,,,,,3119,,2,,
 13,TYJ-001,TYJ001,,2664,3172,11,2,,,,,,,TRUE,,,,,,,3213,,2,,
@@ -4700,7 +4700,7 @@
 5833,SRI-008 R1,SRI008R1,79,5304,4832,700,0,,,,,,,FALSE,0,,,,,6/3/2026,,,,,
 5834,WAK-001R2 D,WAK001R2D,442,5305,4833,711,0,,,,,,,FALSE,0,,,,,6/3/2026,,,,,
 5835,CHG-007AB,CHG007AB,432,5306,4834,700,0,,,,,,,FALSE,0,,,,,6/4/2026,,,,,
-5836,CHG-008AB,CHG008AB,432,5307,4835,700,0,,,,,,,FALSE,0,,,,,6/7/2026,,,,,
+5836,CHG-008AB,CHG008AB,432,5307,4835,700,0,,,,16.9,,,FALSE,0,,,,,6/7/2026,,,,,
 5837,CHG-009AB,CHG009AB,432,5308,4836,700,0,,,,,,,FALSE,0,,,,,6/8/2026,,,,,
 5838,CHG-010AB,CHG010AB,432,5309,4837,700,0,,,,,,,FALSE,0,,,,,6/8/2026,,,,,
 5839,JAE-378,JAE378,177,5310,4838,700,0,,,,,,,FALSE,0,,,,,6/10/2026,,,,,

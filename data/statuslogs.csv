@@ -1,4 +1,5 @@
-﻿StatusLogID,MoldID,CutterID,ItemType,Status,Timestamp,EmployeeID,DestinationID,Notes,AuditDate,AuditType,SessionID,SessionName,SessionMode,AuditSessionID,UpdatedAt,UpdatedBy
+StatusLogID,MoldID,CutterID,ItemType,Status,Timestamp,EmployeeID,DestinationID,Notes,AuditDate,AuditType,SessionID,SessionName,SessionMode,AuditSessionID,UpdatedAt,UpdatedBy
+WEB_SL_1782265039430_vrfufhq2a,4419,,,IN,2026-06-24T01:37:18.880Z,9,241,,,,,,,,2026-06-24T10:37:19.700Z,9
 7,3192,,,,,9,13,台車,,,,,,,,
 8,5604,,,,,10,9,Viet,,,,,,,,
 11,3331,,,,,9,13,,,,,,,,,

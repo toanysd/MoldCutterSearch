@@ -1,4 +1,5 @@
 DataChangeID,TableName,RecordID,RecordIDField,FieldName,OldValue,NewValue,ChangedAt,ChangedBy,BaseValueAtEdit,BaseCommitID,BaseCommitAt,ChangeSource,ChangeNote,IsConflict,ResolvedValue,ResolvedAt,ResolvedBy
+DCH1782439683758rhb64,molds,5854,MoldID,MoldWeight,,8.35,2026-06-26T02:08:00.009Z,,,,,quick_update_v4,Wizard Update v4,FALSE,,,
 DCH1782369395687oejfr,molds,96,MoldID,MoldWeight,,8.95,2026-06-25T06:36:31.601Z,9,,,,quick_update_v4,Wizard Update v4,FALSE,,,
 DCH178235126394699oz9,trays,1037,TrayID,TrayWeight,29,,2026-06-25T01:34:21.522Z,,,,,quick_update_v4,Wizard Update v4,FALSE,,,
 DCH1782350811696cido0,trays,1037,TrayID,TrayWeight,,29,2026-06-25T01:26:48.586Z,,,,,quick_update_v4,Wizard Update v4,FALSE,,,

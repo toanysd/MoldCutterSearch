@@ -637,19 +637,24 @@ class App {
           
           if (typeCode === 'M') {
             targetKind = 'mold';
-            targetItem = this.allItems.find(i => {
-              const mId = String(i.MoldID || '').trim().toUpperCase();
-              const mCode = String(i.MoldCode || '').trim().toUpperCase();
-              return mId === idCode || mCode === idCode;
-            });
+            // Ưu tiên tìm theo ID trước (vì mã QR luôn tạo theo ID)
+            targetItem = this.allItems.find(i => String(i.MoldID || '').trim().toUpperCase() === idCode);
+            // Nếu không thấy, tìm theo Code
+            if (!targetItem) {
+              targetItem = this.allItems.find(i => String(i.MoldCode || '').trim().toUpperCase() === idCode);
+            }
           } else if (typeCode === 'C') {
             targetKind = 'cutter';
-            targetItem = this.allItems.find(i => {
-              const cId = String(i.CutterID || '').trim().toUpperCase();
-              const cCode = String(i.CutterCode || '').trim().toUpperCase();
-              const cNo = String(i.CutterNo || '').trim().toUpperCase();
-              return cId === idCode || cCode === idCode || cNo === idCode;
-            });
+            // Ưu tiên tìm theo ID trước
+            targetItem = this.allItems.find(i => String(i.CutterID || '').trim().toUpperCase() === idCode);
+            // Nếu không thấy, tìm theo Code hoặc No
+            if (!targetItem) {
+              targetItem = this.allItems.find(i => {
+                const cCode = String(i.CutterCode || '').trim().toUpperCase();
+                const cNo = String(i.CutterNo || '').trim().toUpperCase();
+                return cCode === idCode || cNo === idCode;
+              });
+            }
           }
           
           if (targetItem) {

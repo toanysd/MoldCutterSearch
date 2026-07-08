@@ -467,18 +467,25 @@
 
     findExactRecord(list, parsed) {
       const isMold = parsed.kind === 'mold';
-      return list.find(item => {
-        if (isMold) {
-          const mId = String(item.MoldID || '').trim().toUpperCase();
-          const mCode = String(item.MoldCode || '').trim().toUpperCase();
-          return mId === parsed.id || mCode === parsed.code;
-        } else {
-          const cId = String(item.CutterID || '').trim().toUpperCase();
-          const cCode = String(item.CutterCode || '').trim().toUpperCase();
-          const cNo = String(item.CutterNo || '').trim().toUpperCase();
-          return cId === parsed.id || cCode === parsed.code || cNo === parsed.code;
+      if (isMold) {
+        // Ưu tiên tìm theo MoldID trước
+        let target = list.find(item => String(item.MoldID || '').trim().toUpperCase() === parsed.id);
+        if (!target) {
+          target = list.find(item => String(item.MoldCode || '').trim().toUpperCase() === parsed.code);
         }
-      }) || null;
+        return target || null;
+      } else {
+        // Ưu tiên tìm theo CutterID trước
+        let target = list.find(item => String(item.CutterID || '').trim().toUpperCase() === parsed.id);
+        if (!target) {
+          target = list.find(item => {
+            const cCode = String(item.CutterCode || '').trim().toUpperCase();
+            const cNo = String(item.CutterNo || '').trim().toUpperCase();
+            return cCode === parsed.code || cNo === parsed.code;
+          });
+        }
+        return target || null;
+      }
     },
 
     searchByCode(list, code, kind) {

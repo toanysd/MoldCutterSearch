@@ -7672,96 +7672,38 @@ Created: 2026-02-04
 
 
         if (t === 'mold') {
-
-
-
           const id = this.normId(partialItem.MoldID || partialItem.ID || partialItem.id);
-
-
-
           const code = this.normId(partialItem.MoldCode || partialItem.code || partialItem.Code);
-
-
-
           const molds = Array.isArray(this.data?.molds) ? this.data.molds : [];
-
-
-
-          const found = molds.find(m =>
-
-
-
-            (id && this.normId(m?.MoldID || m?.ID) === id) ||
-
-
-
-            (code && this.normId(m?.MoldCode) === code) ||
-
-
-
-            (code && this.normId(m?.MoldID) === code)
-
-
-
-          );
-
-
-
+          
+          let found = id ? molds.find(m => this.normId(m?.MoldID || m?.ID) === id) : null;
+          if (!found && code) {
+            found = molds.find(m => this.normId(m?.MoldCode) === code || this.normId(m?.MoldID) === code);
+          }
           return found || partialItem;
-
-
-
         }
 
         if (t === 'tray') {
           const id = this.normId(partialItem.TrayID || partialItem.ID || partialItem.id);
           const code = this.normId(partialItem.TrayCode || partialItem.code || partialItem.Code);
           const trays = Array.isArray(this.data?.trays) ? this.data.trays : [];
-          const found = trays.find(tr =>
-            (id && this.normId(tr?.TrayID || tr?.ID) === id) ||
-            (code && this.normId(tr?.TrayCode || tr?.Code) === code)
-          );
+          
+          let found = id ? trays.find(tr => this.normId(tr?.TrayID || tr?.ID) === id) : null;
+          if (!found && code) {
+            found = trays.find(tr => this.normId(tr?.TrayCode || tr?.Code) === code);
+          }
           return found || partialItem;
         }
 
-
-
-
-
-
-
         // Cutter
-
-
-
         const id = this.normId(partialItem.CutterID || partialItem.ID || partialItem.id);
-
-
-
         const no = this.normId(partialItem.CutterNo || partialItem.CutterCode || partialItem.code || partialItem.Code);
-
-
-
         const cutters = Array.isArray(this.data?.cutters) ? this.data.cutters : [];
-
-
-
-        const found = cutters.find(c =>
-
-
-
-          (id && this.normId(c?.CutterID || c?.ID) === id) ||
-
-
-
-          (no && this.normId(c?.CutterNo || c?.CutterCode) === no)
-
-
-
-        );
-
-
-
+        
+        let found = id ? cutters.find(c => this.normId(c?.CutterID || c?.ID) === id) : null;
+        if (!found && no) {
+          found = cutters.find(c => this.normId(c?.CutterNo || c?.CutterCode) === no);
+        }
         return found || partialItem;
 
 

@@ -373,19 +373,41 @@
         if (!Array.isArray(list)) return;
         const normQ = this.normalizeCode(query).toLowerCase();
         for (const item of list) {
-          const code = kind === 'mold' ? (item.MoldCode || '') : (item.CutterNo || item.CutterCode || '');
+          const codes = kind === 'mold' ? [item.MoldCode] : [item.CutterNo, item.CutterCode, item.MoldShared];
           const name = kind === 'mold' ? (item.MoldName || '') : (item.CutterName || '');
           const dCode = item.displayCode || '';
-          const normC = this.normalizeCode(code).toLowerCase();
-          const normD = this.normalizeCode(dCode).toLowerCase();
           const itemId = String(kind === 'mold' ? (item.MoldID || '') : (item.CutterID || '')).toLowerCase();
 
-          if (code.toLowerCase().includes(q) || name.toLowerCase().includes(q) || dCode.toLowerCase().includes(q) || normC.includes(normQ) || normD.includes(normQ) || (itemId && itemId === q)) {
+          const primaryCode = kind === 'mold' ? (item.MoldCode || '') : (item.CutterNo || item.CutterCode || '');
+          const normD = this.normalizeCode(dCode).toLowerCase();
+          const normN = this.normalizeCode(name).toLowerCase();
+
+          let isMatch = false;
+          if (name.toLowerCase().includes(q) || (normN && normN.includes(normQ))) isMatch = true;
+          if (dCode.toLowerCase().includes(q) || (normD && normD.includes(normQ))) isMatch = true;
+          if (itemId && itemId === q) isMatch = true;
+          
+          if (!isMatch) {
+            for (const c of codes) {
+              if (!c) continue;
+              const strC = String(c).toLowerCase();
+              const normC = this.normalizeCode(c).toLowerCase();
+              if (strC.includes(q) || (normC && normC.includes(normQ))) {
+                isMatch = true;
+                break;
+              }
+            }
+          }
+
+          if (isMatch) {
+            let finalCode = dCode || primaryCode;
+            if (kind === 'cutter' && item.CutterName) finalCode += '. ' + item.CutterName;
+
             results.push({
-              code: dCode || code,
+              code: finalCode,
               kind: kind,
               item: item,
-              normCode: this.normalizeCode(dCode || code),
+              normCode: this.normalizeCode(dCode || primaryCode),
               normId: String(item.normId || (kind === 'mold' ? item.MoldID : item.CutterID) || '')
             });
           }
@@ -1700,7 +1722,7 @@
                 sel = this.state.dropdownItems[0];
               }
 
-              if (sel && !session.items.find(b => this.normalizeCode(b.code) === sel.normCode && b.kind === sel.kind)) {
+              if (sel && !session.items.find(b => b.normCode === sel.normCode && b.kind === sel.kind)) {
                 session.items.unshift({ code: sel.code, kind: sel.kind, item: sel.item, checked: false, isLoggedToDb: false, normCode: sel.normCode, normId: sel.normId, isManualAddition: true });
                 this.saveSessions();
                 if (window.showToast) window.showToast('success', '', `Đã thêm ${sel.code}`);
@@ -2801,7 +2823,7 @@
           } else {
             const session = this.state.activeSessionId ? this.state.sessions.find(s => s.id === this.state.activeSessionId) : null;
             if (session) {
-              if (!session.items.find(b => this.normalizeCode(b.code) === sel.normCode && b.kind === sel.kind)) {
+              if (!session.items.find(b => b.normCode === sel.normCode && b.kind === sel.kind)) {
                 session.items.unshift({ code: sel.code, kind: sel.kind, item: sel.item, checked: false, isLoggedToDb: false, normCode: sel.normCode, normId: sel.normId, isManualAddition: true });
                 this.saveSessions();
                 if (window.showToast) window.showToast('success', '', `Đã thêm ${sel.code}`);

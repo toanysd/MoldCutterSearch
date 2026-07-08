@@ -423,17 +423,17 @@
       if (!raw) return null;
       const text = String(raw).trim();
       try {
-        if (text.startsWith('http')) {
+        if (text.toLowerCase().startsWith('http')) {
           const url = new URL(text);
-          if (url.searchParams.get('scan') === 'qr') {
-            const type = url.searchParams.get('type') || '';
-            const id = url.searchParams.get('id') || '';
-            const code = url.searchParams.get('code') || '';
+          if (url.searchParams.get('scan') === 'qr' || url.searchParams.get('SCAN') === 'QR') {
+            const type = url.searchParams.get('type') || url.searchParams.get('TYPE') || '';
+            const id = url.searchParams.get('id') || url.searchParams.get('ID') || '';
+            const code = url.searchParams.get('code') || url.searchParams.get('CODE') || '';
             if (type && id && code) {
-              return { raw: text, kind: type.toLowerCase() === 'mold' ? 'mold' : 'cutter', id: decodeURIComponent(id), code: decodeURIComponent(code) };
+              return { raw: text, kind: type.toLowerCase() === 'mold' ? 'mold' : 'cutter', id: decodeURIComponent(id).toUpperCase(), code: decodeURIComponent(code).toUpperCase() };
             }
-          } else if (url.searchParams.has('q')) {
-             const q = url.searchParams.get('q');
+          } else if (url.searchParams.has('q') || url.searchParams.has('Q')) {
+             const q = url.searchParams.get('q') || url.searchParams.get('Q');
              const typeCode = q.charAt(0).toUpperCase();
              const idCode = q.substring(1).trim().toUpperCase();
              if (typeCode === 'M' || typeCode === 'C') {
@@ -447,8 +447,8 @@
       if (parts.length >= 4 && parts[0].toUpperCase() === 'MCQR') {
         const typePart = (parts[1] || '').toUpperCase();
         if (typePart === 'MOLD' || typePart === 'CUTTER') {
-          const id = (parts[2] || '').trim();
-          const code = (parts[3] || '').trim();
+          const id = (parts[2] || '').trim().toUpperCase();
+          const code = (parts[3] || '').trim().toUpperCase();
           if (id && code) {
             return { raw: text, kind: typePart === 'MOLD' ? 'mold' : 'cutter', id, code };
           }
@@ -468,9 +468,16 @@
     findExactRecord(list, parsed) {
       const isMold = parsed.kind === 'mold';
       return list.find(item => {
-        const itemId = isMold ? String(item.MoldID || '').trim() : String(item.CutterID || '').trim();
-        const itemCode = isMold ? String(item.MoldCode || '').trim() : String(item.CutterCode || item.CutterNo || '').trim();
-        return itemId === parsed.id || itemCode === parsed.code;
+        if (isMold) {
+          const mId = String(item.MoldID || '').trim().toUpperCase();
+          const mCode = String(item.MoldCode || '').trim().toUpperCase();
+          return mId === parsed.id || mCode === parsed.code;
+        } else {
+          const cId = String(item.CutterID || '').trim().toUpperCase();
+          const cCode = String(item.CutterCode || '').trim().toUpperCase();
+          const cNo = String(item.CutterNo || '').trim().toUpperCase();
+          return cId === parsed.id || cCode === parsed.code || cNo === parsed.code;
+        }
       }) || null;
     },
 

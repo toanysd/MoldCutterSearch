@@ -1,4 +1,4 @@
-﻿MoldID,MoldName,MoldCode,CustomerID,TrayID,MoldDesignID,RackLayerID,ItemTypeID,MoldLengthModified,MoldWidthModified,MoldHeightModified,MoldWeight,MoldNotes,MoldUsageStatus,MoldOnCheckList,JobID,MoldReturning,MoldReturnedDate,MoldDisposing,MoldDisposedDate,MoldEntry,MoldRevisionID,DeviceStatus,KeeperCompany,UpdatedAt,UpdatedBy
+MoldID,MoldName,MoldCode,CustomerID,TrayID,MoldDesignID,RackLayerID,ItemTypeID,MoldLengthModified,MoldWidthModified,MoldHeightModified,MoldWeight,MoldNotes,MoldUsageStatus,MoldOnCheckList,JobID,MoldReturning,MoldReturnedDate,MoldDisposing,MoldDisposedDate,MoldEntry,MoldRevisionID,DeviceStatus,KeeperCompany,UpdatedAt,UpdatedBy
 10,TIH-014,TIH014,,2528,3018,12,2,,,,,,,TRUE,,,,,,,3072,,2,,
 12,TKO-009T,TKO009T,,2579,3078,11,2,,,,,,,TRUE,,,,,,,3119,,2,,
 13,TYJ-001,TYJ001,,2664,3172,11,2,,,,,,,TRUE,,,,,,,3213,,2,,
@@ -4728,7 +4728,7 @@
 5861,PNS-012D,PNS012D,46,5330,4862,711,0,,,,,,,FALSE,0,,,,,6/30/2026,,,,,
 5862,PB-590X400 HIGHPLUG,PB590X400HIGHPLUG,,5331,4863,0,0,,,,,,,FALSE,0,,,,,7/1/2026,,,,,
 5863,IRI-001 R2,IRI001R2,439,5333,4866,700,0,,,,,,,FALSE,0,,,,,7/2/2026,,,,,
-5864,IRI-002 R2,IRI002R2,439,5334,4867,700,0,,,,,,,FALSE,0,,,,,7/3/2026,,,,,
+5864,IRI-002 R2,IRI002R2,439,5334,4867,700,0,,,,8.45,,,FALSE,0,,,,,7/3/2026,,,,,
 5865,RAI-001,RAI001,443,5335,4868,700,0,,,,,,,FALSE,0,,,,,7/3/2026,,,,,
 5866,STT-002AB,STT002AB,436,5291,4869,700,0,,,,,,,FALSE,0,,,,,7/3/2026,,,,,
 5867,PB-470x400x50 HIGH PLUG,PB470x400x50HIGHPLUG,,5336,4870,0,0,,,,,,,FALSE,0,,,,,7/4/2026,,,,,

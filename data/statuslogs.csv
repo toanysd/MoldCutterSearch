@@ -1,4 +1,5 @@
 StatusLogID,MoldID,CutterID,ItemType,Status,Timestamp,EmployeeID,DestinationID,Notes,AuditDate,AuditType,SessionID,SessionName,SessionMode,AuditSessionID,UpdatedAt,UpdatedBy
+WEB_SL_1785203754009_ig3awwc5q,5613,,,IN,2026-07-28T01:55:53.540Z,9,85,,,,,,,,2026-07-28T10:55:54.265Z,9
 WEB_SL_1785203741941_kw9vlxi4s,5613,,,IN,2026-07-28T01:55:40.356Z,9,AREA-MOLDROOM,,,,,,,,2026-07-28T10:55:42.270Z,9
 7,3192,,,,,9,13,台車,,,,,,,,
 8,5604,,,,,10,9,Viet,,,,,,,,

@@ -1,5 +1,4 @@
-ShipID,CustomerID,ItemTypeID,ShipItemName,ShipDate,ToCompanyID,FromCompanyID,ShipItemType,ShipStatus,FromCompany,ToCompany,MoldID,CutterID,FrameID,OtherEquipID,WaterBaseID,ShipNotes,DateEntry,handler,EmployeeID,UpdatedAt,UpdatedBy
-WEB_SHIP_1785367064079_7rwhr1uj7,,,,2026-07-30,10,2,,Vận chuyển,,,5224,,,,,,2026-07-29T23:17:44.079Z,,9,,
+﻿ShipID,CustomerID,ItemTypeID,ShipItemName,ShipDate,ToCompanyID,FromCompanyID,ShipItemType,ShipStatus,FromCompany,ToCompany,MoldID,CutterID,FrameID,OtherEquipID,WaterBaseID,ShipNotes,DateEntry,handler,EmployeeID,UpdatedAt,UpdatedBy
 4,108,10,ネル,9/30/2024,8,2,,,2,ベトナム,,,,1,,760x320x200 5.4kg,,,,,
 11,177,2,,9/30/2024,7,2,,,,,1169,,,,,,,,,,
 12,177,2,,10/1/2024,3,2,,,,,2895,,,,,坂田さん,,,,,
@@ -370,3 +369,5 @@ RP東プラ　PS黒1.0㎜導電練り込み　640㎜幅×200m；1本",,,,,
 426,,,,7/14/2026,1540,2,,,,,5800,,,,0,,,,,,
 427,,2,,7/14/2026,2,7,,テフロン加工受取,,,5801,,,,,テフロン加工済,7/14/2026,,9,,
 428,,,,7/14/2026,1540,2,,,,,5801,,,,0,,,,,,
+429,,2,,8/18/2026,7,2,,テフロン加工へ発送,,,5852,,,,,テフロン加工のため,8/18/2026,,9,,
+430,,2,,8/21/2026,2,7,,テフロン加工受取,,,5852,,,,,テフロン加工済,8/21/2026,,9,,

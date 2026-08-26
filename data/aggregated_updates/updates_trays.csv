@@ -1,0 +1,16 @@
+TableName,RecordIDField,RecordID,FieldName,NewValue,ChangedAt,ChangedBy
+trays,TrayID,2,TrayWeight,43,2026-06-19T07:56:05.430Z,
+trays,TrayID,617,TrayWeight,49,2026-06-17T04:51:36.830Z,
+trays,TrayID,1037,TrayWeight,,2026-06-25T01:34:21.522Z,
+trays,TrayID,1701,TrayWeight,71,2026-06-16T04:46:09.128Z,
+trays,TrayID,4502,TrayWeight,51,2026-06-17T05:13:14.468Z,
+trays,TrayID,4815,TrayWeight,29,2026-06-23T08:04:09.848Z,
+trays,TrayID,5307,TrayWeight,1,2026-06-23T03:08:39.641Z,9
+trays,TrayID,5308,TrayWeight,17,2026-06-23T02:38:12.735Z,9
+trays,TrayID,5312,TrayWeight,72,2026-07-25T00:48:59.101Z,
+trays,TrayID,5313,TrayWeight,74,2026-07-25T00:46:00.125Z,
+trays,TrayID,5315,TrayWeight,72,2026-07-25T00:46:48.765Z,
+trays,TrayID,5316,TrayWeight,75,2026-07-25T00:48:19.549Z,
+trays,TrayID,5321,TrayWeight,8.1,2026-06-23T04:42:43.636Z,9
+trays,TrayID,5333,TrayWeight,122,2026-07-21T05:07:21.263Z,
+trays,TrayID,5334,TrayWeight,123,2026-07-21T05:10:10.775Z,

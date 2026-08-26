@@ -1,0 +1,40 @@
+name: Aggregate Data Changes
+
+on:
+  push:
+    paths:
+      - 'data/datachangehistory.csv'
+  schedule:
+    - cron: '0 11 * * *' # Chạy vào 18:00 giờ VN (UTC+7) mỗi ngày
+  workflow_dispatch: # Cho phép chạy thủ công
+
+jobs:
+  aggregate-and-commit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        working-directory: ./scripts
+        run: npm install
+
+      - name: Run aggregation script
+        working-directory: ./scripts
+        run: node aggregate-updates.js
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/aggregated_updates/
+          git commit -m "Auto-aggregate latest datachangehistory" || echo "No changes to commit"
+          git push

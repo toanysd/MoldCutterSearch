@@ -1,4 +1,5 @@
 DataChangeID,TableName,RecordID,RecordIDField,FieldName,OldValue,NewValue,ChangedAt,ChangedBy,BaseValueAtEdit,BaseCommitID,BaseCommitAt,ChangeSource,ChangeNote,IsConflict,ResolvedValue,ResolvedAt,ResolvedBy
+DCH1788412856281gvn4c,trays,26,TrayID,TrayWeight,,163,2026-09-03T05:20:53.529Z,,,,,quick_update_v4,Wizard Update v4,FALSE,,,
 DCH1788412828775uhuku,trays,26,TrayID,TrayWeight,,163,2026-09-03T05:20:27.065Z,,,,,quick_update_v4,Wizard Update v4,FALSE,,,
 DCH17884127705824s75r,trays,5010,TrayID,TrayWeight,,110,2026-09-03T05:19:28.097Z,,,,,quick_update_v4,Wizard Update v4,FALSE,,,
 DCH1788411183708yzvpy,trays,2205,TrayID,TrayWeight,,139,2026-09-03T04:53:01.769Z,,,,,quick_update_v4,Wizard Update v4,FALSE,,,

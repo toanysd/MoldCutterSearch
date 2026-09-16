@@ -2,6 +2,7 @@ TableName,RecordIDField,RecordID,FieldName,NewValue,ChangedAt,ChangedBy
 molds,MoldID,96,MoldWeight,8.95,2026-06-25T06:36:31.601Z,9
 molds,MoldID,177,MoldWeightModified,16.1,2026-04-12T23:41:01.234Z,9
 molds,MoldID,230,MoldWeight,5.4,2026-06-02T00:46:30.657Z,9
+molds,MoldID,737,MoldWeight,12.35,2026-09-16T05:43:28.682Z,
 molds,MoldID,1094,MoldWeightModified,6.95,2026-04-10T04:24:01.133Z,9
 molds,MoldID,1102,MoldWeightModified,1.2,2026-04-10T04:19:35.657Z,9
 molds,MoldID,1121,MoldWeightModified,12.35,2026-04-12T23:52:54.360Z,9

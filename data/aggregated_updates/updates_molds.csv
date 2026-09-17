@@ -1,4 +1,5 @@
 TableName,RecordIDField,RecordID,FieldName,NewValue,ChangedAt,ChangedBy
+molds,MoldID,93,MoldWeight,7.6,2026-09-17T07:59:33.832Z,
 molds,MoldID,96,MoldWeight,8.95,2026-06-25T06:36:31.601Z,9
 molds,MoldID,177,MoldWeightModified,16.1,2026-04-12T23:41:01.234Z,9
 molds,MoldID,230,MoldWeight,5.4,2026-06-02T00:46:30.657Z,9

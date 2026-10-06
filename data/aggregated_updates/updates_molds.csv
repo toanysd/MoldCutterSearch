@@ -49,7 +49,9 @@ molds,MoldID,5557,MoldWeightModified,3.6,2026-04-10T04:21:03.821Z,9
 molds,MoldID,5613,RackLayerID,85,2026-07-28T10:56:01.281Z,9
 molds,MoldID,5624,RackLayerID,233,2026-04-13T08:49:32.721Z,9
 molds,MoldID,5624,MoldWeightModified,5.35,2026-04-12T23:48:19.614Z,9
+molds,MoldID,5636,RackLayerID,73,2026-10-06T14:45:57.674Z,9
 molds,MoldID,5637,MoldWeightModified,26.5,2026-04-12T23:44:38.531Z,9
+molds,MoldID,5639,RackLayerID,73,2026-10-06T14:46:18.373Z,9
 molds,MoldID,5646,KeeperCompany,2,2026-06-18,9
 molds,MoldID,5646,RackLayerID,95,2026-06-18T10:57:29.597Z,9
 molds,MoldID,5647,KeeperCompany,2,2026-06-18,9
@@ -134,6 +136,7 @@ molds,MoldID,5817,KeeperCompany,1,2026-05-25,9
 molds,MoldID,5817,MoldWeight,14.3,2026-05-25T05:38:29.101Z,9
 molds,MoldID,5820,MoldWeight,14.5,2026-07-15T04:46:17.912Z,9
 molds,MoldID,5821,MoldWeight,14.6,2026-07-15T02:59:42.516Z,9
+molds,MoldID,5833,RackLayerID,613,2026-10-06T10:06:34.142Z,9
 molds,MoldID,5835,MoldWeight,16.6,2026-06-23T05:06:10.162Z,9
 molds,MoldID,5836,MoldWeight,16.9,2026-06-23T03:08:39.641Z,9
 molds,MoldID,5837,MoldWeight,17.1,2026-06-23T03:17:47.042Z,9
